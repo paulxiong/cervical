@@ -4,6 +4,7 @@ import argparse
 from utils.experiment import cell_segmentation, cell_representation, image_classification
 
 parser = argparse.ArgumentParser()
+#四个选项，cell_representation是什么？
 parser.add_argument('--task', 
                     choices = ['cell_representation', 'image_classification', 'cell_segmentation'], 
                     help='cell_representation | image_classification | cell_segmentation')
