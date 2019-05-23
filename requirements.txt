@@ -1,0 +1,5 @@
+torch==0.3.1
+opencv-python==4.0.0
+large_image==1.0.0
+torchvision==0.2.2
+imgaug==2.5.0
