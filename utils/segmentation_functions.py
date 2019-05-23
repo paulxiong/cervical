@@ -13,7 +13,9 @@ from PIL import Image
 plt.rcParams['figure.figsize'] = 15, 15
 plt.rcParams['image.cmap'] = 'gray'
 titlesize = 24
-
+import torchvision.utils as vutils
+import torchvision.transforms as transforms
+import torch
 
 def save_normalized_images(inputImageFile, refImageFile, save_path):
     imInput = skimage.io.imread(inputImageFile)[:, :, :3]
@@ -305,13 +307,27 @@ def cell_segment(image_path, data_saved_path, ref_path, intensity):
             scale = 32/float(max(height,width))
             height, width = int(height*scale), int(width*scale)
             img = sp.misc.imresize(img, (height, width))
-
+        
         npad = ((16-height/2,32-height-(16-height/2)),(16-width/2,32-width-(16-width/2)),(0,0))
         segmentate_image = np.pad(img, pad_width=npad,constant_values=255,mode='constant')
         image_dict[n] = segmentate_image
+        
         n+=1
 
-    image = np.array(image_dict.values())
-    np.save(((data_saved_path + name)+'.npy'), image)
+    
     print ('Number of nuclei = ', len(image_dict))
-    print ('image saved')
+    if len(image_dict) != 0:
+        image = np.array(image_dict.values())
+        np.save(((data_saved_path + name)+'.npy'), image)
+        
+        print(image.shape)
+        image = np.transpose(image, (0,3,1,2))
+        print(image.shape)
+        vutils.save_image(torch.FloatTensor(image), ((data_saved_path + name)+'_segment.png') ,nrow=5,normalize=True)
+         
+        
+        print ('image saved')
+    
+    
+    
+    

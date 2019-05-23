@@ -290,8 +290,11 @@ def get_matrix(netD, netD_Q, cluster_loader, label, dis_category):
         predict.append(predict_label.data.cpu().numpy())    
     predict = np.concatenate(predict)
     predict_label = []
+    
     for index in range(0, predict.shape[0]):
         predict_label.append(np.argmax(predict[index]))
+        
+    print("predict_label", predict_label)
     coherent_array = np.zeros((np.max(label)+1,dis_category), dtype=float)
     for index in range(0, len(predict)):
         coherent_array[label[index],predict_label[index]] +=1
@@ -299,6 +302,7 @@ def get_matrix(netD, netD_Q, cluster_loader, label, dis_category):
 
 #normalization and data augmentation
 def normalized(array):
+    #print("norm", array.shape)
     X = np.asarray([x.transpose((2,0,1)) for x in array])
     X = X.astype(np.float32)/(255.0/2) - 1.0
     return X
@@ -331,7 +335,7 @@ def create_loader(array, shuffle=False, batchsize=1):
     label = torch.LongTensor(np.zeros((array.shape[0]),dtype=int))
     data = torch.FloatTensor(array)
     dataset = torch.utils.data.TensorDataset(data,label)
-    loader = torch.utils.data.DataLoader(dataset, shuffle=shuffle, batch_size=batchsize, num_workers=2)
+    loader = torch.utils.data.DataLoader(dataset, shuffle=shuffle, batch_size=batchsize, num_workers=0)
     return loader
 
 def create_model(rand=32, dis_category=5, dis=1):
@@ -413,6 +417,12 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
 
     estimator = KMeans(init='k-means++', n_clusters=2, n_init=1)
     true_label = [1]*proportion_1.shape[0] + [0]*proportion_0.shape[0]+[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
+    
+    true_test_label =[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
+    
+    print( proportion_1.shape,  proportion_0.shape, proportion_test_1.shape, proportion_test_0.shape)
+    print("true_test_label", true_test_label)
+    
     true_label_verse = [1-n for n in true_label]
     predict_label = estimator.fit_predict(np.concatenate([proportion_1,proportion_0,proportion_test_1,proportion_test_0],axis=0))
     predict_label = np.abs(1*(np.sum(np.array(true_label) == np.array(predict_label)) < np.sum(np.array(true_label) == (1- np.array(predict_label))))-predict_label)
@@ -436,12 +446,18 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                          predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n' + 
           'precision: '+ str(precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
                          predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n')
-
+    
+    #print("K_means_accuracy predict_label", predict_label)
+    
+    
     clf = svm.LinearSVC(penalty='l2')
     clf.fit(np.concatenate([proportion_1,proportion_0]), true_label[0: -proportion_test_1.shape[0]-proportion_test_0.shape[0]])
     score = clf.score(np.concatenate([proportion_test_1,proportion_test_0]), true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:])
     predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
     #print('_accurac: ', score)
+    
+    
+    
     print('SVM - f1_score:', f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
                              predict_label, average='weighted'),
           'recall:', recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
@@ -458,7 +474,8 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                              predict_label, average='weighted'))+ '\n' +
           'precision:'+ str(precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
                              predict_label, average='weighted'))+ '\n')
-
+                             
+    print("SVM predict_label", predict_label)
 
 def get_catagory_matrix(loader , netD, netD_Q, dis_category):
     test_iter = iter(loader)
@@ -488,6 +505,11 @@ def train(cell_train_set, cell_test_set, cell_test_label,
     test = normalized(cell_test_set)
     test_loader = create_loader(test, shuffle=False, batchsize=1)
     cell_test_label = cell_test_label
+    
+    #for n in negative_test_npy:
+    #    print(np.array(n).shape)
+        #normalized(n)
+        #print(negative_test_npy)
 
     positive_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_train_npy]
     positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
@@ -552,7 +574,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
     fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
 
     for epoch in range(n_epoch):
-
+        print("epoch:", epoch)
         dataiter = iter(train_loader)
         i = 0
 
@@ -671,9 +693,49 @@ def train(cell_train_set, cell_test_set, cell_test_label,
             
     return netD, netG, netD_D, netD_Q
 
+def predict(cell_train_set, cell_test_set, cell_test_label, 
+          positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+          netD, netG, netD_D, netD_Q, experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
+          ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
+    
+    #purity = "0.7580218950547377"
+    #entropy = "1.1362864472346974"
+    #gen_iterations = "10500"
+    #experiment_root = "./experiment/1554157099/"
+    
+    #purity = "0.37219251336898396"
+    #entropy = "2.0490804738403234"
+    #gen_iterations = "17000"
+    #experiment_root = "./experiment/1557940949/"
 
+    
+    #purity = "0.3155080213903743"
+    #entropy = "2.213324046517198"
+    #gen_iterations = "104900"
+    #experiment_root = "./experiment/1558397945/"
+    
+    purity = "0.40641711229946526"
+    entropy = "2.0135038381819172"
+    gen_iterations = "14000"
+    experiment_root = "./experiment/1558465269/"
 
+    
+    positive_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_train_npy]
+    positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
+    negative_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_train_npy]
+    negative_test_loader =  [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_test_npy]
+    
+    netD.load_state_dict(torch.load(experiment_root + 'model/netD_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+    netD_Q.load_state_dict(torch.load(experiment_root +'model/netD_Q_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
 
+    netD.eval()
+    netD_Q.eval()
+    
+    
+    image_level_accuracy(positive_train_loader, positive_test_loader, 
+                                     negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root)
+    
+    return netD, netG, netD_D, netD_Q
 
 
 def train_representation(cell_array, test_array, test_label, netD, netG, netD_D, netD_Q,
@@ -745,7 +807,7 @@ def train_representation(cell_array, test_array, test_label, netD, netG, netD_D,
     fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
 
     for epoch in range(n_epoch):
-
+        print("epoch:", epoch)
         dataiter = iter(train_loader)
         i = 0
 
@@ -860,3 +922,61 @@ def train_representation(cell_array, test_array, test_label, netD, netG, netD_D,
                 end = time.time()
                 
             gen_iterations += 1
+
+
+
+
+dirs=['Norm', 'LSIL', 'HSIL', 'HPV', 'SCC']
+
+import uuid 
+def eval_representation(cell_array, test_array, test_label, netD, netG, netD_D, netD_Q,
+                         experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
+                         ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
+    
+    purity = "0.7580218950547377"
+    entropy = "1.1362864472346974"
+    gen_iterations = "10500"
+    experiment_root = "./experiment/1554157099/"
+    
+    noise = torch.FloatTensor(batchsize, rand+10*dis,1 ,1 )
+
+    fixed_noise = torch.FloatTensor(np.random.multinomial(batchsize, 10*[0.1], size=1))
+    
+    fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
+
+    netD.load_state_dict(torch.load(experiment_root + 'model/netD_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+    netG.load_state_dict(torch.load(experiment_root + 'model/netG_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+    netD_D.load_state_dict(torch.load(experiment_root +'model/netD_D_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+    netD_Q.load_state_dict(torch.load(experiment_root +'model/netD_Q_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+
+    netD.eval()
+    netG.eval()
+    netD_D.eval()
+    netD_Q.eval()
+    
+    #print ('{0} {1} {2} {3}'.format(batch_time, gen_iterations , -D_cost.data[0] , mi_loss.data[0]))
+    G_sample = netG(Variable(fixed_noise, volatile = True))
+    vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell2.png',nrow=5,normalize=True)
+    
+    print(fixed_noise.size(), G_sample.data.size())
+    predict = []
+    for iteration in range(G_sample.data.size()[0]):
+        img = G_sample.data[iteration]
+        img = img.unsqueeze(0)
+        predict_label = netD_Q(netD(Variable(img.cuda(),volatile=True)))
+        predict.append(predict_label.data.cpu().numpy())   
+
+    predict = np.concatenate(predict)
+    predict_label = []
+    
+    for index in range(0, predict.shape[0]):
+        predict_label.append(np.argmax(predict[index]))
+        
+    print("predict_label", predict_label)
+    
+    for iteration in range(G_sample.data.size()[0]):
+        img = G_sample.data[iteration]
+        img = img.unsqueeze(0)
+        type = predict_label[iteration]
+        vutils.save_image(img, experiment_root+'picture/' + dirs[type] + '/fake_cell_'+ dirs[type] + '_' + str(uuid.uuid1()) +'.png',nrow=1,normalize=True)
+    
