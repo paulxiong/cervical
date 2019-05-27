@@ -25,6 +25,7 @@ from sklearn import svm
 from sklearn.metrics import f1_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
+import pickle
 
 from imgaug import augmenters as iaa
 
@@ -410,7 +411,11 @@ def get_f_score(array):
     return final_score
 
 def image_level_accuracy(positive_train_loader, positive_test_loader, negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root):
-
+    
+    clf_path = os.path.join(experiment_root, 'clf_model')
+    if not os.path.exists(clf_path):
+        os.makedirs(clf_path)
+    ts = int(time.time())
     proportion_1 = get_proportion(positive_train_loader , netD, netD_Q, dis_category)
     proportion_0 = get_proportion(negative_train_loader , netD, netD_Q, dis_category)
     proportion_test_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
@@ -447,6 +452,8 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                          predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n' + 
           'precision: '+ str(precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
                          predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n')
+    with open(clf_path + '/kmean_{}.model'.format(ts), 'wb') as f:
+        pickle.dump(estimator, f)
     
     #print("K_means_accuracy predict_label", predict_label)
     
@@ -477,6 +484,9 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                              predict_label, average='weighted'))+ '\n')
                              
     print("SVM predict_label", predict_label)
+    
+    with open(clf_path + '/svm_{}.model'.format(ts), 'wb') as f:
+        pickle.dump(clf, f)
 
 def get_catagory_matrix(loader , netD, netD_Q, dis_category):
     test_iter = iter(loader)
@@ -689,7 +699,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
             
     return netD, netG, netD_D, netD_Q
 
-def predict(cell_train_set, cell_test_set, cell_test_label, 
+def train_predict(cell_train_set, cell_test_set, cell_test_label, 
           positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
           netD, netG, netD_D, netD_Q, experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
           ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
@@ -728,6 +738,76 @@ def predict(cell_train_set, cell_test_set, cell_test_label,
                                      negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root)
     
     return netD, netG, netD_D, netD_Q
+
+
+def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root, clf_ts):
+    
+    clf_path = os.path.join(experiment_root, 'clf_model')
+    if not os.path.exists(clf_path):
+        os.makedirs(clf_path)
+    ts = clf_ts
+    proportion_test_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
+    proportion_test_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
+    
+    
+    true_test_label =[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
+    
+    print("True test labels", true_test_label)
+    
+    with open(experiment_root + '/clf_model/svm_{}.model'.format(ts)) as f:
+        clf = pickle.load(f)
+    predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
+    
+    print('SVM - f1_score:', f1_score(true_test_label, 
+                             predict_label, average='weighted'),
+          'recall:', recall_score(true_test_label, 
+                             predict_label, average='weighted'),
+          'precision:', precision_score(true_test_label, 
+                             predict_label, average='weighted'))
+                     
+    with open(experiment_root + "log","a") as f:
+        f.write('SVM - f1_score:'+ str(f1_score(true_test_label, 
+                             predict_label, average='weighted'))+ '\n' + 
+          'recall:'+ str(recall_score(true_test_label, 
+                             predict_label, average='weighted'))+ '\n' +
+          'precision:'+ str(precision_score(true_test_label, 
+                             predict_label, average='weighted'))+ '\n')
+                             
+    print("SVM predict_label", predict_label)
+    
+    return predict_label
+
+
+   
+def predict(positive_test_npy,  negative_test_npy,
+          netD, netG, netD_D, netD_Q, experiment_root,dis_category=5):
+    
+    config = ConfigParser.ConfigParser()
+    config_path = os.path.join(experiment_root.split('/')[:-2]+['configure.conf'])
+    config.read(config_path)
+    
+    purity = config.get('model','purity')
+    entropy = config.get('model','entropy')
+    gen_iterations = config.get('model','itera')
+    ts = config.get('model','clf_ts')
+    experiment_root = os.path.join(config.get('data','experiment_root'), config.get('model','path'),'')
+
+    
+    #positive_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_train_npy]
+    positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
+    #negative_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_train_npy]
+    negative_test_loader =  [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_test_npy]
+    
+    netD.load_state_dict(torch.load(experiment_root + 'model/netD_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+    netD_Q.load_state_dict(torch.load(experiment_root +'model/netD_Q_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth'))
+
+    netD.eval()
+    netD_Q.eval()
+    
+    
+    predict_label = image_level_predict(positive_test_loader,negative_test_loader , netD, netD_Q, dis_category, experiment_root, ts)
+    
+    return netD, netG, netD_D, netD_Q, predict_label
 
 
 def train_representation(cell_array, test_array, test_label, netD, netG, netD_D, netD_Q,

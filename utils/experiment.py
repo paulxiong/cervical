@@ -5,6 +5,7 @@ from segmentation_functions import *
 from gan_model import *
 import multiprocessing
 import time
+import pandas as pd
 
 def cell_segmentation(positive_images_root, negative_images_root, positive_npy_root, 
                       negative_npy_root, ref_path, intensity, multi_core):
@@ -136,7 +137,19 @@ def image_classification(positive_images_root, negative_images_root, positive_np
                    
                    
 
-def image_classification_predict(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
+      
+                   
+def image_classification_segment(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
+                        positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
+                      ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, multi_core = True,
+                      fold = 4, random_seed=42, choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1, 
+                         dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100):
+
+    cell_segmentation(positive_test_images_root, negative_test_images_root, positive_test_npy_root, 
+                      negative_test_npy_root, ref_path, intensity, multi_core)
+                      
+                      
+def image_classification_train(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
                         positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                       ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, multi_core = True,
                       fold = 4, random_seed=42, choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1, 
@@ -179,20 +192,57 @@ def image_classification_predict(positive_images_root, negative_images_root, pos
     cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
 
     netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
-    netD, netG, netD_D, netD_Q =  predict(cell_train_set, cell_test_set, cell_test_label, 
+    netD, netG, netD_D, netD_Q =  train_predict(cell_train_set, cell_test_set, cell_test_label, 
                    positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
                    netD, netG, netD_D, netD_Q, experiment_root, 
                    n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
                    ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
-                   
-                   
-def image_classification_segment(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
-                        positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
-                      ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, multi_core = True,
-                      fold = 4, random_seed=42, choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1, 
-                         dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100):
+    
+def image_classification_predict(positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
+                      ref_path, intensity, experiment_root, rand=64, dis_category=5):
 
-    cell_segmentation(positive_test_images_root, negative_test_images_root, positive_test_npy_root, 
-                      negative_test_npy_root, ref_path, intensity, multi_core)
+
+    positive_test_npy_path = [positive_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_test_images_root)]
+    negative_test_npy_path =[negative_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_test_images_root)]
+
+    positive_test_list = positive_test_npy_path
+    negative_test_list = negative_test_npy_path
+
+    positive_test_npy = [np.load(n) for n in positive_test_list]
+    negative_test_npy = [np.load(n) for n in negative_test_list]
+    
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q, predict_label =  predict(positive_test_npy,  negative_test_npy,
+          netD, netG, netD_D, netD_Q, experiment_root,dis_category=dis_category)
     
     
+    print("Positive image predict result:")
+    positive_files = os.listdir(positive_test_images_root)
+    positive_cnt = len(positive_files)
+    
+    if positive_cnt > 100:
+        print('The positive images number is greater than 100. Please check the ./positive_res.csv')
+        res_df = pd.DataFrame({'Image Name': [file.split('.')[0] for file in positive_files], 
+                               'Predict Label': ['P' if pl else 'N' for pl in predict_label[:positive_cnt] ]})
+        res_df.to_csv('./positive_res.csv')
+    else:
+        for image_file, pred_l in zip(positive_files, predict_label[:positive_cnt]):
+            basename = image_file.split('.')[0]
+            print("Image Name: {}; Predict Label: {}".format(basename, 'P' if pred_l else 'N'))
+    
+    print("Negative image predict result:")
+    negative_files = os.listdir(negative_test_images_root)
+    negative_cnt = len(negative_files)
+    
+    if negative_cnt > 100:
+        print('The negative images number is greater than 100. Please check the ./negative_res.csv')
+        res_df = pd.DataFrame({'Image Name': [file.split('.')[0] for file in negative_files], 
+                               'Predict Label': ['P' if pl else 'N' for pl in predict_label[-negative_cnt:] ]})
+        res_df.to_csv('./negative_res.csv')
+    else:
+        for image_file, pred_l in zip(negative_files, predict_label[-negative_cnt:]):
+            basename = image_file.split('.')[0]
+            print("Image Name: {}; Predict Label: {}".format(basename, 'P' if pred_l else 'N'))
+        
+             

@@ -1,7 +1,7 @@
 import os
 import time
 import argparse
-from utils.experiment import cell_segmentation, cell_representation, cell_representation_eval, image_classification, image_classification_predict, image_classification_segment
+from utils.experiment import cell_segmentation, cell_representation, cell_representation_eval, image_classification, image_classification_predict, image_classification_segment, image_classification_train
 import ConfigParser
 import re
 
@@ -28,12 +28,22 @@ config.read(config_path)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', 
-                    choices = ['cell_representation', 'cell_representation_eval', 'image_classification', 'image_classification_predict','image_classification_segment', 'cell_segmentation'], 
+                    choices = ['cell_representation', 'cell_representation_eval', 'image_classification', 'image_classification_predict','image_classification_train','image_classification_segment', 'cell_segmentation'], 
                     help='cell_representation | cell_representation | image_classification |image_classification_predict | image_classification_segment| cell_segmentation')
+#parser.add_argument('--image_path',
+#                    help='Test images path')
+#parser.add_argument('--clf_model_path',
+#                    help='Classifier model path')
 opt = parser.parse_args()
 
 if not (opt.task):
     parser.error("specific a task such as '--task cell_representation'")
+#elif opt.task == 'image_classification_predict':
+#    if not (opt.image_path):
+#        parser.error("specific a test image path")
+#    if not (clf_model_path):
+#        parser.error("specific a classifier model path")
+        
 
 #for image classification and nuclei segmentation
 experiment_root = config.get('data', 'experiment_root')
@@ -101,8 +111,8 @@ if opt.task == 'image_classification':
                          batchsize, rand, dis, dis_category, ld, lg, lq, save_model_steps)
                          
                          
-if opt.task == 'image_classification_predict':
-    image_classification_predict(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
+if opt.task == 'image_classification_train':
+    image_classification_train(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
                          positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                          ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, 
                          experiment_root, multi_process, fold, random_seed, choosing_fold, n_epoch, 
@@ -139,4 +149,9 @@ if opt.task == 'cell_segmentation':
                           negative_npy_root, ref_path, intensity, multi_process)
                           
 
-        
+if opt.task == 'image_classification_predict':
+    image_classification_predict(positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
+                         ref_path, intensity, experiment_root, dis_category)
+                         
+    
+
