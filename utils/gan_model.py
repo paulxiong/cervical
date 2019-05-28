@@ -19,6 +19,8 @@ from imgaug import augmenters as iaa
 from sklearn.cluster import KMeans
 from math import *
 
+from tensorboardX import SummaryWriter
+
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from sklearn import svm
@@ -578,6 +580,9 @@ def train(cell_train_set, cell_test_set, cell_test_label,
     one = one.cuda()
     mone = mone.cuda()
     fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
+    
+    #tensor board writer
+    writer = SummaryWriter()
 
     for epoch in range(n_epoch):
         print("epoch:", epoch)
@@ -672,7 +677,12 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 with open(experiment_root + "log","a") as f:
                     f.write('batch_time:{0}, epoch:{1}, gen_iterations:{2}, D_cost:{3}, mi_loss:{4}'.format(batch_time/10, epoch,
                                                                                            gen_iterations , -D_cost.data[0] , mi_loss.data[0])+ '\n')
-                     
+                writer.add_scalar('data/errD_real', errD_real.data[0], gen_iterations)
+                writer.add_scalar('data/errD_fake', -errD_fake.data[0], gen_iterations)
+                writer.add_scalar('data/gradient_penalty', -gradient_penalty.data[0], gen_iterations)
+                writer.add_scalar('data/D_cost', -D_cost.data[0], gen_iterations)
+                writer.add_scalar('data/mi_loss', mi_loss.data[0], gen_iterations)
+                
             if gen_iterations % 100 == 0 :
                 G_sample = netG(Variable(fixed_noise, volatile = True))
                 vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell.png', nrow=5,normalize=True)
@@ -686,6 +696,8 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 image_level_accuracy(positive_train_loader, positive_test_loader, 
                                      negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root)
                 
+                x = vutils.make_grid(G_sample.data)
+                writer.add_image('Image', x, gen_iterations)
                 end = time.time()
                 
             if gen_iterations % save_model_steps == 0 :
@@ -696,7 +708,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 end = time.time()
                 
             gen_iterations += 1
-            
+    writer.close()
     return netD, netG, netD_D, netD_Q
 
 def train_predict(cell_train_set, cell_test_set, cell_test_label, 
