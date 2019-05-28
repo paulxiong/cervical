@@ -1,4 +1,40 @@
-在GPU服务器上放了10个可用的http端口映射，从9000到9010。
-gpu服务器上是http://127.0.0.1:9000的，公网上是http://9000.gpu.raidcdn.cn:9700就可以打开，
-http://127.0.0.1:9001 公网上是http://9001.gpu.raidcdn.cn:9700。
-动态的tensorboard端口改在9000--9010之间，公网上就能打开
+## 说明
+gpu服务器上9000--9010端口做了内网穿透，公网也可以访问这些端口，必须是http的。如果是TCP映射需要重新做。
+### 使用之前注意不要端口用冲突了！冲突了就换其他的端口
+### 映射列表
+```
+http://127.0.0.1:9000   ==> http://9000.gpu.raidcdn.cn:9700
+http://127.0.0.1:9001   ==> http://9001.gpu.raidcdn.cn:9700
+http://127.0.0.1:9002   ==> http://9002.gpu.raidcdn.cn:9700
+http://127.0.0.1:9003   ==> http://9003.gpu.raidcdn.cn:9700
+http://127.0.0.1:9004   ==> http://9004.gpu.raidcdn.cn:9700
+http://127.0.0.1:9005   ==> http://9005.gpu.raidcdn.cn:9700
+http://127.0.0.1:9006   ==> http://9006.gpu.raidcdn.cn:9700
+http://127.0.0.1:9007   ==> http://9007.gpu.raidcdn.cn:9700
+http://127.0.0.1:9008   ==> http://9008.gpu.raidcdn.cn:9700
+http://127.0.0.1:9009   ==> http://9009.gpu.raidcdn.cn:9700
+http://127.0.0.1:9010   ==> http://9010.gpu.raidcdn.cn:9700
+```
+
+
+## 例如公网访问9000端口
+### 启动jupyter-notebook
+```
+docker run -d --name="nu_gan_lambda_9000" --runtime=nvidia \
+	-p 9000:8888 \
+	-v /opt/lambda_workspace/:/notebooks/lambda_workspace \
+	tensorflow/tensorflow:1.7.0-gpu-nu_gan  jupyter-notebook --ip=0.0.0.0 --port=8888 --allow-root
+```
+
+### 查看token
+```
+$ docker logs -f nu_gan_lambda_9000
+。。。
+[I 06:03:25.488 NotebookApp] The Jupyter Notebook is running at:
+[I 06:03:25.488 NotebookApp] http://0.0.0.0:8888/?token=fa29481482c5ad2fe6a1ccc33760e2024a4ea75da89f11ad
+```
+
+### 公网访问
+```
+http://9000.gpu.raidcdn.cn:9700/?token=fa29481482c5ad2fe6a1ccc33760e2024a4ea75da89f11ad
+```
