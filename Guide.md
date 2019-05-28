@@ -32,7 +32,7 @@ cat db.csv or open db.csv in python with pandas and do the search
 
 Training Debug with TensorBoard:  
 1. Prepare Data  
-Make a dir named 'experiment' in the 'nu_gan' folder, and copy the train(positive_images & negative_images) and test (positive_test_images and negative_test_images) datasets to experiment/data/original, and copy the segmentation results to the experiment/data/segmented.  
+Make a dir named 'experiment' in the 'nu_gan' folder, copy the train(positive_images & negative_images) and test (positive_test_images and negative_test_images) datasets to experiment/data/original, copy the segmentation results to the experiment/data/segmented.  
 (REFERENCE: https://github.com/paulxiong/cervical/issues/1)  
 2. Prepare Environment  
 cmd1:docker run -d -v `pwd`:/nu_gan --name="nu_gan" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
