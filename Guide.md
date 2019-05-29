@@ -10,6 +10,7 @@ Execute the command above in project root, and take care of the --name parameter
 And be ware to link the train and test dataset to the nu_gan folder.  
 cmd2:docker exec -it nu_gan bash  
 Enter the "nu_gan" docker execute environment.  
+run CMD in docker env: pip install tensorboardX
 3. Segmentation  
 cmd: python nu_gan.py --task 'cell_segmentation'  
 This command will segment the images in 'train_path_n' and 'train_path_p', the results are stored in 'train_npy_path_n' and 'train_npy_path_p'  
