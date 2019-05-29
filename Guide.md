@@ -43,6 +43,7 @@ Enter the "nu_gan" docker execute environment.
 3. Start Training  
 Follow 4th steps above.  
 4. Start TensorBoard  
+NOTICE: DO NOT run tensorboard in docker, run in the original environment.  
 The visualization data is stored in ./runs. Start tensorboard with command:  
 tensorboard --logdir ./runs --port=xxxx   
 Port selection (Method 1): choose 9000-9010, refer to https://github.com/paulxiong/cervical/blob/master/GPU%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84%E8%A1%A8  
