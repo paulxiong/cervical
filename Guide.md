@@ -5,7 +5,7 @@ Paramters in 'model' section:
 'purity', 'entorpy', 'itera': identifications for GAN model when doing prediction  
 'clf_ts': identification for classifier model when doing prediction  
 2. Environment  
-cmd1:docker run -d -v `pwd`:/nu_gan -v /opt/zhuoyao_workspace/github/cervical/experiment:/nu_gan/experiment  --name="nu_gan" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
+cmd1:docker run -d -v ``pwd``:/nu_gan -v /opt/zhuoyao_workspace/github/cervical/experiment:/nu_gan/experiment  --name="nu_gan" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
 Execute the command above in project root, and take care of the --name parameter with an unique name.  
 And be ware to link the train and test dataset to the nu_gan folder.  
 cmd2:docker exec -it nu_gan bash  
