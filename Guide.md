@@ -36,7 +36,7 @@ Training Debug with TensorBoard:
 Make a dir named 'experiment' in the 'nu_gan' folder, copy the train(positive_images & negative_images) and test (positive_test_images and negative_test_images) datasets to experiment/data/original, copy the segmentation results to the experiment/data/segmented.  
 (REFERENCE: https://github.com/paulxiong/cervical/issues/1)  
 2. Prepare Environment  
-cmd1:docker run -d -v `pwd`:/nu_gan --name="nu_gan" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
+cmd1:docker run -d -v ``pwd``:/nu_gan --name="nu_gan" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
 Execute the command above in project root, and take care of the --name parameter with an unique name.  
 And be ware to link the train and test dataset to the nu_gan folder.   
 cmd2:docker exec -it nu_gan bash   
