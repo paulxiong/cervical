@@ -147,7 +147,8 @@ def image_classification_predict(positive_images_root, negative_images_root, pos
                         positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                       ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, multi_core = True,
                       fold = 4, random_seed=42, choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1, 
-                         dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100):
+                         dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100, 
+                         predict_experient_root='dafault', predict_purity='dafault', predict_entropy='dafault', predict_gen_iterations='dafault'):
     
     FILE_PATTERN = '*.npy'
     positive_npy_path = np.sort(glob.glob(os.path.join(positive_npy_root, str(intensity), FILE_PATTERN)))
@@ -195,8 +196,69 @@ def image_classification_predict(positive_images_root, negative_images_root, pos
                    positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
                    netD, netG, netD_D, netD_Q, experiment_root, 
                    n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
-                   ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
+                   ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps,
+                   predict_experient_root = predict_experient_root, predict_purity = predict_purity, predict_entropy = predict_entropy, predict_gen_iterations = predict_gen_iterations, choosing_fold = choosing_fold
+                   )
                    
+
+def image_classification_predict_ensemble(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
+                        positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
+                      ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, multi_core = True,
+                      fold = 4, random_seed=42, choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1, 
+                         dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100, 
+                         predict_experient_root='dafault', predict_purity='dafault', predict_entropy='dafault', predict_gen_iterations='dafault'):
+    
+    FILE_PATTERN = '*.npy'
+    positive_npy_path = np.sort(glob.glob(os.path.join(positive_npy_root, str(intensity), FILE_PATTERN)))
+    negative_npy_path = np.sort(glob.glob(os.path.join(negative_npy_root, str(intensity), FILE_PATTERN)))
+    
+    
+    #positive_npy_path = [positive_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_images_root)]
+    #negative_npy_path =[negative_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_images_root)]
+
+    positive_train_list, positive_test_list = split_dataset(positive_npy_path, fold, random_seed)
+    negative_train_list, negative_test_list = split_dataset(negative_npy_path, fold, random_seed)
+
+    positive_train_npy = [np.load(n) for n in positive_train_list[choosing_fold]]
+    negative_train_npy = [np.load(n) for n in negative_train_list[choosing_fold]]
+    
+    
+    #positive_test_npy_path = [positive_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_test_images_root)]
+    #negative_test_npy_path =[negative_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_test_images_root)]
+    
+    positive_test_npy_path = np.sort(glob.glob(os.path.join(positive_test_npy_root, str(intensity), FILE_PATTERN)))
+    negative_test_npy_path = np.sort(glob.glob(os.path.join(negative_test_npy_root, str(intensity), FILE_PATTERN)))
+    
+    positive_test_list = positive_test_npy_path
+    negative_test_list = negative_test_npy_path
+
+    positive_test_npy = [np.load(n) for n in positive_test_list]
+    negative_test_npy = [np.load(n) for n in negative_test_list]
+    
+    
+    
+    #print(np.array(positive_train_npy).shape, np.array(negative_train_npy).shape)
+    print(np.concatenate(positive_train_npy).shape, np.concatenate(negative_train_npy).shape)
+    cell_train_set = np.concatenate([np.concatenate(positive_train_npy), np.concatenate(negative_train_npy)])
+
+    X_train = np.load(X_train_path)
+    X_test = np.load(X_test_path)
+    y_train = np.load(y_train_path)
+    y_test = np.load(y_test_path)
+    cell_test_set = np.concatenate([X_train, X_test])
+    cell_test_label = np.concatenate([y_train, y_test])
+    cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q =  predict_ensemble(cell_train_set, cell_test_set, cell_test_label, 
+                   positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+                   netD, netG, netD_D, netD_Q, experiment_root, 
+                   n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
+                   ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps,
+                   predict_experient_root = predict_experient_root, predict_purity = predict_purity, predict_entropy = predict_entropy, predict_gen_iterations = predict_gen_iterations, choosing_fold = choosing_fold
+                   )
+                   
+
                    
 def image_classification_segment(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
                         positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,

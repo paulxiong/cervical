@@ -1,0 +1,18 @@
+
+#TRAIN 5 models
+python2 nu_gan.py --task 'image_classification' --kfold 5 --kfold_choose 0
+python2 nu_gan.py --task 'image_classification' --kfold 5 --kfold_choose 1
+python2 nu_gan.py --task 'image_classification' --kfold 5 --kfold_choose 2
+python2 nu_gan.py --task 'image_classification' --kfold 5 --kfold_choose 3
+python2 nu_gan.py --task 'image_classification' --kfold 5 --kfold_choose 4
+
+#PREDICT with above trained 5 models, will output experiment/SVM_predict_0,1,2,3,4.npy. 
+python2 nu_gan.py --task 'image_classification_predict' --kfold 5 --kfold_choose 0 --predict_experient_root './experiment/XXX_5_0/' --predict_gen_iterations '10000'
+python2 nu_gan.py --task 'image_classification_predict' --kfold 5 --kfold_choose 1 --predict_experient_root './experiment/XXX_5_1/' --predict_gen_iterations '10000'
+python2 nu_gan.py --task 'image_classification_predict' --kfold 5 --kfold_choose 2 --predict_experient_root './experiment/XXX_5_2/' --predict_gen_iterations '10000'
+python2 nu_gan.py --task 'image_classification_predict' --kfold 5 --kfold_choose 3 --predict_experient_root './experiment/XXX_5_3/' --predict_gen_iterations '10000'
+python2 nu_gan.py --task 'image_classification_predict' --kfold 5 --kfold_choose 4 --predict_experient_root './experiment/XXX_5_4/' --predict_gen_iterations '10000'
+
+
+#ENSEMBLE 5 modles for SVM PREDICT RESULT
+python2 nu_gan.py --task 'image_classification_predict_ensemble' --kfold 5 --kfold_choose 0 --predict_experient_root './experiment/XXX_5_0/' --predict_gen_iterations '10000'
