@@ -38,3 +38,16 @@ $ docker logs -f nu_gan_lambda_9000
 ```
 http://9000.gpu.raidcdn.cn:9700/?token=fa29481482c5ad2fe6a1ccc33760e2024a4ea75da89f11ad
 ```
+
+## docker外面使用jupyter启动在9000端口
+```
+$ cd /opt/
+$ nohup jupyter notebook --ip=0.0.0.0 --port=9000 --allow-root  > /dev/null 2>&1 & 
+$ jupyter notebook list
+Currently running servers:
+http://0.0.0.0:9000/?token=56c42221c777d513b09bc7d86f751c6c4cc53f8dacfddb34 :: /opt
+
+
+浏览器打开
+http://9000.gpu.raidcdn.cn:9700/terminals/1
+```
