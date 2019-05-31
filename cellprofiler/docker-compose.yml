@@ -1,0 +1,27 @@
+version: '2'
+services:
+  cellprofiler:
+    image: lambdazhang/raidcdn:cellprofiler-3.1.8
+    container_name: "cellprofiler"
+    volumes:
+      - ./:/opt
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
+  noVNC:
+    image: gotget/novnc:latest
+    container_name: novnc
+    command: '--vnc cellprofiler:5905'
+    depends_on:
+      - "cellprofiler"
+    links:
+      - cellprofiler
+    ports:
+      - "9002:6080"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
