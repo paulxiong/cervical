@@ -418,10 +418,10 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
     if not os.path.exists(clf_path):
         os.makedirs(clf_path)
     ts = int(time.time())
-    proportion_1 = get_proportion(positive_train_loader , netD, netD_Q, dis_category)
-    proportion_0 = get_proportion(negative_train_loader , netD, netD_Q, dis_category)
-    proportion_test_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
-    proportion_test_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
+    proportion_1,_ = get_proportion(positive_train_loader , netD, netD_Q, dis_category)
+    proportion_0,_ = get_proportion(negative_train_loader , netD, netD_Q, dis_category)
+    proportion_test_1,_ = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
+    proportion_test_0,_ = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
 
     estimator = KMeans(init='k-means++', n_clusters=2, n_init=1)
     true_label = [1]*proportion_1.shape[0] + [0]*proportion_0.shape[0]+[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
@@ -500,13 +500,13 @@ def get_catagory_matrix(loader , netD, netD_Q, dis_category):
     return feature_dict
 
 def get_proportion(loader_list , netD, netD_Q, dis_category, gen_iterations=100):
-    array = [get_catagory_matrix(i, netD, netD_Q, dis_category) for i in loader_list]
-    array = np.asarray(array)
+    feature_dicts = [get_catagory_matrix(i, netD, netD_Q, dis_category) for i in loader_list]
+    array = np.asarray(feature_dicts)
     array = array.astype(np.float32)
     for m, n in enumerate(array):
         k = n.astype(np.float32)/np.sum(n)
         array[m] = k
-    return array
+    return array, feature_dicts
 
 def train(cell_train_set, cell_test_set, cell_test_label, 
           positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
@@ -758,8 +758,8 @@ def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_
     if not os.path.exists(clf_path):
         os.makedirs(clf_path)
     ts = clf_ts
-    proportion_test_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
-    proportion_test_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
+    proportion_test_1,feature_dics_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
+    proportion_test_0,feature_dics_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
     
     
     true_test_label =[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
@@ -787,7 +787,8 @@ def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_
                              
     print("SVM predict_label", predict_label)
     
-    return predict_label
+    feature_dics = np.concatenate([feature_dics_1, feature_dics_0])
+    return predict_label, feature_dics
 
 
    
@@ -817,9 +818,9 @@ def predict(positive_test_npy,  negative_test_npy,
     netD_Q.eval()
     
     
-    predict_label = image_level_predict(positive_test_loader,negative_test_loader , netD, netD_Q, dis_category, experiment_root, ts)
+    predict_label, feature_dics = image_level_predict(positive_test_loader,negative_test_loader , netD, netD_Q, dis_category, experiment_root, ts)
     
-    return netD, netG, netD_D, netD_Q, predict_label
+    return netD, netG, netD_D, netD_Q, predict_label, feature_dics
 
 
 def train_representation(cell_array, test_array, test_label, netD, netG, netD_D, netD_Q,
