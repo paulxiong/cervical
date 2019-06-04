@@ -888,9 +888,9 @@ if __name__ == '__main__':
         print('Function {} time costs: {} ms'.format(name,duration))
         
     
-    fd = open('./check_point_step3.txt','w')
-    fd.write(str(cp_list))
-    fd.close()
+    #fd = open('./check_point_step3.txt','w')
+    #fd.write(str(cp_list))
+    #fd.close()
     
     
 
