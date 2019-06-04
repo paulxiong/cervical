@@ -46,7 +46,17 @@ Output: ./dataset/classify/train_datasets
   
 2) npy: The npy file of train and test set X, with the label Y. This is for training the gan part in nu_gan.  
 Copy the .npy files to $NU_GAN/experiment/data/cell_level_label  
- 
+  
+REFERENCE:
+1. Labels and diagnostic types mapping:  
+1) In .csv Annotation:  
+1: 'Norm', 2: 'LSIL', 3: 'HSIL', 4: 'HPV', 5: 'NILM', 6: 'SCC', 7: 'ASCUS',   
+8: 'ASCH', 9: 'AGC', 10:'AIS', 11:'ADC', 12:'T', 13:'M', 14:'HSV'  
+  
+2) In pipeline:  
+0: 'Norm', 1: 'LSIL', 2: 'HSIL', 3: 'HPV', 4: 'NILM', 5: 'SCC', 6: 'ASCUS',  
+7: 'ASCH', 8: 'AGC', 9: 'AIS', 10:'ADC', 11:'T', 12:'M', 13:'HSV'
+
 
 
 
