@@ -68,27 +68,27 @@ cd /opt/xxx_workspace/nu_gan && mkdir experiment && mkdir experiment/data
 先删除原数据，如果目录不存在可以不删：rm -r experiment/data/cell_level_label/ 
 拷贝数据：cp -r segmentation/datasets/classify/train_datasets/default/npy experiment/data/cell_level_label  
   
-第三步，拷贝FOV数据集：
-分两种情况
+第三步，拷贝FOV数据集：  
+分两种情况  
 第一种情况，如果数据集有标注，并执行完了“运行自动标注”与“生成训练数据集”，则测试数据集会自动分成训练集和测试集，并分类为异常FOV和正常FOV  
 通常用于训练nu_gan中的SVM时   
 先删除原数据，如果目录不存在可以不删：  
-rm -r experiment/data/original/ && rm -r experiment/data/segmented  
+rm -r experiment/data/original/ && rm -r experiment/data/segmented   
 拷贝数据：  
 cp -r segmentation/datasets/classify/data/original experiment/data/original   
 cp -r segmentation/datasets/classify/data/segmented experiment/data/segmented  
-
+  
 第二种情况，如果数据集没有标注，或未执行完“运行自动标注”与“生成训练数据集”， 则测试数据集不会自动分成训练与测试，也不会分类  
 通常用于测试已训练好nu_gan模型  
-先删除原始测试数据：
-rm -r experiment/data/original/*test* && rm -r experiment/data/segmented/*test*
-拷贝数据，需要先确认此批数据，是正常的FOV还是异常的FOV：
-拷贝正常FOV：
+先删除原始测试数据：  
+rm -r experiment/data/original/*test* && rm -r experiment/data/segmented/*test*  
+拷贝数据，需要先确认此批数据，是正常的FOV还是异常的FOV：  
+拷贝正常FOV：  
 cp -r segmentation/datasets/classify/data/original/images experiment/data/original/negative_test_images   
-cp -r segmentation/datasets/classify/data/segmented/npy experiment/data/segmented/negative_test_npy
-拷贝异常FOV：
+cp -r segmentation/datasets/classify/data/segmented/npy experiment/data/segmented/negative_test_npy  
+拷贝异常FOV：  
 cp -r segmentation/datasets/classify/data/original/images experiment/data/original/positive_test_images   
-cp -r segmentation/datasets/classify/data/segmented/npy experiment/data/segmented/positive_test_npy
+cp -r segmentation/datasets/classify/data/segmented/npy experiment/data/segmented/positive_test_npy  
 
 
 
