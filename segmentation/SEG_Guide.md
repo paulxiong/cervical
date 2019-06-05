@@ -46,6 +46,10 @@ Output: ./dataset/classify/train_datasets
   
 2) npy: The npy file of train and test set X, with the label Y. This is for training the gan part in nu_gan.  
 Copy the .npy files to $NU_GAN/experiment/data/cell_level_label  
+
+5.Copy output to nu_gan:
+cmd: ./run_annotation.sh step6
+In this step, we will copy the result to nu_gan folder.
   
 REFERENCE:
 1. Labels and diagnostic types mapping:  

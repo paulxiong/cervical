@@ -152,9 +152,14 @@ if __name__ == '__main__':
         12:'M',
         13:'HSV'
     }
+    
+    CSV_NILM_TYPE = [1, 5, 12, 13, 14]
+    
     annotations = []
     missed_df = pd.DataFrame()
     hit_df = pd.DataFrame()
+    
+    fov_type_df = pd.DataFrame()
     
     for annot in tqdm(annot_csv):
         org_fov = annot[:-3] + PATTERN.split('.')[-1]
@@ -215,9 +220,13 @@ if __name__ == '__main__':
             img = cv2.imread(org_fov)
             marked_img = mark_origin_fov(img, class_centr, color_map)
             cv2.imwrite(dst, marked_img)
-            
-            
         
+        fov_type = max([int(t)-1 if int(t) not in CSV_NILM_TYPE else 0 for t in df['Type'].unique() ])
+        
+        fov_type = pd.DataFrame({'folder': [seg_folder_name], 'FOV_type': [fov_type]})
+        fov_type_df = fov_type_df.append(fov_type)
+        
+    fov_type_df.to_csv(os.path.join(output_path, 'fov_type.csv'), index=False)
             
         
     print(hit_df)

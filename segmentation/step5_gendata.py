@@ -31,6 +31,7 @@ NILM_TYPE = [0, 4, 11, 12, 13]
 
 CROP_DIR = 'crops'
 
+
 def show_statics(df,classes):
     #print(df.head())
     folders = df['folder'].unique()
@@ -190,22 +191,18 @@ def gen_npy(df, dest_dir, npy_fn):
     np.save(os.path.join(dest_dir, 'X_' + npy_fn +'.npy'), X)
     np.save(os.path.join(dest_dir, 'Y_' + npy_fn +'.npy'), Y)
         
-    
 
-
-
-
-
+        
 
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(
         description='Cervix Cancer Generate Dataset')
-        
+    
     parser.add_argument('--annot_path', required=True,
-                        metavar="/path/to/original/FOV/images",
-                        help='path to original fovs')
+                        metavar="/path/to/annotation/mapping",
+                        help='path to annotation map')
     parser.add_argument('--seg_dir', required=True,
                         default='./datasets/classify/',
                         metavar="/path/to/segment/result",
@@ -234,6 +231,7 @@ if __name__ == '__main__':
     TRAIN_TEST_SPLIT = args.train_test_split
     MORE_NORM = args.more_norm
     batch_id = args.batch_id
+    PATTERN = args.pattern
     
     output_dir = os.path.join(output_dir, batch_id)
     dataset_dir = os.path.join(output_dir, 'dataset')
@@ -273,6 +271,10 @@ if __name__ == '__main__':
         copy_data_by_type(test_set, test_dir)
         gen_npy(test_set, npy_dir, 'test')
     
+    if (train_set is not None):
+        train_set.to_csv(output_dir+'/train_set.csv', index=False)
+    if test_set is not None:
+        test_set.to_csv(output_dir+'/test_set.csv', index=False)
   
 
 

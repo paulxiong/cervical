@@ -1,5 +1,6 @@
 #!/bin/bash
-ORIGIN_DIR='datasets/test_slide/*/'
+#ORIGIN_DIR='datasets/test_slide/*/'
+ORIGIN_DIR=$2
 ROOT=`pwd`
 SEGMENT_DIR='datasets/segment/test/'
 FILE_PATTERN='*.JPG'
@@ -30,6 +31,7 @@ PVA_THRESH="--perimeter_vs_area 18"
 #INTNES_THRESH="--intensity_thresh 40"
 ANNOT_DIR=${CLF_DATASETS}'/annot_out'
 TRAINDATA_DIR=${CLF_DATASETS}'/train_datasets'
+COPY_DIR=${CLF_DATASETS}'/data'
 
 
 function run_step1()
@@ -94,6 +96,18 @@ function run_step5 ()
         --more_norm
 }
 
+function run_step6 ()
+{
+    ##Step 5. Mark the positive cells
+    python3 step6_copy2nugan.py \
+        --origin_dir ${ORIGIN_DIR} \
+        --csv_dir ${ANNOT_DIR}'/fov_type.csv' \
+        --npy_dir ${CLF_DATASETS}'/npy/'  \
+        --output_dir ${COPY_DIR} \
+        --pattern ${FILE_PATTERN} \
+        --train_test_split 
+}
+
 
 function run_all()
 {
@@ -143,6 +157,8 @@ if [ -n "$1" ]; then
         step3) run_step3;;
         step4) run_step4;;
         step5) run_step5;;
+        step6) run_step6;;
+        
         *) echo ${show_usage};;
     esac
     exit 0
