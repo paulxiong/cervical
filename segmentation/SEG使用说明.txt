@@ -43,22 +43,22 @@ mkdir datasets && mkdir datasets/test_slide
 ln -s ~/Dataset/private_cervical/xxx ./datasets/test_slide  
 
 运行切割命令行: 
-./run_annotation.sh step1 ./datasets/test_slide/xxx/  
-./run_annotation.sh step2 ./datasets/test_slide/xxx/  
-./run_annotation.sh step3 ./datasets/test_slide/xxx/  
+./run_annotation.sh step1 ./datasets/test_slide/xxx/*/  
+./run_annotation.sh step2 ./datasets/test_slide/xxx/*/  
+./run_annotation.sh step3 ./datasets/test_slide/xxx/*/  
 
 4.运行自动标注: 
 注：只支持有标注的数据集
 命令:  
-./run_annotation.sh step4 ./datasets/test_slide/xxx/
+./run_annotation.sh step4 ./datasets/test_slide/xxx/*/
 
 5.生成Cell数据集. 
 注：只支持有标注的数据集
 命令： 
-cmd: ./run_annotation.sh step5 ./datasets/test_slide/xxx/ 
+cmd: ./run_annotation.sh step5 ./datasets/test_slide/xxx/*/ 
 
 6.生成FOV数据集:
-cmd: ./run_annotation.sh step6 ./datasets/test_slide/xxx/
+cmd: ./run_annotation.sh step6 ./datasets/test_slide/xxx/*/
 
 7.拷贝数据到nu_gan目录  
 第一步，生成目录：  
