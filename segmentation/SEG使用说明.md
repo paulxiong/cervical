@@ -1,0 +1,112 @@
+1.准备数据:  
+注： 先将服务器认证文件jps-atec.key放到"桌面"上。
+
+为了生成训练数据，首先我们需要先准备好FOV图像(JPG或png)和.csv标文件。  
+目录结构："$DATAROOT/$SLIDE_NAME/*.JPG(or .png)" and "$DATAROOT/$SLIDE_NAME/*.csv"   
+如果是为了生成测试数据， 我们只需要准备FOV图像即可。  
+目录结构： "$DATAROOT/$SLIDE_NAME/*.JPG(or .png)"  
+  
+训练数据目录结构可以参考目录： /opt/zhuoyao_workspace/medical_ai/datasets/test_slide 中的文件夹  
+  
+上传命令：   
+第一步，拷贝数据到跳板服务器： scp -i ~/桌面/jps-atec.key ~/桌面/xxx.zip atec@115.236.22.146:~  
+第二步，登入跳板服务器： ssh -i ~/桌面/jps-atec.key atec@115.236.22.146  
+第三步，拷贝数据到GPU服务器： scp ~/xxx.zip 172.16.1.99:~/Dataset/private_cervical
+第四步，登入GPU服务器： ssh 172.16.1.99  
+第五步，解压数据： cd ~/Dataset/private_cervical && unzip xxx.zip  
+
+2.准备项目目录：  
+在电脑中重新打开终端，登入GPU服务器：  
+ssh -i ~/桌面/jps-atec.key -t atec@115.236.22.146 ssh 172.16.1.99  
+
+建立项目目录：
+cd /opt   
+sudo mkdir xxx_workspace   
+sudo chmod 777 xxx_workspace
+
+拷贝项目代码：
+cd xxx_workspace && git clone /opt/zhuoyao_workspace/nu_gan
+cd nu_gan
+git checkout -b test_branch remotes/origin/nu_gan_archive
+
+项目代码已经准备好了  
+
+3.U-Net切割:  
+在这一步，我们会把FOV切割成细胞。首先进入项目的切割代码目录：  
+cd /opt/xxx_workspace/nu_gan/segmentation/  
+  
+准备U-Net模型参数文件:   
+ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_output/ ./src/SEGMENT/kaggle-dsb2018/src  
+
+把解压的数据集链接到测试文件夹： 
+mkdir datasets && mkdir datasets/test_slide  
+ln -s ~/Dataset/private_cervical/xxx ./datasets/test_slide  
+
+运行切割命令行: 
+./run_annotation.sh step1 ./datasets/test_slide/xxx/  
+./run_annotation.sh step2 ./datasets/test_slide/xxx/  
+./run_annotation.sh step3 ./datasets/test_slide/xxx/  
+
+4.运行自动标注: 
+注：只支持有标注的数据集
+命令:  
+./run_annotation.sh step4 ./datasets/test_slide/xxx/
+
+5.生成Cell数据集. 
+注：只支持有标注的数据集
+命令： 
+cmd: ./run_annotation.sh step5 ./datasets/test_slide/xxx/ 
+
+6.生成FOV数据集:
+cmd: ./run_annotation.sh step6 ./datasets/test_slide/xxx/
+
+7.拷贝数据到nu_gan目录  
+第一步，生成目录：  
+cd /opt/xxx_workspace/nu_gan && mkdir experiment && mkdir experiment/data
+
+第二步（可选，当需要训练GAN部分时，才需要执行本步），拷贝Cell数据集：  
+先删除原数据，如果目录不存在可以不删：rm -r experiment/data/cell_level_label/ 
+拷贝数据：cp -r segmentation/datasets/classify/train_datasets/default/npy experiment/data/cell_level_label  
+  
+第三步，拷贝FOV数据集：
+分两种情况
+第一种情况，如果数据集有标注，并执行完了“运行自动标注”与“生成训练数据集”，则测试数据集会自动分成训练集和测试集，并分类为异常FOV和正常FOV  
+通常用于训练nu_gan中的SVM时   
+先删除原数据，如果目录不存在可以不删：  
+rm -r experiment/data/original/ && rm -r experiment/data/segmented  
+拷贝数据：  
+cp -r segmentation/datasets/classify/data/original experiment/data/original   
+cp -r segmentation/datasets/classify/data/segmented experiment/data/segmented  
+
+第二种情况，如果数据集没有标注，或未执行完“运行自动标注”与“生成训练数据集”， 则测试数据集不会自动分成训练与测试，也不会分类  
+通常用于测试已训练好nu_gan模型  
+先删除原始测试数据：
+rm -r experiment/data/original/*test* && rm -r experiment/data/segmented/*test*
+拷贝数据，需要先确认此批数据，是正常的FOV还是异常的FOV：
+拷贝正常FOV：
+cp -r segmentation/datasets/classify/data/original/images experiment/data/original/negative_test_images   
+cp -r segmentation/datasets/classify/data/segmented/npy experiment/data/segmented/negative_test_npy
+拷贝异常FOV：
+cp -r segmentation/datasets/classify/data/original/images experiment/data/original/positive_test_images   
+cp -r segmentation/datasets/classify/data/segmented/npy experiment/data/segmented/positive_test_npy
+
+
+
+
+
+
+
+  
+REFERENCE:
+1. Labels and diagnostic types mapping:  
+1) In .csv Annotation:  
+1: 'Norm', 2: 'LSIL', 3: 'HSIL', 4: 'HPV', 5: 'NILM', 6: 'SCC', 7: 'ASCUS',   
+8: 'ASCH', 9: 'AGC', 10:'AIS', 11:'ADC', 12:'T', 13:'M', 14:'HSV'  
+  
+2) In pipeline:  
+0: 'Norm', 1: 'LSIL', 2: 'HSIL', 3: 'HPV', 4: 'NILM', 5: 'SCC', 6: 'ASCUS',  
+7: 'ASCH', 8: 'AGC', 9: 'AIS', 10:'ADC', 11:'T', 12:'M', 13:'HSV'
+
+
+
+
