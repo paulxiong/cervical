@@ -120,7 +120,7 @@ class NPDataDivider():
             #copy images
             folders = self.org_df['folder']
             images_dir = os.path.join(self.output_dir, 'original/images')
-            npy_dir = os.path.join(self.output_dir, 'segmented/npy/')
+            npy_dir = os.path.join(self.output_dir, 'segmented/npy/160')
             if not os.path.exists(images_dir):
                 os.makedirs(images_dir)
             if not os.path.exists(npy_dir):
