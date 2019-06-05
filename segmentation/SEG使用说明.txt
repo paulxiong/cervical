@@ -21,8 +21,8 @@ ssh -i ~/桌面/jps-atec.key -t atec@115.236.22.146 ssh 172.16.1.99
 
 建立项目目录：
 cd /opt   
-sudo mkdir xxx_workspace   
-sudo chmod 777 xxx_workspace
+sudo mkdir abcd_workspace   
+sudo chmod 777 abcd_workspace
 
 拷贝项目代码：
 cd xxx_workspace && git clone /opt/zhuoyao_workspace/nu_gan
