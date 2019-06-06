@@ -150,7 +150,7 @@ if __name__ == '__main__':
     FILE_PATTERN = args.filepattern
     RESIZE_RATIO = args.resize_ratio
     
-    DEBUG = True
+    DEBUG = False
     DEBUG_PATH = './Debug_DF'
     
     if DEBUG:
