@@ -41,6 +41,7 @@ ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_outpu
 把解压的数据集链接到测试文件夹： 
 mkdir datasets && mkdir datasets/test_slide  
 ln -s ~/Dataset/private_cervical/xxx ./datasets/test_slide  
+ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/
 
 运行切割命令行: 
 ./run_annotation.sh step1 "./datasets/test_slide/xxx/*/"   
