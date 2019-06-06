@@ -9,7 +9,10 @@ from sklearn.model_selection import StratifiedKFold, train_test_split
 
 class NPDataDivider():
     def __init__(self, origin_dir,  csv_dir, npy_dir, output_dir, data_type, pattern, train_test_split):
-        self.df = pd.read_csv(csv_dir)
+        if os.path.exists(csv_dir):
+            self.df = pd.read_csv(csv_dir)
+        else:
+            self.df = pd.DataFrame()
         self.npy_dir = npy_dir
         self.output_dir = output_dir
         if not os.path.exists(self.output_dir):
@@ -37,22 +40,45 @@ class NPDataDivider():
         self.org_df['folder'] = self.org_df['org_path'].apply(get_folder)
         print(self.org_df)
         
-    def copy_original(self, org_df, path_fix):
+    def copy_original_and_npy(self, org_df, path_fix):
         original_dir = os.path.join(self.output_dir, 'original')
         pos_dir = os.path.join(original_dir, 'positive{}_images'.format(path_fix))
         neg_dir = os.path.join(original_dir, 'negative{}_images'.format(path_fix))
+        
+        
+        npy_dir = os.path.join(self.output_dir, 'segmented')
+        npy_pos_dir = os.path.join(npy_dir, 'positive{}_npy/160'.format(path_fix))
+        npy_neg_dir = os.path.join(npy_dir, 'negative{}_npy/160'.format(path_fix))
         
         if not os.path.exists(pos_dir):
             os.makedirs(pos_dir)
         if not os.path.exists(neg_dir):
             os.makedirs(neg_dir)
+        if not os.path.exists(npy_pos_dir):
+            os.makedirs(npy_pos_dir)
+        if not os.path.exists(npy_neg_dir):
+            os.makedirs(npy_neg_dir)
+            
             
         for _, row in org_df.iterrows():
             folder = row['folder']
-            dst_name = folder[:-7]
-            src = row['org_path']
+            #copy npy
+            file_name = folder.split('.')[0] + '.npy'
+            src = os.path.join(self.npy_dir, file_name)
+            if not os.path.exists(src):
+                continue
             fov_type = self.df.loc[self.df['folder']==folder, 'FOV_type'].values[0]
             #print(fov_type)
+            if fov_type != 0:
+                dst = os.path.join(npy_pos_dir, file_name)
+                shutil.copy(dst=dst, src=src)
+            else:
+                dst = os.path.join(npy_neg_dir, file_name)
+                shutil.copy(dst=dst, src=src)
+            
+            #copy original
+            dst_name = folder[:-7]
+            src = row['org_path']
             if fov_type != 0:
                 dst = os.path.join(pos_dir, dst_name)
                 shutil.copy(dst=dst, src=src)
@@ -60,28 +86,7 @@ class NPDataDivider():
                 dst = os.path.join(neg_dir, dst_name)
                 shutil.copy(dst=dst, src=src)
     
-    def copy_npy(self, org_df, path_fix):
-        npy_dir = os.path.join(self.output_dir, 'segmented')
-        pos_dir = os.path.join(npy_dir, 'positive{}_npy/160'.format(path_fix))
-        neg_dir = os.path.join(npy_dir, 'negative{}_npy/160'.format(path_fix))
-        
-        if not os.path.exists(pos_dir):
-            os.makedirs(pos_dir)
-        if not os.path.exists(neg_dir):
-            os.makedirs(neg_dir)
-        
-        for _, row in org_df.iterrows():
-            folder = row['folder']
-            file_name = folder.split('.')[0] + '.npy'
-            src = os.path.join(self.npy_dir, file_name)
-            fov_type = self.df.loc[self.df['folder']==folder, 'FOV_type'].values[0]
-            #print(fov_type)
-            if fov_type != 0:
-                dst = os.path.join(pos_dir, file_name)
-                shutil.copy(dst=dst, src=src)
-            else:
-                dst = os.path.join(neg_dir, file_name)
-                shutil.copy(dst=dst, src=src)
+            
     
     def train_test_split(self):
         if len(self.df) <= 0:
@@ -108,11 +113,9 @@ class NPDataDivider():
         #have annotated informations, we can define the pos & neg fov
         if len(self.df) > 0:
             print("Found annotation, copy file with positive & negative labels")
-            self.copy_original(train_org, '')
-            self.copy_npy(train_org, '')
+            self.copy_original_and_npy(train_org, '')
             if test_org is not None:
-                self.copy_original(test_org, '_test')
-                self.copy_npy(test_org, '_test')
+                self.copy_original_and_npy(test_org, '_test')
                 
         else:
             print("No annotation file found, just copy the files to the output dir")
@@ -126,15 +129,18 @@ class NPDataDivider():
             if not os.path.exists(npy_dir):
                 os.makedirs(npy_dir)
             for folder in folders:
+                npy_name = folder.split('.')[0] + '.npy'
+                src = os.path.join(self.npy_dir, npy_name)
+                if not os.path.exists(src):
+                    continue
+                dst = os.path.join(npy_dir, npy_name)
+                shutil.copy(dst=dst, src=src)
+                
                 dst_name = folder[:-7]
                 src = self.org_df.loc[self.org_df['folder']==folder, 'org_path'].values[0]
                 dst = os.path.join(images_dir, dst_name)
                 shutil.copy(dst=dst, src=src)
             
-                npy_name = folder.split('.')[0] + '.npy'
-                src = os.path.join(self.npy_dir, npy_name)
-                dst = os.path.join(npy_dir, npy_name)
-                shutil.copy(dst=dst, src=src)
             
 
 
