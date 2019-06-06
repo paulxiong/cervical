@@ -39,13 +39,13 @@ cd /opt/abcd_workspace/nu_gan
 在这一步，我们会把FOV切割成细胞。首先进入项目的切割代码目录：  
 cd /opt/xxx_workspace/nu_gan/segmentation/  
   
-准备U-Net模型参数文件:   
+准备U-Net模型参数文件及参考数据:   
 ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_output/ ./src/SEGMENT/kaggle-dsb2018/src  
+ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/  
 
 把解压的数据集链接到测试文件夹： 
 mkdir datasets && mkdir datasets/test_slide  
 ln -s ~/Dataset/private_cervical/xxx ./datasets/test_slide  
-ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/
 
 运行切割命令行: 
 ./run_annotation.sh step1 "./datasets/test_slide/xxx/*/"   
