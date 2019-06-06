@@ -7,7 +7,7 @@
 
 2.进入docker环境：  
 第一步，启动docker： 
-run -d -v \`pwd\`:/nu_gan --name="xxxx" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
+docker run -d -v \`pwd\`:/nu_gan --name="xxxx" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
 注意：修改命令中的xxxx为你想要的名称  
   
 第二步，进入docker命令环境：  
