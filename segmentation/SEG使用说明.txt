@@ -30,6 +30,10 @@ cd nu_gan
 git checkout -b test_branch remotes/origin/nu_gan_archive
 
 项目代码已经准备好了  
+  
+注：项目代码只需要准备一次就OK，后续可以通过以下命令进行复用：  
+ssh -i ~/桌面/jps-atec.key -t atec@115.236.22.146 ssh 172.16.1.99  
+cd /opt/abcd_workspace/nu_gan  
 
 3.U-Net切割:  
 在这一步，我们会把FOV切割成细胞。首先进入项目的切割代码目录：  
