@@ -611,7 +611,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
     image = image_dict #np.array(image_dict)
     
     if image is None:
-        return
+        return pd.DataFrame({'name': base_filename, 'npy': []}), None
     np.save(preview_npy, image)
     
     #print(image.shape)
@@ -741,7 +741,7 @@ def process_origin_image():
             df = tot_df.loc[tot_df['slide'] == slide]
             tmp = df['npy'].values
             slide_npy = np.ndarray([0]+list(np.shape(tmp[0])[1:]))
-            for npy in tmp:
+            for npy in tqdm.tqdm(tmp):
                 slide_npy = np.append(slide_npy, npy, axis=0)
             shape = np.shape(slide_npy)
             ##print(shape)
@@ -848,7 +848,7 @@ if __name__ == '__main__':
     COARSE_LABEL = 'SureForeground'
     LABEL_GEN = "Private"
     
-    DEBUG = True
+    DEBUG = False
     DEBUG_PATH = './Debug_DF'
     if not os.path.exists(DEBUG_PATH):
         os.makedirs(DEBUG_PATH)
