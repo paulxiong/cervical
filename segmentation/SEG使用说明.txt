@@ -19,51 +19,49 @@
 在电脑中重新打开终端，登入GPU服务器：  
 ssh -i ~/桌面/jps-atec.key -t atec@115.236.22.146 ssh 172.16.1.99  
 
-建立项目目录：
+建立项目目录(以下命令只需执行一次)：
 cd /opt   
 sudo mkdir abcd_workspace   
 sudo chmod 777 abcd_workspace
 
-拷贝项目代码：
+拷贝项目代码(以下命令只需执行一次)：
 cd abcd_workspace && git clone /opt/zhuoyao_workspace/nu_gan
 cd nu_gan
 git checkout -b test_branch remotes/origin/nu_gan_archive
-
-项目代码已经准备好了  
   
-注：项目代码只需要准备一次就OK，后续可以通过以下命令进行复用：  
+注：项目代码只需要准备一次就OK，后续可以通过以下命令进行复用项目目录：  
 ssh -i ~/桌面/jps-atec.key -t atec@115.236.22.146 ssh 172.16.1.99  
 cd /opt/abcd_workspace/nu_gan  
 
 3.U-Net切割:  
 在这一步，我们会把FOV切割成细胞。首先进入项目的切割代码目录：  
-cd /opt/xxx_workspace/nu_gan/segmentation/  
+cd /opt/abcd_workspace/nu_gan/segmentation/  
   
-准备U-Net模型参数文件及参考数据:   
+准备U-Net模型参数文件及参考数据(以下命令只需要执行一次):   
 ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_output/ ./src/SEGMENT/kaggle-dsb2018/src  
 ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/  
 
 把解压的数据集链接到测试文件夹： 
-mkdir datasets && mkdir datasets/test_slide  
-ln -s ~/Dataset/private_cervical/xxx ./datasets/test_slide  
+mkdir datasets && mkdir datasets/test_slide  (本行命令只需要执行一次)  
+ln -s ~/Dataset/private_cervical/xxx ./datasets/test_slide  (本命令每次切换上传数据都需要执行)  
 
 运行切割命令行: 
 ./run_annotation.sh step1 "./datasets/test_slide/xxx/*/"   
-./run_annotation.sh step2 "./datasets/test_slide/xxx/*/"  
-./run_annotation.sh step3 "./datasets/test_slide/xxx/*/"  
+./run_annotation.sh step2 "./datasets/test_slide/xxx/*/"   
+./run_annotation.sh step3 "./datasets/test_slide/xxx/*/"   
 
 4.运行自动标注: 
 注：只支持有标注的数据集
 命令:  
-./run_annotation.sh step4 "./datasets/test_slide/xxx/*/"
+./run_annotation.sh step4 "./datasets/test_slide/xxx/*/"  
 
 5.生成Cell数据集. 
-注：只支持有标注的数据集
+注：只支持有标注的数据集  
 命令： 
-cmd: ./run_annotation.sh step5 "./datasets/test_slide/xxx/*/" 
+./run_annotation.sh step5 "./datasets/test_slide/xxx/*/"  
 
 6.生成FOV数据集:
-cmd: ./run_annotation.sh step6 "./datasets/test_slide/xxx/*/"
+./run_annotation.sh step6 "./datasets/test_slide/xxx/*/"  
 
 7.拷贝数据到nu_gan目录  
 第一步，生成目录：  
