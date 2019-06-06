@@ -31,7 +31,8 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
     print(origin_image_filename)
     
     original = cv2.imread(origin_image_filename)
-    original = original[:,:,::-1]
+    original_npy = original.copy()
+    original_npy = original_npy[:,:,::-1]
     
     
     mask = cv2.imread(mask_image_filename)
@@ -75,28 +76,34 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
     
     
     filename = os.path.join('{}/{}_output'.format(ROOT_FOLDER, ntpath.basename(origin_image_filename)))
-    if not os.path.exists(filename): os.makedirs(filename)     
+    #if not os.path.exists(filename): os.makedirs(filename)     
 
     crops_outdir = os.path.join('{}/crops'.format(filename))
     preview_outdir = os.path.join('{}/preview'.format(filename))
     
-    mask_filename = os.path.join(preview_outdir, 'mask.png')  
+    mask_filename = os.path.join(preview_outdir, '%s_mask.png'%base_filename)  
     cv2.imwrite(mask_filename, mask_binary)
     
     if not os.path.exists(crops_outdir): os.makedirs(crops_outdir) 
     if not os.path.exists(preview_outdir): os.makedirs(preview_outdir) 
     
     
-    index = 0
+    index = 1
     
 ###txt file###
-    index_name = os.path.join(preview_outdir, 'index_file.txt')
+    index_name = os.path.join(preview_outdir, 'sample_submission.csv')
    # print("index_name:",index_name)
    # print("preview_outtdir",preview_outdir)
-    index_file = open(index_name,"w+")
+    #index_file = open(index_name,"w+")
 ###done###
     image_dict = None
     
+    #classify_text = "datasets/sample_submission.csv"
+    
+    
+    f = open(index_name, 'w') 
+    print('{},{}'.format('name', 'positive'), file=f)
+            
      
     for i in range(len(contours)):
         cnt = contours[i]
@@ -106,7 +113,7 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
         if area < minArea or area > maxArea:
             continue
         
-        index_file.write("%d " % (index))
+        #index_file.write("%d " % (index))
         print("------i:",index)
         
         x, y, w, h = cv2.boundingRect(cnt)
@@ -136,7 +143,20 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
             Y = min(y + h, mask.shape[0])
             w = X - x
             h = Y - y
-        
+        elif crop_method == 'Mask':
+            center_x = x+(w/2)
+            center_y = y+(h/2)
+            side_len = max(w, h)
+            margin = side_len * margin_factor
+            side_margin_len = int(side_len + margin*2)
+            x = center_x - int(side_margin_len/2)
+            y = center_y - int(side_margin_len/2)
+            x = max(0, x)
+            y = max(0, y)
+            X = min(x + side_margin_len, mask_shape[1])
+            Y = min(y + side_margin_len, mask_shape[0])
+            w = X - x
+            h = Y - y
         x1, y1, w1, h1 = int(x), int(y), int(w), int(h)
 ###txt file###
         #index_file.write("%d " % (i+1))
@@ -145,16 +165,24 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
 	#index_file.write("%d " % (w1))
 	#index_file.write("%d\r\n" % (h1))
         #index_file.write("%d " % (i+1))
-        index_file.write("%d " % (x1))
-        index_file.write("%d " % (y1))
-        index_file.write("%d " % (w1))
-        index_file.write("%d\r\n" % (h1))
+        #index_file.write("%d " % (x1))
+        #index_file.write("%d " % (y1))
+        #index_file.write("%d " % (w1))
+        #index_file.write("%d\r\n" % (h1))
 ###done ###
         
         print(index, area, x1, y1, w1, h1)
         
         cropped = original[y1:y1 + h1, x1:x1 + w1, :]
-        cropped_filename = os.path.join(crops_outdir, '{}.png'.format(index))
+        cropped_npy = original_npy[y1:y1 + h1, x1:x1 + w1, :]
+        
+        cropped_filename = os.path.join(crops_outdir, '{}_{}.png'.format(base_filename, index))
+        name_base = '{}_{}.png'.format(base_filename, index)
+        
+        print('{},{}'.format(name_base, 0.5), file=f)
+    
+        
+        #index_file.write("%s 0\r\n" % (name_base))
         
         #print(cropped.mean())
         
@@ -168,12 +196,11 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
     
         cv2.putText(img_preview, text, (x1, y1 + h1), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), lineType=cv2.LINE_AA) 
 
-        #cv2.imwrite(cropped_filename, cropped)
+        cv2.imwrite(cropped_filename, cropped)
         
         index = index + 1
         
-        resize_image = imresize(cropped, [32, 32], interp='nearest')
-        #resize_image = cv2.resize(cropped, (32, 32))
+        resize_image = cv2.resize(cropped_npy, (32, 32))
         
         m = np.array([resize_image])
         if image_dict is not None:
@@ -182,9 +209,9 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
             image_dict = m
         
         
-    preview_filename = os.path.join(npy_outdir, 'preview.png')    
+    preview_filename = os.path.join(preview_outdir, '%s_preview.png'%base_filename)    
     cv2.imwrite(preview_filename, img_preview)
-    index_file.close()    
+    f.close()    
     print(preview_filename)
     
     
@@ -199,8 +226,23 @@ def crop_file(origin_image_filename, mask_image_filename, filter_val, margin_fac
     image = np.transpose(image, (0,3,1,2))
     print(image.shape)
     
-    preview_segpng = os.path.join(npy_outdir, '%s_seg.png'%base_filename)   
-    vutils.save_image(torch.FloatTensor(image), preview_segpng ,nrow=5,normalize=True)
+    preview_segpng = os.path.join(preview_outdir, '%s_seg.png'%base_filename)   
+    vutils.save_image(torch.FloatTensor(image), preview_segpng ,nrow=10,padding=2, normalize=True)
+    
+    
+    
+    segpng = cv2.imread(preview_segpng)
+    
+    for i in range(index-1):
+        text = '{}'.format(i+1)
+        x1 = 34 * int(i%10)
+        y1 = int(i/10) * 34
+        h1 = 12
+        print("x1, y1:", text, x1, y1+h1)
+        cv2.putText(segpng, text, (x1, y1 + h1), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), lineType=cv2.LINE_AA) 
+
+    preview_segpng_idx = os.path.join(preview_outdir, '%s_seg_idx.png'%base_filename) 
+    cv2.imwrite(preview_segpng_idx, segpng)
     
     
 import glob

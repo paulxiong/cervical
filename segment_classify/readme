@@ -1,0 +1,28 @@
+positive png file to use unet segment predicted
+
+1. cp positive png files to datasets/origin_test/positive_test_images/ folder.  
+2  into final_medical_cervical  
+   #run_slide_postive_test.sh all
+3. into segment_classify directory
+   #CUDA_VISIBLE_DEVICES=7 python3 pytorch_train_predict.py --origindir datasets/origin_test/positive_test_images/ --datasets datasets/classify 
+4. mv datasets/classify/npy dtasets/classify/positive_test_npy
+5. cp datasets/classify/positive_test_npy/* to nugan's experiment/data/segment/positive_test_npy/160/
+
+
+XXX.npy      "original cell image npy file, used by nugan"
+XXX_predicted.npy      "filterby uent segment_classify, npy file, used by nugan"
+
+
+negative png file to use unet segment predicted
+
+1. cp negative png files to datasets/origin_test/negative_test_images/ folder.  
+2  into final_medical_cervical  
+   #run_slide_negative_test.sh all
+3. into segment_classify directory
+   #CUDA_VISIBLE_DEVICES=7 python3 pytorch_train_predict.py --origindir datasets/origin_test/negative_test_images/ --datasets datasets/classify 
+4. mv datasets/classify/npy dtasets/classify/negative_test_npy
+5. cp datasets/classify/negative_test_npy/* to nugan's experiment/data/segment/negative_test_npy/160/
+
+
+XXX.npy      "original cell image npy file, used by nugan"
+XXX_predicted.npy      "filterby uent segment_classify, npy file, used by nugan"
