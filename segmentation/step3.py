@@ -373,6 +373,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
     
     #========>>>>>>whether denoising for classifier??
     original = cv2.imread(origin_image_filename)
+    original = original[..., ::-1]
     #original = cv2.fastNlMeansDenoisingColored(original, None, 7, 7, 7, 21)
     
     mask = cv2.imread(mask_filename, 0)
