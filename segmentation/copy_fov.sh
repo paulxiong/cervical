@@ -58,9 +58,8 @@ function copy_neg()
     echo "拷贝完成"
 }
 
-
-if [ -d "./datasets/classify/annot_out" ] && [ -d "./datasets/classify/train_datasets" ];then
-echo "检测到自动标注与训练数据集，执行第一种情况..."
+function copy_fov()
+{
     if [ ! -d "../experiment/data" ];then
         echo "不存在../experiment/data， 创建..."
         mkdir -p ../experiment/data
@@ -82,6 +81,20 @@ echo "检测到自动标注与训练数据集，执行第一种情况..."
         cp -rf ./datasets/classify/data/segmented ../experiment/data/segmented  
         echo "拷贝完成"
     fi
+}
+
+annot_flag=`ls -l ./datasets/classify/annot_out | grep '^-' | wc -l`
+traindata_flag=`ls -l ./datasets/classify/train_datasets/default/npy | grep '^-' | wc -l`
+pdata_flag=`ls -l ./datasets/classify/data/original/positive_test_images | grep '^-' | wc -l`
+ndata_flag=`ls -l ./datasets/classify/data/original/negative_test_images | grep '^-' | wc -l`
+
+
+if [ $annot_flag -gt 0 ] && [ $traindata_flag -gt 0];then
+    echo "检测到自动标注与训练数据集，执行第一种情况..."
+    copy_fov
+elif [ $pdata_flag -gt 0 ] && [ $ndata_flag -gt 0 ];then
+    echo "检测到已分类测试数据，执行第三种情况..."
+    copy_fov
 else
     echo "没有检测到自动标注与训练数据集，执行第二种情况..."
     
