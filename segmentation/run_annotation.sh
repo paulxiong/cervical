@@ -43,7 +43,9 @@ function run_step1()
         --filepattern ${FILE_PATTERN} \
 #	--resize_ratio 1.5 \
 #        $DENOSING
+    echo "Step1 结束"
 }
+
 function run_step2()
 {
     ##Step 2. Run Segmentation
@@ -79,7 +81,7 @@ function run_step4()
 {
     ##Step 4. Cervix cell classification
     python3 step4_annot.py \
-        --origin_dir ${ORIGIN_DIR} \
+        --origin_dir "${ORIGIN_DIR}" \
         --pattern ${FILE_PATTERN}\
         --seg_dir ${CLF_DATASETS}\
         --output_dir ${ANNOT_DIR}
@@ -100,7 +102,7 @@ function run_step6 ()
 {
     ##Step 5. Mark the positive cells
     python3 step6_copy2nugan.py \
-        --origin_dir ${ORIGIN_DIR} \
+        --origin_dir "${ORIGIN_DIR}" \
         --csv_dir ${ANNOT_DIR}'/fov_type.csv' \
         --npy_dir ${CLF_DATASETS}'/npy/'  \
         --output_dir ${COPY_DIR} \
@@ -120,6 +122,9 @@ function run_all()
     run_step3
     run_step4
     run_step5
+    run_step6
+    
+    ./copy_fov.sh
 
     time2=$(date +%s)
     echo $time2
@@ -142,11 +147,62 @@ function clean()
     
 }
 
+function check_env()
+{
+    if [ ! -d "./datasets/segment" ];then
+        mkdir -p ./datasets/segment
+    fi
+    if [ ! -d "./datasets/segment/stage1_train" ];then
+        echo "准备U-Net参考训练集"
+        ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/
+    fi
+    
+    if [ ! -d "././src/SEGMENT/kaggle-dsb2018/src/all_output" ];then
+        echo "准备U-Net模型Weights参数"
+        ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_output/ ./src/SEGMENT/kaggle-dsb2018/src 
+    fi
+}
+
+function detect_testdata()
+{
+    if [ ! -d "$ORIGIN_DIR" ];then
+        #echo $2
+        folder=`echo "$ORIGIN_DIR" | sed 's#\(.*test_slide\)/\(.*\)/.*/#\2#g'`
+        #echo $folder
+        dir=`echo "$ORIGIN_DIR" | sed 's#\(.*test_slide/.*\)/.*/#\1#g'`
+        #echo $dir
+        
+        if [ ! -d "$dir" ];then
+        
+            if [ ! -d ~/Dataset/private_cervical/${folder} ];then
+                #echo "~/Dataset/private_cervical/${folder}"
+                echo "原始数据目录不存在，请用命令ls -l ~/Dataset/private_cervical/${folder} 检查原始目录"
+                exit 0
+            fi
+            
+            if [ ! -d './datasets/test_slide' ];then
+                echo "测试数据文件夹不存在，创建..."
+                mkdir -p ./datasets/test_slide
+            fi
+        
+            echo "创建数据目录..."
+            ln -s ~/Dataset/private_cervical/${folder} ./datasets/test_slide/
+            
+        fi
+        
+    fi
+}
+
+
 show_usage='run.sh all/clean/(step5 THRESHOLD)'
 
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
+
+check_env
+
+detect_testdata
 
 if [ -n "$1" ]; then
     case "$1" in
