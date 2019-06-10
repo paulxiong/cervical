@@ -89,7 +89,7 @@ pdata_flag=`ls -l ./datasets/classify/data/original/positive_test_images | grep 
 ndata_flag=`ls -l ./datasets/classify/data/original/negative_test_images | grep '^-' | wc -l`
 
 
-if [ $annot_flag -gt 0 ] && [ $traindata_flag -gt 0];then
+if [ $annot_flag -gt 0 ] && [ $traindata_flag -gt 0 ];then
     echo "检测到自动标注与训练数据集，执行第一种情况..."
     copy_fov
 elif [ $pdata_flag -gt 0 ] && [ $ndata_flag -gt 0 ];then

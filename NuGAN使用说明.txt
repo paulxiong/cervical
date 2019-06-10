@@ -11,13 +11,16 @@
 
 3. 训练NU_GAN模型：    
 命令:   
-./run_docker.sh 'image_classification'  
+./run_docker.sh 'image_classification' docker_name
+其中docker_name为自定义容器名 
   
 4. 训练NU_GAN FOV识别器：    
 命令:   
-./run_docker.sh 'image_classification_train'    
+./run_docker.sh 'image_classification_train' docker_name   
+其中docker_name为自定义容器名 
   
 5. FOV预测：    
 命令:  
-./run_docker.sh 'image_classification_predict'   
+./run_docker.sh 'image_classification_predict' docker_name   
+其中docker_name为自定义容器名 
 

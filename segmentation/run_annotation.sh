@@ -141,9 +141,10 @@ function clean()
     rm -rf datasets/segment/output/predict/test/*/*
     #Clean the previous results
     echo "Clean the ${CLF_DATASETS} Dir"
-    rm -rf ${CLF_DATASETS}/*_output
+    rm -rf ${CLF_DATASETS}
     rm -rf ./marked_image
     rm -rf ./cell_result
+    
     
 }
 
@@ -200,20 +201,18 @@ show_usage='run.sh all/clean/(step5 THRESHOLD)'
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-check_env
 
-detect_testdata
 
 if [ -n "$1" ]; then
     case "$1" in
-        all) run_all;;
+        all) check_env;detect_testdata;run_all;;
         clean) clean;;
-        step1) run_step1;;
-        step2) run_step2;;
-        step3) run_step3;;
-        step4) run_step4;;
-        step5) run_step5;;
-        step6) run_step6;;
+        step1) check_env;detect_testdata;run_step1;;
+        step2) check_env;detect_testdata;run_step2;;
+        step3) check_env;detect_testdata;run_step3;;
+        step4) check_env;detect_testdata;run_step4;;
+        step5) check_env;detect_testdata;run_step5;;
+        step6) check_env;detect_testdata;run_step6;;
         
         *) echo ${show_usage};;
     esac

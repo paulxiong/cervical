@@ -39,6 +39,8 @@ cd /opt/abcd_workspace/nu_gan
 3.U-Net切割:  
 在这一步，我们会把FOV切割成细胞。首先进入项目的切割代码目录：  
 cd /opt/abcd_workspace/nu_gan/segmentation/  
+清理历史数据：
+./run_annotation.sh clean
 
 运行切割命令行: 
 ./run_annotation.sh all "./datasets/test_slide/2019-xx-xx—name1/*/" 
