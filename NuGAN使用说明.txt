@@ -6,18 +6,7 @@
 第三步，更新configure.conf文件：git pull
 
 2.进入docker环境：  
-第一步，启动docker(只需执行一次）： 
-docker run -d -v `pwd`:/nu_gan --name="xxxx" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h     
-注意：修改命令中的xxxx为你想要的名称  
-  
-第二步，进入docker命令环境：  
-docker exec -it xxxx bash    
-
-第三步，安装tensorboardX软件包(每次在执行了第一步之后再次执行）:  
-pip install tensorboardX  
-
-第四步，切换目录:
-cd /nu_gan
+./run_docker.sh xxxxx
 
 3. 准备数据：  
 按照https://github.com/paulxiong/cervical/blob/nu_gan_archive/segmentation/SEG%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.txt  
