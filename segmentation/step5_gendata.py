@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 print(sys.version)
 
@@ -247,6 +248,10 @@ if __name__ == '__main__':
     
     CLASSES = CLASS_MAP.values()
     COLUMNS = ['folder','point','type']
+    
+    if not os.path.exists(annot_file):
+        print("标注文件%s不存在,退出..." % annot_file)
+        exit(0)
     
     train_set, test_set = train_test_from_labelfile(annot_file, seg_dir)
     

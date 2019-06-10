@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
 import cv2
@@ -91,7 +92,8 @@ if __name__ == '__main__':
     annot_csv = glob.glob(os.path.join(ORIGIN_DIR, '*.csv'))
     
     if len(annot_csv) == 0:
-        print('No annotation found,  exit...')
+        #print('No annotation found,  exit...')
+        print('未发现标注CSV文件，退出...')
         exit()
     
     #debug = True
