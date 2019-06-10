@@ -2,18 +2,21 @@
 注： 先将服务器认证文件jps-atec.key放到"桌面"上。
 
 为了生成训练数据，首先我们需要先准备好FOV图像(JPG或png)和.csv标文件。  
-目录结构："$DATAROOT/$SLIDE_NAME/*.JPG(or .png)" and "$DATAROOT/$SLIDE_NAME/*.csv"   
+目录结构："2019-xx-xx—name1/1234567/*.JPG(or .png)" and "2019-xx-xx—name1/1234567/*.csv"  
+其中2019-xx-xx是日期, name1为自定义名称以区别同一天的数据，1234567表示Slide的编号
+
 如果是为了生成测试数据， 我们只需要准备FOV图像即可。 将FOV图像分为正常视野图和异常视野图，分别放在不同的文件夹。
-目录结构： "$DATAROOT/$SLIDE_NAME/*.JPG(or .png)"  
+目录结构： "2019-xx-xx—name1/1234567_N/*.JPG(or .png)" 和"2019-xx-xx—name1/1234567_P/*.JPG(or .png)"
+其中2019-xx-xx是日期，name1为自定义名称以区别同一天的数据，1234567表示Slide的编号, N表示正常视野图，P表示异常视野图。
   
 训练数据目录结构可以参考目录： /opt/zhuoyao_workspace/medical_ai/datasets/test_slide 中的文件夹  
   
 上传命令：   
-第一步，拷贝数据到跳板服务器： scp -i ~/桌面/jps-atec.key ~/桌面/xxx.zip atec@115.236.22.146:~  
+第一步，拷贝数据到跳板服务器： scp -i ~/桌面/jps-atec.key ~/桌面/2019-xx-xx—name1.zip atec@115.236.22.146:~  
 第二步，登入跳板服务器： ssh -i ~/桌面/jps-atec.key atec@115.236.22.146  
-第三步，拷贝数据到GPU服务器： scp ~/xxx.zip 172.16.1.99:~/Dataset/private_cervical
+第三步，拷贝数据到GPU服务器： scp ~/2019-xx-xx—name1.zip 172.16.1.99:~/Dataset/private_cervical
 第四步，登入GPU服务器： ssh 172.16.1.99  
-第五步，解压数据： cd ~/Dataset/private_cervical && unzip xxx.zip  
+第五步，解压数据： cd ~/Dataset/private_cervical && unzip 2019-xx-xx—name1.zip  
 
 2.准备项目目录：  
 在电脑中重新打开终端，登入GPU服务器：  
@@ -38,8 +41,8 @@ cd /opt/abcd_workspace/nu_gan
 cd /opt/abcd_workspace/nu_gan/segmentation/  
 
 运行切割命令行: 
-./run_annotation.sh all "./datasets/test_slide/xxx/" 
-xxx对应解压出来的目录名称。
+./run_annotation.sh all "./datasets/test_slide/2019-xx-xx—name1/*/" 
+2019-xx-xx—name1对应解压出来的目录名称。
 等待结束...
 
 
