@@ -5,23 +5,19 @@
 
 第三步，更新configure.conf文件：git pull
 
-2.进入docker环境：  
-./run_docker.sh xxxxx
-xxxxx为docker的名称，如nu_gan_test
-
-3. 准备数据：  
+2. 准备数据：  
 按照https://github.com/paulxiong/cervical/blob/nu_gan_archive/segmentation/SEG%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.txt  
-准备好训练和测试数据。  
-  
-4. 训练NU_GAN模型：    
+准备好训练和测试数据。 
+
+3. 训练NU_GAN模型：    
 命令:   
-python nu_gan.py --task 'image_classification'  
+./run_docker.sh 'image_classification'  
   
-5. 训练NU_GAN FOV识别器：    
+4. 训练NU_GAN FOV识别器：    
 命令:   
-python nu_gan.py --task 'image_classification_train'    
+./run_docker.sh 'image_classification_train'    
   
-6. FOV预测：    
+5. FOV预测：    
 命令:  
-python nu_gan.py --task 'image_classification_predict'   
+./run_docker.sh 'image_classification_predict'   
 
