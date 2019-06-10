@@ -1,6 +1,6 @@
 #!/bin/bash
 
-show_usage="./run_docker.sh ${'task':image_classification_train, image_classification_predict, image_classification}"
+show_usage="./run_docker.sh {'task':image_classification_train, image_classification_predict, image_classification}"
 
 echo "Task: $1"
 
