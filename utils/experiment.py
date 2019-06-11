@@ -183,17 +183,16 @@ def image_classification_train(positive_images_root, negative_images_root, posit
     print(np.concatenate(positive_train_npy).shape, np.concatenate(negative_train_npy).shape)
     cell_train_set = np.concatenate([np.concatenate(positive_train_npy), np.concatenate(negative_train_npy)])
 
-    X_train = np.load(X_train_path)
-    X_test = np.load(X_test_path)
-    y_train = np.load(y_train_path)
-    y_test = np.load(y_test_path)
-    cell_test_set = np.concatenate([X_train, X_test])
-    cell_test_label = np.concatenate([y_train, y_test])
-    cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
+    #X_train = np.load(X_train_path)
+    #X_test = np.load(X_test_path)
+    #y_train = np.load(y_train_path)
+    #y_test = np.load(y_test_path)
+    #cell_test_set = np.concatenate([X_train, X_test])
+    #cell_test_label = np.concatenate([y_train, y_test])
+    #cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
 
     netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
-    netD, netG, netD_D, netD_Q =  train_predict(cell_train_set, cell_test_set, cell_test_label, 
-                   positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+    netD, netG, netD_D, netD_Q =  train_predict(positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
                    netD, netG, netD_D, netD_Q, experiment_root, 
                    n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
                    ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)

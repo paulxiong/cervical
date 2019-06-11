@@ -711,8 +711,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
     writer.close()
     return netD, netG, netD_D, netD_Q
 
-def train_predict(cell_train_set, cell_test_set, cell_test_label, 
-          positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+def train_predict(positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
           netD, netG, netD_D, netD_Q, experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
           ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
     
