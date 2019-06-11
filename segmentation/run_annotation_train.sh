@@ -107,7 +107,7 @@ function run_step6 ()
         --npy_dir ${CLF_DATASETS}'/npy/'  \
         --output_dir ${COPY_DIR} \
         --pattern ${FILE_PATTERN} \
-        #--train_test_split 
+        --train_test_split 
 }
 
 

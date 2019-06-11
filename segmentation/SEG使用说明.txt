@@ -42,8 +42,14 @@ cd /opt/abcd_workspace/nu_gan/segmentation/
 清理历史数据：
 ./run_annotation.sh clean
 
-运行切割命令行: 
+测试数行切割命令: 
 ./run_annotation.sh all "./datasets/test_slide/2019-xx-xx—name1/*/" 
+2019-xx-xx—name1对应解压出来的目录名称。
+等待结束...
+
+SVM训练数据的切割：
+数据准备参考1.准备数据中的“生成测试数据”
+./run_annotation_train.sh all "./datasets/test_slide/2019-xx-xx—name1/*/"
 2019-xx-xx—name1对应解压出来的目录名称。
 等待结束...
 

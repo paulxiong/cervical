@@ -44,13 +44,13 @@ class NPDataDivider():
         
     def copy_original_and_npy(self, org_df, path_fix):
         original_dir = os.path.join(self.output_dir, 'original')
-        pos_dir = os.path.join(original_dir, 'positive{}_images'.format(path_fix))
-        neg_dir = os.path.join(original_dir, 'negative{}_images'.format(path_fix))
+        pos_dir = os.path.join(original_dir, 'positive{}images'.format(path_fix))
+        neg_dir = os.path.join(original_dir, 'negative{}images'.format(path_fix))
         
         
         npy_dir = os.path.join(self.output_dir, 'segmented')
-        npy_pos_dir = os.path.join(npy_dir, 'positive{}_npy/160'.format(path_fix))
-        npy_neg_dir = os.path.join(npy_dir, 'negative{}_npy/160'.format(path_fix))
+        npy_pos_dir = os.path.join(npy_dir, 'positive{}npy/160'.format(path_fix))
+        npy_neg_dir = os.path.join(npy_dir, 'negative{}npy/160'.format(path_fix))
         
         if not os.path.exists(pos_dir):
             os.makedirs(pos_dir)
@@ -102,6 +102,60 @@ class NPDataDivider():
             train_org, test_org, _, _ = train_test_split(self.org_df, y, test_size=0.2,
                                                 shuffle=True,stratify=y, random_state=10)
         return train_org, test_org
+    
+    def copy_no_annotaions(self, org_df, path_fix):   
+        if org_df is None:
+            return None
+        folders = org_df['folder']
+        types = [re.search(r'(.*)_([PN])_', folder).group(2) if re.search(r'(.*)_([PN])_', folder) else 'UNK' for folder in folders]
+        
+        
+        images_dir = os.path.join(self.output_dir, 'original/images')
+        npy_dir = os.path.join(self.output_dir, 'segmented/npy/160')
+        
+        p_images_dir = os.path.join(self.output_dir, 'original/positive{}images'.format(path_fix))
+        p_npy_dir = os.path.join(self.output_dir, 'segmented/positive{}npy/160'.format(path_fix))
+        
+        n_images_dir = os.path.join(self.output_dir, 'original/negative{}images'.format(path_fix))
+        n_npy_dir = os.path.join(self.output_dir, 'segmented/negative{}npy/160'.format(path_fix))
+        
+        for folder, t in zip(folders,types):
+            npy_name = folder.split('.')[0] + '.npy'
+            src = os.path.join(self.npy_dir, npy_name)
+            if not os.path.exists(src):
+                continue
+            if t == 'N':
+                print("检测到类型为正常的图片：%s" % folder)
+                if not os.path.exists(n_images_dir):
+                    os.makedirs(n_images_dir)
+                if not os.path.exists(n_npy_dir):
+                    os.makedirs(n_npy_dir)
+                tmp_npy_dir = n_npy_dir
+                tmp_img_dir = n_images_dir
+            elif t == 'P':
+                print("检测到类型为异常的图片：%s" % folder)
+                if not os.path.exists(p_images_dir):
+                    os.makedirs(p_images_dir)
+                if not os.path.exists(p_npy_dir):
+                    os.makedirs(p_npy_dir)
+                tmp_npy_dir = p_npy_dir
+                tmp_img_dir = p_images_dir
+            elif t == 'UNK':
+                if not os.path.exists(images_dir):
+                    os.makedirs(images_dir)
+                if not os.path.exists(npy_dir):
+                    os.makedirs(npy_dir)
+                tmp_npy_dir = npy_dir
+                tmp_img_dir = images_dir
+                
+            
+            dst = os.path.join(tmp_npy_dir, npy_name)
+            shutil.copy(dst=dst, src=src)
+            
+            dst_name = folder[:-7]
+            src = org_df.loc[org_df['folder']==folder, 'org_path'].values[0]
+            dst = os.path.join(tmp_img_dir, dst_name)
+            shutil.copy(dst=dst, src=src)
         
                 
     def copy(self):
@@ -116,67 +170,19 @@ class NPDataDivider():
         if len(self.df) > 0:
             #print("Found annotation, copy file with positive & negative labels")
             print("发现标注文件， 把文件拷贝到正常/异常文件夹中...")
-            self.copy_original_and_npy(train_org, '')
+            self.copy_original_and_npy(train_org, '_')
             if test_org is not None:
-                self.copy_original_and_npy(test_org, '_test')
+                self.copy_original_and_npy(test_org, '_test_')
                 
         else:
             #print("No annotation file found, just copy the files to the output dir")
             print("未发现标注文件")
             #just copy the original and npy to the dest dir
             #copy images
-            folders = self.org_df['folder']
-            types = [re.search(r'(.*)_([PN])_', folder).group(2) if re.search(r'(.*)_([PN])_', folder) else 'UNK' for folder in folders]
+            self.copy_no_annotaions(train_org, '_')
+            if test_org is not None:
+                self.copy_no_annotaions(test_org, '_test_')
             
-            images_dir = os.path.join(self.output_dir, 'original/images')
-            npy_dir = os.path.join(self.output_dir, 'segmented/npy/160')
-            
-            p_images_dir = os.path.join(self.output_dir, 'original/positive_test_images')
-            p_npy_dir = os.path.join(self.output_dir, 'segmented/positive_test_npy/160')
-            
-            n_images_dir = os.path.join(self.output_dir, 'original/negative_test_images')
-            n_npy_dir = os.path.join(self.output_dir, 'segmented/negative_test_npy/160')
-            
-            for folder, t in zip(folders,types):
-                npy_name = folder.split('.')[0] + '.npy'
-                src = os.path.join(self.npy_dir, npy_name)
-                if not os.path.exists(src):
-                    continue
-                if t == 'N':
-                    print("检测到类型为正常的图片：%s" % folder)
-                    if not os.path.exists(n_images_dir):
-                        os.makedirs(n_images_dir)
-                    if not os.path.exists(n_npy_dir):
-                        os.makedirs(n_npy_dir)
-                    tmp_npy_dir = n_npy_dir
-                    tmp_img_dir = n_images_dir
-                elif t == 'P':
-                    print("检测到类型为异常的图片：%s" % folder)
-                    if not os.path.exists(p_images_dir):
-                        os.makedirs(p_images_dir)
-                    if not os.path.exists(p_npy_dir):
-                        os.makedirs(p_npy_dir)
-                    tmp_npy_dir = p_npy_dir
-                    tmp_img_dir = p_images_dir
-                elif t == 'UNK':
-                    if not os.path.exists(images_dir):
-                        os.makedirs(images_dir)
-                    if not os.path.exists(npy_dir):
-                        os.makedirs(npy_dir)
-                    tmp_npy_dir = npy_dir
-                    tmp_img_dir = images_dir
-                    
-                
-                dst = os.path.join(tmp_npy_dir, npy_name)
-                shutil.copy(dst=dst, src=src)
-                
-                dst_name = folder[:-7]
-                src = self.org_df.loc[self.org_df['folder']==folder, 'org_path'].values[0]
-                dst = os.path.join(tmp_img_dir, dst_name)
-                shutil.copy(dst=dst, src=src)
-            
-            
-        
         print("生成完成...")    
 
 

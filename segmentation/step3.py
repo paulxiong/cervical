@@ -396,7 +396,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
     index_file = open(index_name,"w+")
     #####
     ## image preview
-    img_preview = original.copy()
+    img_preview = original[...,::-1].copy()
     
     npy_outdir = os.path.join('{}/npy/'.format(ROOT_FOLDER))
     if not os.path.exists(npy_outdir): os.makedirs(npy_outdir)
@@ -454,7 +454,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
                 area_filter_mask[labels==i] = 255
                 debug_df1.loc[debug_df1['Label']==i, 'Filter_By'] = 'Area'
                 debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = save_path
-                crop_and_save_for_debug(stats[i,:-1], original, save_path, 0)
+                crop_and_save_for_debug(stats[i,:-1], original[...,::-1], save_path, 0)
             continue
             
         
@@ -495,7 +495,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
                     pva_filter_mask[labels==i] = 255
                     debug_df1.loc[debug_df1['Label']==i, 'Filter_By'] = 'PVA'
                     debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = save_path
-                    crop_and_save_for_debug(stats[i,:-1], original, save_path, 0)
+                    crop_and_save_for_debug(stats[i,:-1], original[...,::-1], save_path, 0)
                     f_flag = False
                 elif not DEBUG:
                     continue
@@ -526,7 +526,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
                     rzm_filter_mask[labels==i] = 255
                     debug_df1.loc[debug_df1['Label']==i, 'Filter_By'] = 'RZM'
                     debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = save_path
-                    crop_and_save_for_debug(stats[i,:-1], original, save_path, 0)
+                    crop_and_save_for_debug(stats[i,:-1], original[...,::-1], save_path, 0)
                     f_flag = False
                 elif not DEBUG:
                     continue
@@ -542,7 +542,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
                     intens_filter_mask[labels==i] = 255
                     debug_df1.loc[debug_df1['Label']==i, 'Filter_By'] = 'Intens'
                     debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = save_path
-                    crop_and_save_for_debug(stats[i,:-1], original, save_path, 0)
+                    crop_and_save_for_debug(stats[i,:-1], original[...,::-1], save_path, 0)
                     f_flag = False
                 elif not DEBUG:
                     continue
