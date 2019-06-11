@@ -141,8 +141,12 @@ def cells_intensity_in_fov(origin_image_filename, mask_filename, filter_val, min
     ret, thresh = cv2.threshold(mask_binary, 127, 255, 0)
     h = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     #h = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-
-    contours = h[1]
+    if cv2.__version__.split('.')[0]=='3':
+        contours = h[1]
+    elif cv2.__version__.split('.')[0]=='4':
+        contours = h[0]
+    else:
+        contours = h[1]
     
     mean_intenses = []
     
@@ -331,7 +335,12 @@ def get_contour(box, labels, i):
     crop_label = labels[box[1]:box[1]+box[3], box[0]:box[0]+box[2]]
     crop_mask[crop_label==i] = 255
     contours = cv2.findContours(crop_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours = contours[1]
+    if cv2.__version__.split('.')[0]=='3':
+        contours = contours[1]
+    elif cv2.__version__.split('.')[0]=='4':
+        contours = contours[0]
+    else:
+        contours = contours[1]
     if len(contours)>0:
         area = cv2.contourArea(contours[0])
     else:
