@@ -13,7 +13,7 @@ function build_docker()
     echo $b
     
     #echo $a
-    if [ ! $a -eq 0 ];then
+    if [ $a -eq 0 ];then
         if [ $b -eq 0 ];then
             docker run -d -v `pwd`:/nu_gan --name="$docker_name" --runtime=nvidia tensorflow/tensorflow:1.7.0-gpu-nu_gan sleep 100h 
             docker exec -it $docker_name bash -c "pip install tensorboardX"
