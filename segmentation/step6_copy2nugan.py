@@ -162,26 +162,29 @@ class NPDataDivider():
         if self.split_flag:
             train_org, test_org = self.train_test_split()
         else:
-            train_org = self.org_df
-            test_org = None
+            train_org = None
+            test_org = self.org_df
             
         print("开始生成文件...")
         #have annotated informations, we can define the pos & neg fov
         if len(self.df) > 0:
             #print("Found annotation, copy file with positive & negative labels")
             print("发现标注文件， 把文件拷贝到正常/异常文件夹中...")
-            self.copy_original_and_npy(train_org, '_')
-            if test_org is not None:
-                self.copy_original_and_npy(test_org, '_test_')
+            if train_org is not None:
+                self.copy_original_and_npy(train_org, '_')
+            
+            self.copy_original_and_npy(test_org, '_test_')
                 
         else:
             #print("No annotation file found, just copy the files to the output dir")
             print("未发现标注文件")
             #just copy the original and npy to the dest dir
             #copy images
-            self.copy_no_annotaions(train_org, '_')
-            if test_org is not None:
-                self.copy_no_annotaions(test_org, '_test_')
+            
+            if train_org is not None:
+                self.copy_no_annotaions(train_org, '_')
+            
+            self.copy_no_annotaions(test_org, '_test_')
             
         print("生成完成...")    
 
