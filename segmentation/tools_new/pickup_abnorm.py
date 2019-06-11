@@ -4,12 +4,15 @@ import os
 import pandas as pd
 import glob
 import shutil
+import re
 
 dst_path = './picks'
 if not os.path.exists(dst_path):
     os.makedirs(dst_path)
 
 csv_files = glob.glob('./*.csv')
+csv_files = [ csv for csv in csv_files if re.search(r'.*\(.*\).*', os.path.basename(csv)) is None ]
+print(csv_files)
 
 
 CSV_NILM_TYPE = [1, 5, 12, 13, 14]
@@ -22,6 +25,6 @@ for csv in csv_files:
     fov_type = df['Type'].max()
     if fov_type != 0:
         print("找到一个异常FOV, %s" % name)
-        src = os.path.join('./', jpg_file)
+        src = os.path.join('./Images', jpg_file)
         shutil.copy(src, dst_path)
         shutil.copy(csv, dst_path)
