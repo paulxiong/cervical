@@ -1,0 +1,19 @@
+Test2019-6-10   使用玻片批次：2019-523   病例号：1810620   片子类型：P   数量：36     结果：recall：0.34   precision：0.46   
+                预测
+                
+Test2019-6-11  使用玻片批次：2019-523、玻片2019-4-17   病例号：1810620（P、36张）、1810652（P、5张）、1903440（N、60张）          
+               结果：recall：1   precision：1  
+               SVM训练、训练NU_GAN FOV识别器、FOV预测
+               
+Test2019-6-12  第一次：使用图片：N（40张）、P（40张）        
+               结果：recall：0.5   precision：0.7857 
+               SVM训练、训练NU_GAN FOV识别器、FOV预测
+               
+                第二次：使用图片：N（40张）、P（80张）        
+               结果：recall：0.25   precision：0.3055
+               SVM训练、训练NU_GAN FOV识别器、FOV预测
+               
+               
+                第三次：使用图片：N（80张）、P（80张）        
+               结果：recall：0.46  precision：0.2197
+               SVM训练、训练NU_GAN FOV识别器、FOV预测
