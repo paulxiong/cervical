@@ -487,8 +487,18 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                              
     print("SVM predict_label", predict_label)
     
+    train_proportion = np.concatenate([proportion_1, proportion_0])
+    train_predict_label = clf.predict(train_proportion)
+    train_true_label = true_label[0: -proportion_test_1.shape[0]-proportion_test_0.shape[0]]
+    test_proportion = np.concatenate([proportion_test_1, proportion_test_0])
+    test_predcit_label = predict_label
+    test_true_label = true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:]
+    
+    
     with open(clf_path + '/svm_{}.model'.format(ts), 'wb') as f:
         pickle.dump(clf, f)
+        
+    return train_proportion,  train_predict_label, test_proportion,  test_predcit_label
 
 def get_catagory_matrix(loader , netD, netD_Q, dis_category):
     test_iter = iter(loader)
@@ -745,10 +755,10 @@ def train_predict(positive_train_npy, positive_test_npy,negative_train_npy, nega
     netD_Q.eval()
     
     
-    image_level_accuracy(positive_train_loader, positive_test_loader, 
+    eval_vect = image_level_accuracy(positive_train_loader, positive_test_loader, 
                                      negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root)
     
-    return netD, netG, netD_D, netD_Q
+    return netD, netG, netD_D, netD_Q, eval_vect
 
 
 def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root, clf_ts):
@@ -1017,10 +1027,20 @@ def eval_representation(cell_array, test_array, test_label, netD, netG, netD_D, 
                          experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
                          ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
     
-    purity = "0.7580218950547377"
-    entropy = "1.1362864472346974"
-    gen_iterations = "10500"
-    experiment_root = "./experiment/1554157099/"
+    #purity = "0.7580218950547377"
+    #entropy = "1.1362864472346974"
+    #gen_iterations = "10500"
+    #experiment_root = "./experiment/1554157099/"
+    
+    config = ConfigParser.ConfigParser()
+    config_path = os.path.join(experiment_root.split('/')[:-2]+['configure.conf'])
+    config.read(config_path)
+    
+    purity = config.get('model','purity')
+    entropy = config.get('model','entropy')
+    gen_iterations = config.get('model','itera')
+    ts = config.get('model','clf_ts')
+    experiment_root = os.path.join(config.get('data','experiment_root'), config.get('model','path'),'')
     
     noise = torch.FloatTensor(batchsize, rand+10*dis,1 ,1 )
 
@@ -1062,5 +1082,8 @@ def eval_representation(cell_array, test_array, test_label, netD, netG, netD_D, 
         img = G_sample.data[iteration]
         img = img.unsqueeze(0)
         type = predict_label[iteration]
-        vutils.save_image(img, experiment_root+'picture/' + dirs[type] + '/fake_cell_'+ dirs[type] + '_' + str(uuid.uuid1()) +'.png',nrow=1,normalize=True)
+        save_path = experiment_root+'picture/' + dirs[type]
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        vutils.save_image(img, save_path + '/fake_cell_'+ dirs[type] + '_' + str(uuid.uuid1()) +'.png',nrow=1,normalize=True)
     

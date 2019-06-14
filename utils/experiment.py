@@ -192,10 +192,36 @@ def image_classification_train(positive_images_root, negative_images_root, posit
     #cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
 
     netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
-    netD, netG, netD_D, netD_Q =  train_predict(positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+    netD, netG, netD_D, netD_Q, eval_vect =  train_predict(positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
                    netD, netG, netD_D, netD_Q, experiment_root, 
                    n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
                    ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
+    
+    
+    print("Generate result:")
+    train_feat, train_predict_label, test_feat, test_predict_label = eval_vect               
+    train_files = positive_train_list[choosing_fold] + negative_train_list[choosing_fold]
+    train_true_label = len(positive_train_list[choosing_fold])*[1] + len(negative_train_list[choosing_fold])*[0]
+    print(len(train_feat), len(train_files), len(train_predict_label), len(train_true_label))
+    train_df = pd.DataFrame({'ImageName':  [os.path.basename(file).split('.')[0] for file in train_files],
+                             'FeatureVector': [feat for feat in train_feat],
+                             'PredictLabel': [pl for pl in train_predict_label],
+                             'TrueLabel': train_true_label,
+                             'Dataset': ['Train'] * len(train_files)
+                            })
+    
+               
+    test_files = positive_test_list + negative_test_list
+    test_true_label = len(positive_test_list)*[1] + len(negative_test_list)*[0]
+    test_df = pd.DataFrame({'ImageName':  [os.path.basename(file).split('.')[0] for file in test_files],
+                             'FeatureVector': [feat for feat in test_feat],
+                             'PredictLabel': [pl for pl in test_predict_label],
+                             'TrueLabel': test_true_label,
+                             'Dataset': ['Test'] * len(test_files)
+                             })
+    res_df = train_df.append(test_df, ignore_index=True)
+    res_df.to_csv("./svm_result.csv")
+    
     
 def image_classification_predict(positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                       ref_path, intensity, experiment_root, rand=64, dis_category=5):
@@ -229,7 +255,7 @@ def image_classification_predict(positive_test_images_root, negative_test_images
     
     res_df = pd.DataFrame({'Image Name': [file.split('.')[0] for file in positive_files], 
                            'Predict Label': ['P' if pl else 'N' for pl in predict_label[:positive_cnt] ],
-                           'Feature Dictionary':[feat for feat in feature_dics[:positive_cnt]]
+                           'Feature Vector':[feat for feat in feature_dics[:positive_cnt]]
     })
     res_df.to_csv('./positive_res.csv')
     
@@ -247,7 +273,7 @@ def image_classification_predict(positive_test_images_root, negative_test_images
     
     res_df = pd.DataFrame({'Image Name': [file.split('.')[0] for file in negative_files], 
                            'Predict Label': ['P' if pl else 'N' for pl in predict_label[-negative_cnt:] ],
-                           'Feature Dictionary':[feat for feat in feature_dics[-negative_cnt:]]
+                           'Feature Vector':[feat for feat in feature_dics[-negative_cnt:]]
     })
     res_df.to_csv('./negative_res.csv')
             
