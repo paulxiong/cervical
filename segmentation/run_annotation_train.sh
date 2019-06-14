@@ -95,7 +95,7 @@ function run_step5 ()
         --seg_dir ${CLF_DATASETS}\
         --output_dir ${TRAINDATA_DIR} \
         --train_test_split \
-        --more_norm
+#        --more_norm
 }
 
 function run_step6 ()
