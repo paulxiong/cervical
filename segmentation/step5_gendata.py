@@ -269,8 +269,8 @@ if __name__ == '__main__':
     if (test_set is not None) and (len(test_set) >0) :
         assert len(test_set) == len(test_set['path'].unique()),"Train to csv has multi sampled data"
         print("==================================")
-        print("=======Train set summary==========") 
-        print("Total cells in train set:" + str(len(test_set))+'\n')
+        print("=======Test set summary==========") 
+        print("Total cells in test set:" + str(len(test_set))+'\n')
         show_statics(test_set,CLASSES)
         
         copy_data_by_type(test_set, test_dir)

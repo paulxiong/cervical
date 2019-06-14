@@ -19,7 +19,7 @@ def generate_df(annotat_dict, fov_name, class_map):
         coords = annotat_dict[gt]
         cnt = len(coords)
         dic['coord'] += coords
-        dic['type'] += [class_map[gt]] * cnt
+        dic['type'] += [gt] * cnt
         dic['fov_name'] += [fov_name] * cnt
             
     df = pd.DataFrame(dic)
@@ -29,18 +29,16 @@ def show_statistics(df):
     total = len(df)
     cnt_img = len(df['fov_name'].unique())
     avg = float(total)/cnt_img
-    lsil_cnt = len(df.loc[df['type']=='LSIL'])
-    hsil_cnt = len(df.loc[df['type']=='HSIL'])
-    hpv_cnt = len(df.loc[df['type']=='LSIL_HPV'])
-    scc_cnt = len(df.loc[df['type']=='SCC'])
+    #lsil_cnt = len(df.loc[df['type']=='LSIL'])
+    #hsil_cnt = len(df.loc[df['type']=='HSIL'])
+    #hpv_cnt = len(df.loc[df['type']=='LSIL_HPV'])
+    #scc_cnt = len(df.loc[df['type']=='SCC'])
     
     print("Total: %s" % total)
     print("Num of Fov: %s" % cnt_img)
     print("Annotation per image: %f " % avg)
-    print("LSIL Num: %s " % lsil_cnt)
-    print("HSIL Num: %s " % hsil_cnt)
-    print("HPV Num: %s " % hpv_cnt)
-    print("SCC Num: %s " % scc_cnt)
+    for gt in class_map.keys():
+        print("{} Num: {}".format(class_map[gt], len(df.loc[df['type']==gt])))
     
     
 if __name__ == '__main__':
@@ -231,7 +229,7 @@ if __name__ == '__main__':
     fov_type_df.to_csv(os.path.join(output_path, 'fov_type.csv'), index=False)
             
         
-    print(hit_df)
+    #print(hit_df)
     print("===========================")
     print("Total statistic:")
     show_statistics(hit_df.append(missed_df))
