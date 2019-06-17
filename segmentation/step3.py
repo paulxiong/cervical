@@ -576,7 +576,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
         #this is commented, for we will resize the input image in the classifier.
         #if w != SQUARE_EDGE or h != SQUARE_EDGE:
         #    cropped = misc.imresize(cropped, (SQUARE_EDGE, SQUARE_EDGE), interp='bilinear')
-        cv2.imwrite(cropped_filename, cropped)
+        cv2.imwrite(cropped_filename, cropped[..., ::-1])
         
         #1.save index for mapping Crop box,2.save Crop path, 
         if DEBUG:
