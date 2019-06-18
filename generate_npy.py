@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 from scipy.misc import imsave, imread, imresize
 from sklearn.model_selection import train_test_split
 
@@ -40,11 +41,10 @@ abnorm_cnt = 0
 norm_vs_abnorm = 0.75
 
 
-norm_cells = []
-abnorm_cells = []
-abnorm_y = []
 abnorm_retype = 0
-cell_types = []
+#cell_types = []
+
+df = pd.DataFrame()
 
 for i in class_map.keys():
     train_dir = os.path.join(org_dir, 'train', class_map[i])
@@ -53,15 +53,28 @@ for i in class_map.keys():
     testfile = [os.path.join(test_dir, file) for file in os.listdir(test_dir)]
     files = trainfile + testfile
     if len(files)>0:
-        cell_types += [i]
+        if i in NILM_TYPE:
+            retype = 0
+        else:
+            abnorm_retype += 1
+            retype = abnorm_retype
+            
+        type_df = pd.DataFrame({'FilePath':files, 
+                                'CellTypes': [i]*len(files),
+                                "ReTypes":[retype]*len(files)})
+        df = df.append(type_df, ignore_index=True)
+        '''cell_types += [i]
         if i in NILM_TYPE:
             norm_cells += files
         else:
             abnorm_retype += 1
             abnorm_y += [abnorm_retype] * len(files)
             abnorm_cells += files
-        
-        
+        '''
+
+norm_cells = df.loc[df['ReTypes']==0]     
+abnorm_cells = df.loc[df['ReTypes']!=0].copy()
+
 print('Norm cells cnt: %s' % len(norm_cells))
 print('Abnorm cells cnt: %s' % len(abnorm_cells))
         
@@ -69,17 +82,20 @@ abnorm_cnt = len(abnorm_cells)
 norm_cnt = int(np.ceil(0.75 * abnorm_cnt))
 
 if norm_cnt < len(norm_cells):
-    norm_cells = list(np.random.choice(norm_cells, size=norm_cnt))
+    indexes = np.random.choice(list(range(len(norm_cells))), size=norm_cnt)
+    norm_cells = norm_cells.iloc[indexes]
 print('Norm cells cnt after random choice: %s ' % len(norm_cells))
 
-cells = abnorm_cells + norm_cells
-y = abnorm_y + [0]*len(norm_cells)
+cells = abnorm_cells.append(norm_cells, ignore_index=True)
+y = cells['ReTypes']
 
-train_cells, test_cells, train_y, test_y = train_test_split(cells,y, test_size=proportion, stratify=y)
+train_cells, test_cells = train_test_split(cells, test_size=proportion, stratify=y)
 
-for file, i in zip(train_cells, train_y):
+for _, row in train_cells.iterrows():
     #cell_type = file.split('/')[-2]
     #i = class_map_reverse[cell_type]
+    file = row['FilePath']
+    i = row['ReTypes']
     image = imread(file)
     resize_image = imresize(image, [32, 32], interp='nearest')
     m = np.array([resize_image])
@@ -90,9 +106,11 @@ for file, i in zip(train_cells, train_y):
         M = m
         Y = np.array([i])
 
-for file, i in zip(test_cells,test_y):
+for _, row in test_cells.iterrows():
     #cell_type = file.split('/')[-2]
     #i = class_map_reverse[cell_type]
+    file = row['FilePath']
+    i = row['ReTypes']
     image = imread(file)
     resize_image = imresize(image, [32, 32], interp='nearest')
     m = np.array([resize_image])
@@ -114,10 +132,12 @@ if not os.path.exists('dataset_act'):
 if not os.path.exists('dataset_act/cell_level_label'):
     os.mkdir("dataset_act/cell_level_label")
     
-print(cell_types)
-print(len(Y))
-print(len(Y_test))
+print('Cell Types: {}'.format(df['CellTypes'].unique()))
+print('Training samples: %s' % len(Y))
+print('Testing sampels: %s' % len(Y_test))
 print("total abnorm cnt:%s" % abnorm_cnt)
+
+print(cells.groupby(['CellTypes','ReTypes']).count())
 
 np.save('dataset_act/cell_level_label/X_train.npy', M)
 np.save('dataset_act/cell_level_label/y_train.npy', Y)
