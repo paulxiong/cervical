@@ -9,6 +9,10 @@
 按照https://github.com/paulxiong/cervical/blob/nu_gan_archive/segmentation/SEG%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.txt  
 准备好训练和测试数据。 
 
+准备cell_level_label数据（可选）：
+完成上面准备数据后，执行命令
+python ./generate_npy.py && cp -rf ./dataset_act/cell_level_label ./experiment/data
+
 3. 训练NU_GAN模型：    
 命令:   
 ./run_docker.sh 'image_classification' docker_name
