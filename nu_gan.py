@@ -4,6 +4,7 @@ import argparse
 from utils.experiment import cell_segmentation, cell_representation, cell_representation_eval, image_classification, image_classification_predict, image_classification_segment, image_classification_train
 import ConfigParser
 import re
+import numpy as np
 
 from result_archiver import Archiver
 
@@ -66,11 +67,12 @@ X_test_path = experiment_root + 'data/cell_level_label/X_test.npy'
 y_train_path = experiment_root + 'data/cell_level_label/y_train.npy' 
 y_test_path = experiment_root + 'data/cell_level_label/y_test.npy' 
 
+
 n_epoch=550
 batchsize=36
 rand=32
 dis=1
-dis_category=5
+dis_category=len(np.unique(np.load(y_train_path)))
 ld = 1e-4
 lg = 1e-4
 lq = 1e-4

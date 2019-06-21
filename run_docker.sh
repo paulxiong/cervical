@@ -24,8 +24,33 @@ function build_docker()
     fi
 }
 
+function check_env()
+{
+    file=`ls -lah ./experiment/data/cell_level_label | grep '^-' | wc -l`
+    if [ $file -eq 0 ];then
+        cell_train=`ls ~/Dataset/private_cervical/Nu_Gan/CellLevel/`
+        echo "细胞级训练数据不存在，拷贝哪一批数据："
+        cnt=1
+        for i in $cell_train 
+        do
+            echo "${cnt}) ${i}"
+            cnt=`expr $cnt + 1`
+        done
+        read -p "请输入完整目录名称(如2019-05-23):" val
+        echo $vall
+        while [ ! -d ~/Dataset/private_cervical/Nu_Gan/CellLevel/$val ]; do
+            echo `ls ~/Dataset/private_cervical/Nu_Gan/CellLevel/$val`
+            read -p "请重新输入:" val
+        done
+        
+        mkdir -p ./experiment/data/cell_level_label
+        cp ~/Dataset/private_cervical/Nu_Gan/CellLevel/$val/* ./experiment/data/cell_level_label
+    fi
+}
+
 
 if [ -n "$1" ];then    
+    check_env
     build_docker
     docker exec -it $docker_name bash -c "cd /nu_gan; python nu_gan.py --task ${1}"
 else
