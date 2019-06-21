@@ -23,6 +23,12 @@ SQUARE_EDGE=50
 #COLOR_MODE='HIST_BATCH_EQ_LAB'
 AREA_THRESH=100
 #PVA_THRESH=
+echo $3
+if [ -n "$3" ];then
+    TR_FLAG=--train_test_split
+else
+    TR_FLAG=
+fi
 RZM_THRESH=
 INTNES_THRESH=
 PVA_THRESH="--perimeter_vs_area 18"
@@ -95,18 +101,19 @@ function run_step5 ()
         --seg_dir ${CLF_DATASETS}\
         --output_dir ${TRAINDATA_DIR} \
         --train_test_split \
-        --more_norm
+        #--more_norm
 }
 
 function run_step6 ()
 {
-    ##Step 5. Mark the positive cells
+    echo $TR_FLAG
     python3 step6_copy2nugan.py \
         --origin_dir "${ORIGIN_DIR}" \
         --csv_dir ${ANNOT_DIR}'/fov_type.csv' \
         --npy_dir ${CLF_DATASETS}'/npy/'  \
         --output_dir ${COPY_DIR} \
         --pattern ${FILE_PATTERN} \
+        ${TR_FLAG}
         #--train_test_split 
 }
 
@@ -124,7 +131,7 @@ function run_all()
     run_step5
     run_step6
     
-    ./copy_fov.sh
+    #./copy_fov.sh
 
     time2=$(date +%s)
     echo $time2
