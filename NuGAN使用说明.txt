@@ -1,17 +1,17 @@
-1.准备模型：   
-第一步，进入nu_gan根目录： cd /opt/xxx_workspace/nu_gan  
-
-第二步，拷贝模型：sudo cp -r /opt/zhuoyao_workspace/nu_gan/experiment/1559022992 ./experiment
-
-第三步，更新configure.conf文件：git pull
-
-2. 准备数据：  
+1. 准备数据：  
 按照https://github.com/paulxiong/cervical/blob/nu_gan_archive/segmentation/SEG%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.txt  
-准备好训练和测试数据。 
+准备好训练和测试数据。
 
 准备cell_level_label数据（可选）：
 完成上面准备数据后，执行命令
 python ./generate_npy.py && cp -rf ./dataset_act/cell_level_label ./experiment/data
+
+2.准备模型：   
+第一步，进入nu_gan根目录： cd /opt/abcd_workspace/nu_gan  
+
+第二步，拷贝模型：sudo cp -r /opt/zhuoyao_workspace/nu_gan/experiment/1559022992 ./experiment
+
+第三步，更新configure.conf文件：git pull
 
 3. 训练NU_GAN模型：    
 命令:   
