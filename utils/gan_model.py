@@ -496,6 +496,7 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
     
     
     with open(clf_path + '/svm_{}.model'.format(ts), 'wb') as f:
+        print("Save svm model ts: {}".format(ts))
         pickle.dump(clf, f)
         
     return train_proportion,  train_predict_label, test_proportion,  test_predcit_label
