@@ -171,11 +171,11 @@ def image_classification_train(positive_images_root, negative_images_root, posit
     positive_test_npy_path = [positive_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_test_images_root)]
     negative_test_npy_path =[negative_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_test_images_root)]
 
-    positive_test_list = positive_test_npy_path
-    negative_test_list = negative_test_npy_path
+    #positive_test_list = positive_test_npy_path
+    #negative_test_list = negative_test_npy_path
 
-    positive_test_npy = [np.load(n) for n in positive_test_list]
-    negative_test_npy = [np.load(n) for n in negative_test_list]
+    positive_test_npy = [np.load(n) for n in positive_test_list[choosing_fold]]
+    negative_test_npy = [np.load(n) for n in negative_test_list[choosing_fold]]
     
     
     
@@ -211,8 +211,8 @@ def image_classification_train(positive_images_root, negative_images_root, posit
                             })
     
                
-    test_files = positive_test_list + negative_test_list
-    test_true_label = len(positive_test_list)*[1] + len(negative_test_list)*[0]
+    test_files = positive_test_list[choosing_fold] + negative_test_list[choosing_fold]
+    test_true_label = len(positive_test_list[choosing_fold])*[1] + len(negative_test_list[choosing_fold])*[0]
     test_df = pd.DataFrame({'ImageName':  [os.path.basename(file).split('.')[0] for file in test_files],
                              'FeatureVector': [feat for feat in test_feat],
                              'PredictLabel': [pl for pl in test_predict_label],
