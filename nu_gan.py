@@ -115,7 +115,6 @@ if opt.task == 'image_classification':
                          
 if opt.task == 'image_classification_train':
     image_classification_train(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
-                         positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                          ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, 
                          experiment_root, multi_process, fold, random_seed, choosing_fold, n_epoch, 
                          batchsize, rand, dis, dis_category, ld, lg, lq, save_model_steps)
