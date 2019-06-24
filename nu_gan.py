@@ -153,7 +153,7 @@ if opt.task == 'cell_segmentation':
 
 if opt.task == 'image_classification_predict':
     image_classification_predict(positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
-                         ref_path, intensity, experiment_root, dis_category)
+                         ref_path, intensity, experiment_root, dis_category=dis_category)
                          
     
 
