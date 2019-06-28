@@ -19,14 +19,28 @@ import torch.utils.data as data
 import torch.nn as nn
 from torchvision import datasets, models, transforms
 from torch.autograd import Variable
+import cv2
 
 #data_dir = 
 #data_dir = '../input'
 
+# def load_img(img_path):
+#     with open(img_path, 'rb') as f:
+#         with Image.open(f) as img_f:
+#             img = img_f.convert('RGB').resize((320,320))
+#             print(img.shape)
+#             return img
+
 def load_img(img_path):
-    with open(img_path, 'rb') as f:
-        with Image.open(f) as img_f:
-            return img_f.convert('RGB').resize((320,320))
+    r = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE).astype("uint8")
+    g = r
+    b = r
+    img = np.dstack((r, g, b))
+    
+    image = Image.fromarray(img).resize((320,320))
+        
+    return image
+
 # define custom dataset
 class MyDataSet(data.Dataset):
     def __init__(self, filename, training=True, validating=False, train_percent=0.85, transforms=None, data_dir='datasets_train'):
@@ -88,7 +102,7 @@ data_transforms = {
     ])
 }
 
-def get_data_loader(filename='train_labels1.csv', training=True, validating=False, shuffle=True, data_dir='datasets_train'):
+def get_data_loader(filename='datasets_train/train_labels1.csv', training=True, validating=False, shuffle=True, data_dir='datasets_train'):
     if training and not validating:
         transkey = 'train'
     else:
@@ -110,7 +124,7 @@ def lr_scheduler(optimizer, epoch, init_lr=0.001, lr_decay_epoch=8):
             param_group['lr'] = lr
     return optimizer    
 
-weight_file = 'best_model.pth'
+weight_file = 'best_model_2.pth'
 
 def do_train(net, criterion, optimizer, lr_scheduler, epochs=100):
     print("Dataset ##1")
@@ -191,19 +205,27 @@ def submit(preds, sample_submission, filename, data_dir, outdir):
     
     for index, row in df.iterrows():
         # access data using column names
-        print(index, row['name'], row['positive'])
         
-        if row['positive'] < 0.1:
+        
+        if row['positive'] < 0.5:
             filename = os.path.join('{}'.format(row['name']))
         
             src_file = os.path.join(data_dir, filename)
             dst_file = os.path.join(outdir, filename)
             shutil.copy(src_file, dst_file)
-        
+        else:
+            filename = os.path.join('{}'.format(row['name']))
+            filename2 = ntpath.basename(filename)
+            
+            src_file = os.path.join(data_dir, filename)
+            dst_file = os.path.join(outdir, 'ABNormal', filename2)
+            shutil.copy(src_file, dst_file)
 
-
+            print(index, row['name'], row['positive'])
+            
 if False:
     train_net()
+    exit()
 
 if False:
     net = get_dense201()
@@ -214,12 +236,12 @@ if False:
 
 def process_origin_image(net):
 
-    sample_submission = os.path.join('train_output_datasets_google', 'sample_submission.csv')
-    submission = os.path.join('train_output_datasets_google', 'submission.csv')
+    sample_submission = os.path.join('/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/', 'sample_submission.csv')
+    submission = os.path.join('/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/', 'submission.csv')
         
     if os.path.exists(sample_submission):
-        preds = predict(net, sample_submission, 'train_datasets_google')
-        submit(preds, sample_submission, submission, 'train_datasets_google', 'train_output_datasets_google')
+        preds = predict(net, sample_submission, '/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/dataset/train/')
+        submit(preds, sample_submission, submission, '/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/dataset/train/', '/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/dataset/filtered/')
         
 
 

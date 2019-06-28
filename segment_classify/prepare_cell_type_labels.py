@@ -5,9 +5,11 @@ import shutil
 import sys
 import numpy as np
 
-ROOT_FOLDER = 'train_datasets_google'            
+ROOT_FOLDER = '/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/dataset/train/'            
 
-ClassNames = ['Norm', 'LSIL', 'HSIL', 'HPV', 'SCC']
+
+
+ClassNames = ['Norm', 'ASCH', 'ASCUS', 'HPV', 'HSIL','LSIL','SCC']
 
 
 
@@ -19,7 +21,7 @@ TEST_FOLDER = ROOT_FOLDER
 if __name__ == '__main__':
     # Png is better
     INPUT_FILE_PATTERN = '*.png'
-    classify_text = "train_output_datasets_google/sample_submission.csv"
+    classify_text = "/opt/yunhai/GAN/github/cervical/Nu_Gan/CellLevel/2019-05-23+2019-01FJ+RedHouse/sample_submission.csv"
     
     with open(classify_text, 'w') as f:
         print('{},{}'.format('name', 'positive'), file=f)
