@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+  cervical_api:
+    image: lambdazhang/cervical:81cdf0a
+    container_name: "cervical"
+    #restart: always
+    environment:
+      GIN_MODE: release
+      EXPIRE_SECOND: 2592000
+      MYSQL_HOST: 192.168.1.102
+      GIN_MODE: 'release'
+      SERVER_PORT: 80
+      LOG_OUT: 'enable'
+      LOG_GIN: 'enable'
+      LOG_LEVEL: 'Info'
+      MYSQL_HOST: '192.168.1.102'
+      MYSQL_PORT: '3309'
+      MYSQL_DB: 'datasets'
+      MYSQL_USR: 'mysql'
+      MYSQL_PASSWD: '123456'
+    command: sh -c "./main.exe"
+    ports:
+      - 9002:80
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
+

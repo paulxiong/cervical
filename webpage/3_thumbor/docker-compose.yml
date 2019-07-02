@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  thumbor:
+    image: apsl/thumbor:base-6.6.0
+    container_name: "thumbor"
+    environment:
+      ALLOW_UNSAFE_URL: 'True'
+      LOADER: 'thumbor.loaders.file_loader'
+    ports:
+      - 8000:8000
+    volumes:
+      - ./data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"

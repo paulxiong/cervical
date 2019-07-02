@@ -1,0 +1,23 @@
+# Use postgres
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.5.62
+    container_name: "mysql_cervical"
+    #restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: datasets
+    ports:
+      - 3309:3306
+    volumes:
+      - ./datadir:/var/lib/mysql
+      - ./mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"

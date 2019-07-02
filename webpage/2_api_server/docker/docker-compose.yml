@@ -1,0 +1,21 @@
+# Use postgres
+version: '3.1'
+
+services:
+  db:
+    image: postgres:9.6.6
+    container_name: "postgres_govue"
+    #restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./datadir:/var/lib/postgresql/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "10"
