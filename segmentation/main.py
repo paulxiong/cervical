@@ -35,6 +35,16 @@ if __name__ == '__main__':
         #python3 step3.py --origindir '/ai/lambdatest/*/' --filepattern '*.JPG' --datasets datasets/classify
         #                 --segtestdir datasets/segment/test/ --crop_method Mask --area_thresh 100 --square_edge 50 --perimeter_vs_area 18
         print("step3")
+        from step3v2 import step3v2
+        origindir = '/ai/lambdatest/'
+        filepattern = '*.JPG'
+        datasetspath = 'datasets/classify'
+        segtestdir = 'datasets/segment/test/'
+        crop_method = 'Mask'
+        area_thresh = 100
+        square_edge = 50
+        perimeter_vs_area = 18
+        step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_thresh, square_edge, perimeter_vs_area)
 
         #python3 step4_annot.py --origin_dir '/ai/lambdatest/*/' --pattern '*.JPG' --seg_dir datasets/classify --output_dir datasets/classify/annot_out
         print("step4")
