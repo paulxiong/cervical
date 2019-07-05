@@ -1,17 +1,25 @@
-import os
+import os,sys
 from step1v2 import step1v2
+sys.path.append(os.path.abspath('step2v2'))
+sys.path.append(os.path.abspath('step2v2/modules/'))
 
 if __name__ == '__main__':
-    origindir='/ai/lambdatest/*/'
-    segtestdir='datasets/segment/test/'
-    filepattern='*.JPG'
-
     #python3 step1.py --origindir '/ai/lambdatest/*/' --segtestdir datasets/segment/test/ --filepattern '*.JPG'
     print("step1")
-    step1v2(origindir, segtestdir, filepattern)
+    input_origindir='/ai/lambdatest/*/'
+    output_segtestdir='datasets/segment/test/'
+    filepattern='*.JPG'
+    step1v2(input_origindir, output_segtestdir, filepattern)
 
     #python3 schwaebische_nuclei_predict.py predict_test --mosaic --loadmodel all_output/ --predicttestonly --cuda_device 1 --colouronly
     print("step2")
+    from step2v2.schwaebische_nuclei_predict_v2 import step2v2
+    action = 'predict_test'
+    modpath = './all_output'
+    cuda_device = '1'
+    datasets_train_path = 'datasets/segment/stage1_train'
+    input_datasets_test_path = 'datasets/segment/test'
+    step2v2(action, modpath, cuda_device, datasets_train_path, input_datasets_test_path)
 
     #python3 step3.py --origindir '/ai/lambdatest/*/' --filepattern '*.JPG' --datasets datasets/classify
     #                 --segtestdir datasets/segment/test/ --crop_method Mask --area_thresh 100 --square_edge 50 --perimeter_vs_area 18
