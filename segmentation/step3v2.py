@@ -677,7 +677,7 @@ def worker(images):
     return npy_df, debug_df2
 
 @time_it
-def process_origin_image():
+def process_origin_image(ROOT_FOLDER, ORIGIN_DIR, FILE_PATTERN, DEBUG, DEBUG_PATH):
     slide_npy_outdir = os.path.join(ROOT_FOLDER, 'slide_npy')
     if not os.path.exists(slide_npy_outdir):
         os.makedirs(slide_npy_outdir)
@@ -708,7 +708,6 @@ def process_origin_image():
         debug_ls.append(debug_df)
 
     if DEBUG:
-        global DEBUG_PATH
         table2_df = pd.concat(debug_ls, ignore_index=True)
         print(table2_df)
         table2_name = "step3_table2.csv"
@@ -800,7 +799,7 @@ def step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_
         print("Slide Nuclei Intesity Var(Delta): %f" % INTENS_DELTA)
 
     #process_origin_image(args.crop_margin)
-    process_origin_image()
+    process_origin_image(ROOT_FOLDER, ORIGIN_DIR, FILE_PATTERN, DEBUG, DEBUG_PATH)
 
     if no_mask:
         if not os.path.exists(os.path.join(ORIGIN_DIR,'no_mask')):
