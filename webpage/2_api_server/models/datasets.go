@@ -133,9 +133,9 @@ func ListWantedImages(limit int, skip int, batchids []string, medicalids []strin
 	}
 	_b = make([]string, 0)
 
-	selector1 := "select IMGPATH as imgpath, BATCHID as batchid, MEDICALID as medicalid from image where BATCHID in (?) AND MEDICALID in (?) LIMIT ? OFFSET ?;"
+	selector1 := "select IMGPATH as imgpath, BATCHID as batchid, MEDICALID as medicalid from image,label where BATCHID in (?) AND MEDICALID in (?) AND label.IMGID=image.ID AND label.TYPE=? LIMIT ? OFFSET ?;"
 	ress := []res{}
-	ret := db.Raw(selector1, batchids, medicalids, limit, skip).Scan(&ress)
+	ret := db.Raw(selector1, batchids, medicalids, categoryid, limit, skip).Scan(&ress)
 	if ret.Error != nil {
 		log.Println(ret.Error)
 		return _b, ret.Error
