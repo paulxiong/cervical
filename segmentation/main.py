@@ -9,7 +9,6 @@ if __name__ == '__main__':
     while 1:
         _, job, study, hyperparameters = get_one_job()
 
-
         print(job)
         if job is None or job['type'] is not 'predict':
             time.sleep(5)
@@ -26,7 +25,7 @@ if __name__ == '__main__':
         print("step2")
         from step2v2.schwaebische_nuclei_predict_v2 import step2v2
         action = 'predict_test'
-        modpath = './all_output'
+        modpath = './src/SEGMENT/kaggle-dsb2018/src/all_output'
         cuda_device = '1'
         datasets_train_path = 'datasets/segment/stage1_train'
         input_datasets_test_path = 'datasets/segment/test'
@@ -36,7 +35,7 @@ if __name__ == '__main__':
         #                 --segtestdir datasets/segment/test/ --crop_method Mask --area_thresh 100 --square_edge 50 --perimeter_vs_area 18
         print("step3")
         from step3v2 import step3v2
-        origindir = '/ai/lambdatest/'
+        origindir = '/ai/lambdatest/*/'
         filepattern = '*.JPG'
         datasetspath = 'datasets/classify'
         segtestdir = 'datasets/segment/test/'

@@ -25,7 +25,7 @@ def time_it(fun):
         end = time.time()
         duration = (end-start)*1000
         name = re.search(r' [a-zA-Z_]*',str(fun)).group()[1:]
-        cp_list.append([name,duration])
+#        cp_list.append([name,duration])
         return result
     return new_fun
 
@@ -349,11 +349,11 @@ def crop_and_save_for_debug(box, image, path, margin_factor):
     cropped = image[y:y + h, x:x + w, :]
     cv2.imwrite(path, cropped)
 
-def crop_file(origin_image_filename, mask_filename, contour_filename, margin_factor, minArea=150, maxArea=1300):
+def crop_file(origin_image_filename, mask_filename, contour_filename, args, margin_factor, minArea=150, maxArea=1300):
     ###prepare dirs
     path_split = origin_image_filename.split('/')
     slide_name = path_split[-3] if path_split[-2] == 'Images' else path_split[-2]
-    filename = os.path.join('{}/{}_{}_output'.format(ROOT_FOLDER, slide_name, ntpath.basename(origin_image_filename)))
+    filename = os.path.join('{}/{}_{}_output'.format(args['ROOT_FOLDER'], slide_name, ntpath.basename(origin_image_filename)))
     base_filename = slide_name + '_' + os.path.splitext(ntpath.basename(origin_image_filename))[0]
     if not os.path.exists(filename): os.makedirs(filename)
 
@@ -378,12 +378,12 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
         no_mask.append(origin_image_filename)
         return 0
 
-    if LABEL_GEN == "Kaggle":
+    if args['LABEL_GEN'] == "Kaggle":
         labels, c_labels, stats, centroids = get_labels(original, mask, contours)
-    elif LABEL_GEN == "Private":
-        labels, c_labels, stats, centroids = get_labels_old(original, mask, FILTER_VAL)
+    elif args['LABEL_GEN'] == "Private":
+        labels, c_labels, stats, centroids = get_labels_old(original, mask, args['FILTER_VAL'])
     else:
-        print("Unsupported Label generate method! %s " % LABEL_GEN)
+        print("Unsupported Label generate method! %s " % args['LABEL_GEN'])
         exit(-1)
 
     ###coordinator files###
@@ -393,11 +393,11 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
     ## image preview
     img_preview = original[...,::-1].copy()
 
-    npy_outdir = os.path.join('{}/npy/'.format(ROOT_FOLDER))
+    npy_outdir = os.path.join('{}/npy/'.format(args['ROOT_FOLDER']))
     if not os.path.exists(npy_outdir): os.makedirs(npy_outdir)
 
     #prepare for debug
-    if DEBUG:
+    if args['DEBUG']:
         debug_path = os.path.join(filename, 'debug')
         debug_area_path = os.path.join(debug_path, 'area')
         debug_pva_path = os.path.join(debug_path, 'pva')
@@ -442,7 +442,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
         c_area = stats[i, cv2.CC_STAT_AREA]
         # coarse area filter
         if ( c_area < minArea) or (c_area > maxArea):
-            if DEBUG:
+            if args['DEBUG']:
                 save_path = os.path.join(debug_area_path, ntpath.basename(origin_image_filename)+'_'+str(i)+'.png')
                 area_filter_mask[labels==i] = 255
                 debug_df1.loc[debug_df1['Label']==i, 'Filter_By'] = 'Area'
@@ -456,7 +456,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
 
         #fine area filter, coarse area always smaller than fine area
         #calculate perimeter vs area
-        if PVA_THRESH is not None:
+        if args['PVA_THRESH'] is not None:
             if c_area < 300: # small cells, use c_labels to do pva
                 #get contours
                 cnt, f_area = get_contour(box, c_labels, i)
@@ -471,7 +471,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
             p_vs_a, perimeter = perimeter_vs_area(cnt, f_area)
 
             #save perimeter
-            if DEBUG:
+            if args['DEBUG']:
                 c_cnt, c_area = get_contour(box, c_labels, i)
                 c_perimeter = cv2.arcLength(c_cnt, True)
                 f_cnt, f_area = get_contour(box, labels, i)
@@ -482,19 +482,19 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
                 debug_df1.loc[debug_df1['Label']==i, 'F_Pixel_Area'] = np.float32(f_area)
 
             if p_vs_a > pva_thres:
-                if DEBUG and f_flag:
+                if args['DEBUG'] and f_flag:
                     save_path = os.path.join(debug_pva_path, ntpath.basename(origin_image_filename)+'_'+str(i)+'.png')
                     pva_filter_mask[labels==i] = 255
                     debug_df1.loc[debug_df1['Label']==i, 'Filter_By'] = 'PVA'
                     debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = save_path
                     crop_and_save_for_debug(stats[i,:-1], original[...,::-1], save_path, 0)
                     f_flag = False
-                elif not DEBUG:
+                elif not args['DEBUG']:
                     continue
 
         # cropping
         box = stats[i, :-1]
-        box = box_resize(box, np.shape(labels), margin_factor, crop_method=CROP_METHOD)
+        box = box_resize(box, np.shape(labels), margin_factor, crop_method=args['CROP_METHOD'])
 
         x, y, w, h = box
         cropped = original[y:y + h, x:x + w, :]
@@ -505,7 +505,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
         #    debug_df1.loc[debug_df1['Label']==i, ['C_X', 'C_Y', 'C_W', 'C_H']] = box
 
         #calculate RZM to ignore blurry images.
-        if RZM_THRESH is not None:
+        if args['RZM_THRESH'] is not None:
             rzm = RegionalZernikeMoment(cropped, Z_COEFF,R_SIZE)
 
             if DEBUG:
@@ -523,7 +523,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
                     continue
 
         #check the intensity of a cell
-        if INTENS_THRES is not None:
+        if args['INTENS_THRES'] is not None:
             avg_intens = np.average(cropped)
             if DEBUG:
                 debug_df1.loc[debug_df1['Label']==i, 'Crop_Intens'] = np.float32(avg_intes)
@@ -560,7 +560,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
         cv2.imwrite(cropped_filename, cropped[..., ::-1])
 
         #1.save index for mapping Crop box,2.save Crop path,
-        if DEBUG:
+        if args['DEBUG']:
             debug_df1.loc[debug_df1['Label']==i, 'Index'] = index
             debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = cropped_filename
 
@@ -611,7 +611,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
     preview_segpng = os.path.join(npy_outdir, '%s_seg.png'%base_filename)
     vutils.save_image(torch.FloatTensor(image), preview_segpng ,nrow=5,normalize=True)
 
-    if DEBUG:
+    if args['DEBUG']:
         df1_path = os.path.join(debug_path, ntpath.basename(origin_image_filename)+'_'+'table1.csv')
         area_mask_path = os.path.join(debug_path, ntpath.basename(origin_image_filename)+'_'+'area_mask.png')
         pva_mask_path = os.path.join(debug_path, ntpath.basename(origin_image_filename)+'_'+'pva_mask.png')
@@ -642,7 +642,9 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
         return pd.DataFrame({'name': base_filename, 'npy': [image_dict]}), debug_df2
     return pd.DataFrame({'name': base_filename, 'npy': [image_dict]}), None
 
-def worker(images):
+def worker(workerargs):
+    images = workerargs['images_split']
+    args = workerargs['args']
     bar = tqdm.tqdm
     debug_df2 = pd.DataFrame()
 
@@ -655,19 +657,19 @@ def worker(images):
         #print(base_filename)
 
         image_filename = source
-        mask_filename = os.path.join(SEGMENT_TEST_DIR,'../output/predict/test/colour/{}/channel_0.png'.format(base_filename))
-        contours_filename = os.path.join(SEGMENT_TEST_DIR,'../output/predict/test/colour/{}/channel_1.png'.format(base_filename))
+        mask_filename = os.path.join(args['SEGMENT_TEST_DIR'],'../output/predict/test/colour/{}/channel_0.png'.format(base_filename))
+        contours_filename = os.path.join(args['SEGMENT_TEST_DIR'],'../output/predict/test/colour/{}/channel_1.png'.format(base_filename))
 
         assert os.path.exists(mask_filename), "Segmentation: {} channel_0 not exists".format(mask_filename)
         assert os.path.exists(contours_filename), "Segmentation: {} channel_1 not exists".format(contours_filename)
 
         #print('image_filename:{} mask_filename:{}'.format(image_filename, mask_filename))
-        img_npy, df = crop_file(image_filename, mask_filename, contours_filename, CROP_MARGIN, AREA_THRESH, AREA_MAX_THRESH)
+        img_npy, df = crop_file(image_filename, mask_filename, contours_filename, args, args['CROP_MARGIN'], args['AREA_THRESH'], args['AREA_MAX_THRESH'])
         #print(df)
 
         npy_df = npy_df.append(img_npy, ignore_index=True)
 
-        if DEBUG:
+        if args['DEBUG']:
             if df is None:
                 print("Debug table 2 DataFrame is not existed!")
                 exit(-1)
@@ -677,12 +679,12 @@ def worker(images):
     return npy_df, debug_df2
 
 @time_it
-def process_origin_image(ROOT_FOLDER, ORIGIN_DIR, FILE_PATTERN, DEBUG, DEBUG_PATH):
-    slide_npy_outdir = os.path.join(ROOT_FOLDER, 'slide_npy')
+def process_origin_image(args):
+    slide_npy_outdir = os.path.join(args['ROOT_FOLDER'], 'slide_npy')
     if not os.path.exists(slide_npy_outdir):
         os.makedirs(slide_npy_outdir)
     # Split train set
-    total_images = np.sort(glob.glob(os.path.join(ORIGIN_DIR, FILE_PATTERN)))
+    total_images = np.sort(glob.glob(os.path.join(args['ORIGIN_DIR'], args['FILE_PATTERN'])))
     #input_images = []
     #for image in total_images:
     #    filename = os.path.basename(image)
@@ -696,8 +698,12 @@ def process_origin_image(ROOT_FOLDER, ORIGIN_DIR, FILE_PATTERN, DEBUG, DEBUG_PAT
     cpus = mp.cpu_count()
     images_split = np.array_split(total_images,cpus)
 
+    images_split2 = []
+    for _images_split in images_split:
+        images_split2.append({'images_split': _images_split, 'args': args})
+
     p = mp.Pool(processes=cpus)
-    res = p.map(worker, images_split)
+    res = p.map(worker, images_split2)
     p.close()
     p.join()
 
@@ -707,7 +713,7 @@ def process_origin_image(ROOT_FOLDER, ORIGIN_DIR, FILE_PATTERN, DEBUG, DEBUG_PAT
         npy_ls.append(npy_df)
         debug_ls.append(debug_df)
 
-    if DEBUG:
+    if args['DEBUG']:
         table2_df = pd.concat(debug_ls, ignore_index=True)
         print(table2_df)
         table2_name = "step3_table2.csv"
@@ -799,7 +805,13 @@ def step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_
         print("Slide Nuclei Intesity Var(Delta): %f" % INTENS_DELTA)
 
     #process_origin_image(args.crop_margin)
-    process_origin_image(ROOT_FOLDER, ORIGIN_DIR, FILE_PATTERN, DEBUG, DEBUG_PATH)
+    args = {'ROOT_FOLDER': ROOT_FOLDER, 'ORIGIN_DIR': ORIGIN_DIR,
+            'FILE_PATTERN': FILE_PATTERN, 'DEBUG': DEBUG, 'DEBUG_PATH': DEBUG_PATH,
+            'SEGMENT_TEST_DIR': SEGMENT_TEST_DIR, 'CROP_MARGIN': CROP_MARGIN,
+            'AREA_THRESH': AREA_THRESH, 'AREA_MAX_THRESH': AREA_MAX_THRESH, 'LABEL_GEN': LABEL_GEN,
+            'FILTER_VAL': FILTER_VAL, 'PVA_THRESH': PVA_THRESH, 'CROP_METHOD': CROP_METHOD,
+            'RZM_THRESH': RZM_THRESH, 'INTENS_THRES': INTENS_THRES}
+    process_origin_image(args)
 
     if no_mask:
         if not os.path.exists(os.path.join(ORIGIN_DIR,'no_mask')):
