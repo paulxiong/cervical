@@ -52,12 +52,9 @@ def wrapper(arg):
         else:
             shutil.copy(source, target)
             print("Color image {} copy complete!".format(filename))
-        return None
+    return None
 
 def process_origin_image(DATASETS_DIR, SEGMENT_TEST_DIR, FILE_PATTERN, DENOISING, RESIZE_RATIO):
-    global STAST_DF
-    #FILE_PATTERN = '*.png'
-
     # Split train set
     total_images = np.sort(glob.glob(os.path.join(DATASETS_DIR + '/*/', FILE_PATTERN)))
 
