@@ -1,49 +1,69 @@
-import os,sys,time
+import os,sys,time,gc
 from step1v2 import step1v2
 sys.path.append(os.path.abspath('step2v2'))
 sys.path.append(os.path.abspath('step2v2/modules/'))
 from src.utilslib.webserverapi import get_one_job
 
+class cell_crop():
+    def __init__(self, jobId):
+        self.jid = jobId
+        #path
+        self.scratchdir = './scratch'
+        self.jobdir = self.scratchdir + '/' + self.jid                            # path of every job
+        self.input_datasets = self.jobdir + '/input_datasets'                  # input FOV images and csv
+        self.input_datasets_denoising = self.jobdir + '/input_datasets_denoising' # denoised images
+        self.middle_mask = self.jobdir + '/middle_mask'                           # images mask
+        self.output_datasets = self.jobdir + '/output_datasets'                   # croped cells
+        #const path
+        self.modpath = './src/SEGMENT/kaggle-dsb2018/src/all_output'
+        self.datasets_train_path = 'datasets/segment/stage1_train'
+        #config
+        self.action = 'predict_test'
+        self.cuda_device = '1'
+        self.filepattern = '*.JPG'
+        self.crop_method = 'Mask'
+        self.area_thresh = 100
+        self.square_edge = 50
+        self.perimeter_vs_area = 18
+        return
+    def makedir(self):
+        if os.path.exists(self.scratchdir) is False:
+            os.makedirs(self.scratchdir)
+        if os.path.exists(self.jobdir) is False:
+            os.makedirs(self.jobdir)
+        if os.path.exists(self.input_datasets) is False:
+            os.makedirs(self.input_datasets)
+        if os.path.exists(self.input_datasets_denoising) is False:
+            os.makedirs(self.input_datasets_denoising)
+        if os.path.exists(self.middle_mask) is False:
+            os.makedirs(self.middle_mask)
+        if os.path.exists(self.output_datasets) is False:
+            os.makedirs(self.output_datasets)
+        return
+
 if __name__ == '__main__':
     #main loop
     while 1:
         _, job, study, hyperparameters = get_one_job()
-
         print(job)
         if job is None or job['type'] is not 'predict':
             time.sleep(5)
             continue
+        ID = str(int(time.time()*1000)) + '00000001'
+        ID = '156256766279800000001'
+        j = cell_crop(ID)
+        j.makedir()
 
-        #python3 step1.py --origindir '/ai/lambdatest/*/' --segtestdir datasets/segment/test/ --filepattern '*.JPG'
         print("step1")
-        input_origindir='/ai/lambdatest/*/'
-        output_segtestdir='datasets/segment/test/'
-        filepattern='*.JPG'
-        step1v2(input_origindir, output_segtestdir, filepattern)
+        step1v2(j.input_datasets, j.input_datasets_denoising, j.filepattern)
 
-        #python3 schwaebische_nuclei_predict.py predict_test --mosaic --loadmodel all_output/ --predicttestonly --cuda_device 1 --colouronly
         print("step2")
         from step2v2.schwaebische_nuclei_predict_v2 import step2v2
-        action = 'predict_test'
-        modpath = './src/SEGMENT/kaggle-dsb2018/src/all_output'
-        cuda_device = '1'
-        datasets_train_path = 'datasets/segment/stage1_train'
-        input_datasets_test_path = 'datasets/segment/test'
-        step2v2(action, modpath, cuda_device, datasets_train_path, input_datasets_test_path)
+        step2v2(j.action, j.modpath, j.cuda_device, j.datasets_train_path, j.input_datasets_denoising, j.middle_mask)
 
-        #python3 step3.py --origindir '/ai/lambdatest/*/' --filepattern '*.JPG' --datasets datasets/classify
-        #                 --segtestdir datasets/segment/test/ --crop_method Mask --area_thresh 100 --square_edge 50 --perimeter_vs_area 18
         print("step3")
         from step3v2 import step3v2
-        origindir = '/ai/lambdatest/*/'
-        filepattern = '*.JPG'
-        datasetspath = 'datasets/classify'
-        segtestdir = 'datasets/segment/test/'
-        crop_method = 'Mask'
-        area_thresh = 100
-        square_edge = 50
-        perimeter_vs_area = 18
-        step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_thresh, square_edge, perimeter_vs_area)
+        step3v2(j.input_datasets, j.filepattern, j.output_datasets, j.input_datasets_denoising, j.middle_mask, j.crop_method, j.area_thresh, j.square_edge, j.perimeter_vs_area)
 
         #python3 step4_annot.py --origin_dir '/ai/lambdatest/*/' --pattern '*.JPG' --seg_dir datasets/classify --output_dir datasets/classify/annot_out
         print("step4")
@@ -56,4 +76,6 @@ if __name__ == '__main__':
         #                            --npy_dir datasets/classify/npy/ --output_dir datasets/classify/data --pattern '*.JPG'
         print("step6")
 
+        del j
+        gc.collect()
         time.sleep(5)

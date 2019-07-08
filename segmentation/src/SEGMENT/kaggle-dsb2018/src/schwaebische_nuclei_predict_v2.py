@@ -962,11 +962,12 @@ class NucleiUtility(object):
     '''--------------------'''
 
 #python3 schwaebische_nuclei_predict.py predict_test --mosaic --loadmodel all_output/ --predicttestonly --cuda_device 1 --colouronly
-def step2v2(action, modpath, cuda_device, datasets_train_path, datasets_test_path):
+def step2v2(action, modpath, cuda_device, datasets_train_path, datasets_test_path, output_path):
     #cp_list = []
     util = NucleiUtility()
     #args = util.parse_argument()
 
+    util.OUTPUT_PATH = output_path
     util.TRAIN_PATH = datasets_train_path
     util.TEST_PATH = datasets_test_path
     util.LOAD_MODELS_COLOUR_PATH = os.path.join(modpath,  util.MODELS_COLOUR_PATH)

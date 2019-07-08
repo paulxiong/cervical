@@ -28,7 +28,6 @@ def wrapper(arg):
     DENOISING =  arg['denoising']
     FILE_PATTERN = arg['file_pattern']
     RESIZE_RATIO = arg['resize_ratio']
-    print(images)
     res = pd.DataFrame()
     for source in images:
         filename = ntpath.basename(source)
@@ -36,7 +35,6 @@ def wrapper(arg):
         slide_name = path_split[-3] if path_split[-2] == 'Images' else path_split[-2]
         base_filename = slide_name + '_' + os.path.splitext(filename)[0]
         df_dic = {'FOV_Name': base_filename}
-        print(base_filename)
 
         base_outdir = os.path.join('{}/{}/images'.format(SEGMENT_TEST_DIR, base_filename))
         if not os.path.exists(base_outdir): os.makedirs(base_outdir)
@@ -64,7 +62,6 @@ def wrapper(arg):
                  df_dic['RS_Intens'] = get_intensity(img)
                  df_dic['DN_Intens'] = np.nan
             cv2.imwrite(target, img)
-            print(source, target)
             print("Image %s copy complete." % filename)
         else:
             if DEBUG:
@@ -72,7 +69,6 @@ def wrapper(arg):
                 df_dic['OG_Intens'] = get_intensity(img)
                 df_dic['RS_Intens'] = np.nan
                 df_dic['DN_Intens'] = np.nan
-            print(source, target)
             shutil.copy(source, target)
             print("Color image %s copy complete!" % filename)
 
@@ -90,14 +86,12 @@ def process_origin_image(DATASETS_DIR, SEGMENT_TEST_DIR, FILE_PATTERN, DENOISING
     #FILE_PATTERN = '*.png'
 
     # Split train set
-    total_images = np.sort(glob.glob(os.path.join(DATASETS_DIR, FILE_PATTERN)))
-    print(total_images)
+    total_images = np.sort(glob.glob(os.path.join(DATASETS_DIR + '/*/', FILE_PATTERN)))
 
     if DEBUG:
         STAST_DF['FOV_Path'] = total_images
         STAST_DF['FOV_Name'] = STAST_DF['FOV_Path'].map(lambda x: os.path.basename(x).split('.')[0])
         STAST_DF['Slide_Path'] = DATASETS_DIR
-        print(len(STAST_DF))
 
     cpus = mp.cpu_count()
     images_split = np.array_split(total_images, cpus)
@@ -115,7 +109,6 @@ def process_origin_image(DATASETS_DIR, SEGMENT_TEST_DIR, FILE_PATTERN, DENOISING
         res = pd.concat(res)
         STAST_DF = STAST_DF.merge(res, on='FOV_Name')
         STAST_DF['RS_Ratio'] = RESIZE_RATIO
-        print(STAST_DF)
 
 def step1v2(origindir, segtestdir, filepattern, debug=False):
     DATASETS_DIR = origindir

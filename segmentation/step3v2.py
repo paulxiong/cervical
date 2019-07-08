@@ -168,7 +168,7 @@ def cells_intensity_in_fov(origin_image_filename, mask_filename, filter_val, min
 
 def intensity_statistics():
     # Split train set
-    total_images = np.sort(glob.glob(os.path.join(ORIGIN_DIR, FILE_PATTERN)))
+    total_images = np.sort(glob.glob(os.path.join(ORIGIN_DIR + '/*/', FILE_PATTERN)))
 
     # Random choose 10 images to calculate average intensity
     np.random.seed(10)
@@ -657,8 +657,8 @@ def worker(workerargs):
         #print(base_filename)
 
         image_filename = source
-        mask_filename = os.path.join(args['SEGMENT_TEST_DIR'],'../output/predict/test/colour/{}/channel_0.png'.format(base_filename))
-        contours_filename = os.path.join(args['SEGMENT_TEST_DIR'],'../output/predict/test/colour/{}/channel_1.png'.format(base_filename))
+        mask_filename = os.path.join(args['MASK_DIR'],'predict/test/colour/{}/channel_0.png'.format(base_filename))
+        contours_filename = os.path.join(args['MASK_DIR'],'predict/test/colour/{}/channel_1.png'.format(base_filename))
 
         assert os.path.exists(mask_filename), "Segmentation: {} channel_0 not exists".format(mask_filename)
         assert os.path.exists(contours_filename), "Segmentation: {} channel_1 not exists".format(contours_filename)
@@ -684,7 +684,7 @@ def process_origin_image(args):
     if not os.path.exists(slide_npy_outdir):
         os.makedirs(slide_npy_outdir)
     # Split train set
-    total_images = np.sort(glob.glob(os.path.join(args['ORIGIN_DIR'], args['FILE_PATTERN'])))
+    total_images = np.sort(glob.glob(os.path.join(args['ORIGIN_DIR'] + '/*/', args['FILE_PATTERN'])))
     #input_images = []
     #for image in total_images:
     #    filename = os.path.basename(image)
@@ -745,7 +745,7 @@ def process_origin_image(args):
 def process_one():
 
     # Split train set
-    total_images = np.sort(glob.glob(os.path.join(ORIGIN_DIR, FILE_PATTERN)))
+    total_images = np.sort(glob.glob(os.path.join(ORIGIN_DIR + '/*/', FILE_PATTERN)))
     #print(total_images)
 
     filename = ntpath.basename(total_images[0])
@@ -761,7 +761,7 @@ def process_one():
     #crop_file(image_filename, mask_filename, 100, 0.2, 150, 2000)
     crop_file(image_filename, mask_filename, FILTER_VAL, CROP_MARGIN, AREA_THRESH, AREA_MAX_THRESH)
 
-def step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_thresh, square_edge, perimeter_vs_area):
+def step3v2(origindir, filepattern, datasetspath, segtestdir, maskdir, crop_method, area_thresh, square_edge, perimeter_vs_area):
     cp_list = []
     crop_margin=0.2
     intensity_thresh=None
@@ -771,6 +771,7 @@ def step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_
     ORIGIN_DIR = origindir
     SEGMENT_TEST_DIR = segtestdir
     FILE_PATTERN = filepattern
+    MASK_DIR = maskdir
     CROP_MARGIN = crop_margin
     SQUARE_EDGE = square_edge
     CROP_METHOD = crop_method
@@ -810,7 +811,7 @@ def step3v2(origindir, filepattern, datasetspath, segtestdir, crop_method, area_
             'SEGMENT_TEST_DIR': SEGMENT_TEST_DIR, 'CROP_MARGIN': CROP_MARGIN,
             'AREA_THRESH': AREA_THRESH, 'AREA_MAX_THRESH': AREA_MAX_THRESH, 'LABEL_GEN': LABEL_GEN,
             'FILTER_VAL': FILTER_VAL, 'PVA_THRESH': PVA_THRESH, 'CROP_METHOD': CROP_METHOD,
-            'RZM_THRESH': RZM_THRESH, 'INTENS_THRES': INTENS_THRES}
+            'RZM_THRESH': RZM_THRESH, 'INTENS_THRES': INTENS_THRES, 'MASK_DIR': MASK_DIR}
     process_origin_image(args)
 
     if no_mask:
