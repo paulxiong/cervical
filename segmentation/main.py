@@ -3,6 +3,7 @@ from step1v2 import step1v2
 sys.path.append(os.path.abspath('step2v2'))
 sys.path.append(os.path.abspath('step2v2/modules/'))
 from src.utilslib.webserverapi import get_one_job
+from src.utilslib.logger import  logger
 
 class cell_crop():
     def __init__(self, jobId):
@@ -25,6 +26,8 @@ class cell_crop():
         self.area_thresh = 100
         self.square_edge = 50
         self.perimeter_vs_area = 18
+        #log
+        self.logger = logger(self.jid, self.jobdir)
         return
     def makedir(self):
         if os.path.exists(self.scratchdir) is False:
@@ -42,7 +45,6 @@ class cell_crop():
         return
 
 if __name__ == '__main__':
-    #main loop
     while 1:
         _, job, study, hyperparameters = get_one_job()
         print(job)
@@ -54,16 +56,19 @@ if __name__ == '__main__':
         j = cell_crop(ID)
         j.makedir()
 
-        print("step1")
+        j.logger.info("begain step1...")
         step1v2(j.input_datasets, j.input_datasets_denoising, j.filepattern)
+        j.logger.info("end step1...")
 
-        print("step2")
+        j.logger.info("begain step2...")
         from step2v2.schwaebische_nuclei_predict_v2 import step2v2
         step2v2(j.action, j.modpath, j.cuda_device, j.datasets_train_path, j.input_datasets_denoising, j.middle_mask)
+        j.logger.info("end step2...")
 
-        print("step3")
+        j.logger.info("begain step3...")
         from step3v2 import step3v2
         step3v2(j.input_datasets, j.filepattern, j.output_datasets, j.input_datasets_denoising, j.middle_mask, j.crop_method, j.area_thresh, j.square_edge, j.perimeter_vs_area)
+        j.logger.info("end step3...")
 
         #python3 step4_annot.py --origin_dir '/ai/lambdatest/*/' --pattern '*.JPG' --seg_dir datasets/classify --output_dir datasets/classify/annot_out
         print("step4")
