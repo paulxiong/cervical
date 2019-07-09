@@ -318,3 +318,14 @@ func CreateGetDataset(c *gin.Context) {
 
 	return
 }
+
+func GetOneJob(c *gin.Context) {
+	dt, _ := m.GetOneDatasetsToCrop()
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   dt,
+	})
+
+	return
+}

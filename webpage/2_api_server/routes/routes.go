@@ -63,6 +63,7 @@ func Router() *gin.Engine {
 	api1.GET("/getLabelbyimageid", ctr.GetLabelByImageId)
 	api1.POST("/createdataset", ctr.CreateGetDataset)
 	api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalId)
+	api1.POST("/job", ctr.GetOneJob)
 
 	api1.Use(authMiddleware.MiddlewareFunc())
 	{
