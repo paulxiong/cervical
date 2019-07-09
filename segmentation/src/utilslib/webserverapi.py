@@ -54,50 +54,40 @@ def post_api_job(payload):
     if ml_first:
         ml_first = False
         payload['ml_first'] = 'true'
-    return post2webserver('/api/job', payload)
+    return post2webserver('/api1/job', payload)
 
 def get_one_job():
     """
     Tries to get the job from web server.
 
     :param name:
-    :return: code, job_info, dataset_info, hyperparameters
+    :return: status, job_info
     """
 
     payload = {}
     job = post_api_job(payload)
     if job is None:
-        return None, None, None, None
+        return None, None
 
     try:
         jobjson = json.loads(job.decode())
+        status = jobjson['data']['status']
+        dirname = jobjson['data']['dir']
     except Exception as ex:
         print(ex)
         code = None
-        return None, None, None, None
+        return None, None
     else:
-        code    = jobjson.get("code",  None)
-        job     = jobjson.get("job",  None)
-        study   = jobjson.get("study",  None)
-        hyperparameters = jobjson.get("hyperparameters",  None)
+        if status is None:
+            return None, None
 
-        if code is None:
-            return None, None, None, None
-
-        code = int(code)
-        if code == 3002 and job is not None and study is not None:
+        status = int(status)
+        if status == 1 and dirname is not None:
             if debug_on:
-                print('got a trainning job')
-            return code, job, study, hyperparameters 
-        elif code == 3003:
-            if debug_on:
-                print('got a forecast job')
-            return code, None, None, None
+                print('got a crop job')
+            return status, dirname
         else:
-            reason = jobjson.get("reason",  None)
-            if debug_on:
-                print('got a unknown job: ' + str(reason))
-            return None, None, None, None
+            return None, None
 
 
 #def post_prediction_result(jpg_dir, study_id, job_id):

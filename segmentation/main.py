@@ -26,6 +26,7 @@ class cell_crop():
         self.area_thresh = 100
         self.square_edge = 50
         self.perimeter_vs_area = 18
+        self.makedir()
         #log
         self.logger = logger(self.jid, self.jobdir)
         return
@@ -46,14 +47,13 @@ class cell_crop():
 
 if __name__ == '__main__':
     while 1:
-        _, job, study, hyperparameters = get_one_job()
-        print(job)
-        if job is None or job['type'] is not 'predict':
+        status, dirname = get_one_job()
+        print(status, dirname)
+        if status != 1 or dirname is None:
             time.sleep(5)
             continue
-        ID = str(int(time.time()*1000)) + '00000001'
-        ID = '156256766279800000001'
-        j = cell_crop(ID)
+
+        j = cell_crop(dirname)
         j.makedir()
 
         j.logger.info("begain step1...")
@@ -84,3 +84,4 @@ if __name__ == '__main__':
         del j
         gc.collect()
         time.sleep(5)
+        break
