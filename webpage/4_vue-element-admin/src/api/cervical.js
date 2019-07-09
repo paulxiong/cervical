@@ -63,3 +63,19 @@ export function getLabelByImageId(query) {
     params: query
   })
 }
+
+export function getimgnptypebymids(data) {
+  return request({
+    url: '/api1/getimgnptypebymids',
+    method: 'post',
+    data
+  })
+}
+
+export function createdataset(data) {
+  return request({
+    url: '/api1/createdataset',
+    method: 'post',
+    data
+  })
+}

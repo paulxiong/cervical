@@ -11,13 +11,13 @@ import (
 )
 
 type Image struct {
-	Id        int64     `json:"id"         gorm:"column:ID"          `
-	Csvpath   string    `json:"csvpath"         gorm:"column:CSVPATH"          `
-	Imgpath   string    `json:"imgpath"         gorm:"column:IMGPATH"          `
-	Batchid   string    `json:"batchid"         gorm:"column:BATCHID"          `
-	Medicalid string    `json:"medicalid"         gorm:"column:MEDICALID"         `
-	CreatedAt time.Time `json:"created_time"         gorm:"column:CREATED_TIME"          `
-	UpdatedAt time.Time `json:"updated_time"         gorm:"column:UPDATED_TIME"          `
+	Id        int64     `json:"id"           gorm:"column:ID"`
+	Csvpath   string    `json:"csvpath"      gorm:"column:CSVPATH"`
+	Imgpath   string    `json:"imgpath"      gorm:"column:IMGPATH"`
+	Batchid   string    `json:"batchid"      gorm:"column:BATCHID"`
+	Medicalid string    `json:"medicalid"    gorm:"column:MEDICALID"`
+	CreatedAt time.Time `json:"created_time" gorm:"column:CREATED_TIME"`
+	UpdatedAt time.Time `json:"updated_time" gorm:"column:UPDATED_TIME"`
 }
 
 func (u *Image) BeforeCreate(scope *gorm.Scope) error {
@@ -148,6 +148,59 @@ func ListWantedImages(limit int, skip int, batchids []string, medicalids []strin
 	return _b, ret.Error
 }
 
+// ListImagesNPTypeByMedicalId 查找出MedicalId下图片的类型(N/P)的数量
+func ListImagesNPTypeByMedicalId(medicalids []string) (countN int, countP int, e error) {
+	type res struct {
+		Total int
+	}
+
+	selector1 := "SELECT count(*) as total from (SELECT image.CSVPATH from label,image,category where image.MEDICALID in (?) AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH) xx;"
+	ressN := res{}
+	ressP := res{}
+	ret := db.Raw(selector1, medicalids, 0).Scan(&ressN)
+	if ret.Error != nil {
+		log.Println(ret.Error)
+		return ressN.Total, ressP.Total, ret.Error
+	}
+	ret2 := db.Raw(selector1, medicalids, 1).Scan(&ressP)
+	if ret2.Error != nil {
+		log.Println(ret2.Error)
+	}
+	return ressN.Total, ressP.Total, ret2.Error
+}
+
+type ImagesByMedicalId struct {
+	Imgpath   string `json:"imgpath"`
+	Batchid   string `json:"batchid"`
+	Medicalid string `json:"medicalid"`
+	P1N0      int    `json:"p1n0"` //是阴性还是阳性
+}
+
+// ListImagesByMedicalId 查找出MedicalId下图片所有图片，按照n/p分开
+func ListImagesByMedicalId(medicalid string) (imgs []ImagesByMedicalId, e error) {
+	selector1 := "SELECT image.MEDICALID as medicalid, image.BATCHID as batchid, image.IMGPATH as imgpath from label,image,category where image.MEDICALID=? AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH;"
+	ressN := []ImagesByMedicalId{}
+	ressP := []ImagesByMedicalId{}
+	ressAll := make([]ImagesByMedicalId, 0)
+	ret := db.Raw(selector1, medicalid, 0).Scan(&ressN)
+	if ret.Error != nil {
+		log.Println(ret.Error)
+	}
+	for _, v := range ressN {
+		v.P1N0 = 0
+		ressAll = append(ressAll, v)
+	}
+	ret2 := db.Raw(selector1, medicalid, 1).Scan(&ressP)
+	if ret2.Error != nil {
+		log.Println(ret2.Error)
+	}
+	for _, v2 := range ressP {
+		v2.P1N0 = 1
+		ressAll = append(ressAll, v2)
+	}
+	return ressAll, ret2.Error
+}
+
 type Label struct {
 	Id        int64     `json:"id"            gorm:"column:ID"`    //标注信息ID
 	Imgid     int64     `json:"imgid"         gorm:"column:IMGID"` //所属图片的ID
@@ -260,4 +313,74 @@ func GetCategoryById(id int) (c Category, e error) {
 		logger.Info.Println(ret.Error)
 	}
 	return _c, ret.Error
+}
+
+type Dataset struct {
+	Id        int64     `json:"id"          gorm:"column:ID"`           //分类ID
+	Desc      string    `json:"desc"        gorm:"column:DESCRIPTION"`  //描述
+	Status    int       `json:"status"      gorm:"column:STATUS"`       //状态 0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在
+	Dir       string    `json:"dir"         gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
+	CreatedBy int64     `json:"created_by"  gorm:"column:CREATED_BY"`   //创建者
+	CreatedAt time.Time `json:"-"           gorm:"column:CREATED_TIME"` //创建时间
+	StartTime time.Time `json:"-"           gorm:"column:START_TIME"`   //开始处理的时间
+	UpdatedAt time.Time `json:"-"           gorm:"column:UPDATED_TIME"` //更新时间
+}
+
+func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
+	if d.CreatedAt.IsZero() {
+		d.CreatedAt = time.Now()
+	}
+	if d.UpdatedAt.IsZero() {
+		d.UpdatedAt = time.Now()
+	}
+	if d.StartTime.IsZero() {
+		d.StartTime = time.Now()
+	}
+	return nil
+}
+
+func ListDataset(limit int, skip int) (totalNum int64, c []Dataset, e error) {
+	var _d []Dataset
+	var total int64 = 0
+
+	db.Model(&Dataset{}).Count(&total)
+	ret := db.Model(&Dataset{}).Limit(limit).Offset(skip).Find(&_d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _d, ret.Error
+}
+
+func (d *Dataset) CreateDatasets() (e error) {
+	d.Id = 0
+	ret := db.Model(d).Save(&d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+
+	ret2 := db.Model(d).Where("DIR=?", d.Dir).First(&d)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+	return ret2.Error
+}
+
+func UpdateDatasetsStatus(did int64, status int) (e error) {
+	d := Dataset{}
+	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+		return ret2.Error
+	}
+
+	if d.Status != 0 || d.Status == status {
+		return ret2.Error
+	}
+	d.Status = status
+
+	ret := db.Model(&d).Where("ID=?", did).Updates(d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
 }

@@ -879,10 +879,11 @@
               "notNull": true
             },
             {
-              "name": "DESC",
+              "name": "DESCRIPTION",
               "type": "MiddleString",
               "remark": "",
-              "chnname": "描述"
+              "chnname": "描述",
+              "notNull": false
             },
             {
               "name": "STATUS",

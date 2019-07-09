@@ -5,8 +5,10 @@ import (
 	"strings"
 
 	e "../error"
+	f "../functions"
 	logger "../log"
 	m "../models"
+	u "../utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -255,6 +257,63 @@ func GetLabelByImageId(c *gin.Context) {
 		"status": e.StatusSucceed,
 		"data":   labels,
 		"total":  total,
+	})
+
+	return
+}
+
+type imagesNPTypeByMedicalId struct {
+	Medicalids []string `json:"medicalids"`
+}
+type imagesNPCount struct {
+	CountN int `json:"countn"`
+	CountP int `json:"countp"`
+}
+
+func GetImagesNPTypeByMedicalId(c *gin.Context) {
+	cnt := imagesNPCount{}
+	w := imagesNPTypeByMedicalId{}
+	err := c.BindJSON(&w)
+	logger.Info.Println(err, w.Medicalids)
+
+	totaln, totalp, _ := m.ListImagesNPTypeByMedicalId(w.Medicalids)
+	cnt.CountN = totaln
+	cnt.CountP = totalp
+	logger.Info.Println(totaln, totalp)
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   cnt,
+	})
+	return
+}
+
+func CreateGetDataset(c *gin.Context) {
+	w := imagesNPTypeByMedicalId{}
+	err := c.BindJSON(&w)
+	if err != nil {
+		logger.Info.Println(err)
+	}
+
+	// usr, _ := m.GetUserFromContext(c)
+
+	dt := m.Dataset{}
+	dt.Id = 0
+	dt.CreatedBy = 1
+	dt.Desc = ""
+	dt.Dir = u.GetRandomSalt()
+	dt.Status = 0
+	dt.CreateDatasets()
+
+	for _, v := range w.Medicalids {
+		imgs, _ := m.ListImagesByMedicalId(v)
+		f.CreateGetDataset(imgs, dt.Dir)
+	}
+
+	m.UpdateDatasetsStatus(dt.Id, 1)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   "",
 	})
 
 	return
