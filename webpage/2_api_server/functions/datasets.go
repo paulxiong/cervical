@@ -2,14 +2,28 @@ package function
 
 import (
 	"os"
-	"strings"
 
 	logger "../log"
 	m "../models"
 )
 
 /*
-目录结构
+CSV和JPG存放路径
+lambdatest/
+├── csv
+│   └── 20190523
+│       └── TCT
+│           └── 1807178
+│               └── IMG001x008.csv
+└── img
+    └── 20190523
+        └── 1807178
+            ├── Images
+            │   └── IMG001x001.JPG
+            └── Thumbs
+
+
+要生成的目录结构
 scratch/
 └── 156256766279800000001
     ├── input_datasets
@@ -49,15 +63,13 @@ func CreateGetDataset(imgs []m.ImagesByMedicalId, dirname string) {
 		logger.Info.Println(filelist, err1)
 	}
 	for _, v := range imgs {
-		csvname := strings.Replace(v.Imgpath, `JPG`, "csv", -1)
-
-		imgpath := v.Batchid + "/" + v.Medicalid + "/" + v.Imgpath
-		csvpath := v.Batchid + "/" + v.Medicalid + "/" + csvname
+		imgpath := v.Batchid + "/" + v.Medicalid + "/Images/" + v.Imgpath
+		csvpath := v.Csvpath
 		topath := ""
 		if v.P1N0 == 0 {
-			topath = scratch_root + "/" + dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_N/"
+			topath = dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_N/"
 		} else {
-			topath = scratch_root + "/" + dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_P/"
+			topath = dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_P/"
 		}
 
 		s := imgpath + " " + csvpath + " " + topath

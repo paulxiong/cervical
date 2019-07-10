@@ -264,6 +264,7 @@ func GetLabelByImageId(c *gin.Context) {
 
 type imagesNPTypeByMedicalId struct {
 	Medicalids []string `json:"medicalids"`
+	Desc       string   `json:"desc"`
 }
 type imagesNPCount struct {
 	CountN int `json:"countn"`
@@ -299,15 +300,19 @@ func CreateGetDataset(c *gin.Context) {
 	dt := m.Dataset{}
 	dt.Id = 0
 	dt.CreatedBy = 1
-	dt.Desc = ""
+	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
 	dt.Status = 0
 	dt.CreateDatasets()
 
+	imgs := make([]m.ImagesByMedicalId, 0)
 	for _, v := range w.Medicalids {
-		imgs, _ := m.ListImagesByMedicalId(v)
-		f.CreateGetDataset(imgs, dt.Dir)
+		_imgs, _ := m.ListImagesByMedicalId(v)
+		for _, v2 := range _imgs {
+			imgs = append(imgs, v2)
+		}
 	}
+	f.CreateGetDataset(imgs, dt.Dir)
 
 	m.UpdateDatasetsStatus(dt.Id, 1)
 
@@ -320,12 +325,75 @@ func CreateGetDataset(c *gin.Context) {
 }
 
 func GetOneJob(c *gin.Context) {
-	dt, _ := m.GetOneDatasetsToCrop()
+	dt, err := m.GetOneDatasetsToCrop()
+	if err != nil {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   dt,
+		})
+		return
+	}
+	m.UpdateDatasetsStatus(dt.Id, 2)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
 		"data":   dt,
 	})
+	return
+}
 
+type jobResult struct {
+	Id     int64 `json:"id"`
+	Status int   `json:"status"`
+}
+
+func SetJobResult(c *gin.Context) {
+	w := jobResult{}
+	err := c.BindJSON(&w)
+	if err != nil {
+		logger.Info.Println(err)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+		})
+		return
+	}
+
+	m.UpdateDatasetsStatus(w.Id, w.Status)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+	})
+
+	return
+}
+
+type listDatasets struct {
+	Datasets []m.Dataset `json:"datasets"`
+	Total    int64       `json:"total"`
+}
+
+func ListDatasets(c *gin.Context) {
+	limit_str := c.DefaultQuery("limit", "1")
+	skip_str := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limit_str, 10, 64)
+	skip, _ := strconv.ParseInt(skip_str, 10, 64)
+
+	total, ds, err := m.ListDataset(int(limit), int(skip))
+	if err != nil {
+		logger.Info.Println(err)
+	}
+	for idx, v := range ds {
+		ds[idx].CreatedAtTs = v.CreatedAt.Unix() * 1000
+		ds[idx].StartTimeTs = v.StartTime.Unix() * 1000
+	}
+
+	dts := listDatasets{}
+	dts.Datasets = ds
+	dts.Total = total
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   dts,
+	})
 	return
 }

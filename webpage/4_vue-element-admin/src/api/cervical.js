@@ -79,3 +79,19 @@ export function createdataset(data) {
     data
   })
 }
+
+export function listdatasets(query) {
+  return request({
+    url: '/api1/listdatasets',
+    method: 'get',
+    params: query
+  })
+}
+
+export function jobresult(data) {
+  return request({
+    url: '/api1/jobresult',
+    method: 'post',
+    data
+  })
+}

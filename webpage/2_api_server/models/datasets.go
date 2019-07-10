@@ -170,6 +170,7 @@ func ListImagesNPTypeByMedicalId(medicalids []string) (countN int, countP int, e
 }
 
 type ImagesByMedicalId struct {
+	Csvpath   string `json:"csvpath"`
 	Imgpath   string `json:"imgpath"`
 	Batchid   string `json:"batchid"`
 	Medicalid string `json:"medicalid"`
@@ -178,7 +179,7 @@ type ImagesByMedicalId struct {
 
 // ListImagesByMedicalId 查找出MedicalId下图片所有图片，按照n/p分开
 func ListImagesByMedicalId(medicalid string) (imgs []ImagesByMedicalId, e error) {
-	selector1 := "SELECT image.MEDICALID as medicalid, image.BATCHID as batchid, image.IMGPATH as imgpath from label,image,category where image.MEDICALID=? AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH;"
+	selector1 := "SELECT image.CSVPATH as csvpath, image.MEDICALID as medicalid, image.BATCHID as batchid, image.IMGPATH as imgpath from label,image,category where image.MEDICALID=? AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH;"
 	ressN := []ImagesByMedicalId{}
 	ressP := []ImagesByMedicalId{}
 	ressAll := make([]ImagesByMedicalId, 0)
@@ -316,14 +317,16 @@ func GetCategoryById(id int) (c Category, e error) {
 }
 
 type Dataset struct {
-	Id        int64     `json:"id"          gorm:"column:ID"`           //分类ID
-	Desc      string    `json:"desc"        gorm:"column:DESCRIPTION"`  //描述
-	Status    int       `json:"status"      gorm:"column:STATUS"`       //状态 0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在
-	Dir       string    `json:"dir"         gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
-	CreatedBy int64     `json:"created_by"  gorm:"column:CREATED_BY"`   //创建者
-	CreatedAt time.Time `json:"-"           gorm:"column:CREATED_TIME"` //创建时间
-	StartTime time.Time `json:"-"           gorm:"column:START_TIME"`   //开始处理的时间
-	UpdatedAt time.Time `json:"-"           gorm:"column:UPDATED_TIME"` //更新时间
+	Id          int64     `json:"id"          gorm:"column:ID"`           //分类ID
+	Desc        string    `json:"desc"        gorm:"column:DESCRIPTION"`  //描述
+	Status      int       `json:"status"      gorm:"column:STATUS"`       //状态 0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在
+	Dir         string    `json:"dir"         gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
+	CreatedBy   int64     `json:"created_by"  gorm:"column:CREATED_BY"`   //创建者
+	CreatedAt   time.Time `json:"-"           gorm:"column:CREATED_TIME"` //创建时间
+	StartTime   time.Time `json:"-"           gorm:"column:START_TIME"`   //开始处理的时间
+	UpdatedAt   time.Time `json:"-"           gorm:"column:UPDATED_TIME"` //更新时间
+	CreatedAtTs int64     `json:"created_at"  gorm:"-"  `                 //创建时间
+	StartTimeTs int64     `json:"start_at"    gorm:"-"`                   //开始处理的时间
 }
 
 func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
@@ -369,14 +372,18 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
 		return ret2.Error
 	}
-
-	if d.Status != 0 || d.Status == status {
-		return ret2.Error
-	}
+	/*
+		logger.Info.Println(status, d.Status)
+		if d.Status >= status {
+			return ret2.Error
+		}
+	*/
 	d.Status = status
+	if status == 2 {
+		d.StartTime = time.Now()
+	}
 
 	ret := db.Model(&d).Where("ID=?", did).Updates(d)
 	if ret.Error != nil {
@@ -389,7 +396,6 @@ func GetOneDatasetsToCrop() (dt Dataset, e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("STATUS=?", 1).First(&d)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
 		return d, ret2.Error
 	}
 	return d, ret2.Error
