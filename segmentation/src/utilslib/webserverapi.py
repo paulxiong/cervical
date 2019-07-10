@@ -24,7 +24,7 @@ def post2webserver(path=None, payload=None):
     api_url = webhost + path
 
     try:
-        response = requests.post(api_url, data=payload, timeout=4)
+        response = requests.post(api_url, json=payload, timeout=4)
     except Exception as e:
         print(e)
     else:
@@ -67,59 +67,29 @@ def get_one_job():
     payload = {}
     job = post_api_job(payload)
     if job is None:
-        return None, None
+        return None, None, None
 
     try:
         jobjson = json.loads(job.decode())
         status = jobjson['data']['status']
         dirname = jobjson['data']['dir']
+        jobid = jobjson['data']['id']
     except Exception as ex:
         print(ex)
         code = None
-        return None, None
+        return None, None, None
     else:
         if status is None:
-            return None, None
+            return None, None, None
 
         status = int(status)
         if status == 1 and dirname is not None:
             if debug_on:
                 print('got a crop job')
-            return status, dirname
+            return jobid, status, dirname
         else:
-            return None, None
+            return None, None, None
 
-
-#def post_prediction_result(jpg_dir, study_id, job_id):
-#    instances = []
-#    #upload jpg file to qiniu
-#    for f in  os.listdir(jpg_dir):
-#        file_path = jpg_dir + f
-#        if os.path.isdir(file_path):
-#            continue
-#
-#        nodule_chance = f.split("_")[0]
-#
-#        key = str(uuid1())
-#        url = qiniu_upload_img(key, file_path, timeout=4)
-#        if len(url) > 1:
-#            #instances.append(json.dumps({'imgUrl': url, 'percent':nodule_chance}))
-#            obj = {"imgUrl": url, "percent":nodule_chance}
-#            instances.insert(len(instances), obj)
-#
-#    result = "良性"
-#    percent = '0.00'
-#    forecast_status = 'done'
-#
-#    if len(instances) > 0:
-#        result = "恶性"
-#
-#    payload = {
-#               'result': result,
-#               'percent': percent,
-#               'instances': json.dumps(instances),
-#               'study_id': study_id,
-#               'job_id': job_id,
-#               'forecast_status': forecast_status
-#               }
-#    post2webserver(path='/api/forecast', payload=payload)
+def post_job_status(jobid, status):
+    payload = {'id': jobid, 'status': status}
+    post2webserver(path='/api1/jobresult', payload=payload)
