@@ -95,3 +95,11 @@ export function jobresult(data) {
     data
   })
 }
+
+export function getjobresult(query) {
+  return request({
+    url: '/api1/jobresult',
+    method: 'get',
+    params: query
+  })
+}

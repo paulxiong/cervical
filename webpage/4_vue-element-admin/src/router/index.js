@@ -112,6 +112,13 @@ export const constantRoutes = [
         component: () => import('@/views/page4/index'),
         name: '我的数据集合',
         meta: { title: '我的数据集合', icon: 'tree-table', affix: true }
+      },
+      {
+        path: 'details',
+        component: () => import('@/views/page4/details'),
+        name: '详细信息',
+        meta: { title: '详细信息', icon: 'tree-table', affix: true },
+        hidden: true
       }
     ]
   }

@@ -61,10 +61,11 @@ func Router() *gin.Engine {
 	api1.POST("/imglistsofwanted", ctr.GetImgListOfWanted)
 	api1.GET("/imglistsonebyone", ctr.GetImgListOneByOne)
 	api1.GET("/getLabelbyimageid", ctr.GetLabelByImageId)
-	api1.POST("/createdataset", ctr.CreateGetDataset)
+	api1.POST("/createdataset", ctr.CreateDataset)
 	api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalId)
 	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
+	api1.GET("/jobresult", ctr.GetJobResult)
 	api1.GET("/listdatasets", ctr.ListDatasets)
 
 	api1.Use(authMiddleware.MiddlewareFunc())

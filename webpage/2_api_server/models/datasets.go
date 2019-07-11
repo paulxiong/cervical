@@ -365,6 +365,9 @@ func (d *Dataset) CreateDatasets() (e error) {
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
+
+	d.CreatedAtTs = d.CreatedAt.Unix() * 1000
+	d.StartTimeTs = d.StartTime.Unix() * 1000
 	return ret2.Error
 }
 
@@ -395,6 +398,15 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 func GetOneDatasetsToCrop() (dt Dataset, e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("STATUS=?", 1).First(&d)
+	if ret2.Error != nil {
+		return d, ret2.Error
+	}
+	return d, ret2.Error
+}
+
+func GetOneDatasetById(id int) (dt Dataset, e error) {
+	d := Dataset{}
+	ret2 := db.Model(&d).Where("ID=?", id).First(&d)
 	if ret2.Error != nil {
 		return d, ret2.Error
 	}

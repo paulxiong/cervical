@@ -263,6 +263,7 @@ func GetLabelByImageId(c *gin.Context) {
 }
 
 type imagesNPTypeByMedicalId struct {
+	Batchids   []string `json:"batchids"`
 	Medicalids []string `json:"medicalids"`
 	Desc       string   `json:"desc"`
 }
@@ -288,7 +289,7 @@ func GetImagesNPTypeByMedicalId(c *gin.Context) {
 	return
 }
 
-func CreateGetDataset(c *gin.Context) {
+func CreateDataset(c *gin.Context) {
 	w := imagesNPTypeByMedicalId{}
 	err := c.BindJSON(&w)
 	if err != nil {
@@ -312,9 +313,11 @@ func CreateGetDataset(c *gin.Context) {
 			imgs = append(imgs, v2)
 		}
 	}
-	f.CreateGetDataset(imgs, dt.Dir)
+	cntn, cntp := f.CreateDataset(imgs, dt.Dir)
+	dt.Status = 1
+	m.UpdateDatasetsStatus(dt.Id, dt.Status)
 
-	m.UpdateDatasetsStatus(dt.Id, 1)
+	f.NewJsonFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -395,5 +398,22 @@ func ListDatasets(c *gin.Context) {
 		"status": e.StatusSucceed,
 		"data":   dts,
 	})
+	return
+}
+
+func GetJobResult(c *gin.Context) {
+	id_str := c.DefaultQuery("id", "1")
+	id, _ := strconv.ParseInt(id_str, 10, 64)
+
+	d, _ := m.GetOneDatasetById(int(id))
+
+	j := f.LoadJsonFile(f.GetInfoJsonPath(d))
+	logger.Info.Println(j.Id)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   j,
+	})
+
 	return
 }

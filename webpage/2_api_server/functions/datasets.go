@@ -1,10 +1,14 @@
 package function
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
 	"os"
 
 	logger "../log"
 	m "../models"
+	"github.com/toolkits/file"
 )
 
 /*
@@ -51,7 +55,67 @@ const (
 	scratch_root             = "scratch"
 )
 
-func CreateGetDataset(imgs []m.ImagesByMedicalId, dirname string) {
+type JobInfo struct {
+	Id                        int64    `json:"id"`
+	Desc                      string   `json:"desc"`
+	Dir                       string   `json:"dir"`
+	Batchids                  []string `json:"batchids"`
+	Medicalids                []string `json:"medicalids"`
+	Status                    int      `json:"status"`
+	Cntn                      int      `json:"cntn"`
+	Cntp                      int      `json:"cntp"`
+	CellCntn                  int      `json:"cellcntn"`
+	CellCntp                  int      `json:"cellcntp"`
+	Createdatts               int64    `json:"createdatts"`
+	Starttimets               int64    `json:"starttimets"`
+	Input_datasets_img        []string `json:"input_datasets_img"`
+	Input_datasets_csv        []string `json:"input_datasets_csv"`
+	Input_datasets_denoising  []string `json:"input_datasets_denoising"`
+	Middle_mask               []string `json:"middle_mask"`
+	Output_datasets_crop      []string `json:"output_datasets_crop"`
+	Output_datasets_npy       []string `json:"output_datasets_npy"`
+	Output_datasets_slide_npy []string `json:"output_datasets_slide_npy"`
+}
+
+func WriteJson(cfg string, jsonByte []byte) {
+	if cfg == "" {
+		logger.Info.Println("please specify json file")
+	}
+	_, err := file.WriteBytes(cfg, jsonByte)
+	if err != nil {
+		logger.Info.Println("write config file:", cfg, "fail:", err)
+	}
+}
+
+func GetInfoJsonPath(d m.Dataset) string {
+	infopath := scratch_root + "/" + d.Dir + "/info.json"
+	return infopath
+}
+
+func NewJsonFile(d m.Dataset, batchids []string, medicalids []string, cntn int, cntp int) {
+	c := JobInfo{}
+	c.Id = d.Id
+	c.Desc = d.Desc
+	c.Status = d.Status
+	c.Dir = d.Dir
+	c.Createdatts = d.CreatedAtTs
+	c.Starttimets = d.StartTimeTs
+	c.Batchids = batchids
+	c.Medicalids = medicalids
+	c.Cntn = cntn
+	c.Cntp = cntp
+	c.CellCntn = 0
+	c.CellCntp = 0
+	data, err := json.MarshalIndent(c, "", " ") //这里返回的data值，类型是[]byte
+	if err != nil {
+		log.Println("ERROR:", err)
+	}
+
+	info := scratch_root + "/" + d.Dir + "/info.json"
+	WriteJson(info, data)
+}
+
+func CreateDataset(imgs []m.ImagesByMedicalId, dirname string) (n int, p int) {
 	err := os.MkdirAll(scratch_root+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)
@@ -62,18 +126,36 @@ func CreateGetDataset(imgs []m.ImagesByMedicalId, dirname string) {
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)
 	}
+
+	var cntn int = 0
+	var cntp int = 0
 	for _, v := range imgs {
 		imgpath := v.Batchid + "/" + v.Medicalid + "/Images/" + v.Imgpath
 		csvpath := v.Csvpath
 		topath := ""
 		if v.P1N0 == 0 {
 			topath = dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_N/"
+			cntn = cntn + 1
 		} else {
 			topath = dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_P/"
+			cntp = cntp + 1
 		}
-
 		s := imgpath + " " + csvpath + " " + topath
 		fd.WriteString(s + "\n")
 	}
 	fd.Close()
+	return cntn, cntp
+}
+
+func LoadJsonFile(filename string) JobInfo {
+	j := JobInfo{}
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return j
+	}
+	err = json.Unmarshal(data, &j)
+	if err != nil {
+		return j
+	}
+	return j
 }

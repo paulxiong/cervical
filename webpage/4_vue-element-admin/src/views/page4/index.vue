@@ -97,6 +97,7 @@ export default {
       medicalids_checked: [],
       tableDataTotal: 0,
       tableData: [],
+      value: '',
       modules: [{
         value: '1',
         label: 'UNET 好'
@@ -225,6 +226,7 @@ export default {
     createdataset2() {
       var postdata = {
         medicalids: this.medicalids_checked,
+        batchids: this.batchs_checked,
         desc: this.desc
       }
       this.createdataset(postdata)
@@ -232,6 +234,7 @@ export default {
     getImageNPCount() {
       var postdata = {
         medicalids: this.medicalids_checked,
+        batchids: this.batchs_checked,
         desc: this.desc
       }
       console.log(this.medicalids_checked)
@@ -256,6 +259,7 @@ export default {
       console.log(index, row)
     },
     handleDetail(index, row) {
+      this.$router.push({ path: '/page4/details' || '/', query: { 'id': row.id }})
       console.log(index, row)
     }
   }
