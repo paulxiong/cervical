@@ -7,19 +7,22 @@ from step2v2.schwaebische_nuclei_predict_v2 import step2v2
 from step3v2 import step3v2
 from src.utilslib.webserverapi import get_one_job, post_job_status
 from src.utilslib.logger import  logger
+from step7v2 import step7v2
 
 class cell_crop():
     def __init__(self, jobId, jobdir):
         self.jid = jobId
         #path
-        self.scratchdir = './scratch'
+        self.scratchdir = '/ai/cervical.git-master/webpage/2_api_server/scratch'
         self.jobdir = self.scratchdir + '/' + jobdir                            # path of every job
         self.filelist = self.jobdir + '/filelist.csv'
+        self.infojson = self.jobdir + '/info.json'
         self.input_datasets = self.jobdir + '/input_datasets'                  # input FOV images and csv
         self.input_datasets_denoising = self.jobdir + '/input_datasets_denoising' # denoised images
         self.middle_mask = self.jobdir + '/middle_mask'                           # images mask
         self.output_datasets = self.jobdir + '/output_datasets'                   # croped cells
         self.output_datasets_npy = self.jobdir + '/output_datasets/npy'                   # croped cells
+        self.output_datasets_slide_npy = self.jobdir + '/output_datasets/slide_npy'
         #const path
         self.modpath = './src/SEGMENT/kaggle-dsb2018/src/all_output'
         self.datasets_train_path = 'datasets/segment/stage1_train'
@@ -109,6 +112,17 @@ if __name__ == '__main__':
             continue
         j.logger.info("end step3...")
 
+
+        j.logger.info("begain step7...")
+        try:
+            ret = step7v2(j)
+        except Exception as ex:
+            j.failed(ex)
+            continue
+        else:
+            if ret is False:
+                j.failed("step7 failed")
+                continue
 
         j.done('done!')
 
