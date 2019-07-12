@@ -111,7 +111,7 @@ def mark_contours(mask):
     padded_mask = np.pad(mask.copy(), ((padded,padded), (padded,padded), (0,0)), 'edge')
     
     _,thresh = cv2.threshold(padded_mask,127,255,cv2.THRESH_BINARY)
-    _, contours, _ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     
     contoured_rgb = cv2.drawContours(background_rgb,contours,-1,(255,255,255),1) 
     contoured_gray = cv2.cvtColor(contoured_rgb, cv2.COLOR_RGB2GRAY)    

@@ -20,13 +20,16 @@ def step7v2(job):
         return False
 
     job_info = load_json_file(job.infojson)
-    job_info['input_datasets_img']        = get_path(glob.glob(os.path.join(job.input_datasets + '/*/', "*.JPG")), job.jobdir)
-    job_info['input_datasets_csv']        = get_path(glob.glob(os.path.join(job.input_datasets + '/*/', "*.csv")), job.jobdir)
-    job_info['input_datasets_denoising']  = get_path(glob.glob(os.path.join(job.input_datasets_denoising + '/*/*/', "*.png")), job.jobdir)
-    job_info['middle_mask']               = get_path(glob.glob(os.path.join(job.middle_mask + '/' + 'predict/test/colour' + '/*/', "*.png")), job.jobdir)
-    job_info['output_datasets_crop']      = get_path(glob.glob(os.path.join(job.output_datasets + '/*output/' + 'crops/' + '*.png')), job.jobdir)
-    job_info['output_datasets_npy']       = get_path(glob.glob(os.path.join(job.output_datasets_npy + '/' + '*.png')), job.jobdir)
-    job_info['output_datasets_slide_npy'] = get_path(glob.glob(os.path.join(job.output_datasets_slide_npy + '/' + '*.npy')), job.jobdir)
+    job_info['input_datasets_img']           = get_path(glob.glob(os.path.join(job.input_datasets + '/*/', "*.JPG")), job.jobdir)
+    job_info['input_datasets_csv']           = get_path(glob.glob(os.path.join(job.input_datasets + '/*/', "*.csv")), job.jobdir)
+    job_info['input_datasets_denoising']     = get_path(glob.glob(os.path.join(job.input_datasets_denoising + '/*/*/', "*.png")), job.jobdir)
+    job_info['middle_mask']                  = get_path(glob.glob(os.path.join(job.middle_mask + '/' + 'predict/test/colour' + '/*/', "*.png")), job.jobdir)
+    job_info['output_datasets_crop']         = get_path(glob.glob(os.path.join(job.output_datasets + '/*output/' + 'crops/' + '*.png')), job.jobdir)
+    job_info['output_datasets_crop_n']       = get_path(glob.glob(os.path.join(job.output_datasets + '/*_N_*output/' + 'crops/' + '*.png')), job.jobdir)
+    job_info['output_datasets_crop_p']       = get_path(glob.glob(os.path.join(job.output_datasets + '/*_P_*output/' + 'crops/' + '*.png')), job.jobdir)
+    job_info['output_datasets_crop_preview'] = get_path(glob.glob(os.path.join(job.output_datasets + '/*output/' + 'preview/' + 'preview.png')), job.jobdir)
+    job_info['output_datasets_npy']          = get_path(glob.glob(os.path.join(job.output_datasets_npy + '/' + '*.png')), job.jobdir)
+    job_info['output_datasets_slide_npy']    = get_path(glob.glob(os.path.join(job.output_datasets_slide_npy + '/' + '*.npy')), job.jobdir)
     job_info['status'] = 2
 
     with open(job.infojson,'w',encoding='utf-8') as file:

@@ -1,3 +1,26 @@
+# 编译
+```
+$ git clone https://github.com/paulxiong/cervical
+$ cd cervical
+$ git checkout origin/nu_gan_archive -b nu_gan_archive
+$ cd segmentation
+$ docker build -f Dockerfile -t lambdazhang/raidcdn:cervical_crop_20190712 ..
+```
+
+# 运行
+```
+$ docker run -d --name='cervical_crop' \
+    --log-opt max-size=100m \
+    -v /data/km/cervical:/ai \
+    -e WEBURL='http://192.168.1.66:9000' \
+    -e SCRATCHDIR='/ai/thumbor/data/loader/scratch' \
+    -e CSVDIR='/ai/thumbor/data/loader/csv' \
+    -e IMGDIR='/ai/thumbor/data/loader/img' \
+    -e TRAINDATASETS='/ai/thumbor/data/loader/datasets/stage1_train' \
+    -e MODDIR='/ai/thumbor/data/loader/modules/1' \
+    lambdazhang/raidcdn:cervical_crop_20190712 python3 main.py
+```
+
 # final_medical_cervix
 final_medical_cervix AI project
 

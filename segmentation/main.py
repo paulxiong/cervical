@@ -13,7 +13,7 @@ class cell_crop():
     def __init__(self, jobId, jobdir):
         self.jid = jobId
         #path
-        self.scratchdir = '/ai/cervical.git-master/webpage/2_api_server/scratch'
+        self.scratchdir = os.environ.get('SCRATCHDIR', './scratch')
         self.jobdir = self.scratchdir + '/' + jobdir                            # path of every job
         self.filelist = self.jobdir + '/filelist.csv'
         self.infojson = self.jobdir + '/info.json'
@@ -24,10 +24,10 @@ class cell_crop():
         self.output_datasets_npy = self.jobdir + '/output_datasets/npy'                   # croped cells
         self.output_datasets_slide_npy = self.jobdir + '/output_datasets/slide_npy'
         #const path
-        self.modpath = './src/SEGMENT/kaggle-dsb2018/src/all_output'
-        self.datasets_train_path = 'datasets/segment/stage1_train'
-        self.csvroot = '/ai/lambdatest/csv'
-        self.imgroot= '/ai/lambdatest/img'
+        self.modpath = os.environ.get('MODDIR', './src/SEGMENT/kaggle-dsb2018/src/all_output')
+        self.datasets_train_path = os.environ.get('TRAINDATASETS', 'datasets/segment/stage1_train')
+        self.csvroot = os.environ.get('CSVDIR', './csv')
+        self.imgroot= os.environ.get('IMGDIR', './img')
         #config
         self.action = 'predict_test'
         self.cuda_device = '1'
