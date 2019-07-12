@@ -14,84 +14,85 @@
           </div>
         </el-collapse-item>
         <el-collapse-item title="(step0)  原始数据" name="2">
-          <el-table :data="input_datasets_img" style="width: 100%">
-            <el-table-column label="图片链接" width="900">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>图片链接: {{ scope.row }}</p>
-                  <img id="hallstatt" src="http://9201.gpu.raidcdn.cn:9700/unsafe/645x0/20190523/1813330/Images/IMG001x014.JPG" class="annotatable">
-                  <div slot="reference" class="name-wrapper">
-                    <p size="medium">{{ scope.row }}</p>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="popover-container">
+            <div v-for="url in input_datasets_img" :key="url.path">
+              <el-popover trigger="hover" placement="top">
+                <p>图片链接: {{ url.path }}</p>
+                <el-image :src="url.big" class="img-step0" />
+                <div slot="reference" class="name-wrapper">
+                  <el-image :src="url.small" class="img-step0" />
+                </div>
+              </el-popover>
+            </div>
+          </div>
         </el-collapse-item>
         <el-collapse-item title="(step1)  去噪后的数据" name="3">
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column label="图片链接" width="900">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>住址: {{ scope.row.address }}</p>
-                  <img id="hallstatt" src="http://9201.gpu.raidcdn.cn:9700/unsafe/645x0/20190523/1813330/Images/IMG001x014.JPG" class="annotatable">
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag size="medium">{{ scope.row.address }}</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="popover-container">
+            <div v-for="url in input_datasets_denoising" :key="url.path">
+              <el-popover trigger="hover" placement="top">
+                <p>图片链接: {{ url.path }}</p>
+                <el-image :src="url.big" class="img-step0" />
+                <div slot="reference" class="name-wrapper">
+                  <el-image :src="url.small" class="img-step0" />
+                </div>
+              </el-popover>
+            </div>
+          </div>
         </el-collapse-item>
         <el-collapse-item title="(step2)  mask图片" name="4">
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column label="图片链接" width="900">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>住址: {{ scope.row.address }}</p>
-                  <img id="hallstatt" src="http://9201.gpu.raidcdn.cn:9700/unsafe/645x0/20190523/1813330/Images/IMG001x014.JPG" class="annotatable">
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag size="medium">{{ scope.row.address }}</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="popover-container">
+            <div v-for="url in middle_mask" :key="url.path">
+              <el-popover trigger="hover" placement="top">
+                <p>图片链接: {{ url.path }}</p>
+                <el-image :src="url.big" class="img-step0" />
+                <div slot="reference" class="name-wrapper">
+                  <el-image :src="url.small" class="img-step0" />
+                </div>
+              </el-popover>
+            </div>
+          </div>
         </el-collapse-item>
-        <el-collapse-item title="(step3)  输出数据" name="5">
-          <el-table :data="tableData" style="width: 100%">
-            <el-table-column label="图片链接" width="900">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>住址: {{ scope.row.address }}</p>
-                  <img id="hallstatt" src="http://9201.gpu.raidcdn.cn:9700/unsafe/645x0/20190523/1813330/Images/IMG001x014.JPG" class="annotatable">
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag size="medium">{{ scope.row.address }}</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+        <el-collapse-item title="(step3)  输出数据 crop_preview" name="5">
+          <div class="popover-container">
+            <div v-for="url in output_datasets_crop_preview" :key="url.path">
+              <el-popover trigger="hover" placement="top">
+                <p>图片链接: {{ url.path }}</p>
+                <el-image :src="url.big" class="img-step0" />
+                <div slot="reference" class="name-wrapper">
+                  <el-image :src="url.small" class="img-step0" />
+                </div>
+              </el-popover>
+            </div>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item title="(step3)  输出数据 crop N" name="6">
+          <div class="popover-container">
+            <div v-for="url in output_datasets_crop_n" :key="url.path">
+              <el-popover trigger="hover" placement="top">
+                <p>图片链接: {{ url.path }}</p>
+                <el-image :src="url.big" class="img-step0" />
+                <div slot="reference" class="name-wrapper">
+                  <el-image :src="url.small" class="img-step0" />
+                </div>
+              </el-popover>
+            </div>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item title="(step3)  输出数据 crop P" name="7">
+          <div class="popover-container">
+            <div v-for="url in output_datasets_crop_p" :key="url.path">
+              <el-popover trigger="hover" placement="top">
+                <p>图片链接: {{ url.path }}</p>
+                <el-image :src="url.big" class="img-step0" />
+                <div slot="reference" class="name-wrapper">
+                  <el-image :src="url.small" class="img-step0" />
+                </div>
+              </el-popover>
+            </div>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item title="后台log" name="8">
+          <el-input v-model="textarea" type="textarea" :rows="2" placeholder="后台log" autosize readonly>1</el-input>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -99,13 +100,19 @@
 </template>
 
 <script>
-import { getjobresult } from '@/api/cervical'
+import { getjobresult, getjoblog } from '@/api/cervical'
 import { dateformat2 } from '@/utils/dateformat'
 export default {
   name: 'Info',
   components: { },
   data() {
     return {
+      hosturlpath: 'http://9201.gpu.raidcdn.cn:9700/unsafe/',
+      hosturlpath200: '',
+      hosturlpath645: '',
+      hosturlpath16: '',
+      hosturlpath64: '',
+      textarea: '',
       id: 0,
       desc: '',
       dir: '',
@@ -124,35 +131,45 @@ export default {
       output_datasets_npy: [],
       output_datasets_slide_npy: [],
       output_datasets_crop: [],
-      activeNames: ['1'],
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      output_datasets_crop_n: [],
+      output_datasets_crop_p: [],
+      output_datasets_crop_preview: [],
+      activeNames: ['1']
     }
   },
   computed: {
   },
   created() {
     this.id = this.$route.query.id
+    this.hosturlpath200 = this.hosturlpath + '200x0/scratch/'
+    this.hosturlpath16 = this.hosturlpath + '32x0/scratch/'
+    this.hosturlpath645 = this.hosturlpath + '800x0/scratch/'
+    this.hosturlpath64 = this.hosturlpath + '64x0/scratch/'
     this.getjobresult(this.id)
+    this.getjoblog(this.id)
   },
   methods: {
     handleChange(val) {
       console.log(val)
+    },
+    getimgurl(smallurl, bigurl, patharr) {
+      var out = []
+      for (var i = 0; i < patharr.length; i++) {
+        var item = patharr[i]
+        var url = smallurl + this.dir + '/' + item
+        var url2 = bigurl + this.dir + '/' + item
+        out.push({ 'small': url, 'big': url2, 'path': item })
+      }
+      return out
+    },
+    getjoblog(id) {
+      getjoblog({ 'id': id }).then(response => {
+        if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'string') {
+          return
+        }
+        const { data } = response.data
+        this.textarea = data
+      })
     },
     getjobresult(id) {
       getjobresult({ 'id': id }).then(response => {
@@ -173,7 +190,17 @@ export default {
         this.medicalids = data.medicalids
         this.createdatts = dateformat2(data.createdatts)
         this.starttimets = dateformat2(data.starttimets)
-        this.input_datasets_img = [].concat(data.input_datasets_img)
+        this.input_datasets_img = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.input_datasets_img)
+        this.input_datasets_denoising = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.input_datasets_denoising)
+        this.middle_mask = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.middle_mask)
+        this.output_datasets_npy = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_npy)
+        this.output_datasets_slide_npy = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_slide_npy)
+        this.output_datasets_crop_preview = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_crop_preview)
+        this.output_datasets_crop = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop)
+        this.output_datasets_crop_n = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_n)
+        this.output_datasets_crop_p = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_p)
+        this.cellcntn = this.output_datasets_crop_n.length
+        this.cellcntp = this.output_datasets_crop_p.length
       })
     }
   }
@@ -181,9 +208,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .img-step0 {
+    border: 1px solid #11b95c;
+    margin: 1px 1px 0px 0px;
+  }
+  .popover-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
   .dashboard-container {
     margin: 10px 10px 10px 10px;
-    max-width: 1024px;
+    max-width: 1050px;
   }
   .box1-container {
     padding: 12px;

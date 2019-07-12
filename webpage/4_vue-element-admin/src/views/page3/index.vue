@@ -77,7 +77,7 @@ export default {
       this.$refs.singleTable.setCurrentRow(row)
     },
     handleCurrentChange(val) {
-      this.imgrl = 'http://9201.gpu.raidcdn.cn:9700/unsafe/645x0/' + val.batchid + '/' + val.medicalid + '/Images/' + val.imgpath
+      this.imgrl = 'http://9201.gpu.raidcdn.cn:9700/unsafe/645x0/img/' + val.batchid + '/' + val.medicalid + '/Images/' + val.imgpath
       this.getLabelByImageId(100, 0, val.id)
     },
     handleCurrentChange2(val) {

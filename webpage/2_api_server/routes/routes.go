@@ -66,6 +66,7 @@ func Router() *gin.Engine {
 	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
 	api1.GET("/jobresult", ctr.GetJobResult)
+	api1.GET("/joblog", ctr.GetJobLog)
 	api1.GET("/listdatasets", ctr.ListDatasets)
 
 	api1.Use(authMiddleware.MiddlewareFunc())

@@ -69,8 +69,6 @@
         </div>
         <p>4 请选择操作：</p>
         <div class="box1-container">
-          <p>N={{ countn }} / P={{ countp }} 总计 {{ countnp }} 张FOV图片</p>
-          <el-button type="primary" icon="upload" @click="getImageNPCount">统计选中病例图片的数量</el-button>
           <el-button type="primary" icon="upload" @click="createdataset2">生成并切割数据集</el-button>
         </div>
       </el-tab-pane>
@@ -155,11 +153,11 @@ export default {
         that.medicalids = (data.medicalids) ? data.medicalids.concat([]) : []
       })
     },
-    getimgnptypebymids(postdata) {
+    getimgnptypebymids(postdata, cb) {
       var that = this
       getimgnptypebymids(postdata).then(response => {
         if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'object') {
-          return
+          return cb && cb()
         }
         const { data } = response.data
         if (!data.countn || !data.countp) {
@@ -171,6 +169,7 @@ export default {
         that.countn = data.countn
         that.countp = data.countp
         that.countnp = that.countn + that.countp
+        return cb && cb()
       })
     },
     createdataset(postdata) {
@@ -229,7 +228,26 @@ export default {
         batchids: this.batchs_checked,
         desc: this.desc
       }
-      this.createdataset(postdata)
+      var that = this
+      this.getimgnptypebymids(postdata, function() {
+        var tip = '准备生成和处理数据集【选中原图数量 N: ' + that.countn + ' / P: ' + that.countp + ' 】, 是否继续?'
+        that.$confirm(tip, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          that.createdataset(postdata)
+          that.$message({
+            type: 'success',
+            message: '开始创建和处理数据集!'
+          })
+        }).catch(() => {
+          that.$message({
+            type: 'info',
+            message: '已取消创建'
+          })
+        })
+      })
     },
     getImageNPCount() {
       var postdata = {

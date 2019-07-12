@@ -103,3 +103,11 @@ export function getjobresult(query) {
     params: query
   })
 }
+
+export function getjoblog(query) {
+  return request({
+    url: '/api1/joblog',
+    method: 'get',
+    params: query
+  })
+}

@@ -2,6 +2,7 @@ package function
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -52,29 +53,32 @@ const (
 	output_datasets          = "output_datasets"
 	image_root               = ""
 	csv_root                 = ""
-	scratch_root             = "scratch"
+	scratch_root             = "/data/km/cervical/thumbor/data/loader/scratch"
 )
 
 type JobInfo struct {
-	Id                        int64    `json:"id"`
-	Desc                      string   `json:"desc"`
-	Dir                       string   `json:"dir"`
-	Batchids                  []string `json:"batchids"`
-	Medicalids                []string `json:"medicalids"`
-	Status                    int      `json:"status"`
-	Cntn                      int      `json:"cntn"`
-	Cntp                      int      `json:"cntp"`
-	CellCntn                  int      `json:"cellcntn"`
-	CellCntp                  int      `json:"cellcntp"`
-	Createdatts               int64    `json:"createdatts"`
-	Starttimets               int64    `json:"starttimets"`
-	Input_datasets_img        []string `json:"input_datasets_img"`
-	Input_datasets_csv        []string `json:"input_datasets_csv"`
-	Input_datasets_denoising  []string `json:"input_datasets_denoising"`
-	Middle_mask               []string `json:"middle_mask"`
-	Output_datasets_crop      []string `json:"output_datasets_crop"`
-	Output_datasets_npy       []string `json:"output_datasets_npy"`
-	Output_datasets_slide_npy []string `json:"output_datasets_slide_npy"`
+	Id                           int64    `json:"id"`
+	Desc                         string   `json:"desc"`
+	Dir                          string   `json:"dir"`
+	Batchids                     []string `json:"batchids"`
+	Medicalids                   []string `json:"medicalids"`
+	Status                       int      `json:"status"`
+	Cntn                         int      `json:"cntn"`
+	Cntp                         int      `json:"cntp"`
+	CellCntn                     int      `json:"cellcntn"`
+	CellCntp                     int      `json:"cellcntp"`
+	Createdatts                  int64    `json:"createdatts"`
+	Starttimets                  int64    `json:"starttimets"`
+	Input_datasets_img           []string `json:"input_datasets_img"`
+	Input_datasets_csv           []string `json:"input_datasets_csv"`
+	Input_datasets_denoising     []string `json:"input_datasets_denoising"`
+	Middle_mask                  []string `json:"middle_mask"`
+	Output_datasets_crop         []string `json:"output_datasets_crop"`
+	Output_datasets_crop_n       []string `json:"output_datasets_crop_n"`
+	Output_datasets_crop_p       []string `json:"output_datasets_crop_p"`
+	Output_datasets_npy          []string `json:"output_datasets_npy"`
+	Output_datasets_slide_npy    []string `json:"output_datasets_slide_npy"`
+	Output_datasets_crop_preview []string `json:"output_datasets_crop_preview"`
 }
 
 func WriteJson(cfg string, jsonByte []byte) {
@@ -90,6 +94,15 @@ func WriteJson(cfg string, jsonByte []byte) {
 func GetInfoJsonPath(d m.Dataset) string {
 	infopath := scratch_root + "/" + d.Dir + "/info.json"
 	return infopath
+}
+
+func GetLogContent(d m.Dataset) string {
+	logpath := scratch_root + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.Id)
+	data, err := ioutil.ReadFile(logpath)
+	if err != nil {
+		return string(data)
+	}
+	return string(data)
 }
 
 func NewJsonFile(d m.Dataset, batchids []string, medicalids []string, cntn int, cntp int) {

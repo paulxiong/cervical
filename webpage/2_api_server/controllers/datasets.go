@@ -417,3 +417,19 @@ func GetJobResult(c *gin.Context) {
 
 	return
 }
+
+func GetJobLog(c *gin.Context) {
+	id_str := c.DefaultQuery("id", "1")
+	id, _ := strconv.ParseInt(id_str, 10, 64)
+
+	d, _ := m.GetOneDatasetById(int(id))
+
+	j := f.GetLogContent(d)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   j,
+	})
+
+	return
+}
