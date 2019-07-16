@@ -1,5 +1,10 @@
+opencv-python==4.1.0.25
+cachetools==3.1.1
+large-image==1.0.0.dev55
+Shapely==1.6.4.post2
+future==0.17.1
+imageio==2.5.0
+imgaug==0.2.9
 torch==0.3.1
-opencv-python==4.0.0
-large_image==1.0.0
-torchvision==0.2.2
-imgaug==2.5.0
+torchvision==0.1.9
+tensorboardX==1.4
