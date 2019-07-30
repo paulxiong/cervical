@@ -761,6 +761,22 @@ def train_predict(positive_train_npy, positive_test_npy,negative_train_npy, nega
     
     return netD, netG, netD_D, netD_Q, eval_vect
 
+def train_predictv2(positive_train_npy, positive_test_npy, negative_train_npy, negative_test_npy,
+          netD, netG, netD_D, netD_Q, netD_path, netD_Q_path, experiment_root, batchsize=32, dis_category=5):
+    positive_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_train_npy]
+    positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
+    negative_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_train_npy]
+    negative_test_loader =  [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_test_npy]
+
+    netD.load_state_dict(torch.load(netD_path))
+    netD_Q.load_state_dict(torch.load(netD_Q_path))
+
+    netD.eval()
+    netD_Q.eval()
+
+    eval_vect = image_level_accuracy(positive_train_loader, positive_test_loader, negative_train_loader,
+                                     negative_test_loader, netD, netD_Q, dis_category, experiment_root)
+    return netD, netG, netD_D, netD_Q, eval_vect
 
 def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root, clf_ts):
     

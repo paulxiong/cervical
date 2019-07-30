@@ -135,10 +135,41 @@ def image_classification(positive_images_root, negative_images_root, positive_np
                    n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
                    ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
                    
-                   
+def image_classificationv2(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root,
+                           intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root,
+                           fold = 4, random_seed=42, choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1,
+                           dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100):
 
-      
-                   
+    positive_npy_path = [positive_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_images_root)]
+    negative_npy_path =[negative_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_images_root)]
+
+    positive_train_list, positive_test_list = split_dataset(positive_npy_path, fold, random_seed)
+    negative_train_list, negative_test_list = split_dataset(negative_npy_path, fold, random_seed)
+
+    positive_train_npy = [np.load(n) for n in positive_train_list[choosing_fold]]
+    positive_test_npy = [np.load(n) for n in positive_test_list[choosing_fold]]
+    negative_train_npy = [np.load(n) for n in negative_train_list[choosing_fold]]
+    negative_test_npy = [np.load(n) for n in negative_test_list[choosing_fold]]
+
+    #print(np.array(positive_train_npy).shape, np.array(negative_train_npy).shape)
+    print(np.concatenate(positive_train_npy).shape, np.concatenate(negative_train_npy).shape)
+    cell_train_set = np.concatenate([np.concatenate(positive_train_npy), np.concatenate(negative_train_npy)])
+
+    X_train = np.load(X_train_path)
+    X_test = np.load(X_test_path)
+    y_train = np.load(y_train_path)
+    y_test = np.load(y_test_path)
+    cell_test_set = np.concatenate([X_train, X_test])
+    cell_test_label = np.concatenate([y_train, y_test])
+    cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q =  train(cell_train_set, cell_test_set, cell_test_label,
+                   positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+                   netD, netG, netD_D, netD_Q, experiment_root,
+                   n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category,
+                   ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
+
 def image_classification_segment(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
                         positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                       ref_path, intensity, X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, multi_core = True,
@@ -206,8 +237,55 @@ def image_classification_train(positive_images_root, negative_images_root, posit
                              })
     res_df = train_df.append(test_df, ignore_index=True)
     res_df.to_csv("./svm_result.csv")
-    
-    
+
+def image_classification_trainv2(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root,
+                                 intensity, X_train_path, X_test_path, y_train_path, y_test_path, netD_path, netD_Q_path,
+                                 experiment_root, fold=4, random_seed=42, choosing_fold=1, batchsize=32, rand=64,
+                                 dis_category=5):
+    positive_npy_path = [positive_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_images_root)]
+    negative_npy_path =[negative_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_images_root)]
+
+    positive_train_list, positive_test_list = split_dataset(positive_npy_path, fold, random_seed)
+    negative_train_list, negative_test_list = split_dataset(negative_npy_path, fold, random_seed)
+
+    positive_train_npy = [np.load(n) for n in positive_train_list[choosing_fold]]
+    negative_train_npy = [np.load(n) for n in negative_train_list[choosing_fold]]
+
+    positive_test_npy = [np.load(n) for n in positive_test_list[choosing_fold]]
+    negative_test_npy = [np.load(n) for n in negative_test_list[choosing_fold]]
+
+    #print(np.array(positive_train_npy).shape, np.array(negative_train_npy).shape)
+    print(np.concatenate(positive_train_npy).shape, np.concatenate(negative_train_npy).shape)
+    cell_train_set = np.concatenate([np.concatenate(positive_train_npy), np.concatenate(negative_train_npy)])
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q, eval_vect = train_predictv2(positive_train_npy, positive_test_npy,negative_train_npy,
+                   negative_test_npy, netD, netG, netD_D, netD_Q, netD_path, netD_Q_path, experiment_root,
+                   batchsize=batchsize, dis_category=dis_category)
+
+    print("Generate result:")
+    train_feat, train_predict_label, test_feat, test_predict_label = eval_vect
+    train_files = positive_train_list[choosing_fold] + negative_train_list[choosing_fold]
+    train_true_label = len(positive_train_list[choosing_fold])*[1] + len(negative_train_list[choosing_fold])*[0]
+    print(len(train_feat), len(train_files), len(train_predict_label), len(train_true_label))
+    train_df = pd.DataFrame({'ImageName':  [os.path.basename(file).split('.')[0] for file in train_files],
+                             'FeatureVector': [feat for feat in train_feat],
+                             'PredictLabel': [pl for pl in train_predict_label],
+                             'TrueLabel': train_true_label,
+                             'Dataset': ['Train'] * len(train_files)
+                            })
+
+    test_files = positive_test_list[choosing_fold] + negative_test_list[choosing_fold]
+    test_true_label = len(positive_test_list[choosing_fold])*[1] + len(negative_test_list[choosing_fold])*[0]
+    test_df = pd.DataFrame({'ImageName':  [os.path.basename(file).split('.')[0] for file in test_files],
+                             'FeatureVector': [feat for feat in test_feat],
+                             'PredictLabel': [pl for pl in test_predict_label],
+                             'TrueLabel': test_true_label,
+                             'Dataset': ['Test'] * len(test_files)
+                             })
+    res_df = train_df.append(test_df, ignore_index=True)
+    res_df.to_csv("./svm_result.csv")
+
 def image_classification_predict(positive_test_images_root, negative_test_images_root, positive_test_npy_root,negative_test_npy_root,
                       ref_path, intensity, experiment_root, rand=64, dis_category=5):
 
