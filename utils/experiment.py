@@ -339,7 +339,53 @@ def image_classification_predict(positive_test_images_root, negative_test_images
                            'Feature Vector':[feat for feat in feature_dics[-negative_cnt:]]
     })
     res_df.to_csv('./negative_res.csv')
-            
-            
-        
-             
+
+def image_classification_predictv2(positive_test_images_root, negative_test_images_root, positive_test_npy_root,
+        negative_test_npy_root, intensity, experiment_root, netD_path, netD_Q_path, clf_model,
+        rand=64, dis_category=5):
+
+    positive_test_npy_path = [positive_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(positive_test_images_root)]
+    negative_test_npy_path =[negative_test_npy_root +str(intensity)+'/' + n[:-3] + 'npy' for n in os.listdir(negative_test_images_root)]
+
+    positive_test_list = positive_test_npy_path
+    negative_test_list = negative_test_npy_path
+
+    positive_test_npy = [np.load(n) for n in positive_test_list]
+    negative_test_npy = [np.load(n) for n in negative_test_list]
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q, predict_label, feature_dics =  predictv2(positive_test_npy, negative_test_npy,
+        netD_path, netD_Q_path, netD, netG, netD_D, netD_Q, experiment_root, clf_model, dis_category=dis_category)
+    print("Positive image predict result:")
+    positive_files = os.listdir(positive_test_images_root)
+    positive_cnt = len(positive_files)
+
+    if positive_cnt > 100:
+        print('The positive images number is greater than 100. Please check the ./positive_res.csv')
+    else:
+        for image_file, pred_l in zip(positive_files, predict_label[:positive_cnt]):
+            basename = image_file.split('.')[0]
+            print("Image Name: {}; Predict Label: {}".format(basename, 'P' if pred_l else 'N'))
+
+    res_df = pd.DataFrame({'Image Name': [file.split('.')[0] for file in positive_files],
+                           'Predict Label': ['P' if pl else 'N' for pl in predict_label[:positive_cnt] ],
+                           'Feature Vector':[feat for feat in feature_dics[:positive_cnt]]
+    })
+    res_df.to_csv('./positive_res.csv')
+
+    print("Negative image predict result:")
+    negative_files = os.listdir(negative_test_images_root)
+    negative_cnt = len(negative_files)
+
+    if negative_cnt > 100:
+        print('The negative images number is greater than 100. Please check the ./negative_res.csv')
+    else:
+        for image_file, pred_l in zip(negative_files, predict_label[-negative_cnt:]):
+            basename = image_file.split('.')[0]
+            print("Image Name: {}; Predict Label: {}".format(basename, 'P' if pred_l else 'N'))
+
+    res_df = pd.DataFrame({'Image Name': [file.split('.')[0] for file in negative_files],
+                           'Predict Label': ['P' if pl else 'N' for pl in predict_label[-negative_cnt:] ],
+                           'Feature Vector':[feat for feat in feature_dics[-negative_cnt:]]
+    })
+    res_df.to_csv('./negative_res.csv')

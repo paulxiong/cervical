@@ -816,8 +816,38 @@ def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_
     feature_dics = np.concatenate([feature_dics_1, feature_dics_0])
     return predict_label, feature_dics
 
+def image_level_predictv2(positive_test_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root, clf_model):
+    proportion_test_1,feature_dics_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
+    proportion_test_0,feature_dics_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
 
-   
+    true_test_label =[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
+
+    print("True test labels", true_test_label)
+
+    with open(clf_model) as f:
+        clf = pickle.load(f)
+    predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
+
+    print('SVM - f1_score:', f1_score(true_test_label,
+                             predict_label, average='weighted'),
+          'recall:', recall_score(true_test_label,
+                             predict_label, average='weighted'),
+          'precision:', precision_score(true_test_label,
+                             predict_label, average='weighted'))
+
+    with open(experiment_root + "log","a") as f:
+        f.write('SVM - f1_score:'+ str(f1_score(true_test_label,
+                             predict_label, average='weighted'))+ '\n' +
+          'recall:'+ str(recall_score(true_test_label,
+                             predict_label, average='weighted'))+ '\n' +
+          'precision:'+ str(precision_score(true_test_label,
+                             predict_label, average='weighted'))+ '\n')
+
+    print("SVM predict_label", predict_label)
+
+    feature_dics = np.concatenate([feature_dics_1, feature_dics_0])
+    return predict_label, feature_dics
+
 def predict(positive_test_npy,  negative_test_npy,
           netD, netG, netD_D, netD_Q, experiment_root,dis_category=5):
     
@@ -848,6 +878,21 @@ def predict(positive_test_npy,  negative_test_npy,
     
     return netD, netG, netD_D, netD_Q, predict_label, feature_dics
 
+def predictv2(positive_test_npy, negative_test_npy, netD_path, netD_Q_path,
+          netD, netG, netD_D, netD_Q, experiment_root, clf_model, dis_category=5):
+
+    positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
+    negative_test_loader =  [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_test_npy]
+
+    netD.load_state_dict(torch.load(netD_path))
+    netD_Q.load_state_dict(torch.load(netD_Q_path))
+
+    netD.eval()
+    netD_Q.eval()
+
+    predict_label, feature_dics = image_level_predictv2(positive_test_loader,negative_test_loader , netD, netD_Q, dis_category, experiment_root, clf_model)
+
+    return netD, netG, netD_D, netD_Q, predict_label, feature_dics
 
 def train_representation(cell_array, test_array, test_label, netD, netG, netD_D, netD_Q,
                          experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 

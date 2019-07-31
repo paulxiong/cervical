@@ -1,6 +1,6 @@
 import os
 import time
-from utils.experiment import image_classificationv2, image_classification_trainv2
+from utils.experiment import image_classificationv2, image_classification_trainv2, image_classification_predictv2
 import numpy as np
 
 class cervical_gan():
@@ -18,6 +18,12 @@ class cervical_gan():
         self.X_test_path  = self.experiment_root + 'data/cell_level_label/X_test.npy'
         self.y_train_path = self.experiment_root + 'data/cell_level_label/y_train.npy'
         self.y_test_path  = self.experiment_root + 'data/cell_level_label/y_test.npy'
+
+        self.positive_test_images_root = self.experiment_root + "data/original/positive_test_images/"
+        self.negative_test_images_root = self.experiment_root + "data/original/negative_test_images/"
+        self.positive_test_npy_root    = self.experiment_root + "data/segmented/positive_test_npy/"
+        self.negative_test_npy_root    = self.experiment_root + "data/segmented/negative_test_npy/"
+        self.ref_path = ""
 
         self.n_epoch = 2
         self.batchsize = 36
@@ -42,6 +48,7 @@ class cervical_gan():
 
         self.netD_path   = self.experiment_root + "model/netD_0.37644110275689224_1.6596411766945283_0.pth"
         self.netD_Q_path = self.experiment_root + "model/netD_Q_0.37644110275689224_1.6596411766945283_0.pth"
+        self.clf_model   = self.experiment_root + "clf_model/svm_1564542659.model"
 
     def train_gan(self):
         image_classificationv2(self.positive_images_root, self.negative_images_root,
@@ -50,6 +57,7 @@ class cervical_gan():
             self.experiment_root, self.fold, self.random_seed, self.choosing_fold,
             self.n_epoch, self.batchsize, self.rand, self.dis, self.dis_category,
             self.ld, self.lg, self.lq, self.save_model_steps)
+
     def train2(self):
         image_classification_trainv2(self.positive_images_root, self.negative_images_root,
             self.positive_npy_root, self.negative_npy_root, self.intensity,
@@ -57,7 +65,14 @@ class cervical_gan():
             self.netD_path, self.netD_Q_path, self.experiment_root, self.fold, self.random_seed, self.choosing_fold,
             self.batchsize, self.rand, self.dis_category)
 
+    def train3(self):
+        image_classification_predictv2(self.positive_test_images_root, self.negative_test_images_root,
+            self.positive_test_npy_root, self.negative_test_npy_root,
+            self.intensity, self.experiment_root, self.netD_path, self.netD_Q_path,
+            self.clf_model, dis_category=self.dis_category)
+
 if __name__ == '__main__':
     cgan = cervical_gan('1234567')
     #cgan.train_gan()
-    cgan.train2()
+    #cgan.train2()
+    cgan.train3()
