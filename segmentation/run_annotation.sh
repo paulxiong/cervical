@@ -162,12 +162,12 @@ function check_env()
     fi
     if [ ! -d "./datasets/segment/stage1_train" ];then
         echo "准备U-Net参考训练集"
-        ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/
+        #ln -s /opt/zhuoyao_workspace/medical_ai/datasets/segment/stage1_train ./datasets/segment/
     fi
     
     if [ ! -d "././src/SEGMENT/kaggle-dsb2018/src/all_output" ];then
         echo "准备U-Net模型Weights参数"
-        ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_output/ ./src/SEGMENT/kaggle-dsb2018/src 
+        #ln -s /opt/zhuoyao_workspace/medical_ai/src/SEGMENT/kaggle-dsb2018/src/all_output/ ./src/SEGMENT/kaggle-dsb2018/src
     fi
 }
 
@@ -182,11 +182,11 @@ function detect_testdata()
         
         if [ ! -d "$dir" ];then
         
-            if [ ! -d ~/Dataset/private_cervical/${folder} ];then
-                #echo "~/Dataset/private_cervical/${folder}"
-                echo "原始数据目录不存在，请用命令ls -l ~/Dataset/private_cervical/${folder} 检查原始目录"
-                exit 0
-            fi
+            #if [ ! -d ${folder} ];then
+            #    #echo "~/Dataset/private_cervical/${folder}"
+            #    echo "原始数据目录不存在，请用命令ls -l ~/Dataset/private_cervical/${folder} 检查原始目录"
+            #    exit 0
+            #fi
             
             if [ ! -d './datasets/test_slide' ];then
                 echo "测试数据文件夹不存在，创建..."
@@ -194,7 +194,7 @@ function detect_testdata()
             fi
         
             echo "创建数据目录..."
-            ln -s ~/Dataset/private_cervical/${folder} ./datasets/test_slide/
+            #ln -s ${folder} ./datasets/test_slide/
             
         fi
         
