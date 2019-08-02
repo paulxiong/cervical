@@ -796,6 +796,15 @@ def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_
         clf = pickle.load(f)
     predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
     #调用sklearn库函数计算得分
+    '''
+    TP: 预测为1(Positive)，实际也为1(Truth-预测对了)
+    TN: 预测为0(Negative)，实际也为0(Truth-预测对了)
+    FP: 预测为1(Positive)，实际为0(False-预测错了)
+    FN: 预测为0(Negative)，实际为1(False-预测错了)
+    总的样本个数为：TP+TN+FP+FN
+    Precision = (预测为1且正确预测的样本数)/(所有预测为1的样本数) = TP/(TP+FP)
+    Recall = (预测为1且正确预测的样本数)/(所有真实情况为1的样本数) = TP/(TP+FN)
+    '''
     print('SVM - f1_score:', f1_score(true_test_label, 
                              predict_label, average='weighted'),
           'recall:', recall_score(true_test_label, 
