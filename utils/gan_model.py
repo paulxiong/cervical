@@ -795,7 +795,7 @@ def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_
     with open(experiment_root + '/clf_model/svm_{}.model'.format(ts)) as f:
         clf = pickle.load(f)
     predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
-    
+    #调用sklearn库函数计算得分
     print('SVM - f1_score:', f1_score(true_test_label, 
                              predict_label, average='weighted'),
           'recall:', recall_score(true_test_label, 
@@ -873,7 +873,7 @@ def predict(positive_test_npy,  negative_test_npy,
     netD.eval()
     netD_Q.eval()
     
-    
+    #调用image_level_predict计算recall/precision
     predict_label, feature_dics = image_level_predict(positive_test_loader,negative_test_loader , netD, netD_Q, dis_category, experiment_root, ts)
     
     return netD, netG, netD_D, netD_Q, predict_label, feature_dics
