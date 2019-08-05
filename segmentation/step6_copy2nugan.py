@@ -4,6 +4,7 @@ import parser
 import glob
 import pandas as pd
 import shutil
+#import numpy as np
 import re
 
 from sklearn.model_selection import StratifiedKFold, train_test_split
@@ -40,7 +41,6 @@ class NPDataDivider():
             else:
                 return splits[-2] + '_' + splits[-1] + '_output'
         self.org_df['folder'] = self.org_df['org_path'].apply(get_folder)
-        print(self.org_df)
         
     def copy_original_and_npy(self, org_df, path_fix):
         original_dir = os.path.join(self.output_dir, 'original')
@@ -88,19 +88,36 @@ class NPDataDivider():
             else:
                 dst = os.path.join(neg_dir, dst_name)
                 shutil.copy(dst=dst, src=src)
-    
-            
-    
+
+    def getlistnum(self, li):
+        li = list(li)
+        set1 = set(li)
+        dict1 = {}
+        types_remove = []
+        for item in set1:
+            dict1.update({item:li.count(item)})
+            if(li.count(item)) < 2:
+                types_remove.append(item)
+        return dict1, types_remove
+
     def train_test_split(self):
         if len(self.df) <= 0:
             train_org, test_org = train_test_split(self.org_df, test_size=0.2,
                                                 shuffle=True, random_state=10)
         else:
             df = pd.merge(self.org_df, self.df, how='left', on='folder')
-            #import pdb; pdb.set_trace()
-            print(df)
             y = df['FOV_type']
-            train_org, test_org, _, _ = train_test_split(self.org_df, y, test_size=0.2,
+            #FIXME: remove raws which count(FOV_type) < 2 ??
+            #count of y must >= 2
+            static, remove_arr = self.getlistnum(y)
+            org_df = df[~df['FOV_type'].isin(remove_arr)]
+            y = org_df['FOV_type']
+
+            #FIXME: many be nan ??
+            #remove all raws which FOV_type=nan
+            y = y.dropna(axis=0,how='all')
+
+            train_org, test_org, _, _ = train_test_split(org_df, y, test_size=0.1,
                                                 shuffle=True,stratify=y, random_state=10)
         return train_org, test_org
     
