@@ -69,8 +69,9 @@ class NPDataDivider():
             src = os.path.join(self.npy_dir, file_name)
             if not os.path.exists(src):
                 continue
+            if(len(self.df.loc[self.df['folder']==folder, 'FOV_type']) == 0):
+                continue
             fov_type = self.df.loc[self.df['folder']==folder, 'FOV_type'].values[0]
-            #print(fov_type)
             if fov_type != 0:
                 dst = os.path.join(npy_pos_dir, file_name)
                 shutil.copy(dst=dst, src=src)
