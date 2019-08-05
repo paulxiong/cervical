@@ -56,6 +56,7 @@ def mark_missed_annotation(annotat_img, missed_centr, color_map):
     return annotat_img
     
 def mark_origin_fov(img, class_coords, color_map):
+    annotat_img = None
     for gt in class_coords.keys():
         coords = class_coords[gt]
         for centr in coords:
