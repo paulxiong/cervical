@@ -117,7 +117,7 @@ class NPDataDivider():
             #remove all raws which FOV_type=nan
             y = y.dropna(axis=0,how='all')
 
-            train_org, test_org, _, _ = train_test_split(org_df, y, test_size=0.1,
+            train_org, test_org, _, _ = train_test_split(org_df, y, test_size=0.2,
                                                 shuffle=True,stratify=y, random_state=10)
         return train_org, test_org
     
