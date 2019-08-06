@@ -68,7 +68,17 @@ def get_rest_segs(folder, data_root, fov_type, picked_segs):
     else:
         print('All cells in ' + folder + ' are labeled.')
     return rest_segs_df
-    
+
+def getlistnum(li):
+    li = list(li)
+    set1 = set(li)
+    dict1 = {}
+    types_remove = []
+    for item in set1:
+        dict1.update({item:li.count(item)})
+        if(li.count(item)) < 2:
+            types_remove.append(item)
+    return dict1, types_remove
 
 def train_test_from_labelfile(file_list, seg_dir):
 
@@ -137,9 +147,20 @@ def train_test_from_labelfile(file_list, seg_dir):
         print(tmp_df)
         df = df.append(tmp_df, ignore_index=True)
     
-    if TRAIN_TEST_SPLIT:            
-        y = df['type'].values
-        train_set, test_set, _, _ = train_test_split(df, y, test_size=0.2,
+    if TRAIN_TEST_SPLIT:
+        y = df['type']
+        #FIXME: remove raws which count(FOV_type) < 2 ??
+        #count of y must >= 2
+        static, remove_arr = getlistnum(y)
+        org_df = df[~df['type'].isin(remove_arr)]
+        y = org_df['type']
+
+        #FIXME: many be nan ??
+        #remove all raws which FOV_type=nan
+        y = y.dropna(axis=0,how='all')
+
+        y = y.values
+        train_set, test_set, _, _ = train_test_split(org_df, y, test_size=0.2,
                                                 shuffle=True, stratify=y, random_state=10)
     else:
         train_set = df
