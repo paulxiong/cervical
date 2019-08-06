@@ -1,31 +1,36 @@
+# -*- coding: utf-8 -*-
 import os
 import time
 from utils.experiment import image_classificationv2, image_classification_trainv2, image_classification_predictv2
 import numpy as np
+from segmentation.src.utilslib.webserverapi import get_one_job, post_job_status
+
+localdebug = os.environ.get('GEBUG', 'True')
 
 class cervical_gan():
-    def __init__(self, jobdir):
+    def __init__(self, jobid, jobdir):
         self.jobdir = jobdir
+        self.jobid = jobid
         #for image classification and nuclei segmentation
-        self.experiment_root      = "scratch/" + self.jobdir + "/"
-        self.positive_images_root = self.experiment_root + "data/original/positive_images/"
-        self.negative_images_root = self.experiment_root + "data/original/negative_images/"
-        self.positive_npy_root    = self.experiment_root + "data/segmented/positive_npy/"
-        self.negative_npy_root    = self.experiment_root + "data/segmented/negative_npy/"
+        self.experiment_root      = "segmentation/scratch/" + self.jobdir + "/"
+        self.positive_images_root = self.experiment_root + "train_predict_datasets/original/positive_images/"
+        self.negative_images_root = self.experiment_root + "train_predict_datasets/original/negative_images/"
+        self.positive_npy_root    = self.experiment_root + "train_predict_datasets/segmented/positive_npy/"
+        self.negative_npy_root    = self.experiment_root + "train_predict_datasets/segmented/negative_npy/"
 
         #cell_level_data
-        self.X_train_path = self.experiment_root + 'data/cell_level_label/X_train.npy'
-        self.X_test_path  = self.experiment_root + 'data/cell_level_label/X_test.npy'
-        self.y_train_path = self.experiment_root + 'data/cell_level_label/y_train.npy'
-        self.y_test_path  = self.experiment_root + 'data/cell_level_label/y_test.npy'
+        self.X_train_path = self.experiment_root + 'train_predict_datasets/cell_level_label/X_train.npy'
+        self.X_test_path  = self.experiment_root + 'train_predict_datasets/cell_level_label/X_test.npy'
+        self.y_train_path = self.experiment_root + 'train_predict_datasets/cell_level_label/y_train.npy'
+        self.y_test_path  = self.experiment_root + 'train_predict_datasets/cell_level_label/y_test.npy'
 
-        self.positive_test_images_root = self.experiment_root + "data/original/positive_test_images/"
-        self.negative_test_images_root = self.experiment_root + "data/original/negative_test_images/"
-        self.positive_test_npy_root    = self.experiment_root + "data/segmented/positive_test_npy/"
-        self.negative_test_npy_root    = self.experiment_root + "data/segmented/negative_test_npy/"
+        self.positive_test_images_root = self.experiment_root + "train_predict_datasets/original/positive_test_images/"
+        self.negative_test_images_root = self.experiment_root + "train_predict_datasets/original/negative_test_images/"
+        self.positive_test_npy_root    = self.experiment_root + "train_predict_datasets/segmented/positive_test_npy/"
+        self.negative_test_npy_root    = self.experiment_root + "train_predict_datasets/segmented/negative_test_npy/"
         self.ref_path = ""
 
-        self.n_epoch = 2
+        self.n_epoch = 550
         self.batchsize = 36
         self.rand = 32
         self.dis = 1
@@ -71,8 +76,35 @@ class cervical_gan():
             self.intensity, self.experiment_root, self.netD_path, self.netD_Q_path,
             self.clf_model, dis_category=self.dis_category)
 
+    def done(self, text):
+        #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
+        post_job_status(self.jid, 8)
+        self.logger.info(text)
+        return
+    def failed(self, text):
+        post_job_status(self.jid, 3)
+        self.logger.info(text)
+        return
+
 if __name__ == '__main__':
-    cgan = cervical_gan('1234567')
-    #cgan.train_gan()
-    #cgan.train2()
-    cgan.train3()
+    while 1:
+        if localdebug is not "True" and localdebug is not True:
+            jobid, status, dirname = get_one_job()
+        else:
+            jobid = 95
+            status = 4
+            dirname = 'vwlN83JI'
+
+        if status != 4 or dirname is None:
+            time.sleep(5)
+            continue
+
+        cgan = cervical_gan(jobid, dirname)
+        cgan.train_gan()
+        #cgan.train2()
+        #cgan.train3()
+        cgan.done('done!')
+
+        del cgan
+        gc.collect()
+        time.sleep(5)

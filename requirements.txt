@@ -8,3 +8,8 @@ imgaug==0.2.9
 torch==0.3.1
 torchvision==0.1.9
 tensorboardX==1.4
+certifi==2019.6.16
+chardet==3.0.4
+idna==2.8
+requests==2.22.0
+urllib3==1.25.3

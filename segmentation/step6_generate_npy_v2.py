@@ -26,7 +26,7 @@ def step6_generate_npy_v2(train_datasets, train_test_datasets):
     batch_id = 'default'
     output_dir = os.path.join(train_datasets, batch_id)
     dataset_dir = os.path.join(output_dir, 'dataset')
-    cell_level_label = os.path.join(train_test_datasets, "data")
+    cell_level_label = os.path.join(train_test_datasets, "cell_level_label")
 
     org_dir = dataset_dir
     M = None

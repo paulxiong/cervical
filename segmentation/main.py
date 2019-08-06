@@ -106,17 +106,17 @@ if __name__ == '__main__':
         j = cell_crop(jobid, dirname)
         j.makedir()
 
-        #j.logger.info("begain step0...")
-        #try:
-        #    ret = step0v2(j.filelist, j.imgroot, j.csvroot, j.scratchdir, j.logger)
-        #except Exception as ex:
-        #    j.failed(ex)
-        #    continue
-        #else:
-        #    if ret is False:
-        #        j.failed("step0 failed")
-        #        continue
-        #j.logger.info("end step0...")
+        j.logger.info("begain step0...")
+        try:
+            ret = step0v2(j.filelist, j.imgroot, j.csvroot, j.scratchdir, j.logger)
+        except Exception as ex:
+            j.failed(ex)
+            continue
+        else:
+            if ret is False:
+                j.failed("step0 failed")
+                continue
+        j.logger.info("end step0...")
 
         j.logger.info("begain step1...")
         try:
@@ -146,15 +146,11 @@ if __name__ == '__main__':
         step4_annotv2(j.input_datasets, j.output_datasets, j.filepattern, j.output_annot_out)
         print("step4")
 
-        #python3 step5_gendata.py --annot_path datasets/classify/annot_out/annotation_default.txt --seg_dir datasets/classify
-        #                         --output_dir datasets/classify/train_datasets --train_test_split
         step5_gendatav2(j.output_annot_out_txt, j.output_datasets, j.output_train_datasets, True)
         print("step5")
 
-        #python3 step6_copy2nugan.py --origin_dir '/ai/lambdatest/*/' --csv_dir datasets/classify/annot_out/fov_type.csv
-        #                            --npy_dir datasets/classify/npy/ --output_dir datasets/classify/data --pattern '*.JPG'
         step6_copy2nuganv2(j.input_datasets, j.output_annot_out_csv, j.output_datasets_npy, j.input_train_pridict, j.filepattern, True)
-        #print("step6")
+        print("step6")
 
         step6_generate_npy_v2(j.output_train_datasets, j.input_train_pridict)
 
@@ -169,7 +165,6 @@ if __name__ == '__main__':
                 j.failed("step7 failed")
                 continue
 
-        break
         j.done('done!')
 
         del j
