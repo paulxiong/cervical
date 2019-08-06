@@ -87,10 +87,17 @@ choosing_fold = 1 #cross-validation for classification
 time = str(int(time.time()))
 print(experiment_root)
 print(time)
+name_temp1 = config.get('model', 'path')
+name_temp2 = os.listdir(experiment_root)
+sign_temp = 0
+for n in name_temp2:
+    if n == name_temp1:
+        sign_temp = 1
 if not os.path.exists(experiment_root+time):
-    os.makedirs(experiment_root+time)
-    os.makedirs(experiment_root+time+'/'+'picture')
-    os.makedirs(experiment_root+time+'/'+'model')
+    if sign_temp == 0:
+        os.makedirs(experiment_root+time)
+        os.makedirs(experiment_root+time+'/'+'picture')
+        os.makedirs(experiment_root+time+'/'+'model')
     
 experiment_root = experiment_root + time + '/'
 print('folder_name:'+str(time))
