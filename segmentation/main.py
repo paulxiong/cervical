@@ -106,17 +106,18 @@ if __name__ == '__main__':
         j = cell_crop(jobid, dirname)
         j.makedir()
 
-        j.logger.info("begain step0...")
-        try:
-            ret = step0v2(j.filelist, j.imgroot, j.csvroot, j.scratchdir, j.logger)
-        except Exception as ex:
-            j.failed(ex)
-            continue
-        else:
-            if ret is False:
-                j.failed("step0 failed")
+        if localdebug is not "True" and localdebug is not True:
+            j.logger.info("begain step0...")
+            try:
+                ret = step0v2(j.filelist, j.imgroot, j.csvroot, j.scratchdir, j.logger)
+            except Exception as ex:
+                j.failed(ex)
                 continue
-        j.logger.info("end step0...")
+            else:
+                if ret is False:
+                    j.failed("step0 failed")
+                    continue
+            j.logger.info("end step0...")
 
         j.logger.info("begain step1...")
         try:
@@ -165,6 +166,8 @@ if __name__ == '__main__':
                 j.failed("step7 failed")
                 continue
 
+        if localdebug is "True" or localdebug is True:
+            break
         j.done('done!')
 
         del j
