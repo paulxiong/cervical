@@ -93,7 +93,7 @@ class cell_crop():
 if __name__ == '__main__':
     while 1:
         if localdebug is not "True" and localdebug is not True:
-            jobid, status, dirname = get_one_job()
+            jobid, status, dirname = get_one_job(1)
         else:
             jobid = 95
             status = 1

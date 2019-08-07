@@ -4,6 +4,7 @@ import time
 from utils.experiment import image_classificationv2, image_classification_trainv2, image_classification_predictv2
 import numpy as np
 from segmentation.src.utilslib.webserverapi import get_one_job, post_job_status
+from segmentation.src.utilslib.logger import  logger
 
 localdebug = os.environ.get('DEBUG', 'True')
 
@@ -52,6 +53,9 @@ class cervical_gan():
         if not os.path.exists(self.experiment_root + '/model'):
             os.makedirs(self.experiment_root + '/model')
 
+        #log
+        self.logger = logger(str(self.jobid), self.jobdir)
+
         self.netD_path   = self.experiment_root + "model/netD_0.37644110275689224_1.6596411766945283_0.pth"
         self.netD_Q_path = self.experiment_root + "model/netD_Q_0.37644110275689224_1.6596411766945283_0.pth"
         self.clf_model   = self.experiment_root + "clf_model/svm_1564542659.model"
@@ -90,7 +94,7 @@ class cervical_gan():
 if __name__ == '__main__':
     while 1:
         if localdebug is not "True" and localdebug is not True:
-            jobid, status, dirname = get_one_job()
+            jobid, status, dirname = get_one_job(4)
         else:
             jobid = 95
             status = 4

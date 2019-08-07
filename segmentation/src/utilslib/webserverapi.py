@@ -56,7 +56,7 @@ def post_api_job(payload):
         payload['ml_first'] = 'true'
     return post2webserver('/api1/job', payload)
 
-def get_one_job():
+def get_one_job(status):
     """
     Tries to get the job from web server.
 
@@ -64,7 +64,7 @@ def get_one_job():
     :return: status, job_info
     """
 
-    payload = {}
+    payload = {'id': 0, 'status': status}
     job = post_api_job(payload)
     if job is None:
         return None, None, None
