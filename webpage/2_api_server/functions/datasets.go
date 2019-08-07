@@ -53,7 +53,7 @@ const (
 	output_datasets          = "output_datasets"
 	image_root               = ""
 	csv_root                 = ""
-	scratch_root             = "/data/km/cervical/thumbor/data/loader/scratch"
+	scratch_root             = "scratch"
 )
 
 type JobInfo struct {

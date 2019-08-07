@@ -327,8 +327,18 @@ func CreateDataset(c *gin.Context) {
 	return
 }
 
+type jobResult struct {
+	Id     int64 `json:"id"`
+	Status int   `json:"status"`
+}
+
 func GetOneJob(c *gin.Context) {
-	dt, err := m.GetOneDatasetsToCrop()
+	w := jobResult{}
+	err := c.BindJSON(&w)
+
+	logger.Info.Println(w.Status)
+
+	dt, err := m.GetOneDatasetsToProcess(w.Status)
 	if err != nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -336,18 +346,17 @@ func GetOneJob(c *gin.Context) {
 		})
 		return
 	}
-	m.UpdateDatasetsStatus(dt.Id, 2)
+	if w.Status == 1 {
+		m.UpdateDatasetsStatus(dt.Id, 2)
+	} else if w.Status == 4 {
+		m.UpdateDatasetsStatus(dt.Id, 6)
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
 		"data":   dt,
 	})
 	return
-}
-
-type jobResult struct {
-	Id     int64 `json:"id"`
-	Status int   `json:"status"`
 }
 
 func SetJobResult(c *gin.Context) {

@@ -395,9 +395,9 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	return ret.Error
 }
 
-func GetOneDatasetsToCrop() (dt Dataset, e error) {
+func GetOneDatasetsToProcess(status int) (dt Dataset, e error) {
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("STATUS=?", 1).First(&d)
+	ret2 := db.Model(&d).Where("STATUS=?", status).First(&d)
 	if ret2.Error != nil {
 		return d, ret2.Error
 	}
