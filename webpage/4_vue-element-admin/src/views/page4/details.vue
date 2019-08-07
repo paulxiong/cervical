@@ -107,7 +107,7 @@ export default {
   components: { },
   data() {
     return {
-      hosturlpath: 'http://9201.gpu.raidcdn.cn:9700/unsafe/',
+      hosturlpath: 'http://medical.raidcdn.cn:3001/unsafe/',
       hosturlpath200: '',
       hosturlpath645: '',
       hosturlpath16: '',
