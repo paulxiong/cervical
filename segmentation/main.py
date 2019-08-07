@@ -13,7 +13,7 @@ from step5_gendatav2 import step5_gendatav2
 from step6_copy2nuganv2 import step6_copy2nuganv2
 from step6_generate_npy_v2 import step6_generate_npy_v2
 
-localdebug = os.environ.get('GEBUG', 'True')
+localdebug = os.environ.get('DEBUG', 'True')
 
 class cell_crop():
     def __init__(self, jobId, jobdir):

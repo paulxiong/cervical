@@ -5,14 +5,15 @@ from utils.experiment import image_classificationv2, image_classification_trainv
 import numpy as np
 from segmentation.src.utilslib.webserverapi import get_one_job, post_job_status
 
-localdebug = os.environ.get('GEBUG', 'True')
+localdebug = os.environ.get('DEBUG', 'True')
 
 class cervical_gan():
     def __init__(self, jobid, jobdir):
         self.jobdir = jobdir
         self.jobid = jobid
+        self.scratchdir = os.environ.get('SCRATCHDIR', 'segmentation/scratch/')
         #for image classification and nuclei segmentation
-        self.experiment_root      = "segmentation/scratch/" + self.jobdir + "/"
+        self.experiment_root      = self.scratchdir + self.jobdir + "/"
         self.positive_images_root = self.experiment_root + "train_predict_datasets/original/positive_images/"
         self.negative_images_root = self.experiment_root + "train_predict_datasets/original/negative_images/"
         self.positive_npy_root    = self.experiment_root + "train_predict_datasets/segmented/positive_npy/"
