@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import time
 from utils.experiment import image_classificationv2, image_classification_trainv2, image_classification_predictv2
 import numpy as np
 from segmentation.src.utilslib.webserverapi import get_one_job, post_job_status
-from segmentation.src.utilslib.logger import  logger
+#from segmentation.src.utilslib.logger import  logger
 
 localdebug = os.environ.get('DEBUG', 'True')
 
@@ -54,7 +57,7 @@ class cervical_gan():
             os.makedirs(self.experiment_root + '/model')
 
         #log
-        self.logger = logger(str(self.jobid), self.jobdir)
+        #self.logger = logger(str(self.jobid), self.jobdir)
 
         self.netD_path   = self.experiment_root + "model/netD_0.37644110275689224_1.6596411766945283_0.pth"
         self.netD_Q_path = self.experiment_root + "model/netD_Q_0.37644110275689224_1.6596411766945283_0.pth"
@@ -84,11 +87,11 @@ class cervical_gan():
     def done(self, text):
         #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
         post_job_status(self.jid, 8)
-        self.logger.info(text)
+        print(text)
         return
     def failed(self, text):
         post_job_status(self.jid, 3)
-        self.logger.info(text)
+        print(text)
         return
 
 if __name__ == '__main__':

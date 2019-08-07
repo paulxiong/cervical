@@ -3,9 +3,14 @@ if [ ! -d datasets/segment/ ]; then
     mkdir -p datasets/segment/
 fi
 
-if [ ! -d segmentation/src/SEGMENT/kaggle-dsb2018/src/all_output/ ]; then
+if [ ! -d src/SEGMENT/kaggle-dsb2018/src/all_output/ ]; then
     echo "not found segmentation/src/SEGMENT/kaggle-dsb2018/src/all_output/*.h5 !!!"
-    mkdir -p segmentation/src/SEGMENT/kaggle-dsb2018/src/all_output/
+    mkdir -p src/SEGMENT/kaggle-dsb2018/src/all_output/
+    exit
+fi
+
+if [ -d datasets/segment/stage1_train/ ] || [ -d datasets/segment/stage1_test/ ]; then
+    echo "please remove datasets/segment/stage1_train/ and datasets/segment/stage1_test/ !!!"
     exit
 fi
 

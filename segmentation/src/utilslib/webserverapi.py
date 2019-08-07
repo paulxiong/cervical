@@ -87,6 +87,10 @@ def get_one_job(status):
             if debug_on:
                 print('got a crop job')
             return jobid, status, dirname
+        elif status == 4 and dirname is not None:
+            if debug_on:
+                print('got a train job')
+            return jobid, status, dirname
         else:
             return None, None, None
 
