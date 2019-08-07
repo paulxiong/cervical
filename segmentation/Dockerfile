@@ -5,6 +5,7 @@ RUN mv /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/cuda.list.bk &&
     apt-get update && apt-get install -y --no-install-recommends libsm-dev libxrender-dev git vim python3-tk language-pack-en && \
     apt-get clean && mkdir /data
 ENV LANG "en_US.UTF-8"
+ENV PYTHONUNBUFFERED "0"
 ADD segmentation /data
 WORKDIR /data
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir && find . && rm -rf /root/.nv/

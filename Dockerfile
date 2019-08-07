@@ -12,6 +12,7 @@ RUN mv /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/cuda.list.bk &&
     touch /data/segmentation/src/__init__.py && \
     touch /data/segmentation/src/utilslib/__init__.py
 ENV LANG "en_US.UTF-8"
+ENV PYTHONUNBUFFERED "0"
 WORKDIR /data
 ADD segmentation/src/utilslib/webserverapi.py segmentation/src/utilslib/webserverapi.py
 ADD *.py /data/
