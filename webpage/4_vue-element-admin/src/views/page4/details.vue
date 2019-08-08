@@ -151,7 +151,25 @@ export default {
   },
   methods: {
     handleChange(val) {
-      console.log(val)
+      // 清空所有关闭的面板的数据，不然一个页面同时加载上千张图片导致浏览器卡死
+      if (val.indexOf('2') > -1 && this.input_datasets_img.length === 0) {
+        this.input_datasets_img = this._input_datasets_img
+      }
+      if (val.indexOf('3') > -1 && this.input_datasets_denoising.length === 0) {
+        this.input_datasets_denoising = this._input_datasets_denoising
+      }
+      if (val.indexOf('4') > -1 && this.middle_mask.length === 0) {
+        this.middle_mask = this._middle_mask
+      }
+      if (val.indexOf('5') > -1 && this.output_datasets_crop_preview.length === 0) {
+        this.output_datasets_crop_preview = this._output_datasets_crop_preview
+      }
+      if (val.indexOf('6') > -1 && this.output_datasets_crop_n.length === 0) {
+        this.output_datasets_crop_n = this._output_datasets_crop_n
+      }
+      if (val.indexOf('7') > -1 && this.output_datasets_crop_p.length === 0) {
+        this.output_datasets_crop_p = this._output_datasets_crop_p
+      }
     },
     getimgurl(smallurl, bigurl, patharr) {
       var out = []
@@ -191,15 +209,15 @@ export default {
         this.medicalids = data.medicalids
         this.createdatts = dateformat2(data.createdatts)
         this.starttimets = dateformat2(data.starttimets)
-        this.input_datasets_img = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.input_datasets_img)
-        this.input_datasets_denoising = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.input_datasets_denoising)
-        this.middle_mask = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.middle_mask)
+        this._input_datasets_img = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.input_datasets_img)
+        this._input_datasets_denoising = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.input_datasets_denoising)
+        this._middle_mask = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.middle_mask)
         this.output_datasets_npy = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_npy)
         this.output_datasets_slide_npy = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_slide_npy)
-        this.output_datasets_crop_preview = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_crop_preview)
+        this._output_datasets_crop_preview = this.getimgurl(this.hosturlpath200, this.hosturlpath645, data.output_datasets_crop_preview)
         this.output_datasets_crop = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop)
-        this.output_datasets_crop_n = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_n)
-        this.output_datasets_crop_p = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_p)
+        this._output_datasets_crop_n = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_n)
+        this._output_datasets_crop_p = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_p)
         this.cellcntn = this.output_datasets_crop_n.length
         this.cellcntp = this.output_datasets_crop_p.length
       })
