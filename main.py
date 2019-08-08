@@ -14,7 +14,7 @@ localdebug = os.environ.get('DEBUG', 'True')
 class cervical_gan():
     def __init__(self, jobid, jobdir):
         self.jobdir = jobdir
-        self.jobid = jobid
+        self.jid = jobid
         self.scratchdir = os.environ.get('SCRATCHDIR', 'segmentation/scratch/')
         #for image classification and nuclei segmentation
         self.experiment_root      = self.scratchdir + self.jobdir + "/"
