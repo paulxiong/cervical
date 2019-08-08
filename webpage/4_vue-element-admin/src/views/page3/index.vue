@@ -112,7 +112,11 @@ export default {
         this.labels = (data.labels) ? data.labels.concat([]) : []
         this.imgw = data.imgw
         this.imgh = data.imgh
-        this.scale = this.imgw / page3ImgWidth
+        if (!this.imgw) {
+          this.scale = 3
+        } else {
+          this.scale = this.imgw / page3ImgWidth
+        }
         var that = this
         setTimeout(function() {
           that.setaddAnnotation(that.imgurl, that.labels, that.scale)
