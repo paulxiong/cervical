@@ -438,10 +438,11 @@ func GetJobResult(c *gin.Context) {
 func GetJobLog(c *gin.Context) {
 	id_str := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(id_str, 10, 64)
+	type_str := c.DefaultQuery("type", "c") // c-- crop  t--train
 
 	d, _ := m.GetOneDatasetById(int(id))
 
-	j := f.GetLogContent(d)
+	j := f.GetLogContent(d, type_str)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,

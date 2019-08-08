@@ -91,8 +91,11 @@
             </div>
           </div>
         </el-collapse-item>
-        <el-collapse-item title="后台log" name="8">
-          <el-input v-model="textarea" type="textarea" :rows="2" placeholder="后台log" autosize readonly>1</el-input>
+        <el-collapse-item title="裁剪log" name="8">
+          <el-input v-model="croplog" type="textarea" :rows="2" placeholder="后台log" autosize readonly>1</el-input>
+        </el-collapse-item>
+        <el-collapse-item title="训练log" name="9">
+          <el-input v-model="trainlog" type="textarea" :rows="2" placeholder="训练log" autosize readonly>1</el-input>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -113,7 +116,8 @@ export default {
       hosturlpath645: '',
       hosturlpath16: '',
       hosturlpath64: '',
-      textarea: '',
+      croplog: '',
+      trainlog: '',
       id: 0,
       desc: '',
       dir: '',
@@ -182,12 +186,19 @@ export default {
       return out
     },
     getjoblog(id) {
-      getjoblog({ 'id': id }).then(response => {
+      getjoblog({ 'id': id, 'type': 'c' }).then(response => {
         if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'string') {
           return
         }
         const { data } = response.data
-        this.textarea = data
+        this.croplog = data
+      })
+      getjoblog({ 'id': id, 'type': 't' }).then(response => {
+        if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'string') {
+          return
+        }
+        const { data } = response.data
+        this.trainlog = data
       })
     },
     getjobresult(id) {

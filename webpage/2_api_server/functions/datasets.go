@@ -96,8 +96,13 @@ func GetInfoJsonPath(d m.Dataset) string {
 	return infopath
 }
 
-func GetLogContent(d m.Dataset) string {
-	logpath := scratch_root + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.Id)
+func GetLogContent(d m.Dataset, _type string) string {
+	logpath := ""
+	if _type == "c" {
+		logpath = scratch_root + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.Id)
+	} else {
+		logpath = scratch_root + "/" + d.Dir + "/" + "log"
+	}
 	data, err := ioutil.ReadFile(logpath)
 	if err != nil {
 		return string(data)
