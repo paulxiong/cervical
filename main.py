@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, gc
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
