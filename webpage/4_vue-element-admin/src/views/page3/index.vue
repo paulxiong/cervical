@@ -1,7 +1,7 @@
 <template>
   <div class="page3-dashboard-container">
     <div class="page3-column">
-      <img id="hallstatt" :src="imgrl" class="annotatable">
+      <img id="hallstatt" :src="imgurl" class="annotatable">
     </div>
 
     <div class="page3-column">
@@ -18,12 +18,17 @@
 
 <script>
 import { getImgListOneByOne, getLabelByImageId } from '@/api/cervical'
+import { ImgServerUrl } from '@/const/config'
+import { page3ImgWidth } from '@/const/const'
 export default {
   name: 'Info',
   components: { },
   data() {
     return {
-      imgrl: '',
+      imgurl: '',
+      imgw: 0, // 当前图片宽度
+      imgh: 0, // 当前图片高度
+      scale: 1, // 当前缩放比， 显示的图片宽度=原图宽度/scale
       totalimg: 0,
       tableData: [],
       totallabel: 0,
@@ -77,7 +82,7 @@ export default {
       this.$refs.singleTable.setCurrentRow(row)
     },
     handleCurrentChange(val) {
-      this.imgrl = 'http://medical.raidcdn.cn:3001/unsafe/645x0/img/' + val.batchid + '/' + val.medicalid + '/Images/' + val.imgpath
+      this.imgurl = ImgServerUrl + '/unsafe/' + page3ImgWidth + 'x0/img/' + val.batchid + '/' + val.medicalid + '/Images/' + val.imgpath
       this.getLabelByImageId(100, 0, val.id)
     },
     handleCurrentChange2(val) {
@@ -105,9 +110,12 @@ export default {
         const { data } = response.data
         this.totallabel = response.data.total
         this.labels = (data.labels) ? data.labels.concat([]) : []
+        this.imgw = data.imgw
+        this.imgh = data.imgh
+        this.scale = this.imgw / page3ImgWidth
         var that = this
         setTimeout(function() {
-          that.setaddAnnotation(that.imgrl, that.labels, 3)
+          that.setaddAnnotation(that.imgurl, that.labels, that.scale)
         }, 200)
       })
     }

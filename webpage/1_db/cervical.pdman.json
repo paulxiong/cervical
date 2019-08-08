@@ -31,6 +31,20 @@
               "notNull": true
             },
             {
+              "name": "W",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "图片分辨率宽",
+              "notNull": true
+            },
+            {
+              "name": "H",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "图片分辨率高",
+              "notNull": true
+            },
+            {
               "name": "BATCHID",
               "type": "ShortString",
               "remark": "",

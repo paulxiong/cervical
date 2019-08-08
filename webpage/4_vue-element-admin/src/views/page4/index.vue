@@ -79,6 +79,7 @@
 <script>
 import { getBatchInfo, getMedicalIdInfo, getimgnptypebymids, createdataset, listdatasets, jobresult } from '@/api/cervical'
 import { dateformat2 } from '@/utils/dateformat'
+import { taskStatus } from '@/const/const'
 export default {
   name: 'Info',
   components: { },
@@ -198,22 +199,11 @@ export default {
         for (var i = 0; i < data.datasets.length; i++) {
           data.datasets[i].created_at = dateformat2(data.datasets[i].created_at)
           data.datasets[i].start_at = dateformat2(data.datasets[i].start_at)
-          const info = [
-            {'id': 0, 'status': '初始化',         'type': 'info'},
-            {'id': 1, 'status': '用户要求开始处理', 'type': 'info'},
-            {'id': 2, 'status': '开始处理',        'type': 'info'},
-            {'id': 3, 'status': '处理出错',        'type': 'danger'},
-            {'id': 4, 'status': '处理完成',        'type': 'success'},
-            {'id': 5, 'status': '目录不存在',      'type': 'danger'},
-            {'id': 6, 'status': '开始训练',        'type': 'info'},
-            {'id': 7, 'status': '训练出错',        'type': 'danger'},
-            {'id': 8, 'status': '训练完成',        'type': 'success'}
-          ]
           // #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
           var index = Number(data.datasets[i].status)
-          if (index < info.length) {
-            data.datasets[i].status = info[index].status
-            data.datasets[i].status_type = info[index].type
+          if (index < taskStatus.length) {
+            data.datasets[i].status = taskStatus[index].status
+            data.datasets[i].status_type = taskStatus[index].type
           } else {
             data.datasets[i].status = '未知'
             data.datasets[i].status_type = 'warning'

@@ -14,6 +14,8 @@ type Image struct {
 	Id        int64     `json:"id"           gorm:"column:ID"`
 	Csvpath   string    `json:"csvpath"      gorm:"column:CSVPATH"`
 	Imgpath   string    `json:"imgpath"      gorm:"column:IMGPATH"`
+	W         int       `json:"w"            gorm:"column:W"` //X
+	H         int       `json:"h"            gorm:"column:H"` //Y
 	Batchid   string    `json:"batchid"      gorm:"column:BATCHID"`
 	Medicalid string    `json:"medicalid"    gorm:"column:MEDICALID"`
 	CreatedAt time.Time `json:"created_time" gorm:"column:CREATED_TIME"`
@@ -28,6 +30,15 @@ func (u *Image) BeforeCreate(scope *gorm.Scope) error {
 		u.UpdatedAt = time.Now()
 	}
 	return nil
+}
+
+func GetImageById(imgid int64) (img Image, e error) {
+	var retimg Image
+	ret := db.Model(&Image{}).Where("ID = ?", imgid).First(&retimg)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return retimg, ret.Error
 }
 
 func ListImage(limit int, skip int) (totalNum int64, c []Image, e error) {

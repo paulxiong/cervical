@@ -102,12 +102,13 @@
 <script>
 import { getjobresult, getjoblog } from '@/api/cervical'
 import { dateformat2 } from '@/utils/dateformat'
+import { ImgServerUrl } from '@/const/config'
 export default {
   name: 'Info',
   components: { },
   data() {
     return {
-      hosturlpath: 'http://medical.raidcdn.cn:3001/unsafe/',
+      hosturlpath: ImgServerUrl + '/unsafe/',
       hosturlpath200: '',
       hosturlpath645: '',
       hosturlpath16: '',

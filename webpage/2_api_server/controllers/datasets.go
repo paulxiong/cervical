@@ -233,6 +233,8 @@ func GetImgListOneByOne(c *gin.Context) {
 
 type Labelslists struct {
 	Labels []m.Label `json:"labels"`
+	W      int       `json:"imgw"`
+	H      int       `json:"imgh"`
 }
 
 func GetLabelByImageId(c *gin.Context) {
@@ -245,6 +247,12 @@ func GetLabelByImageId(c *gin.Context) {
 
 	labels := Labelslists{}
 	labels.Labels = make([]m.Label, 0)
+
+	img, err := m.GetImageById(imgid)
+	if err == nil {
+		labels.W = img.W
+		labels.H = img.H
+	}
 
 	total, _labels, _ := m.ListLabelByImageId(int(limit), int(skip), int(imgid))
 	for _, v := range _labels {
