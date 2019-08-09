@@ -229,8 +229,8 @@ export default {
         this.output_datasets_crop = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop)
         this._output_datasets_crop_n = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_n)
         this._output_datasets_crop_p = this.getimgurl(this.hosturlpath16, this.hosturlpath64, data.output_datasets_crop_p)
-        this.cellcntn = this.output_datasets_crop_n.length
-        this.cellcntp = this.output_datasets_crop_p.length
+        this.cellcntn = this._output_datasets_crop_n.length
+        this.cellcntp = this._output_datasets_crop_p.length
       })
     }
   }
