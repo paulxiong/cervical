@@ -413,8 +413,7 @@ def get_f_score(array):
         final_score += fscore_list[n] * (TP_list[n]/np.sum(TP_list))
     return final_score
 
-def image_level_accuracy(positive_train_loader, positive_test_loader, negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root):
-    
+def image_level_accuracy(positive_train_loader, positive_test_loader, negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root, n_epoch=0):
     clf_path = os.path.join(experiment_root, 'clf_model')
     if not os.path.exists(clf_path):
         os.makedirs(clf_path)
@@ -478,6 +477,7 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                      
     #with open(experiment_root + "log","a") as f:
         #f.write('SVM_accuracy: ' + str(score)+ '\n')
+    #lambda
     with open(experiment_root + "log","a") as f:
         f.write('SVM - f1_score:'+ str(f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
                              predict_label, average='weighted'))+ '\n' + 
@@ -485,7 +485,13 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                              predict_label, average='weighted'))+ '\n' +
           'precision:'+ str(precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
                              predict_label, average='weighted'))+ '\n')
-                             
+
+    with open(experiment_root + "svm_model.txt","w") as f:
+        _f1_score = f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], predict_label, average='weighted')
+        _recall = recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], predict_label, average='weighted')
+        _precision = precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], predict_label, average='weighted')
+        logstr='{' + 'index: {}, ts: {}, f1_score: {}, recall: {}, precision: {}'.format(n_epoch, ts, _f1_score, _recall, _precision) + '}\n'
+        f.write(logstr)
     print("SVM predict_label", predict_label)
     
     train_proportion = np.concatenate([proportion_1, proportion_0])
@@ -520,11 +526,11 @@ def get_proportion(loader_list , netD, netD_Q, dis_category, gen_iterations=100)
         array[m] = k
     return array, feature_dicts
 
-def train(cell_train_set, cell_test_set, cell_test_label, 
+def train(cell_train_set, cell_test_set, cell_test_label,
           positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
-          netD, netG, netD_D, netD_Q, experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
+          netD, netG, netD_D, netD_Q, experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5,
           ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
-    
+
     train = normalized(cell_train_set)
     train_loader = create_loader(train, shuffle=True, batchsize=batchsize)
     test = normalized(cell_test_set)
@@ -558,7 +564,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 ], lq, betas=(0.5, 0.9))
 
     optimizerQ_G = optim.Adam([
-                    {'params': netG.parameters()},            
+                    {'params': netG.parameters()},
                 ], lg, betas=(0.5, 0.9))
 
     input = torch.FloatTensor(batchsize, 3, 32, 32)
@@ -592,9 +598,16 @@ def train(cell_train_set, cell_test_set, cell_test_label,
     one = one.cuda()
     mone = mone.cuda()
     fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
-    
+
     #tensor board writer
     writer = SummaryWriter()
+
+    with open(experiment_root + "gan_model.txt","w") as f:
+        f.seek(0,0)
+        f.truncate()
+    with open(experiment_root + "svm_model.txt","w") as f:
+        f.seek(0,0)
+        f.truncate()
 
     for epoch in range(n_epoch):
         print("epoch:", epoch)
@@ -603,10 +616,10 @@ def train(cell_train_set, cell_test_set, cell_test_label,
 
         while i < len(train_loader):
 
-            for p in netD.parameters(): 
-                p.requires_grad = True 
-            for p in netD_D.parameters(): 
-                p.requires_grad = True 
+            for p in netD.parameters():
+                p.requires_grad = True
+            for p in netD_D.parameters():
+                p.requires_grad = True
 
             for iter_d in range(0,5):
                 if i >=len(train_loader):
@@ -646,11 +659,11 @@ def train(cell_train_set, cell_test_set, cell_test_label,
 
                 optimizerD.step()
 
-            # update G  
-            for p in netD.parameters(): 
-                p.requires_grad = False 
-            for p in netD_D.parameters(): 
-                p.requires_grad = False 
+            # update G
+            for p in netD.parameters():
+                p.requires_grad = False
+            for p in netD_D.parameters():
+                p.requires_grad = False
 
             zero_grad()
             rand_c,label_c = sample_c(batchsize,dis_category=dis_category)
@@ -666,10 +679,10 @@ def train(cell_train_set, cell_test_set, cell_test_label,
             errG.backward(mone)
             optimizerG.step()
 
-            for p in netD.parameters(): 
-                p.requires_grad = True 
-            for p in netD_D.parameters(): 
-                p.requires_grad = True 
+            for p in netD.parameters():
+                p.requires_grad = True
+            for p in netD_D.parameters():
+                p.requires_grad = True
 
             zero_grad()
             inputv = Variable(noise_resize)
@@ -694,10 +707,10 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 writer.add_scalar('data/gradient_penalty', -gradient_penalty.data[0], gen_iterations)
                 writer.add_scalar('data/D_cost', -D_cost.data[0], gen_iterations)
                 writer.add_scalar('data/mi_loss', mi_loss.data[0], gen_iterations)
-                
+
             if gen_iterations % 100 == 0 :
                 G_sample = netG(Variable(fixed_noise, volatile = True))
-                vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell.png', nrow=5,normalize=True)
+                vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell_' + str(gen_iterations) + '.png', nrow=5,normalize=True)
                 coherent_array = get_matrix(netD, netD_Q, test_loader, cell_test_label, dis_category)
                 entropy, purity = compute_purity_entropy(coherent_array)
                 f_score = get_f_score(coherent_array)
@@ -705,20 +718,25 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 with open(experiment_root + "log","a") as f:
                     f.write('*cell_level_classification - purity: ' + str(purity) + ' entropy: ' + str(entropy) + ' f_score: ' + str(f_score)+ '\n')
 
-                image_level_accuracy(positive_train_loader, positive_test_loader, 
-                                     negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root)
-                
+                image_level_accuracy(positive_train_loader, positive_test_loader,
+                                     negative_train_loader, negative_test_loader ,
+                                     netD, netD_Q, dis_category, experiment_root, gen_iterations)
+
                 x = vutils.make_grid(G_sample.data)
                 writer.add_image('Image', x, gen_iterations)
                 end = time.time()
-                
+
             if gen_iterations % save_model_steps == 0 :
+                logstr = '{' + 'idx: {}, total_epoch: {}, errD_real: {}, errD_fake: {}, gradient_penalty: {}, D_cost: {}, mi_loss: {}, purity: {}, entropy: {}'.format(
+                    gen_iterations, n_epoch, errD_real.data[0], errD_fake.data[0], gradient_penalty.data[0], D_cost.data[0], mi_loss.data[0], purity, entropy) + '}\n'
+                with open(experiment_root + "gan_model.txt","a") as f:
+                    f.write(logstr)
                 torch.save(netD.state_dict(), experiment_root + 'model/netD_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 torch.save(netG.state_dict(), experiment_root +'model/netG_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 torch.save(netD_D.state_dict(), experiment_root +'model/netD_D_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 torch.save(netD_Q.state_dict(), experiment_root +'model/netD_Q_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 end = time.time()
-                
+
             gen_iterations += 1
     writer.close()
     return netD, netG, netD_D, netD_Q

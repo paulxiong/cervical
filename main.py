@@ -116,3 +116,6 @@ if __name__ == '__main__':
         del cgan
         gc.collect()
         time.sleep(5)
+
+        if localdebug is "True" or localdebug is True:
+            break
