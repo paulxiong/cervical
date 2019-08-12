@@ -490,7 +490,8 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
         _f1_score = f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], predict_label, average='weighted')
         _recall = recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], predict_label, average='weighted')
         _precision = precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], predict_label, average='weighted')
-        logstr='{' + 'index: {}, ts: {}, f1_score: {}, recall: {}, precision: {}'.format(n_epoch, ts, _f1_score, _recall, _precision) + '}\n'
+        _path = clf_path + '/svm_{}.model'.format(ts)
+        logstr='{' + '"index": {}, "ts": {}, "f1_score": {}, "recall": {}, "precision": {}, "path": "{}"'.format(n_epoch, ts, _f1_score, _recall, _precision, _path) + '}\n'
         f.write(logstr)
     print("SVM predict_label", predict_label)
     
@@ -727,8 +728,9 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 end = time.time()
 
             if gen_iterations % save_model_steps == 0 :
-                logstr = '{' + 'idx: {}, total_epoch: {}, errD_real: {}, errD_fake: {}, gradient_penalty: {}, D_cost: {}, mi_loss: {}, purity: {}, entropy: {}'.format(
-                    gen_iterations, n_epoch, errD_real.data[0], errD_fake.data[0], gradient_penalty.data[0], D_cost.data[0], mi_loss.data[0], purity, entropy) + '}\n'
+                netDpath = experiment_root + 'model/netD_' + str(purity) + '_' + str(entropy) + '_' + str(gen_iterations) + '.pth'
+                logstr = '{' + '"index": {}, "total_epoch": {}, "errD_real": {}, "errD_fake": {}, "gradient_penalty": {}, "D_cost": {}, "mi_loss": {}, "purity": {}, "entropy": {}, "path": "{}"'.format(
+                    gen_iterations, n_epoch, errD_real.data[0], errD_fake.data[0], gradient_penalty.data[0], D_cost.data[0], mi_loss.data[0], purity, entropy, netDpath) + '}\n'
                 with open(experiment_root + "gan_model.txt","a") as f:
                     f.write(logstr)
                 torch.save(netD.state_dict(), experiment_root + 'model/netD_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
