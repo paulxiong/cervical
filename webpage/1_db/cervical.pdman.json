@@ -1012,10 +1012,23 @@
               "notNull": true
             },
             {
-              "name": "DIR",
-              "type": "ShortString",
+              "name": "DID",
+              "type": "BigInt",
               "remark": "",
-              "chnname": "文件夹名称",
+              "chnname": "dataset Id，被哪次dataset训练的",
+              "notNull": true
+            },
+            {
+              "name": "DESCRIPTION",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "描述"
+            },
+            {
+              "name": "PATH",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "模型路径",
               "notNull": true
             },
             {

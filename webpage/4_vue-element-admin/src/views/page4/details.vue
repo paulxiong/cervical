@@ -97,13 +97,53 @@
         <el-collapse-item title="训练log" name="9">
           <el-input v-model="trainlog" type="textarea" :rows="2" placeholder="训练log" autosize readonly>1</el-input>
         </el-collapse-item>
+        <el-collapse-item title="模型信息" name="10">
+          <el-table :data="tableData" style="width: 100%">
+            <el-table-column label="epoch" width="80">
+              <template slot-scope="scope">
+                <span style="margin-left: 0px">{{ scope.row.index }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="类型" width="80">
+              <template slot-scope="scope">
+                <span v-if="scope.row.type == 2 " style="margin-left: 0px">GAN</span>
+                <span v-else-if="scope.row.type == 3 " style="margin-left: 0px">SVM</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="recall" width="80">
+              <template slot-scope="scope">
+                <span style="margin-left: 0px">{{ scope.row.recall }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="precision" width="85">
+              <template slot-scope="scope">
+                <span style="margin-left: 0px">{{ scope.row.precision }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="entropy" width="90">
+              <template slot-scope="scope">
+                <span style="margin-left: 0px">{{ scope.row.entropy }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="purity" width="85">
+              <template slot-scope="scope">
+                <span style="margin-left: 0px">{{ scope.row.purity }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" @click="handleDetail(scope.$index, scope.row)">存数据库</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-collapse-item>
       </el-collapse>
     </div>
   </div>
 </template>
 
 <script>
-import { getjobresult, getjoblog } from '@/api/cervical'
+import { getjobresult, getjoblog, getjobmodel, savemodel } from '@/api/cervical'
 import { dateformat2 } from '@/utils/dateformat'
 import { ImgServerUrl } from '@/const/config'
 export default {
@@ -139,7 +179,8 @@ export default {
       output_datasets_crop_n: [],
       output_datasets_crop_p: [],
       output_datasets_crop_preview: [],
-      activeNames: ['1']
+      activeNames: ['1'],
+      tableData: []
     }
   },
   computed: {
@@ -152,6 +193,7 @@ export default {
     this.hosturlpath64 = this.hosturlpath + '64x0/scratch/'
     this.getjobresult(this.id)
     this.getjoblog(this.id)
+    this.getjobmodel(this.id)
   },
   methods: {
     handleChange(val) {
@@ -177,6 +219,9 @@ export default {
     },
     getimgurl(smallurl, bigurl, patharr) {
       var out = []
+      if (!patharr || patharr.length < 1) {
+        return out
+      }
       for (var i = 0; i < patharr.length; i++) {
         var item = patharr[i]
         var url = smallurl + this.dir + '/' + item
@@ -184,6 +229,13 @@ export default {
         out.push({ 'small': url, 'big': url2, 'path': item })
       }
       return out
+    },
+    savemodel(postdata) {
+      savemodel(postdata).then(response => {
+        if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'object') {
+          return
+        }
+      })
     },
     getjoblog(id) {
       getjoblog({ 'id': id, 'type': 'c' }).then(response => {
@@ -199,6 +251,23 @@ export default {
         }
         const { data } = response.data
         this.trainlog = data
+      })
+    },
+    getjobmodel(id) {
+      getjobmodel({ 'id': id, 'type': 's' }).then(response => {
+        if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'object') {
+          return
+        }
+        const { data } = response.data
+        this.tableData = this.tableData.concat(data)
+        console.log(this.tableData)
+      })
+      getjobmodel({ 'id': id, 'type': 'g' }).then(response => {
+        if (!response || !response.data || !response.data.data || typeof (response.data.data) !== 'object') {
+          return
+        }
+        const { data } = response.data
+        this.tableData = this.tableData.concat(data)
       })
     },
     getjobresult(id) {
@@ -232,6 +301,10 @@ export default {
         this.cellcntn = this._output_datasets_crop_n.length
         this.cellcntp = this._output_datasets_crop_p.length
       })
+    },
+    handleDetail(index, row) {
+      this.savemodel(row)
+      console.log(index, row)
     }
   }
 }

@@ -423,3 +423,58 @@ func GetOneDatasetById(id int) (dt Dataset, e error) {
 	}
 	return d, ret2.Error
 }
+
+type Model struct {
+	Id        int       `json:"id"    gorm:"column:ID"`
+	Type      int       `json:"type"  gorm:"column:TYPE"`
+	Index     int       `json:"index" gorm:"-"`
+	DId       int64     `json:"did"   gorm:"column:DID"`
+	Path      string    `json:"-"     gorm:"column:PATH"`
+	Desc      string    `json:"desc"  gorm:"column:DESCRIPTION"`  //描述
+	CreatedAt time.Time `json:"-"     gorm:"column:CREATED_TIME"` //创建时间
+	UpdatedAt time.Time `json:"-"     gorm:"column:UPDATED_TIME"` //更新时间
+	// gan
+	TotalEpoch       int     `json:"total_epoch"      gorm:"-"`
+	ErrD_real        float32 `json:"errD_real"        gorm:"-"`
+	ErrD_fake        float32 `json:"errD_fake"        gorm:"-"`
+	Gradient_penalty float32 `json:"gradient_penalty" gorm:"-"`
+	D_cost           float32 `json:"D_cost"           gorm:"-"`
+	Mi_loss          float32 `json:"mi_loss"          gorm:"-"`
+	Purity           float32 `json:"purity"           gorm:"-"`
+	Entropy          float32 `json:"entropy"          gorm:"-"`
+	// svm
+	Ts        int     `json:"ts"        gorm:"-"`
+	F1_score  float32 `json:"f1_score"  gorm:"-"`
+	Recall    float32 `json:"recall"    gorm:"-"`
+	Precision float32 `json:"precision" gorm:"-"`
+}
+
+func (d *Model) BeforeCreate(scope *gorm.Scope) error {
+	if d.CreatedAt.IsZero() {
+		d.CreatedAt = time.Now()
+	}
+	if d.UpdatedAt.IsZero() {
+		d.UpdatedAt = time.Now()
+	}
+	return nil
+}
+
+func (d *Model) CreateModelInfo() (e error) {
+	d.Id = 0
+	_d := Model{}
+
+	ret2 := db.Model(d).Where("PATH=?", d.Path).First(&_d)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+
+	if _d.Id > 0 {
+		return ret2.Error
+	}
+
+	ret := db.Model(d).Save(&d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}

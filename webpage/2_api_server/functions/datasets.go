@@ -1,11 +1,14 @@
 package function
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	logger "../log"
 	m "../models"
@@ -108,6 +111,43 @@ func GetLogContent(d m.Dataset, _type string) string {
 		return string(data)
 	}
 	return string(data)
+}
+
+func GetModelInfo(d m.Dataset, _type string) []m.Model {
+	logpath := ""
+	minfo := []m.Model{}
+	modeltype := 1 // 0未知 1UNET 2GAN 3SVM
+	if _type == "s" {
+		logpath = scratch_root + "/" + d.Dir + "/svm_model.txt"
+		modeltype = 3
+	} else {
+		logpath = scratch_root + "/" + d.Dir + "/gan_model.txt"
+		modeltype = 2
+	}
+
+	f, err := os.Open(logpath)
+	if err != nil {
+		return minfo
+	}
+	buf := bufio.NewReader(f)
+	for {
+		line, err := buf.ReadString('\n')
+		line = strings.TrimSpace(line)
+		if err != nil {
+			if err == io.EOF {
+				return minfo
+			}
+			return minfo
+		}
+		_minfo := m.Model{}
+		if err2 := json.Unmarshal([]byte(line), &_minfo); err2 == nil {
+			_minfo.Type = modeltype
+			_minfo.DId = d.Id
+			minfo = append(minfo, _minfo)
+		} else {
+			logger.Info.Println(err2)
+		}
+	}
 }
 
 func NewJsonFile(d m.Dataset, batchids []string, medicalids []string, cntn int, cntp int) {

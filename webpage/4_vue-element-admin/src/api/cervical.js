@@ -111,3 +111,19 @@ export function getjoblog(query) {
     params: query
   })
 }
+
+export function getjobmodel(query) {
+  return request({
+    url: '/api1/jobmodel',
+    method: 'get',
+    params: query
+  })
+}
+
+export function savemodel(data) {
+  return request({
+    url: '/api1/savemodel',
+    method: 'post',
+    data
+  })
+}

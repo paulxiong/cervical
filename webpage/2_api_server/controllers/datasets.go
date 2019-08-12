@@ -451,3 +451,40 @@ func GetJobLog(c *gin.Context) {
 
 	return
 }
+
+func GetModelInfo(c *gin.Context) {
+	id_str := c.DefaultQuery("id", "1")
+	id, _ := strconv.ParseInt(id_str, 10, 64)
+	type_str := c.DefaultQuery("type", "c") // s-- svm  g--gan
+
+	d, _ := m.GetOneDatasetById(int(id))
+
+	j := f.GetModelInfo(d, type_str)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   j,
+	})
+	return
+}
+
+func SaveModelInfo(c *gin.Context) {
+	w := m.Model{}
+	err := c.BindJSON(&w)
+
+	logger.Info.Println(w, err)
+
+	err = w.CreateModelInfo()
+	if err == nil {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "ok",
+		})
+	} else {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "failed",
+		})
+	}
+	return
+}
