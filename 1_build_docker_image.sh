@@ -8,4 +8,6 @@ if [ ! -f torch-0.3.1-cp27-cp27mu-linux_x86_64.whl ]; then
     exit
 fi
 
-docker build -f Dockerfile -t cervical:gan_20190807 .
+timestamp=$(date "+%Y%m%d%-H%-M%-S")
+
+docker build -f Dockerfile -t cervical:gan_${timestamp} .

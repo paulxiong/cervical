@@ -162,7 +162,8 @@ if __name__ == '__main__':
         step6_copy2nuganv2(j.input_datasets, j.output_annot_out_csv, j.output_datasets_npy, j.input_train_pridict, j.filepattern, j.train_test_split)
         print("step6")
 
-        step6_generate_npy_v2(j.output_train_datasets, j.input_train_pridict)
+        if j.train_test_split == True:
+            step6_generate_npy_v2(j.output_train_datasets, j.input_train_pridict)
 
         j.logger.info("begain step7...")
         try:

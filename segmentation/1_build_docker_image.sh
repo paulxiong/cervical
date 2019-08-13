@@ -14,4 +14,6 @@ if [ -d datasets/segment/stage1_train/ ] || [ -d datasets/segment/stage1_test/ ]
     exit
 fi
 
-docker build -f Dockerfile -t cervical:crop_20190807 ..
+timestamp=$(date "+%Y%m%d%-H%-M%-S")
+
+docker build -f Dockerfile -t cervical:crop_${timestamp} ..
