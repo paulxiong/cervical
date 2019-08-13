@@ -328,9 +328,10 @@ func GetCategoryById(id int) (c Category, e error) {
 }
 
 type Dataset struct {
-	Id          int64     `json:"id"          gorm:"column:ID"`           //分类ID
+	Id          int64     `json:"id"          gorm:"column:ID"`           //ID
+	Type        int       `json:"type"        gorm:"column:TYPE"`         //分类
 	Desc        string    `json:"desc"        gorm:"column:DESCRIPTION"`  //描述
-	Status      int       `json:"status"      gorm:"column:STATUS"`       //状态 0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在
+	Status      int       `json:"status"      gorm:"column:STATUS"`       //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
 	Dir         string    `json:"dir"         gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
 	CreatedBy   int64     `json:"created_by"  gorm:"column:CREATED_BY"`   //创建者
 	CreatedAt   time.Time `json:"-"           gorm:"column:CREATED_TIME"` //创建时间
@@ -406,9 +407,9 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	return ret.Error
 }
 
-func GetOneDatasetsToProcess(status int) (dt Dataset, e error) {
+func GetOneDatasetsToProcess(status int, _type int) (dt Dataset, e error) {
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("STATUS=?", status).First(&d)
+	ret2 := db.Model(&d).Where("STATUS=? AND TYPE=?", status, _type).First(&d)
 	if ret2.Error != nil {
 		return d, ret2.Error
 	}

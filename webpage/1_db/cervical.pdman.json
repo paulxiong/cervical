@@ -893,6 +893,13 @@
               "notNull": true
             },
             {
+              "name": "TYPE",
+              "type": "Integer",
+              "remark": "0未知1训练2预测",
+              "chnname": "类型",
+              "notNull": true
+            },
+            {
               "name": "DESCRIPTION",
               "type": "MiddleString",
               "remark": "",
@@ -902,7 +909,7 @@
             {
               "name": "STATUS",
               "type": "Integer",
-              "remark": "0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在",
+              "remark": "0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成",
               "chnname": "状态",
               "notNull": true
             },

@@ -274,6 +274,7 @@ type imagesNPTypeByMedicalId struct {
 	Batchids   []string `json:"batchids"`
 	Medicalids []string `json:"medicalids"`
 	Desc       string   `json:"desc"`
+	Type       int      `json:"type"`
 }
 type imagesNPCount struct {
 	CountN int `json:"countn"`
@@ -312,6 +313,7 @@ func CreateDataset(c *gin.Context) {
 	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
 	dt.Status = 0
+	dt.Type = w.Type
 	dt.CreateDatasets()
 
 	imgs := make([]m.ImagesByMedicalId, 0)
@@ -337,6 +339,7 @@ func CreateDataset(c *gin.Context) {
 
 type jobResult struct {
 	Id     int64 `json:"id"`
+	Type   int   `json:"type"`
 	Status int   `json:"status"`
 }
 
@@ -344,9 +347,7 @@ func GetOneJob(c *gin.Context) {
 	w := jobResult{}
 	err := c.BindJSON(&w)
 
-	logger.Info.Println(w.Status)
-
-	dt, err := m.GetOneDatasetsToProcess(w.Status)
+	dt, err := m.GetOneDatasetsToProcess(w.Status, w.Type)
 	if err != nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,

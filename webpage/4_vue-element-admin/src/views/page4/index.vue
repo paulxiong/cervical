@@ -10,6 +10,13 @@
                 <span style="margin-left: 0px">{{ scope.row.id }}</span>
               </template>
             </el-table-column>
+            <el-table-column label="类型" width="80">
+              <template slot-scope="scope">
+                <span v-if="scope.row.type == 1 " style="margin-left: 0px">训练</span>
+                <span v-else-if="scope.row.type == 2 " style="margin-left: 0px">预测</span>
+                <span v-else style="margin-left: 0px">未知</span>
+              </template>
+            </el-table-column>
             <el-table-column label="描述" width="160">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
@@ -66,6 +73,11 @@
           <el-select v-model="value" placeholder="请选择">
             <el-option v-for="item in modules" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
+          <p>选择操作类型</p>
+          <el-radio-group v-model="train1predict2" @change="changeHandler">
+            <el-radio :label="1">训练</el-radio>
+            <el-radio :label="2">预测</el-radio>
+          </el-radio-group>
         </div>
         <p>4 请选择操作：</p>
         <div class="box1-container">
@@ -112,7 +124,8 @@ export default {
       }, {
         value: '5',
         label: 'UNET 差'
-      }]
+      }],
+      train1predict2: 1
     }
   },
   computed: {
@@ -199,7 +212,7 @@ export default {
         for (var i = 0; i < data.datasets.length; i++) {
           data.datasets[i].created_at = dateformat2(data.datasets[i].created_at)
           data.datasets[i].start_at = dateformat2(data.datasets[i].start_at)
-          // #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
+          // 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
           var index = Number(data.datasets[i].status)
           if (index < taskStatus.length) {
             data.datasets[i].status = taskStatus[index].status
@@ -216,7 +229,8 @@ export default {
       var postdata = {
         medicalids: this.medicalids_checked,
         batchids: this.batchs_checked,
-        desc: this.desc
+        desc: this.desc,
+        type: this.train1predict2
       }
       var that = this
       this.getimgnptypebymids(postdata, function() {
@@ -269,6 +283,10 @@ export default {
     handleDetail(index, row) {
       this.$router.push({ path: '/page4/details' || '/', query: { 'id': row.id }})
       console.log(index, row)
+    },
+    changeHandler(value) {
+      console.log(this.train1predict2)
+      console.log('改变之后的值是:' + value)
     }
   }
 }
