@@ -67,7 +67,7 @@ def get_one_job(status, _type):
     payload = {'id': 0, 'status': status, 'type': _type}
     job = post_api_job(payload)
     if job is None:
-        return None, None, None
+        return None, None, None, None
 
     try:
         jobjson = json.loads(job.decode())
