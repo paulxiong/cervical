@@ -97,7 +97,8 @@ class cervical_gan():
 if __name__ == '__main__':
     while 1:
         if localdebug is not "True" and localdebug is not True:
-            jobid, status, dirname = get_one_job(4)
+            # datatype:  0未知1训练2预测
+            jobid, status, dirname = get_one_job(4, 1)
         else:
             jobid = 95
             status = 4

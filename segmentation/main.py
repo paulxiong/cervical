@@ -16,7 +16,7 @@ from step6_generate_npy_v2 import step6_generate_npy_v2
 localdebug = os.environ.get('DEBUG', 'True')
 
 class cell_crop():
-    def __init__(self, jobId, jobdir):
+    def __init__(self, jobId, jobdir, datatype):
         self.jid = jobId
         #path
         self.scratchdir = os.environ.get('SCRATCHDIR', './scratch')
@@ -55,6 +55,10 @@ class cell_crop():
         self.logger = logger(str(self.jid), self.jobdir)
 
         self.makedir()
+        # datatype:  0未知1训练2预测
+        self.train_test_split = False
+        if datatype == 1:
+            self.train_test_split = True
         return
     def makedir(self):
         if os.path.exists(self.scratchdir) is False:
@@ -81,7 +85,7 @@ class cell_crop():
             os.makedirs(self.input_train_pridict)
         return
     def done(self, text):
-        #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在
+        # status:    0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
         post_job_status(self.jid, 4)
         self.logger.info(text)
         return
@@ -93,17 +97,22 @@ class cell_crop():
 if __name__ == '__main__':
     while 1:
         if localdebug is not "True" and localdebug is not True:
-            jobid, status, dirname = get_one_job(1)
+            # datatype:  0未知1训练2预测
+            # status:    0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
+            jobid, status, dirname, datatype = get_one_job(1, 2) #请求裁剪预测数据
+            if status != 1 or dirname is None:
+                jobid, status, dirname, datatype = get_one_job(1, 1)  #请求裁剪训练数据
         else:
             jobid = 95
             status = 1
             dirname = 'vwlN83JI'
+            datatype = 1
 
         if status != 1 or dirname is None:
             time.sleep(5)
             continue
 
-        j = cell_crop(jobid, dirname)
+        j = cell_crop(jobid, dirname, datatype)
         j.makedir()
 
         if localdebug is not "True" and localdebug is not True:
@@ -147,10 +156,10 @@ if __name__ == '__main__':
         step4_annotv2(j.input_datasets, j.output_datasets, j.filepattern, j.output_annot_out)
         print("step4")
 
-        step5_gendatav2(j.output_annot_out_txt, j.output_datasets, j.output_train_datasets, True)
+        step5_gendatav2(j.output_annot_out_txt, j.output_datasets, j.output_train_datasets, j.train_test_split)
         print("step5")
 
-        step6_copy2nuganv2(j.input_datasets, j.output_annot_out_csv, j.output_datasets_npy, j.input_train_pridict, j.filepattern, True)
+        step6_copy2nuganv2(j.input_datasets, j.output_annot_out_csv, j.output_datasets_npy, j.input_train_pridict, j.filepattern, j.train_test_split)
         print("step6")
 
         step6_generate_npy_v2(j.output_train_datasets, j.input_train_pridict)

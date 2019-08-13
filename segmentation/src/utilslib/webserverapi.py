@@ -56,7 +56,7 @@ def post_api_job(payload):
         payload['ml_first'] = 'true'
     return post2webserver('/api1/job', payload)
 
-def get_one_job(status):
+def get_one_job(status, _type):
     """
     Tries to get the job from web server.
 
@@ -64,7 +64,7 @@ def get_one_job(status):
     :return: status, job_info
     """
 
-    payload = {'id': 0, 'status': status}
+    payload = {'id': 0, 'status': status, 'type': _type}
     job = post_api_job(payload)
     if job is None:
         return None, None, None
@@ -74,25 +74,26 @@ def get_one_job(status):
         status = jobjson['data']['status']
         dirname = jobjson['data']['dir']
         jobid = jobjson['data']['id']
+        datatype = jobjson['data']['type']
     except Exception as ex:
         print(ex)
         code = None
-        return None, None, None
+        return None, None, None, None
     else:
         if status is None:
-            return None, None, None
+            return None, None, None, None
 
         status = int(status)
         if status == 1 and dirname is not None:
             if debug_on:
                 print('got a crop job')
-            return jobid, status, dirname
+            return jobid, status, dirname, datatype
         elif status == 4 and dirname is not None:
             if debug_on:
                 print('got a train job')
-            return jobid, status, dirname
+            return jobid, status, dirname, datatype
         else:
-            return None, None, None
+            return None, None, None, None
 
 def post_job_status(jobid, status):
     payload = {'id': jobid, 'status': status}
