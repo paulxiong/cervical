@@ -45,7 +45,7 @@ data/
 ```
 data/task1/ 是你准备的训练数据的目录
 ```
-# python main2.py --task train --taskdir data/task1/
+# python main.py --task train --taskdir data/task1/
 ```
 
 ## 5 组织预测的目录结构
@@ -71,5 +71,5 @@ data/
 
 ## 6 开始预测
 ```
-# python main2.py --task predict --taskdir data/task1/
+# python main.py --task predict --taskdir data/task1/
 ```

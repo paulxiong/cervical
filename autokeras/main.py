@@ -1,9 +1,22 @@
-import os, csv, cv2
+# -*- coding: utf-8 -*-
+import os, csv, cv2, time, argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--task', choices = ['train', 'predict'], help='train or predict')
+parser.add_argument('--taskdir', help='fold path for train/predict')
+opt = parser.parse_args()
+if not (opt.task) or (opt.task != 'train' and opt.task != 'predict'):
+    parser.error("specific a task such as '--task train'")
+if opt.taskdir is None or len(opt.taskdir) < 1:
+    parser.error("specific path such as '--taskdir your/path/data'")
+
 from autokeras.utils import pickle_from_file
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
  
+def timestamp():
+    return time.strftime("%Y%m%d_%H%M%S", time.localtime())
+
 #write csv  
 def write_csv(img_dir, csv_dir):
     list = []
@@ -18,7 +31,7 @@ def write_csv(img_dir, csv_dir):
     writer.writerows(list)
  
 #resize images
-def resize_img(input_dir,output_dir):
+def resize_img(input_dir, output_dir, RESIZE):
     cls_file = os.listdir(input_dir)
     for cls_name in cls_file:
         img_file = os.listdir("%s/%s"%(input_dir,cls_name))
@@ -32,83 +45,91 @@ def resize_img(input_dir,output_dir):
                 os.makedirs("%s/%s"%(output_dir,cls_name))
                 cv2.imwrite("%s/%s/%s"%(output_dir,cls_name,img_name),img)
 
+class cervical_autokeras():
+    def __init__(self, ROOTPATH):
+        #训练、预测任务的顶层目录, 训练是按照时间随机生成的，预测是人为指定的
+        self.ROOTPATH = ROOTPATH
+        #保存中间过程的目录
+        self.TEMP_DIR = os.path.join(self.ROOTPATH, 'autokeras')
+        #Folder for storing training images
+        self.TRAIN_IMG_DIR = os.path.join(self.ROOTPATH, 'train')
+        self.RESIZE_TRAIN_IMG_DIR = os.path.join(self.ROOTPATH,'resize_train')
+        #Folder for storing testing images
+        self.TEST_IMG_DIR = os.path.join(self.ROOTPATH, 'test')
+        self.RESIZE_TEST_IMG_DIR = os.path.join(self.ROOTPATH, 'resize_test')
+        #Folder for storing predict images
+        self.PREDICT_IMG_DIR = os.path.join(self.ROOTPATH, 'predict')
+        self.RESIZE_PREDICT_IMG_DIR = os.path.join(self.ROOTPATH, 'resize_predict')
+        #Path to generate csv file
+        self.TRAIN_CSV_DIR = os.path.join(self.ROOTPATH, 'train_labels.csv')
+        self.TEST_CSV_DIR = os.path.join(self.ROOTPATH, 'test_labels.csv')
+        self.PREDICT_CSV_DIR = os.path.join(self.ROOTPATH, 'predict_labels.csv')
+        #Path to generate model file
+        self.MODEL_DIR = os.path.join(self.ROOTPATH, 'Model.h5')
+        #If your memory is not enough, please turn down this value.(my computer memory 16GB)
+        self.RESIZE = 128
+        #Set the training time, this is half an hour
+        self.TIME = 0.5*60*60
 
-def train_autokeras(RESIZE_TRAIN_IMG_DIR,TRAIN_CSV_DIR,RESIZE_TEST_IMG_DIR,TEST_CSV_DIR,TIME):
-    #Load images
-    train_data, train_labels = load_image_dataset(csv_file_path=TRAIN_CSV_DIR, images_path=RESIZE_TRAIN_IMG_DIR)
-    test_data, test_labels = load_image_dataset(csv_file_path=TEST_CSV_DIR, images_path=RESIZE_TEST_IMG_DIR)
+        if not os.path.exists(self.ROOTPATH):
+             os.makedirs(self.ROOTPATH)
 
-    train_data = train_data.astype('float32') / 255
-    test_data = test_data.astype('float32') / 255
-    print("Train data shape:", train_data.shape)
 
-    TEMP_DIR='autokeras_U8KEOQ'
-    clf = ImageClassifier(verbose=True, path=TEMP_DIR)
-    clf.fit(train_data, train_labels, time_limit=TIME)
-    clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
-
-    y = clf.evaluate(test_data, test_labels)
-    print("Evaluate:", y)
-
-    #Predict the category of the test image
-    img = load_img(PREDICT_IMG_PATH)
-    x = img_to_array(img)
-    x = x.astype('float32') / 255
-    x = np.reshape(x, (1, RESIZE, RESIZE, 3))
-    print("x shape:", x.shape)
-
-    y = clf.predict(x)
-    print("predict:", y)
-
-    # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
-    # clf.export_keras_model(MODEL_DIR)
-    clf.export_autokeras_model(MODEL_DIR)
-
-    #Save model architecture diagram
-    model = pickle_from_file(MODEL_DIR)
-
-    #plot_model(model, to_file=MODEL_PNG)
-
-def predict_autokeras(RESIZE_TEST_IMG_DIR,TEST_CSV_DIR):
-    #Load images
-    test_data, test_labels = load_image_dataset(csv_file_path=TEST_CSV_DIR, images_path=RESIZE_TEST_IMG_DIR)
-    test_data = test_data.astype('float32') / 255
-    print("Test data shape:", test_data.shape)
-
-    autokeras_model = pickle_from_file(MODEL_DIR)
-    autokeras_score = autokeras_model.evaluate(test_data, test_labels)
-    print(autokeras_score)
+    def train_autokeras(self):
+        #Load images
+        train_data, train_labels = load_image_dataset(csv_file_path=self.TRAIN_CSV_DIR, images_path=self.RESIZE_TRAIN_IMG_DIR)
+        test_data, test_labels = load_image_dataset(csv_file_path=self.TEST_CSV_DIR, images_path=self.RESIZE_TEST_IMG_DIR)
+    
+        train_data = train_data.astype('float32') / 255
+        test_data = test_data.astype('float32') / 255
+        print("Train data shape:", train_data.shape)
+    
+        clf = ImageClassifier(verbose=True, path=self.TEMP_DIR)
+        clf.fit(train_data, train_labels, time_limit=self.TIME)
+        clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
+    
+        y = clf.evaluate(test_data, test_labels)
+        print("Evaluate:", y)
+    
+        ##Predict the category of the test image
+        #img = load_img(PREDICT_IMG_PATH)
+        #x = img_to_array(img)
+        #x = x.astype('float32') / 255
+        #x = np.reshape(x, (1, RESIZE, RESIZE, 3))
+        #print("x shape:", x.shape)
+        #y = clf.predict(x)
+        #print("predict:", y)
+    
+        # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
+        # clf.export_keras_model(MODEL_DIR)
+        clf.export_autokeras_model(self.MODEL_DIR)
+    
+    def predict_autokeras(self):
+        #Load images
+        test_data, test_labels = load_image_dataset(csv_file_path=self.PREDICT_CSV_DIR, images_path=self.RESIZE_PREDICT_IMG_DIR)
+        test_data = test_data.astype('float32') / 255
+        print("Test data shape:", test_data.shape)
+    
+        autokeras_model = pickle_from_file(self.MODEL_DIR)
+        autokeras_score = autokeras_model.evaluate(test_data, test_labels)
+        print(autokeras_score)
 
 if __name__ == "__main__":
-    #Folder for storing training images
-    TRAIN_IMG_DIR = '/tf/lambda/autokeras/17P0603/train'
-    RESIZE_TRAIN_IMG_DIR = '/tf/lambda/autokeras/17P0603/resize_train'
-    #Folder for storing testing images
-    TEST_IMG_DIR = '/tf/lambda/autokeras/17P0603/test'
-    RESIZE_TEST_IMG_DIR = '/tf/lambda/autokeras/17P0603/resize_test'
+    ca = cervical_autokeras(opt.taskdir)
 
-    #Path to generate csv file
-    TRAIN_CSV_DIR = '/tf/lambda/autokeras/17P0603/train_labels.csv'
-    TEST_CSV_DIR = '/tf/lambda/autokeras/17P0603/test_labels.csv'
-
-    #Path to test image 
-    PREDICT_IMG_PATH = '/tf/lambda/autokeras/17P0603/resize_test/1/17P0603_1903779_IMG033x022.JPG_1296_429.png'
-
-    #Path to generate model file
-    MODEL_DIR = 'Model.h5'
-    MODEL_PNG = 'Model.png'
-
-    #If your memory is not enough, please turn down this value.(my computer memory 16GB)
-    RESIZE = 128
-    #Set the training time, this is half an hour
-    TIME = 1*60*60
-
-    print ("Resize images...")
-    resize_img(TRAIN_IMG_DIR,RESIZE_TRAIN_IMG_DIR)
-    resize_img(TEST_IMG_DIR,RESIZE_TEST_IMG_DIR)
-    print ("write csv...")
-    write_csv(RESIZE_TRAIN_IMG_DIR, TRAIN_CSV_DIR)
-    write_csv(RESIZE_TEST_IMG_DIR, TEST_CSV_DIR)
-    print ("============Load...=================")
-    train_autokeras(RESIZE_TRAIN_IMG_DIR,TRAIN_CSV_DIR,RESIZE_TEST_IMG_DIR,TEST_CSV_DIR,TIME)
-    #predict_autokeras(RESIZE_TEST_IMG_DIR,TEST_CSV_DIR)
+    if opt.task == 'train':
+        print ("Resize images...")
+        resize_img(ca.TRAIN_IMG_DIR, ca.RESIZE_TRAIN_IMG_DIR, ca.RESIZE)
+        resize_img(ca.TEST_IMG_DIR, ca.RESIZE_TEST_IMG_DIR, ca.RESIZE)
+        print ("write csv...")
+        write_csv(ca.RESIZE_TRAIN_IMG_DIR, ca.TRAIN_CSV_DIR)
+        write_csv(ca.RESIZE_TEST_IMG_DIR, ca.TEST_CSV_DIR)
+        print ("============Load...=================")
+        ca.train_autokeras()
+    elif opt.task == 'predict':
+        print ("Resize images...")
+        resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
+        print ("write csv...")
+        write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
+        print ("============Load...=================")
+        ca.predict_autokeras()
