@@ -73,3 +73,10 @@ data/
 ```
 # python main.py --task predict --taskdir data/task1/
 ```
+
+## 7 下次预测要清除如下数据
+```
+rm -rf data/task1/predict_labels.csv
+rm -rf data/task1/predict
+rm -rf data/task1/resize_predict
+```
