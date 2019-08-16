@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import os, csv, cv2, time, argparse
+import os, csv, cv2, time, argparse, shutil
+# 匹配参数放在这里是因为如果参数不对就可以报错退出，否则后面的import会占用很长时间然后再报错退出
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', choices = ['train', 'predict'], help='train or predict')
 parser.add_argument('--taskdir', help='fold path for train/predict')
@@ -13,11 +14,11 @@ from autokeras.utils import pickle_from_file
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
- 
+
 def timestamp():
     return time.strftime("%Y%m%d_%H%M%S", time.localtime())
 
-#write csv  
+#write csv
 def write_csv(img_dir, csv_dir):
     list = []
     list.append(['File Name','Label'])
@@ -25,11 +26,11 @@ def write_csv(img_dir, csv_dir):
     	for img in os.listdir("%s/%s"%(img_dir,file_name)):
             #print (img)
             item = [file_name+"/"+img, file_name]
-            list.append(item) 
+            list.append(item)
     f = open(csv_dir, 'w')
     writer = csv.writer(f)
     writer.writerows(list)
- 
+
 #resize images
 def resize_img(input_dir, output_dir, RESIZE):
     cls_file = os.listdir(input_dir)
@@ -74,23 +75,34 @@ class cervical_autokeras():
         if not os.path.exists(self.ROOTPATH):
              os.makedirs(self.ROOTPATH)
 
+        self.clean_fold()
+
+    def clean_fold(self):
+        dirs = [self.RESIZE_TRAIN_IMG_DIR, self.RESIZE_TEST_IMG_DIR, self.RESIZE_PREDICT_IMG_DIR]
+        files = [self.TRAIN_CSV_DIR, self.TEST_CSV_DIR, self.PREDICT_CSV_DIR]
+        for d in dirs:
+            if os.path.exists(d):
+                shutil.rmtree(d)
+        for f in files:
+            if os.path.exists(f):
+                os.remove(f)
 
     def train_autokeras(self):
         #Load images
         train_data, train_labels = load_image_dataset(csv_file_path=self.TRAIN_CSV_DIR, images_path=self.RESIZE_TRAIN_IMG_DIR)
         test_data, test_labels = load_image_dataset(csv_file_path=self.TEST_CSV_DIR, images_path=self.RESIZE_TEST_IMG_DIR)
-    
+
         train_data = train_data.astype('float32') / 255
         test_data = test_data.astype('float32') / 255
         print("Train data shape:", train_data.shape)
-    
+
         clf = ImageClassifier(verbose=True, path=self.TEMP_DIR)
         clf.fit(train_data, train_labels, time_limit=self.TIME)
         clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
-    
+
         y = clf.evaluate(test_data, test_labels)
         print("Evaluate:", y)
-    
+
         ##Predict the category of the test image
         #img = load_img(PREDICT_IMG_PATH)
         #x = img_to_array(img)
@@ -99,17 +111,17 @@ class cervical_autokeras():
         #print("x shape:", x.shape)
         #y = clf.predict(x)
         #print("predict:", y)
-    
+
         # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
         # clf.export_keras_model(MODEL_DIR)
         clf.export_autokeras_model(self.MODEL_DIR)
-    
+
     def predict_autokeras(self):
         #Load images
         test_data, test_labels = load_image_dataset(csv_file_path=self.PREDICT_CSV_DIR, images_path=self.RESIZE_PREDICT_IMG_DIR)
         test_data = test_data.astype('float32') / 255
         print("Test data shape:", test_data.shape)
-    
+
         autokeras_model = pickle_from_file(self.MODEL_DIR)
         autokeras_score = autokeras_model.evaluate(test_data, test_labels)
         print(autokeras_score)
