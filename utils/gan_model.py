@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 import os
 import time
 import random
 import argparse
 import numpy as np
+import scipy.misc
 
 import torch
 import torch.nn as nn
@@ -292,10 +294,28 @@ def get_matrix(netD, netD_Q, cluster_loader, label, dis_category):
     predict_label = []
     for index in range(0, predict.shape[0]):
         predict_label.append(np.argmax(predict[index]))
+        #print(np.argmax(predict[index]))
     coherent_array = np.zeros((np.max(label)+1,dis_category), dtype=float)
     for index in range(0, len(predict)):
         coherent_array[label[index],predict_label[index]] +=1
     return coherent_array
+
+def get_matrix2(netD, netD_Q, cluster_loader, label, dis_category):
+    predict = []
+    data_iter = iter(cluster_loader)
+    print(len(data_iter))
+    for iteration in data_iter:
+        img, img_label = iteration
+        predict_label = netD_Q(netD(Variable(img.cuda(),volatile=True)))
+        predict.append(predict_label.data.cpu().numpy())
+    predict = np.concatenate(predict)
+    predict_label = []
+    for index in range(0, predict.shape[0]):
+        predict_label.append(np.argmax(predict[index]))
+        #print(np.argmax(predict[index]))
+    print(predict_label)
+    print('len(predict_label)=', len(predict_label))
+
 
 #normalization and data augmentation
 def normalized(array):
@@ -371,6 +391,8 @@ def get_f_score(array):
     index_list = []
     for n in range(0, array.shape[1]):
         index = np.argmax(array[:,n])
+        if np.sum(array[index]) == 0:
+            continue
         precision = float(np.max(array[:,n],axis=0))/float(np.sum(array[index]))
         if np.sum(array[:,n]) == 0:
             continue
@@ -842,7 +864,7 @@ def train_representation(cell_array, test_array, test_label, netD, netG, netD_D,
 
                 #print ('{0} {1} {2} {3}'.format(batch_time, gen_iterations , -D_cost.data[0] , mi_loss.data[0]))
                 G_sample = netG(Variable(fixed_noise, volatile = True))
-                vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell.png',nrow=5,normalize=True)
+                vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell_train_{}.png'.format(gen_iterations),nrow=5,normalize=True)
 
                 coherent_array = get_matrix(netD, netD_Q, test_loader, test_label, dis_category)
                 entropy, purity = compute_purity_entropy(coherent_array)
@@ -860,3 +882,251 @@ def train_representation(cell_array, test_array, test_label, netD, netG, netD_D,
                 end = time.time()
                 
             gen_iterations += 1
+
+def train_representation2(cell_array, test_array, test_label, netD, netG, netD_D, netD_Q,
+                         experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5,
+                         ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
+
+    train = rotation(cell_array)
+    train = normalized(train)
+    train_loader = create_loader(train, shuffle=True, batchsize=batchsize)
+    test = normalized(test_array)
+    test_loader = create_loader(test, shuffle=False, batchsize=1)
+    test_label = test_label
+
+    def zero_grad():
+        netD.zero_grad()
+        netD_Q.zero_grad()
+        netD_D.zero_grad()
+        netG.zero_grad()
+
+    optimizerD = optim.Adam([
+                {'params': netD.parameters(), 'lr': ld},
+                {'params': netD_D.parameters(), 'lr': ld},
+            ], betas=(0.5, 0.9))
+
+    optimizerG = optim.Adam([
+                {'params': netG.parameters(), 'lr': lg},
+            ], betas=(0.5, 0.9))
+
+    optimizerQ = optim.Adam([
+                    {'params': netG.parameters()},
+                    {'params': netD.parameters()},
+                    {'params': netD_Q.parameters()},
+                ], lq, betas=(0.5, 0.9))
+
+    optimizerQ_G = optim.Adam([
+                    {'params': netG.parameters()},
+                ], lg, betas=(0.5, 0.9))
+
+    input = torch.FloatTensor(batchsize, 3, 32, 32)
+    noise = torch.FloatTensor(batchsize, rand+10*dis,1 ,1 )
+
+    fixed_noise = torch.FloatTensor(np.random.multinomial(batchsize, 10*[0.1], size=1))
+    c = torch.randn(batchsize, 10)
+    z = torch.randn(batchsize, rand)
+
+    label = torch.FloatTensor(1)
+
+    real_label = 1
+    fake_label = 0
+
+    criterion = nn.BCELoss()
+    criterion_logli = nn.NLLLoss()
+    criterion_mse = nn.MSELoss()
+
+    criterion, criterion_logli, criterion_mse = criterion.cuda(), criterion_logli.cuda(), criterion_mse.cuda()
+    input, label = input.cuda(), label.cuda()
+    noise, fixed_noise = noise.cuda(), fixed_noise.cuda()
+    z, c = z.cuda(), c.cuda()
+
+    gen_iterations = 0
+    lamda = 10
+    discrete_lamda = 1
+    end = time.time()
+
+    one = torch.FloatTensor([1])
+    mone = one * -1
+    one = one.cuda()
+    mone = mone.cuda()
+    fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
+
+    for epoch in range(n_epoch):
+
+        dataiter = iter(train_loader)
+        i = 0
+
+        while i < len(train_loader):
+            for p in netD.parameters():
+                p.requires_grad = True
+            for p in netD_D.parameters():
+                p.requires_grad = True
+
+            for iter_d in range(0,5):
+                if i >=len(train_loader):
+                    continue
+
+                zero_grad()
+                image_, _ = dataiter.next()
+                _batchsize = image_.size(0)
+                image_ = image_.cuda()
+                i +=1
+                input.resize_as_(image_).copy_(image_)
+                inputv = Variable(input)
+
+                #train with real
+                errD_real = netD_D(netD(inputv)).mean()
+                errD_real.backward(mone)
+
+                # train with fake
+                rand_c,label_c = sample_c(_batchsize,dis_category=dis_category)
+                rand_c = rand_c.cuda()
+                c.resize_as_(rand_c).copy_(rand_c)
+                z.resize_(_batchsize, rand, 1, 1).normal_(0, 1)
+                c = c.view(-1, dis_category, 1, 1)
+                noise = torch.cat([c,z],1)
+                noise_resize = noise.view(_batchsize,rand+dis_category*dis,1,1)
+                noisev = Variable(noise_resize, volatile = True)
+                fake = Variable(netG(noisev).data)
+                inputv = fake
+                errD_fake = netD_D(netD(inputv)).mean()
+                errD_fake.backward(one)
+
+                # train with gradient penalty
+                gradient_penalty = calc_gradient_penalty(netD_D,netD, input, fake.data,lamda,_batchsize)
+                gradient_penalty.backward()
+
+                D_cost = -errD_real + errD_fake + gradient_penalty
+
+                optimizerD.step()
+
+            # update G
+            for p in netD.parameters():
+                p.requires_grad = False
+            for p in netD_D.parameters():
+                p.requires_grad = False
+
+            zero_grad()
+            rand_c,label_c = sample_c(batchsize,dis_category=dis_category)
+            rand_c = rand_c.cuda()
+            c.resize_as_(rand_c).copy_(rand_c)
+            z.resize_(batchsize, rand, 1, 1).normal_(0, 1)
+            c = c.view(-1, dis_category, 1, 1)
+            noise = torch.cat([c,z],1)
+            noise_resize = noise.view(batchsize,rand+dis_category*dis,1,1)
+            noisev = Variable(noise_resize)
+            fake = netG(noisev)
+            errG = netD_D(netD(fake)).mean()
+            errG.backward(mone)
+            optimizerG.step()
+
+            for p in netD.parameters():
+                p.requires_grad = True
+            for p in netD_D.parameters():
+                p.requires_grad = True
+
+            zero_grad()
+            inputv = Variable(noise_resize)
+            Q_c_given_x = netD_Q(netD(netG(inputv))).view(batchsize, dis_category)
+            crossent_loss = criterion_logli(Q_c_given_x ,Variable(label_c.cuda()))
+            mi_loss = discrete_lamda*crossent_loss
+            mi_loss.backward()
+
+            optimizerQ.step()
+
+            if gen_iterations % 10 == 0 and gen_iterations:
+
+                batch_time = time.time() - end
+                end = time.time()
+
+                with open(experiment_root + "log","a") as f:
+                    f.write('batch_time:{0}, gen_iterations:{1}, D_cost:{2}, mi_loss:{3}'.format(batch_time/10, gen_iterations , -D_cost.data[0] , mi_loss.data[0]) + '\n')
+                print('batch_time:{0}, gen_iterations:{1}, D_cost:{2}, mi_loss:{3}'.format(batch_time/10, gen_iterations , -D_cost.data[0] , mi_loss.data[0]))
+
+
+            if gen_iterations % 100 == 0 :
+
+                #print ('{0} {1} {2} {3}'.format(batch_time, gen_iterations , -D_cost.data[0] , mi_loss.data[0]))
+                G_sample = netG(Variable(fixed_noise, volatile = True))
+                vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell_train_{}.png'.format(gen_iterations),nrow=5,normalize=True)
+
+                coherent_array = get_matrix(netD, netD_Q, test_loader, test_label, dis_category)
+                entropy, purity = compute_purity_entropy(coherent_array)
+                f_score = get_f_score(coherent_array)
+                print('purity:', purity, 'entropy:', entropy, 'f_score', f_score)
+
+                with open(experiment_root + "log","a") as f:
+                    f.write('{0} {1} {2} {3}'.format(gen_iterations, purity , entropy , f_score) + '\n')
+
+            if gen_iterations % save_model_steps == 0 :
+                torch.save(netD.state_dict(), os.path.join(experiment_root + 'model/netD.pth'))
+                torch.save(netG.state_dict(), os.path.join(experiment_root + 'model/netG.pth'))
+                torch.save(netD_D.state_dict(), os.path.join(experiment_root + 'model/netD_D.pth'))
+                torch.save(netD_Q.state_dict(), os.path.join(experiment_root + 'model/netD_Q.pth'))
+                end = time.time()
+
+            gen_iterations += 1
+
+def fake_cell(experiment_root, num, netD, netG, netD_D, netD_Q, batchsize=32, rand=64, dis=1, dis_category=5):
+    path_netG = os.path.join(experiment_root + 'model/netG.pth')
+    netG.load_state_dict(torch.load(path_netG))
+    netG.eval()
+
+    fake_cell_fold = os.path.join(experiment_root, 'fake_cell')
+    if not os.path.exists(fake_cell_fold):
+        os.makedirs(fake_cell_fold)
+
+    for num in range(0, num):
+        noise = torch.FloatTensor(batchsize, rand+10*dis,1 ,1 )
+        fixed_noise = torch.FloatTensor(np.random.multinomial(batchsize, 10*[0.1], size=1))
+        fixed_noise = torch.from_numpy(fix_noise(dis_category=dis_category,rand=rand)).cuda()
+
+        G_sample = netG(Variable(fixed_noise, volatile = True))
+        vutils.save_image(G_sample.data, '%s/fake_cell_%08d.png' % (fake_cell_fold, num), nrow=1, padding=0, normalize=True)
+    # 10个细胞图切割成单个的
+    for i in os.listdir(fake_cell_fold):
+        img_path = os.path.join(fake_cell_fold, i)
+        if os.path.isdir(img_path):
+            continue
+        image = scipy.misc.imread(img_path)
+        for j in range(0, 10):
+            y1 = j*32 + 1
+            y2 = y1 + 32
+            x1 = 1
+            x2 = 32
+            cropped = image[y1:y2,x1:x2,:]
+            cropped_path = os.path.join(fake_cell_fold, 'cropd')
+            if not os.path.exists(cropped_path):
+                os.makedirs(cropped_path)
+            cropped_name = os.path.join(cropped_path, i) + '_%02d.png' % j
+            scipy.misc.imsave(cropped_name , cropped)
+    return
+
+def predict_cells(experiment_root, cell_test_set, cell_test_label, netD, netG, netD_D, netD_Q, batchsize=32, rand=64, dis=1, dis_category=5):
+    test = normalized(cell_test_set)
+    test_loader = create_loader(test, shuffle=False, batchsize=1)
+
+    #type=7
+    #path_netG =   "experiment/1565702279/model/netG_1.0_-0.0001442622910945383_4900.pth"
+    #type=1
+    #path_netG = "experiment/1565694475/model/netG_1.0_-0.0001442622910945383_6000.pth"
+    #type=1.7
+    path_netD =   os.path.join(experiment_root + 'model/netD.pth')
+    path_netG =   os.path.join(experiment_root + 'model/netG.pth')
+    path_netD_D = os.path.join(experiment_root + 'model/netD_D.pth')
+    path_netD_Q = os.path.join(experiment_root + 'model/netD_Q.pth')
+
+    netD.load_state_dict(torch.load(path_netD))
+    netG.load_state_dict(torch.load(path_netG))
+    netD_D.load_state_dict(torch.load(path_netD_D))
+    netD_Q.load_state_dict(torch.load(path_netD_Q))
+
+    netD.eval()
+    netG.eval()
+    netD_D.eval()
+    netD_Q.eval()
+
+    print(cell_test_label)
+    print(">>>>>>>>")
+    res = get_matrix2(netD, netD_Q, test_loader, cell_test_label, dis_category)
+    print(res)

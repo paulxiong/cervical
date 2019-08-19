@@ -1,11 +1,11 @@
 import os
 import time
 import argparse
-from utils.experiment import cell_segmentation, cell_representation, image_classification
+from utils.experiment import cell_segmentation, cell_representation, image_classification, generator_fake_cell, predict_cell, cell_representation2
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', 
-                    choices = ['cell_representation', 'image_classification', 'cell_segmentation'], 
+                    choices = ['cell_representation', 'cell_train_fake', 'cell_train', 'cell_fake', 'predict_cell', 'image_classification', 'cell_segmentation'], 
                     help='cell_representation | image_classification | cell_segmentation')
 opt = parser.parse_args()
 
@@ -30,7 +30,7 @@ n_epoch=50
 batchsize=10
 rand=32
 dis=1
-dis_category=5
+dis_category=2
 ld = 1e-4
 lg = 1e-4
 lq = 1e-4
@@ -43,18 +43,38 @@ fold = 4
 choosing_fold = 1 #cross-validation for classification
 
 time = str(int(time.time()))
-if 1- os.path.exists(experiment_root+time):
-    os.makedirs(experiment_root+time)
-    os.makedirs(experiment_root+time+'/'+'picture')
-    os.makedirs(experiment_root+time+'/'+'model')
-    
-experiment_root = experiment_root + time + '/'
+time = 'output'
+experiment_root = os.path.join(experiment_root , time) + '/'
 print('folder_name:'+str(time))
+if not os.path.exists(experiment_root):
+    os.makedirs(experiment_root)
+    os.makedirs(os.path.join(experiment_root, 'picture'))
+    os.makedirs(os.path.join(experiment_root, 'model'))
+    os.makedirs(os.path.join(experiment_root, 'fake_cell'))
 
 if opt.task == 'cell_representation':
     cell_representation(X_train_path, X_test_path, y_train_path, y_test_path, experiment_root, 
                             n_epoch, batchsize, rand, dis, dis_category, 
                             ld, lg, lq, save_model_steps)
+
+if opt.task == 'cell_train':
+    dis_category=1
+    cell_datasets_path = 'experiment/data/cell_datasets/'
+    cell_representation2(cell_datasets_path, experiment_root,
+                            n_epoch, batchsize, rand, dis, dis_category,
+                            ld, lg, lq, save_model_steps)
+if opt.task == 'cell_fake':
+    dis_category=1
+    generator_fake_cell(experiment_root, batchsize=batchsize, rand=rand, dis=dis, dis_category=dis_category)
+if opt.task == 'cell_train_fake':
+    dis_category=1
+    cell_datasets_path = 'experiment/data/cell_datasets/'
+    cell_representation2(cell_datasets_path, experiment_root,
+                            n_epoch, batchsize, rand, dis, dis_category,
+                            ld, lg, lq, save_model_steps)
+    generator_fake_cell(experiment_root, batchsize=batchsize, rand=rand, dis=dis, dis_category=dis_category)
+if opt.task == 'predict_cell':
+    predict_cell(experiment_root, X_test_path, y_test_path, batchsize=batchsize, rand=rand, dis=dis, dis_category=dis_category)
 
 if opt.task == 'image_classification':
     image_classification(positive_images_root, negative_images_root, positive_npy_root,negative_npy_root, 
