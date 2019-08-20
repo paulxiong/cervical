@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, csv, cv2, time, argparse, shutil
+import os, csv, cv2, time, argparse
 # 匹配参数放在这里是因为如果参数不对就可以报错退出，否则后面的import会占用很长时间然后再报错退出
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', choices = ['train', 'predict', 'predict2'], help='train or predict')
@@ -14,7 +14,7 @@ from autokeras.utils import pickle_from_file
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
-from shutil import copyfile
+from shutil import copyfile, rmtree
 
 def timestamp():
     return time.strftime("%Y%m%d_%H%M%S", time.localtime())
@@ -40,6 +40,9 @@ def resize_img(input_dir, output_dir, RESIZE):
         for img_name in img_file:
             #print (img_name)
             img = cv2.imread("%s/%s/%s"%(input_dir,cls_name,img_name))
+            if img.shape[0] != img.shape[1]:
+                print("skip this image w != h: %s" % img_name)
+                continue
             img = cv2.resize(img,(RESIZE,RESIZE),interpolation=cv2.INTER_LINEAR)
             if os.path.exists("%s/%s"%(output_dir,cls_name)):
                 cv2.imwrite("%s/%s/%s"%(output_dir,cls_name,img_name),img)
@@ -62,6 +65,7 @@ class cervical_autokeras():
         #Folder for storing predict images
         self.PREDICT_IMG_DIR = os.path.join(self.ROOTPATH, 'predict')
         self.RESIZE_PREDICT_IMG_DIR = os.path.join(self.ROOTPATH, 'resize_predict')
+        self.PREDICT_ERROR_IMG_DIR = os.path.join(self.ROOTPATH, 'predict_error_data')
         #Path to generate csv file
         self.TRAIN_CSV_DIR = os.path.join(self.ROOTPATH, 'train_labels.csv')
         self.TEST_CSV_DIR = os.path.join(self.ROOTPATH, 'test_labels.csv')
@@ -73,17 +77,15 @@ class cervical_autokeras():
         #Set the training time, this is half an hour
         self.TIME = 0.5*60*60
 
-        if not os.path.exists(self.ROOTPATH):
-             os.makedirs(self.ROOTPATH)
-
         self.clean_fold()
 
     def clean_fold(self):
-        dirs = [self.RESIZE_TRAIN_IMG_DIR, self.RESIZE_TEST_IMG_DIR, self.RESIZE_PREDICT_IMG_DIR]
+        dirs = [self.RESIZE_TRAIN_IMG_DIR, self.RESIZE_TEST_IMG_DIR, self.RESIZE_PREDICT_IMG_DIR, self.PREDICT_ERROR_IMG_DIR]
         files = [self.TRAIN_CSV_DIR, self.TEST_CSV_DIR, self.PREDICT_CSV_DIR]
         for d in dirs:
             if os.path.exists(d):
-                shutil.rmtree(d)
+                rmtree(d)
+            os.makedirs(d)
         for f in files:
             if os.path.exists(f):
                 os.remove(f)
@@ -104,15 +106,6 @@ class cervical_autokeras():
         y = clf.evaluate(test_data, test_labels)
         print("Evaluate:", y)
 
-        ##Predict the category of the test image
-        #img = load_img(PREDICT_IMG_PATH)
-        #x = img_to_array(img)
-        #x = x.astype('float32') / 255
-        #x = np.reshape(x, (1, RESIZE, RESIZE, 3))
-        #print("x shape:", x.shape)
-        #y = clf.predict(x)
-        #print("predict:", y)
-
         # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
         # clf.export_keras_model(MODEL_DIR)
         clf.export_autokeras_model(self.MODEL_DIR)
@@ -126,45 +119,33 @@ class cervical_autokeras():
         autokeras_model = pickle_from_file(self.MODEL_DIR)
         autokeras_score = autokeras_model.evaluate(test_data, test_labels)
         print(autokeras_score)
-        
-    def predict_autokeras2(self):
-        #Load images
-        test_data, test_labels = load_image_dataset(csv_file_path=self.PREDICT_CSV_DIR, images_path=self.RESIZE_PREDICT_IMG_DIR)
-        img_path_1 = self.ROOTPATH + 'predict/'
-        predict_error_path = self.ROOTPATH + 'predict_error_data/'
-        if os.path.exists(predict_error_path):
-            shutil.rmtree(predict_error_path)
-        if not os.path.exists(predict_error_path):
-            os.mkdir(predict_error_path)
-        list_name = os.listdir(img_path_1)
-        all_name = []
-        all_name_path = []
-        for k in list_name:
-            path_temp = img_path_1 + k
-            list_name_temp = os.listdir(path_temp)
-            for k1 in list_name_temp:
-                list_name_temp_path = path_temp + '/' + ''.join(k1)
-            for kk in list_name_temp:
-                all_name.append(kk) #文件名
-                all_name_path.append(path_temp + '/' +''.join(kk)) #文件路径
-        test_data = test_data.astype('float32') / 255
-        print("Test data shape:", test_data.shape)
 
+    def predict_autokeras2(self):
         autokeras_model = pickle_from_file(self.MODEL_DIR)
-        autokeras_score = autokeras_model.evaluate(test_data, test_labels)
-        label_predict = autokeras_model.predict(test_data)
-        print("============predict============")
-        count = 0
-        count_ture = 0
-        for img_path, i, n,m in zip(all_name_path, all_name,test_labels, label_predict):
-            print("文件名：%s     真实标签：%s     预测标签：%s"%(i, n,m))
-            count = count + 1
-            if n == m:
-                count_ture = count_ture + 1
-            else:
-                copyfile(img_path, predict_error_path + '/' + i)
-        print("准确率：",count_ture/count)
-        print("评估得分：",autokeras_score)    
+
+        #Load images
+        for label in os.listdir(self.RESIZE_PREDICT_IMG_DIR):
+            images = os.listdir(os.path.join(self.RESIZE_PREDICT_IMG_DIR, label))
+            total = len(images)
+            count_false = 0
+            for index in range(0, total):
+                img_path = os.path.join(self.RESIZE_PREDICT_IMG_DIR, label, images[index])
+                if not os.path.exists(img_path):
+                    continue
+
+                img = load_img(img_path)
+                x = img_to_array(img)
+                x = x.astype('float32') / 255
+                x = np.reshape(x, (1, self.RESIZE, self.RESIZE, 3))
+                y = autokeras_model.predict(x)
+                if str(label) != str(y[0]):
+                    print("%s %s result=%s" % (images[index], label, y[0]))
+                    count_false = count_false - 1
+                    error_image_dir = os.path.join(self.PREDICT_ERROR_IMG_DIR, label)
+                    if not os.path.exists(error_image_dir):
+                        os.makedirs(error_image_dir)
+                    copyfile(img_path, os.path.join(error_image_dir, images[index]))
+            print("%s 的个数/准确率：%d %d" % (label, total, (total - count_false) / total))
 
 if __name__ == "__main__":
     ca = cervical_autokeras(opt.taskdir)
