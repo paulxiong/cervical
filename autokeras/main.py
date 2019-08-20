@@ -14,6 +14,7 @@ from autokeras.utils import pickle_from_file
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
+from shutil import copyfile
 
 def timestamp():
     return time.strftime("%Y%m%d_%H%M%S", time.localtime())
@@ -129,14 +130,23 @@ class cervical_autokeras():
     def predict_autokeras2(self):
         #Load images
         test_data, test_labels = load_image_dataset(csv_file_path=self.PREDICT_CSV_DIR, images_path=self.RESIZE_PREDICT_IMG_DIR)
-        img_path_1 = self.ROOTPATH + '/predict/'
+        img_path_1 = self.ROOTPATH + 'predict/'
+        predict_error_path = self.ROOTPATH + 'predict_error_data/'
+        if os.path.exists(predict_error_path):
+            shutil.rmtree(predict_error_path)
+        if not os.path.exists(predict_error_path):
+            os.mkdir(predict_error_path)
         list_name = os.listdir(img_path_1)
         all_name = []
+        all_name_path = []
         for k in list_name:
             path_temp = img_path_1 + k
             list_name_temp = os.listdir(path_temp)
+            for k1 in list_name_temp:
+                list_name_temp_path = path_temp + '/' + ''.join(k1)
             for kk in list_name_temp:
-                all_name.append(kk)
+                all_name.append(kk) #文件名
+                all_name_path.append(path_temp + '/' +''.join(kk)) #文件路径
         test_data = test_data.astype('float32') / 255
         print("Test data shape:", test_data.shape)
 
@@ -144,9 +154,17 @@ class cervical_autokeras():
         autokeras_score = autokeras_model.evaluate(test_data, test_labels)
         label_predict = autokeras_model.predict(test_data)
         print("============predict============")
-        for i, n,m in zip(all_name,test_labels, label_predict):
+        count = 0
+        count_ture = 0
+        for img_path, i, n,m in zip(all_name_path, all_name,test_labels, label_predict):
             print("文件名：%s     真实标签：%s     预测标签：%s"%(i, n,m))
-        print("得分：",autokeras_score)    
+            count = count + 1
+            if n == m:
+                count_ture = count_ture + 1
+            else:
+                copyfile(img_path, predict_error_path + '/' + i)
+        print("准确率：",count_ture/count)
+        print("评估得分：",autokeras_score)    
 
 if __name__ == "__main__":
     ca = cervical_autokeras(opt.taskdir)
