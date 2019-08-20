@@ -2,10 +2,10 @@
 import os, csv, cv2, time, argparse, shutil
 # 匹配参数放在这里是因为如果参数不对就可以报错退出，否则后面的import会占用很长时间然后再报错退出
 parser = argparse.ArgumentParser()
-parser.add_argument('--task', choices = ['train', 'predict'], help='train or predict')
+parser.add_argument('--task', choices = ['train', 'predict', 'predict2'], help='train or predict')
 parser.add_argument('--taskdir', help='fold path for train/predict')
 opt = parser.parse_args()
-if not (opt.task) or (opt.task != 'train' and opt.task != 'predict'):
+if not (opt.task) or (opt.task != 'train' and opt.task != 'predict' and opt.task != 'predict2'):
     parser.error("specific a task such as '--task train'")
 if opt.taskdir is None or len(opt.taskdir) < 1:
     parser.error("specific path such as '--taskdir your/path/data'")
@@ -125,6 +125,30 @@ class cervical_autokeras():
         autokeras_model = pickle_from_file(self.MODEL_DIR)
         autokeras_score = autokeras_model.evaluate(test_data, test_labels)
         print(autokeras_score)
+        
+    def predict_autokeras2(self):
+        #Load images
+        test_data, test_labels = load_image_dataset(csv_file_path=self.PREDICT_CSV_DIR, images_path=self.RESIZE_PREDICT_IMG_DIR)
+        print("+++++++++++++++++++++")
+        print(self.ROOTPATH)
+        img_path_1 = self.ROOTPATH + '/predict/'
+        list_name = os.listdir(img_path_1)
+        all_name = []
+        for k in list_name:
+            path_temp = img_path_1 + k
+            list_name_temp = os.listdir(path_temp)
+            for kk in list_name_temp:
+                all_name.append(kk)
+        test_data = test_data.astype('float32') / 255
+        print("Test data shape:", test_data.shape)
+
+        autokeras_model = pickle_from_file(self.MODEL_DIR)
+        autokeras_score = autokeras_model.evaluate(test_data, test_labels)
+        label_predict = autokeras_model.predict(test_data)
+        print("============predict============")
+        for i, n,m in zip(all_name,test_labels, label_predict):
+            print("文件名：%s     真实标签：%s     预测标签：%s"%(i, n,m))
+        print("得分：",autokeras_score)    
 
 if __name__ == "__main__":
     ca = cervical_autokeras(opt.taskdir)
@@ -145,3 +169,11 @@ if __name__ == "__main__":
         write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
         print ("============Load...=================")
         ca.predict_autokeras()
+
+    elif opt.task == 'predict2':
+        print ("Resize images...")
+        resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
+        print ("write csv...")
+        write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
+        print ("============Load...=================")
+        ca.predict_autokeras2()
