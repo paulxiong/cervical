@@ -140,12 +140,12 @@ class cervical_autokeras():
                 y = autokeras_model.predict(x)
                 if str(label) != str(y[0]):
                     print("%s %s result=%s" % (images[index], label, y[0]))
-                    count_false = count_false - 1
+                    count_false = count_false + 1
                     error_image_dir = os.path.join(self.PREDICT_ERROR_IMG_DIR, label)
                     if not os.path.exists(error_image_dir):
                         os.makedirs(error_image_dir)
                     copyfile(img_path, os.path.join(error_image_dir, images[index]))
-            print("%s 的个数/准确率：%d %d" % (label, total, (total - count_false) / total))
+            print("%s 的个数/准确率：%d %f" % (label, total, (total - count_false) / total))
 
 if __name__ == "__main__":
     ca = cervical_autokeras(opt.taskdir)
