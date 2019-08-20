@@ -129,8 +129,6 @@ class cervical_autokeras():
     def predict_autokeras2(self):
         #Load images
         test_data, test_labels = load_image_dataset(csv_file_path=self.PREDICT_CSV_DIR, images_path=self.RESIZE_PREDICT_IMG_DIR)
-        print("+++++++++++++++++++++")
-        print(self.ROOTPATH)
         img_path_1 = self.ROOTPATH + '/predict/'
         list_name = os.listdir(img_path_1)
         all_name = []
