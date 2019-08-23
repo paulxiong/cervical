@@ -18,9 +18,9 @@
             <div v-for="url in input_datasets_img" :key="url.path">
               <el-popover trigger="hover" placement="top">
                 <p>图片链接: {{ url.path }}</p>
-                <el-image :src="url.big" class="img-step0" />
+                <el-image lazy :src="url.big" class="img-step0" />
                 <div slot="reference" class="name-wrapper">
-                  <el-image :src="url.small" class="img-step0" />
+                  <el-image lazy :src="url.small" class="img-step0" />
                 </div>
               </el-popover>
             </div>
@@ -31,9 +31,9 @@
             <div v-for="url in input_datasets_denoising" :key="url.path">
               <el-popover trigger="hover" placement="top">
                 <p>图片链接: {{ url.path }}</p>
-                <el-image :src="url.big" class="img-step0" />
+                <el-image lazy :src="url.big" class="img-step0" />
                 <div slot="reference" class="name-wrapper">
-                  <el-image :src="url.small" class="img-step0" />
+                  <el-image lazy :src="url.small" class="img-step0" />
                 </div>
               </el-popover>
             </div>
@@ -44,9 +44,9 @@
             <div v-for="url in middle_mask" :key="url.path">
               <el-popover trigger="hover" placement="top">
                 <p>图片链接: {{ url.path }}</p>
-                <el-image :src="url.big" class="img-step0" />
+                <el-image lazy :src="url.big" class="img-step0" />
                 <div slot="reference" class="name-wrapper">
-                  <el-image :src="url.small" class="img-step0" />
+                  <el-image lazy :src="url.small" class="img-step0" />
                 </div>
               </el-popover>
             </div>
@@ -57,9 +57,9 @@
             <div v-for="url in output_datasets_crop_preview" :key="url.path">
               <el-popover trigger="hover" placement="top">
                 <p>图片链接: {{ url.path }}</p>
-                <el-image :src="url.big" class="img-step0" />
+                <el-image lazy :src="url.big" class="img-step0" />
                 <div slot="reference" class="name-wrapper">
-                  <el-image :src="url.small" class="img-step0" />
+                  <el-image lazy :src="url.small" class="img-step0" />
                 </div>
               </el-popover>
             </div>
@@ -70,9 +70,9 @@
             <div v-for="url in output_datasets_crop_n" :key="url.path">
               <el-popover trigger="hover" placement="top">
                 <p>图片链接: {{ url.path }}</p>
-                <el-image :src="url.big" class="img-step0" />
+                <el-image lazy :src="url.big" class="img-step0" />
                 <div slot="reference" class="name-wrapper">
-                  <el-image :src="url.small" class="img-step0" />
+                  <el-image lazy :src="url.small" class="img-step0" />
                 </div>
               </el-popover>
             </div>
@@ -83,9 +83,9 @@
             <div v-for="url in output_datasets_crop_p" :key="url.path">
               <el-popover trigger="hover" placement="top">
                 <p>图片链接: {{ url.path }}</p>
-                <el-image :src="url.big" class="img-step0" />
+                <el-image lazy :src="url.big" class="img-step0" />
                 <div slot="reference" class="name-wrapper">
-                  <el-image :src="url.small" class="img-step0" />
+                  <el-image lazy :src="url.small" class="img-step0" />
                 </div>
               </el-popover>
             </div>

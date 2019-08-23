@@ -1,7 +1,7 @@
 <template>
   <div class="page3-dashboard-container">
     <div class="page3-column">
-      <img id="hallstatt" :src="imgurl" class="annotatable">
+      <el-image id="hallstatt" :src="imgurl" class="annotatable" lazy></el-image>
     </div>
 
     <div class="page3-column">
