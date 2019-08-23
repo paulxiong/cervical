@@ -1,6 +1,6 @@
 <template>
   <div class="model">
-    <section class="model-selsect">
+    <section class="model-select">
       <p>Model</p>
       <el-select class="model-option" v-model="value" clearable placeholder="请选择">
         <el-option
