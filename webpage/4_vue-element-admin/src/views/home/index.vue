@@ -7,11 +7,11 @@
 <script>
 import tabBar from "./components/tabBar";
 export default {
-  name: "temp",
+  name: "home",
   components: { tabBar },
   data() {
     return {
-      value: "temp"
+      value: "home"
     };
   },
   methods: {}
@@ -19,6 +19,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.temp {
+.home {
 }
 </style>
