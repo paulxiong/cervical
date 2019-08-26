@@ -136,7 +136,6 @@ export default {
           this.output_datasets_crop_p = this.objData.output_datasets_crop_p          
           break;
       }
-      console.log(this.input_datasets_denoising)
     }
   },
   created() {
