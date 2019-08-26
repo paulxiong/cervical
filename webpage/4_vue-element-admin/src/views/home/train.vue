@@ -3,7 +3,7 @@
     <section class="header">
       <div class="title flex">
         <h2>Models</h2>
-        <el-button type="primary">新建训练模型</el-button>
+        <el-button type="primary">new Model</el-button>
       </div>
       <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
     </section>
