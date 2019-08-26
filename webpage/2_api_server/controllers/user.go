@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	e "../error"
-	logger "../log"
-	m "../models"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
 
 	"github.com/gin-gonic/gin"
 )

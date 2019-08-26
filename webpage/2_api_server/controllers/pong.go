@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	e "../error"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 
 	"github.com/gin-gonic/gin"
 )

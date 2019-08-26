@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"net/url"
 
-	p "../platforms"
 	"github.com/chanxuehong/rand"
 	"github.com/chanxuehong/session"
 	"github.com/gin-gonic/gin"
+	p "github.com/paulxiong/cervical/webpage/2_api_server/platforms"
 
 	"github.com/chanxuehong/sid"
 	mpoauth2 "github.com/chanxuehong/wechat/mp/oauth2"

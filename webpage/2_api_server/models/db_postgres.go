@@ -6,7 +6,9 @@ https://godoc.org/github.com/jinzhu/gorm
 package models
 
 import (
-	configs "../configs"
+	"time"
+
+	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
 	// logger "../log"
 
 	"fmt"
@@ -28,6 +30,7 @@ func init() {
 	db.LogMode(false)
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)
+	db.DB().SetConnMaxLifetime(time.Second)
 	db.DB().SetMaxOpenConns(100)
 
 	// db.AutoMigrate(&Token{}, &UserType{}, &User{})

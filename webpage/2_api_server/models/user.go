@@ -1,8 +1,8 @@
 package models
 
 import (
-	e "../error"
-	logger "../log"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 
 	"time"
 

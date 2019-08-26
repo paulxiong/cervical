@@ -4,11 +4,11 @@ import (
 	"strconv"
 	"strings"
 
-	e "../error"
-	f "../functions"
-	logger "../log"
-	m "../models"
-	u "../utils"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/gin-gonic/gin"
 )

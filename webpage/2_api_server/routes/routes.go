@@ -3,9 +3,9 @@ package routes
 import (
 	"net/http"
 
-	ctr "../controllers"
-	logger "../log"
-	"../middlewares"
+	ctr "github.com/paulxiong/cervical/webpage/2_api_server/controllers"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	"github.com/paulxiong/cervical/webpage/2_api_server/middlewares"
 
 	"time"
 

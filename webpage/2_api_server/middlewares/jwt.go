@@ -1,15 +1,15 @@
 package middlewares
 
 import (
-	configs "../configs"
-	e "../error"
-	logger "../log"
-	m "../models"
+	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
 
 	"errors"
 	"time"
 
-	"github.com/appleboy/gin-jwt"
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -74,9 +74,9 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			EmailMobile := loginVals.EmailOrMobile
 			password := loginVals.Password
 			userFound, errstring := LoginWithPasswd(userName, password, EmailMobile)
-            logger.Info.Println(userName)
-            logger.Info.Println(EmailMobile)
-            logger.Info.Println(password)
+			logger.Info.Println(userName)
+			logger.Info.Println(EmailMobile)
+			logger.Info.Println(password)
 			m.SaveUsertoContext(c, userFound)
 			if userFound == nil {
 				return "", errors.New(errstring)

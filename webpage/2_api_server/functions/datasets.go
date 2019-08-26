@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	logger "../log"
-	m "../models"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	"github.com/toolkits/file"
 )
 
