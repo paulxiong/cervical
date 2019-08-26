@@ -1,7 +1,5 @@
 <template>
-  <div class="temp">
-    {{value}}
-  </div>
+  <div class="temp">{{value}}</div>
 </template>
 
 <script>
@@ -19,6 +17,5 @@ export default {
 
 <style lang="scss" scoped>
 .temp {
-  
 }
 </style>
