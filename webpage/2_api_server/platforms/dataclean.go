@@ -3,8 +3,8 @@
 package platforms
 
 import (
-	configs "../configs"
-	logger "../log"
+	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 
 	"crypto/sha1"
 	"fmt"

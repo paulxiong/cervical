@@ -8,7 +8,7 @@ package models
 import (
 	"time"
 
-	configs "../configs"
+	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
 	// logger "../log"
 
 	"fmt"

@@ -1,9 +1,9 @@
 package main
 
 import (
-	configs "./configs"
-	logger "./log"
-	"./routes"
+	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	"github.com/paulxiong/cervical/webpage/2_api_server/routes"
 
 	"fmt"
 	"net"

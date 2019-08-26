@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	logger "../log"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 
 	"github.com/jinzhu/gorm"
 )

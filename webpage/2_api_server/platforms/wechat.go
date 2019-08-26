@@ -1,9 +1,8 @@
 package platforms
 
 import (
-	logger "../log"
-
-	configs "../configs"
+	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 
 	"github.com/chanxuehong/wechat/mp/core"
 	"github.com/chanxuehong/wechat/mp/menu"
