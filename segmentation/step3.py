@@ -584,7 +584,7 @@ def crop_file(origin_image_filename, mask_filename, contour_filename, margin_fac
             debug_df1.loc[debug_df1['Label']==i, 'Crop_path'] = cropped_filename
         
         #marks on image preview
-        cv2.rectangle(img_preview, (x, y), (x + w, y + h), (0, 255, 0), 1)
+        cv2.rectangle(img_preview, (x, y), (x + w, y + h), (0, 0, 255), 4)
         #can't draw contours, for the contours are in the crop now
         #cv2.drawContours(img_preview,cnt,-1,(0,255,0),1)
         cv2.putText(img_preview, str(index), (x, y + h), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), lineType=cv2.LINE_AA) 
