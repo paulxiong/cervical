@@ -16,7 +16,7 @@ from skimage import img_as_ubyte
 import model as modellib
 import pandas as pd
 import os
-
+import visualize
 import my_functions as f
 
 
@@ -120,15 +120,19 @@ for i in np.arange(n_images):
         original_image = original_image[:,:,[0,0,0]] # flip r and b
     ####################################################################
     original_image = original_image[:,:,:3]
-
+    
     ## Make prediction for that image
     results = model.detect([original_image], verbose=0)
-
+    
+    r = results[0]
+    visualize.display_instances(original_image, image_id, r['rois'], r['masks'], r['class_ids'], 
+                             r['scores'])
     ## Proccess prediction into rle
     pred_masks = results[0]['masks']
     scores_masks = results[0]['scores']
     class_ids = results[0]['class_ids']
-
+    print("cell_len:",len(class_ids))
+     
     if len(class_ids): ## Some objects are detected
         ImageId_batch, EncodedPixels_batch, _ = f.numpy2encoding(pred_masks, image_id,scores=scores_masks,dilation=True)
         ImageId_d += ImageId_batch
@@ -140,7 +144,7 @@ for i in np.arange(n_images):
         EncodedPixels_d += ['']
 
 
-f.write2csv('submission.csv', ImageId_d, EncodedPixels_d)
+#f.write2csv('submission.csv', ImageId_d, EncodedPixels_d)
 
 end_time = time.time()
 ellapsed_time = (end_time-start_time)/3600
