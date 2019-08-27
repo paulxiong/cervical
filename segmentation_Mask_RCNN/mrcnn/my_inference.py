@@ -74,13 +74,14 @@ MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 
 
 ## Change this with the path to the last epoch of train
-model_path = 
-model_path = os.path.join(MODEL_DIR,'YOUR_LOG_FOLDER','final.h5')
+model_path = 'model/deepretina_final.h5'
+#model_path = os.path.join(MODEL_DIR,'YOUR_LOG_FOLDER','final.h5')
 
 
 ## change this with the correct paths for images and sample submission
-test_path = os.path.join(ROOT_DIR,'stage_2')
-sample_submission = pd.read_csv('stage2_sample_submission_final.csv')
+#test_path = os.path.join(ROOT_DIR,'stage_2')
+test_path = 'data1/0826_test2/'
+sample_submission = pd.read_csv('data1/0826_name.csv')
 
 
 print("Loading weights from ", model_path)
@@ -109,7 +110,7 @@ for i in np.arange(n_images):
     tf.set_random_seed(seed)
 
     ## Load the image
-    image_path = os.path.join(test_path, image_id, 'images', image_id + '.png')
+    image_path = os.path.join(test_path, image_id)
     original_image = skimage.io.imread(image_path)
     ####################################################################
     ## This is needed for the stage 2 image that has only one channel
