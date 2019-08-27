@@ -16,6 +16,7 @@ import colorsys
 
 import numpy as np
 from skimage.measure import find_contours
+from skimage.io import imsave
 import matplotlib.pyplot as plt
 from matplotlib import patches,  lines
 from matplotlib.patches import Polygon
@@ -165,10 +166,9 @@ def display_instances(image,image_id, boxes, masks, class_ids, class_names,
             p = Polygon(verts, facecolor="none", edgecolor=color)
             ax.add_patch(p)
     ax.imshow(masked_image.astype(np.uint8))
-    
+
     if auto_show:
-       # plt.show()
-        cv2.imwrite("./output_image/" + image_id + '.png',masked_image.astype(np.uint8))  
+        imsave("./output_image/" + image_id + '.png', masked_image.astype(np.uint8))
 
 def display_differences(image,
                         gt_box, gt_class_id, gt_mask,

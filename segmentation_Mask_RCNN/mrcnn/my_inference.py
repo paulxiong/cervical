@@ -120,28 +120,28 @@ for i in np.arange(n_images):
         original_image = original_image[:,:,[0,0,0]] # flip r and b
     ####################################################################
     original_image = original_image[:,:,:3]
-    
+
     ## Make prediction for that image
     results = model.detect([original_image], verbose=0)
-    
+
     r = results[0]
     visualize.display_instances(original_image, image_id, r['rois'], r['masks'], r['class_ids'], 
                              r['scores'])
-    ## Proccess prediction into rle
-    pred_masks = results[0]['masks']
-    scores_masks = results[0]['scores']
-    class_ids = results[0]['class_ids']
-    print("cell_len:",len(class_ids))
-     
-    if len(class_ids): ## Some objects are detected
-        ImageId_batch, EncodedPixels_batch, _ = f.numpy2encoding(pred_masks, image_id,scores=scores_masks,dilation=True)
-        ImageId_d += ImageId_batch
-        EncodedPixels_d += EncodedPixels_batch
+    ### Proccess prediction into rle
+    #pred_masks = results[0]['masks']
+    #scores_masks = results[0]['scores']
+    #class_ids = results[0]['class_ids']
+    #print("cell_len:",len(class_ids))
 
-    else:
-        print('No particles detected',i,pred_masks.shape)
-        ImageId_d +=  [image_id]
-        EncodedPixels_d += ['']
+    #if len(class_ids): ## Some objects are detected
+    #    ImageId_batch, EncodedPixels_batch, _ = f.numpy2encoding(pred_masks, image_id,scores=scores_masks,dilation=True)
+    #    ImageId_d += ImageId_batch
+    #    EncodedPixels_d += EncodedPixels_batch
+
+    #else:
+    #    print('No particles detected',i,pred_masks.shape)
+    #    ImageId_d +=  [image_id]
+    #    EncodedPixels_d += ['']
 
 
 #f.write2csv('submission.csv', ImageId_d, EncodedPixels_d)
