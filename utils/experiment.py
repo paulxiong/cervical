@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 import os
 from sklearn.model_selection import KFold
 import numpy as np
 from segmentation_functions import *
 from gan_model import *
 from datasets import *
+#from datasets2 import get_image_lists, get_images_type, get_cell_datasets
 import multiprocessing
 import time
 
@@ -79,11 +81,48 @@ def cell_representation(X_train_path, X_test_path, y_train_path, y_test_path, ex
                          experiment_root, n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=dis, 
                          dis_category=dis_category, ld=ld, lg=lg, lq=lq, save_model_steps=save_model_steps)
 
+def cell_representation3(cell_datasets_path, experiment_root,
+                        n_epoch=50, batchsize=16, rand=32, dis=1, dis_category=5,
+                        ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
+
+    image = get_image_lists(cell_datasets_path)
+    # 获得所有图片的统计信息
+    cell = get_images_type(image, 1)
+    fov = get_images_type(image, 0)
+    cell_type_num =  len(cell.keys())
+    fov_type_num = len(fov.keys())
+    print(cell_type_num, fov_type_num)
+
+    dis_category = cell_type_num
+
+    # 把cell数据按照train/evaluation分开
+    x, y = get_cell_datasets(image)
+    X_train, X_test, y_train, y_test = split_datasets_train_test(x, y, test_size=0.2)
+    print(len(x), len(y))
+    print(len(X_train), len(X_test), len(y_train), len(y_test))
+
+    print(">>> loading datasets ...:")
+    X_train, y_train = load_imgs_as_nparray(X_train, y_train, rand)
+    X_test, y_test = load_imgs_as_nparray(X_test, y_test, rand)
+    print(">>> loading datasets done:")
+
+    cell_train_set = np.concatenate([X_train, X_test])
+    cell_test_set = cell_train_set
+    cell_test_label = np.concatenate([y_train, y_test])
+
+    print(cell_train_set.shape, cell_test_set.shape, cell_test_label.shape)
+
+    print('rand=', rand, 'dis_category=', dis_category, 'batchsize=', batchsize, 'dis=', dis)
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    train_representation2(cell_train_set, cell_test_set, cell_test_label, netD, netG, netD_D, netD_Q,
+                         experiment_root, n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=dis,
+                         dis_category=dis_category, ld=ld, lg=lg, lq=lq, save_model_steps=save_model_steps)
+
 def cell_representation2(cell_datasets_path, experiment_root,
                         n_epoch=50, batchsize=16, rand=32, dis=1, dis_category=5,
                         ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
 
-    x, y = get_all_datasets('experiment/data/cell_datasets/')
+    x, y = get_all_datasets(cell_datasets_path)
     X_train, X_test, y_train, y_test = split_datasets_train_test(x, y, test_size=0.2)
     print(">>> train with:")
     get_datasets_info(X_train, y_train)

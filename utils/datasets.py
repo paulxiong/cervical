@@ -82,3 +82,79 @@ def load_imgs_as_nparray(x, y, size=100):
             xnp = n_arr_x
             ynp = n_arr_y
     return xnp, ynp
+
+# 找出目录里面所有的图片, 只查找rootpath这级目录
+# 返回rootpath + 图片名称的一个数组
+def get_image_lists(rootpath):
+    if not os.path.exists(rootpath) or not os.path.isdir(rootpath):
+        raise RuntimeError('not found folder: %s' % rootpath)
+    image_list = []
+    allfiles = os.listdir(rootpath)
+    allfiles_num = len(allfiles)
+    for i in allfiles:
+        path1 = os.path.join(rootpath, i)
+        if os.path.isdir(path1):
+            print(">>> unexpected folder: %s, must be image." % path1)
+            continue
+        ext = os.path.splitext(path1)[1]
+        ext = ext.lower()
+        if not ext in ['.jpg', '.png', '.jpeg', '.bmp']:
+            print(">>> unexpected file: %s, must be jpg/png/bmp" % path1)
+        else:
+            image_list.append(path1)
+    if allfiles_num > len(image_list):
+        print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
+    return image_list
+
+# 解析文件名字，返回fov和cell的类型
+def get_info_by_cell_name(filename):
+    if filename is None or len(filename) < 2:
+        return None, None
+    arr = filename.split('_')
+    if len(arr) < 7:
+        print("invalied filename: %s" % filename)
+        return None, None
+    cell_type = arr[2]
+    fov_type = arr[1]
+    return fov_type, cell_type
+
+# 按照图片的名字的字段信息，把图片分类成字典
+def get_images_type(imgs, cell1_fov0=1):
+    dic = {} #fov的统计
+    if imgs is None or len(imgs) < 1:
+        return None
+    for i in range(0, len(imgs)):
+        filepath = imgs[i]
+        #注意文件名字有严格规定
+        fov_type, cell_type = get_info_by_cell_name(filepath)
+
+        _tmp = []
+        if fov_type in dic.keys():
+            _tmp = dic[fov_type]
+        _tmp.append(filepath)
+        dic[fov_type] = _tmp
+
+    infoname = 'cell'
+    if cell1_fov0 == 0:
+        infoname = 'fov'
+    #打印统计个数
+    for key in dic:
+        print("%s: %s  %s" % (infoname, key, len(dic[key])))
+    return dic
+
+# 找出目录里面所有的cell信息
+# y表示label, 一维数组
+# x是图片的路径，一维数组
+# min_num 每个分类最少要求有多少个分类
+def get_cell_datasets(imgs, min_num=10):
+    x, y = [], []
+    if imgs is None or len(imgs) < 1:
+        return None
+    for i in range(0, len(imgs)):
+        filepath = imgs[i]
+        fov_type, cell_type = get_info_by_cell_name(filepath)
+        if cell_type is None:
+            continue
+        x.append(filepath)
+        y.append(cell_type)
+    return x, y

@@ -1,11 +1,12 @@
+# -*- coding: utf-8 -*-
 import os
 import time
 import argparse
-from utils.experiment import cell_segmentation, cell_representation, image_classification, generator_fake_cell, predict_cell, cell_representation2
+from utils.experiment import cell_segmentation, cell_representation, image_classification, generator_fake_cell, predict_cell, cell_representation2, cell_representation3
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--task', 
-                    choices = ['cell_representation', 'cell_train_fake', 'cell_train', 'cell_fake', 'predict_cell', 'image_classification', 'cell_segmentation'], 
+parser.add_argument('--task',
+                    choices = ['cell_representation', 'cell_train_fake', 'cell_train', 'cell_train3', 'cell_fake', 'predict_cell', 'image_classification', 'cell_segmentation'],
                     help='cell_representation | image_classification | cell_segmentation')
 opt = parser.parse_args()
 
@@ -61,6 +62,12 @@ if opt.task == 'cell_train':
     dis_category=1
     cell_datasets_path = 'experiment/data/cell_datasets/'
     cell_representation2(cell_datasets_path, experiment_root,
+                            n_epoch, batchsize, rand, dis, dis_category,
+                            ld, lg, lq, save_model_steps)
+if opt.task == 'cell_train3':
+    dis_category=1
+    cell_datasets_path = 'cells/crop/'
+    cell_representation3(cell_datasets_path, experiment_root,
                             n_epoch, batchsize, rand, dis, dis_category,
                             ld, lg, lq, save_model_steps)
 if opt.task == 'cell_fake':
