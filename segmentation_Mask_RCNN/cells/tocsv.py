@@ -1,63 +1,83 @@
 # !/usr/bin/python
 # -*- coding: UTF-8 -*-
-import math
 import pandas as pd
 import numpy as np
 import os
-import time
-import scipy.misc
-from shutil import copyfile
-from PIL import Image
-import shutil
-from pandas.core.frame import DataFrame
-'''
-path_ojb = os.getcwd()
-path_org = os.path.join(path_ojb, 'orignal_img')
-list_org = os.listdir(path_org)
-path_orgimg = []
-path_orgcsv = []
-for n in list_org:
-    print(n[-3:])
-    if n[-3:] == 'JPG':
-        path_orgimg.append(path_org + '/' + n)
-    elif n[-3:] == 'csv'
-        path_orgcsv.append(path_org + '/' + n)
-    else:
-        raise ErrorName(n)
-path_segcsv = os.path.join(path_ojb, 'cells', 'RIOS')
-list_segcsv = os.listdir(path_segcsv)
-'''
 
-path_func2 = os.path.join(path_ojb, 'cells')
-path_orgcsv = os.path.join(path_func2, 'RIOS')
-path_cell = os.path.join(path_func2, 'crop')
-root_orgcsv = os.path.join(path_orgcsv, 'IMG032x018.csv')
-root_segcsv = os.path.join(path_orgcsv, 'IMG032x018.JPG.csv')
-root_savecsv = os.path.join(path_orgcsv, 'IMG032x018.JPG.csv.csv')
-limit = 900
-df_org = pd.read_csv(root_orgcsv, usecols = [0, 2, 3])
-print(df_org)
-df_seg = pd.read_csv(root_segcsv)
-save_orgcsv = []
-for index_org, row_org in df_org.iterrows():
-    point_org_x = row_org['X']
-    point_org_y = row_org['Y']
-    L_temp_all = []
-    for inde_seg, row_seg in df_seg.iterrows():
-        x1 = row_seg['x1']
-        x2 = row_seg['x2']
-        y1 = row_seg['y1']
-        y2 = row_seg['y2']
-        point_seg_x = (x1 + x2)/2
-        point_seg_y = (y1 + y2)/2
-        print(">>>:",point_seg_x, point_seg_y)
-        L_temp = np.sqrt((np.square(point_org_x - point_seg_x)) + np.square(point_org_y - point_seg_y))
-        print("+++",L_temp)
-        L_temp_all.append(L_temp)
-    print(min(L_temp_all))
-    if min(L_temp_all) < limit:
-        print("ooo",row_org)
-        save_orgcsv.append(row_org)
-save_orgcsv = DataFrame(save_orgcsv)
-save_orgcsv.to_csv(root_savecsv)
+def get_csv_lists(original_img_path):
+    if not os.path.exists(original_img_path) or \
+       not os.path.isdir(original_img_path):
+        raise RuntimeError('not found folder: %s' % original_img_path)
+    image_list = []
+    allfiles = os.listdir(original_img_path)
+    allfiles_num = len(allfiles)
+    for i in allfiles:
+        path1 = os.path.join(original_img_path, i)
+        if os.path.isdir(path1):
+            print(">>> unexpected folder: %s, must be image." % path1)
+            continue
+        ext = os.path.splitext(path1)[1]
+        ext = ext.lower()
+        if not ext in ['.csv']:
+            print(">>> unexpected file: %s, must be csv" % path1)
+        else:
+            image_list.append(i)
+    if allfiles_num > len(image_list):
+        print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
+    return image_list
 
+def get_fileName_fileExt(filename):
+    (shotname,extension) = os.path.splitext(filename)
+    return shotname, extension
+
+def get_cells_rois_csv(cells_rois_path, original_csv_name):
+    filename, _ = get_fileName_fileExt(original_csv_name)
+    csvfilename = filename + '.JPG_.csv'
+    cells_rois_csv = os.path.join(cells_rois_path, csvfilename)
+    if not os.path.exists(cells_rois_csv):
+        print("not found %s" % cells_rois_csv)
+        return None
+    return cells_rois_csv
+
+def compare_roi(x, y, original_csv_path):
+    df2 = pd.read_csv(original_csv_path)
+    for index, row in df2.iterrows():
+         org_x, org_y, _type = row['X'], row['Y'], row['Type']
+         L_temp = np.sqrt((np.square(org_x - x)) + np.square(org_y - y))
+         limit = 700
+         if L_temp < limit:
+            return True, _type
+    return False, _type
+
+def save_rois_as_csv(cells_rois_file_path, rois):
+    csv_path = cells_rois_file_path + '_and.csv'
+    pd_data = pd.DataFrame(rois, columns=['x', 'y', 'type'])
+    save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
+                index = False, header = True)
+    return
+
+def get_trusted_labels(original_csv_path, cells_rois_path):
+    #第一步查找预测的csv和医生的csv
+    original_csv_names = get_csv_lists(original_csv_path)
+
+    #比较求交集
+    for i in original_csv_names:
+        org_csv_path = os.path.join(original_csv_path, i)
+        csv_path = get_cells_rois_csv(cells_rois_path, i)
+
+        rois = []
+        df1 = pd.read_csv(csv_path)
+        org_label_num = df1.shape[0]
+        for index, row in df1.iterrows():
+            x = int((row['x2'] + row['x1']) / 2)
+            y = int((row['y2'] + row['y1']) / 2)
+            ret, _type = compare_roi(x, y, org_csv_path)
+            if ret:
+                rois.append([x, y, _type])
+
+        if len(rois) > 0:
+            print(org_label_num, len(rois))
+            save_rois_as_csv(csv_path, rois)
+
+if __name__ == "__main__":
+    get_trusted_labels('origin_imgs/', 'cells/rois/')
