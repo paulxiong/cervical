@@ -87,7 +87,7 @@ def cell_representation3(cell_datasets_path, experiment_root,
 
     image = get_image_lists(cell_datasets_path)
     # 获得所有图片的统计信息
-    cell = get_images_type(image, 1)
+    cell = get_images_type(image, cell1_fov0=1)
     fov = get_images_type(image, 0)
     cell_type_num =  len(cell.keys())
     fov_type_num = len(fov.keys())
@@ -204,7 +204,7 @@ def image_classification3(cell_datasets_path, experiment_root, fold = 4, random_
     print(">>> loading cell and fov datasets ...:")
     image = get_image_lists(cell_datasets_path)
     # 获得细胞有几个类型
-    cell = get_images_type(image, 1)
+    cell = get_images_type(image, cell1_fov0=1)
     dis_category =  len(cell.keys())
     # 把cell数据按照train/evaluation分开
     x, y = get_cell_datasets(image)

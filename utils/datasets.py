@@ -130,12 +130,15 @@ def get_images_type(imgs, cell1_fov0=1):
         filepath = imgs[i]
         #注意文件名字有严格规定
         fov_type, cell_type, _ = get_info_by_cell_name(filepath)
+        _type = fov_type
+        if cell1_fov0 == 1:
+            _type = cell_type
 
         _tmp = []
-        if fov_type in dic.keys():
-            _tmp = dic[fov_type]
+        if _type in dic.keys():
+            _tmp = dic[_type]
         _tmp.append(filepath)
-        dic[fov_type] = _tmp
+        dic[_type] = _tmp
 
     infoname = 'cell'
     if cell1_fov0 == 0:
