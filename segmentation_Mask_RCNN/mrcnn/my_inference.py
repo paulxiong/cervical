@@ -1,6 +1,6 @@
 seed=123
 from keras import backend as K
-
+import matplotlib as plt
 import numpy as np
 np.random.seed(seed)
 import tensorflow as tf
@@ -9,16 +9,17 @@ tf.set_random_seed(seed)
 
 import random
 random.seed(seed)
-
-import skimage.io 
+from skimage import io 
 from skimage import img_as_ubyte
 
 import model as modellib
 import pandas as pd
 import os
-import visualize
+import cv2
 import my_functions as f
-
+import visualize
+import sys
+import time
 
 #######################################################################################
 ## SET UP CONFIGURATION
@@ -63,90 +64,71 @@ class BowlConfig(Config):
 
     USE_MINI_MASK = True
 
+def main():
+    inference_config = BowlConfig()
+    inference_config.display()
 
-inference_config = BowlConfig()
-inference_config.display()
-#######################################################################################
+    ROOT_DIR = os.getcwd()
+    MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 
-
-ROOT_DIR = os.getcwd()
-MODEL_DIR = os.path.join(ROOT_DIR, "logs")
-
-
-## Change this with the path to the last epoch of train
-model_path = 'model/deepretina_final.h5'
-#model_path = os.path.join(MODEL_DIR,'YOUR_LOG_FOLDER','final.h5')
-
-
-## change this with the correct paths for images and sample submission
-#test_path = os.path.join(ROOT_DIR,'stage_2')
-test_path = 'data1/0826_test2/'
-sample_submission = pd.read_csv('data1/0826_name.csv')
-
-
-print("Loading weights from ", model_path)
-
-
-import time
-start_time = time.time()
-
-# Recreate the model in inference mode
-model = modellib.MaskRCNN(mode="inference", 
+    ## Change this with the path to the last epoch of train
+    model_path = "./model/deepretina_final.h5"
+    #sample_submission_path = sys.argv[1]
+    print("Loading weights from ", model_path)
+    test_path = './data1/0826_test2'
+    # Recreate the model in inference mode
+    model = modellib.MaskRCNN(mode="inference", 
                           config=inference_config,
                           model_dir=MODEL_DIR)
-model.load_weights(model_path, by_name=True)
+    model.load_weights(model_path, by_name=True)
+    detect_image(test_path, model)
+    
 
-
-ImageId_d = []
-EncodedPixels_d = []
-
-n_images= len(sample_submission.ImageId)
-for i in np.arange(n_images):
-    image_id = sample_submission.ImageId[i]
-    print('Start detect',i, '  ' ,image_id)
-    ##Set seeds for each image, just in case..
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.set_random_seed(seed)
-
-    ## Load the image
-    image_path = os.path.join(test_path, image_id)
-    original_image = skimage.io.imread(image_path)
+def __init__(self,test_path,model_path,save_path):
+        self.test_path = test_path
+        self.model_path = model_path
+        self.save_path = save_path
+#检测细胞
+#返回细胞的坐标值
+def detect_image(test_path, model):
+    if not os.path.exists(test_path) or not os.path.isdir(test_path):
+        raise RuntimeError('not found folder: %s' % test_path)
+        
+    pathList = os.listdir(test_path)
+   
+    for image_id in pathList:
+       image_path = os.path.join(test_path,image_id)  
+       if not pathList in ['JPG','.jpg', '.png', '.jpeg', '.bmp']:
+            print(">>> unexpected file: %s, must be jpg/png/bmp" % image_path)
+       original_image = io.imread(image_path) 
+        
+       if len(original_image.shape)<3:
+           original_image = img_as_ubyte(original_image)
+           original_image = np.expand_dims(original_image,2)
+           original_image = original_image[:,:,[0,0,0]] # flip r and b
     ####################################################################
-    ## This is needed for the stage 2 image that has only one channel
-    if len(original_image.shape)<3:
-        original_image = img_as_ubyte(original_image)
-        original_image = np.expand_dims(original_image,2)
-        original_image = original_image[:,:,[0,0,0]] # flip r and b
-    ####################################################################
-    original_image = original_image[:,:,:3]
-
-    ## Make prediction for that image
-    results = model.detect([original_image], verbose=0)
-
-    r = results[0]
-    visualize.display_instances(original_image, image_id, r['rois'], r['masks'], r['class_ids'], 
+       original_image = original_image[:,:,:3] 
+    ## Make prediction for that image 
+       results = model.detect([original_image], verbose=0)   
+       r = results[0]
+       visualize.display_instances(original_image, image_id, r['rois'], r['masks'], r['class_ids'], 
                              r['scores'])
-    ### Proccess prediction into rle
-    #pred_masks = results[0]['masks']
-    #scores_masks = results[0]['scores']
-    #class_ids = results[0]['class_ids']
-    #print("cell_len:",len(class_ids))
+   
+    ## Proccess prediction into rle
+       pred_masks = results[0]['masks']       #每张图像的大小和对应的mask点
+       scores_masks = results[0]['scores']    #判别物得分
+       class_ids = results[0]['class_ids']
+       final_rois =results[0]["rois"]         #交并比得到的回归框坐标
+       print("cell_len:",len(class_ids))
+       pd_data = pd.DataFrame(final_rois,columns=['x1', 'y1', 'x2', 'y2'])
+     #print(pd_data)
+       save_file = pd_data.to_csv("./cells/" + image_id + '.csv')
 
-    #if len(class_ids): ## Some objects are detected
-    #    ImageId_batch, EncodedPixels_batch, _ = f.numpy2encoding(pred_masks, image_id,scores=scores_masks,dilation=True)
-    #    ImageId_d += ImageId_batch
-    #    EncodedPixels_d += EncodedPixels_batch
-
-    #else:
-    #    print('No particles detected',i,pred_masks.shape)
-    #    ImageId_d +=  [image_id]
-    #    EncodedPixels_d += ['']
-
-
-#f.write2csv('submission.csv', ImageId_d, EncodedPixels_d)
-
-end_time = time.time()
-ellapsed_time = (end_time-start_time)/3600
-print('Time required to train ', ellapsed_time, 'hours')
+    
+if __name__ == "__main__":
+    start_time = time.time()
+    main()
+    end_time = time.time()
+    ellapsed_time = (end_time-start_time)/3600
+    print('Time required to train ', ellapsed_time, 'hours')
 
