@@ -61,7 +61,7 @@ def split_datasets_train_test(all_x, all_y, test_size=0.2):
 # 把x对应图片load之后转成np.array, y也转成np.array
 # 如果图片不是size宽 size长的，转换成sizexsize的
 def load_imgs_as_nparray(imgdir, x, y, size=100):
-    if len(y) != len(y):
+    if len(x) != len(y):
         print("len(x) != len(y)")
         return None, None
     xnp, ynp = None, None
@@ -141,7 +141,7 @@ def get_images_type(imgs, cell1_fov0=1):
     if cell1_fov0 == 0:
         infoname = 'fov'
     #打印统计个数
-    for key in dic:
+    for key in dic.keys():
         print("%s: %s  %s" % (infoname, key, len(dic[key])))
     return dic
 
@@ -262,7 +262,6 @@ def load_fov_as_nparray(imgdir, imgs, size=32, test_size=0.2):
     if not os.path.exists(imgdir) or not os.path.isdir(imgdir):
         raise RuntimeError('not found folder: %s' % rootpath)
     nx, ny, px, py = _get_fov_positive_negative(imgs)
-    print(len(nx))
 
     nX_train, nX_test, ny_train, ny_test = \
         train_test_split(nx, ny, test_size=test_size, random_state=int(time.time()))
@@ -274,5 +273,4 @@ def load_fov_as_nparray(imgdir, imgs, size=32, test_size=0.2):
     nX_test_np, ny_test_np = _load_fov_as_nparray(imgdir, nX_test, ny_test, size=32)
     pX_test_np, py_test_np = _load_fov_as_nparray(imgdir, pX_test, py_test, size=32)
 
-    return nX_train_np, ny_train_np, nX_test_np, ny_test_np, \
-           pX_train_np, py_train_np, pX_test_np, py_test_np
+    return nX_train_np, nX_test_np, pX_train_np, pX_test_np

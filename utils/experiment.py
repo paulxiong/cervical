@@ -102,8 +102,8 @@ def cell_representation3(cell_datasets_path, experiment_root,
     print(len(X_train), len(X_test), len(y_train), len(y_test))
 
     print(">>> loading datasets ...:")
-    X_train, y_train = load_imgs_as_nparray(X_train, y_train, rand)
-    X_test, y_test = load_imgs_as_nparray(X_test, y_test, rand)
+    X_train, y_train = load_imgs_as_nparray(cell_datasets_path, X_train, y_train, rand)
+    X_test, y_test = load_imgs_as_nparray(cell_datasets_path, X_test, y_test, rand)
     print(">>> loading datasets done:")
 
     cell_train_set = np.concatenate([X_train, X_test])
@@ -196,4 +196,36 @@ def image_classification(positive_images_root, negative_images_root, positive_np
                    positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
                    netD, netG, netD_D, netD_Q, experiment_root, 
                    n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category, 
+                   ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
+
+def image_classification3(cell_datasets_path, experiment_root, fold = 4, random_seed = 42,
+                          choosing_fold = 1, n_epoch=10000, batchsize=32, rand=64, dis=1,
+                          dis_category=5, ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps = 100):
+    print(">>> loading cell and fov datasets ...:")
+    image = get_image_lists(cell_datasets_path)
+    # 获得细胞有几个类型
+    cell = get_images_type(image, 1)
+    dis_category =  len(cell.keys())
+    # 把cell数据按照train/evaluation分开
+    x, y = get_cell_datasets(image)
+    X_train, X_test, y_train, y_test = split_datasets_train_test(x, y, test_size=0.2)
+    X_train, y_train = load_imgs_as_nparray(cell_datasets_path, X_train, y_train, rand)
+    X_test, y_test = load_imgs_as_nparray(cell_datasets_path, X_test, y_test, rand)
+
+    #吧fov加载到内存，按npy的方式组织
+    negative_train_npy, negative_test_npy, positive_train_npy, positive_test_npy = \
+        load_fov_as_nparray(cell_datasets_path, image)
+    print(">>> loading datasets done:")
+
+    cell_train_set = np.concatenate([np.concatenate(positive_train_npy), np.concatenate(negative_train_npy)])
+
+    cell_test_set = np.concatenate([X_train, X_test])
+    cell_test_label = np.concatenate([y_train, y_test])
+    cell_train_set = np.concatenate([cell_train_set, rotation(cell_test_set)])
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q =  train(cell_train_set, cell_test_set, cell_test_label,
+                   positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
+                   netD, netG, netD_D, netD_Q, experiment_root,
+                   n_epoch=n_epoch, batchsize=batchsize, rand=rand, dis=1, dis_category=dis_category,
                    ld = ld, lg = lg, lq = lq, save_model_steps=save_model_steps)
