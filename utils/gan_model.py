@@ -1133,3 +1133,30 @@ def predict_cells(experiment_root, cell_test_set, cell_test_label, netD, netG, n
     print(">>>>>>>>")
     res = get_matrix2(netD, netD_Q, test_loader, cell_test_label, dis_category)
     print(res)
+
+def train_svm_only(positive_train_npy, positive_test_npy, negative_train_npy, negative_test_npy,
+                   netD, netG, netD_D, netD_Q, experiment_root, dis_category=5):
+    path_netD =   os.path.join(experiment_root +   'model/netD_0.6670301708469647_0.8305400471430765_8900.pth')
+    path_netG =   os.path.join(experiment_root +   'model/netG_0.6670301708469647_0.8305400471430765_8900.pth')
+    path_netD_D = os.path.join(experiment_root + 'model/netD_D_0.6670301708469647_0.8305400471430765_8900.pth')
+    path_netD_Q = os.path.join(experiment_root + 'model/netD_Q_0.6670301708469647_0.8305400471430765_8900.pth')
+
+    netD.load_state_dict(torch.load(path_netD))
+    netG.load_state_dict(torch.load(path_netG))
+    netD_D.load_state_dict(torch.load(path_netD_D))
+    netD_Q.load_state_dict(torch.load(path_netD_Q))
+
+    netD.eval()
+    netG.eval()
+    netD_D.eval()
+    netD_Q.eval()
+
+    positive_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_train_npy]
+    positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
+    negative_train_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_train_npy]
+    negative_test_loader =  [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_test_npy]
+
+    image_level_accuracy(positive_train_loader, positive_test_loader,
+                         negative_train_loader, negative_test_loader ,
+                         netD, netD_Q, dis_category, experiment_root)
+    return netD, netG, netD_D, netD_Q

@@ -2,11 +2,11 @@
 import os
 import time
 import argparse
-from utils.experiment import cell_segmentation, cell_representation, image_classification, generator_fake_cell, predict_cell, cell_representation2, cell_representation3, image_classification3
+from utils.experiment import cell_segmentation, cell_representation, image_classification, generator_fake_cell, predict_cell, cell_representation2, cell_representation3, image_classification3, only_train_svm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--task',
-                    choices = ['cell_representation', 'cell_train_fake', 'cell_train', 'cell_train3', 'cell_fake', 'predict_cell', 'image_classification', 'image_classification3', 'cell_segmentation'],
+                    choices = ['cell_representation', 'cell_train_fake', 'cell_train', 'cell_train3', 'cell_fake', 'predict_cell', 'train_svm', 'image_classification', 'image_classification3', 'cell_segmentation'],
                     help='cell_representation | image_classification | cell_segmentation')
 opt = parser.parse_args()
 
@@ -75,6 +75,10 @@ if opt.task == 'image_classification3':
     image_classification3(cell_datasets_path, experiment_root, fold,
                           random_seed, choosing_fold, n_epoch,
                           batchsize, rand, dis, dis_category, ld, lg, lq, save_model_steps)
+if opt.task == 'train_svm':
+    cell_datasets_path = 'cells/crop/'
+    only_train_svm(cell_datasets_path, experiment_root, rand, dis_category)
+
 if opt.task == 'cell_fake':
     dis_category=1
     generator_fake_cell(experiment_root, batchsize=batchsize, rand=rand, dis=dis, dis_category=dis_category)
