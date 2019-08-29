@@ -29,15 +29,16 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
 
 from imgaug import augmenters as iaa
+import pickle
 
 class avgpool(nn.Module):
     def __init__(self, up_size=0):
         super(avgpool, self).__init__()
-        
+
     def forward(self, x):
         out_man = (x[:,:,::2,::2] + x[:,:,1::2,::2] + x[:,:,::2,1::2] + x[:,:,1::2,1::2]) / 4
         return out_man
-    
+
 class ResidualBlock(nn.Module):
 
     def __init__(self, in_dim, out_dim, resample=None, up_size=0):
@@ -427,60 +428,62 @@ def get_f_score(array):
     return final_score
 
 def image_level_accuracy(positive_train_loader, positive_test_loader, negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root):
-
+    clf_path = os.path.join(experiment_root, 'clf_model')
+    if not os.path.exists(clf_path):
+        os.makedirs(clf_path)
+    ts = int(time.time()*1000)
     proportion_1 = get_proportion(positive_train_loader , netD, netD_Q, dis_category)
     proportion_0 = get_proportion(negative_train_loader , netD, netD_Q, dis_category)
     proportion_test_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
     proportion_test_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
 
     estimator = KMeans(init='k-means++', n_clusters=2, n_init=1)
-    true_label = [1]*proportion_1.shape[0] + [0]*proportion_0.shape[0]+[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
+    true_label = [1]*proportion_1.shape[0] + [0]*proportion_0.shape[0]+[1]*proportion_test_1.shape[0] + \
+                 [0]*proportion_test_0.shape[0]
     true_label_verse = [1-n for n in true_label]
-    predict_label = estimator.fit_predict(np.concatenate([proportion_1,proportion_0,proportion_test_1,proportion_test_0],axis=0))
-    predict_label = np.abs(1*(np.sum(np.array(true_label) == np.array(predict_label)) < np.sum(np.array(true_label) == (1- np.array(predict_label))))-predict_label)
+    predict_label = estimator.fit_predict(np.concatenate([proportion_1,proportion_0, proportion_test_1, \
+                        proportion_test_0],axis=0))
+    predict_label = np.abs(1*(np.sum(np.array(true_label) == np.array(predict_label)) < \
+                        np.sum(np.array(true_label) == (1- np.array(predict_label))))-predict_label)
     accuracy_all = accuracy_score(true_label, predict_label)
-    accuracy_test = accuracy_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
+    accuracy_test = accuracy_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
                          predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:])
-    #print('K_means_accuracy:', accuracy_all, accuracy_test)
-    print('*k-means - f1_score:', f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'), 
-          'recall:', recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'),
-          'precision:', precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))
-                     
-    #with open(experiment_root + "log","a") as f:
-        #f.write('K_means_accuracy: ' +str(accuracy_all) + ' '+ str(accuracy_test) + '\n')
+
+    _recall = recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
+                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted')
+    _precision = precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
+                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted')
+    _f1_score = f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
+                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted')
+
+    logstr = 'k-means - f1_score: {} precision: {} recall: {}\n'.format(_f1_score, _precision, _recall)
+    print(logstr)
     with open(experiment_root + "log","a") as f:
-        f.write('k-means - f1_score: '  + str(f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n' +  
-          'recall: '+ str(recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n' + 
-          'precision: '+ str(precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                         predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted'))+ '\n')
+        f.write(logstr)
+    with open(clf_path + '/kmean_{}_f{}_r{}_p{}.model'.format(ts, _f1_score, _recall, _precision), 'wb') as f:
+        pickle.dump(estimator, f)
 
     clf = svm.LinearSVC(penalty='l2')
-    clf.fit(np.concatenate([proportion_1,proportion_0]), true_label[0: -proportion_test_1.shape[0]-proportion_test_0.shape[0]])
-    score = clf.score(np.concatenate([proportion_test_1,proportion_test_0]), true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:])
+    clf.fit(np.concatenate([proportion_1,proportion_0]), \
+            true_label[0: -proportion_test_1.shape[0]-proportion_test_0.shape[0]])
+    score = clf.score(np.concatenate([proportion_test_1,proportion_test_0]), \
+                      true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:])
     predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
-    #print('_accurac: ', score)
-    print('SVM - f1_score:', f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                             predict_label, average='weighted'),
-          'recall:', recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                             predict_label, average='weighted'),
-          'precision:', precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                             predict_label, average='weighted'))
-                     
-    #with open(experiment_root + "log","a") as f:
-        #f.write('SVM_accuracy: ' + str(score)+ '\n')
-    with open(experiment_root + "log","a") as f:
-        f.write('SVM - f1_score:'+ str(f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                             predict_label, average='weighted'))+ '\n' + 
-          'recall:'+ str(recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                             predict_label, average='weighted'))+ '\n' +
-          'precision:'+ str(precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], 
-                             predict_label, average='weighted'))+ '\n')
 
+    _f1_score = f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
+                             predict_label, average='weighted')
+    _recall = recall_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
+                             predict_label, average='weighted')
+    _precision = precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
+                             predict_label, average='weighted')
+    logstr = 'SVM - f1_score: {} precision: {} recall: {}\n'.format(_f1_score, _precision, _recall)
+    print(logstr)
+
+    with open(experiment_root + "log","a") as f:
+        f.write(logstr)
+    with open(clf_path + '/svm_{}_f{}_r{}_p{}.model'.format(ts, _f1_score, _recall, _precision), 'wb') as f:
+        print("Save svm model ts: {}".format(ts))
+        pickle.dump(clf, f)
 
 def get_catagory_matrix(loader , netD, netD_Q, dis_category):
     test_iter = iter(loader)
@@ -504,7 +507,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
           positive_train_npy, positive_test_npy,negative_train_npy, negative_test_npy,
           netD, netG, netD_D, netD_Q, experiment_root, n_epoch=50, batchsize=32, rand=64, dis=1, dis_category=5, 
           ld = 1e-4, lg = 1e-4, lq = 1e-4, save_model_steps=100):
-    
+
     train = normalized(cell_train_set)
     train_loader = create_loader(train, shuffle=True, batchsize=batchsize)
     test = normalized(cell_test_set)
@@ -538,7 +541,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 ], lq, betas=(0.5, 0.9))
 
     optimizerQ_G = optim.Adam([
-                    {'params': netG.parameters()},            
+                    {'params': netG.parameters()},
                 ], lg, betas=(0.5, 0.9))
 
     input = torch.FloatTensor(batchsize, 3, 32, 32)
@@ -580,10 +583,10 @@ def train(cell_train_set, cell_test_set, cell_test_label,
 
         while i < len(train_loader):
 
-            for p in netD.parameters(): 
-                p.requires_grad = True 
-            for p in netD_D.parameters(): 
-                p.requires_grad = True 
+            for p in netD.parameters():
+                p.requires_grad = True
+            for p in netD_D.parameters():
+                p.requires_grad = True
 
             for iter_d in range(0,5):
                 if i >=len(train_loader):
@@ -623,11 +626,11 @@ def train(cell_train_set, cell_test_set, cell_test_label,
 
                 optimizerD.step()
 
-            # update G  
-            for p in netD.parameters(): 
-                p.requires_grad = False 
-            for p in netD_D.parameters(): 
-                p.requires_grad = False 
+            # update G
+            for p in netD.parameters():
+                p.requires_grad = False
+            for p in netD_D.parameters():
+                p.requires_grad = False
 
             zero_grad()
             rand_c,label_c = sample_c(batchsize,dis_category=dis_category)
@@ -643,10 +646,10 @@ def train(cell_train_set, cell_test_set, cell_test_label,
             errG.backward(mone)
             optimizerG.step()
 
-            for p in netD.parameters(): 
-                p.requires_grad = True 
-            for p in netD_D.parameters(): 
-                p.requires_grad = True 
+            for p in netD.parameters():
+                p.requires_grad = True
+            for p in netD_D.parameters():
+                p.requires_grad = True
 
             zero_grad()
             inputv = Variable(noise_resize)
@@ -666,7 +669,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
                 with open(experiment_root + "log","a") as f:
                     f.write('batch_time:{0}, epoch:{1}, gen_iterations:{2}, D_cost:{3}, mi_loss:{4}'.format(batch_time/10, epoch,
                                                                                            gen_iterations , -D_cost.data[0] , mi_loss.data[0])+ '\n')
-                     
+
             if gen_iterations % 100 == 0 :
                 G_sample = netG(Variable(fixed_noise, volatile = True))
                 vutils.save_image(G_sample.data, experiment_root+'picture/fake_cell.png', nrow=5,normalize=True)
@@ -679,18 +682,18 @@ def train(cell_train_set, cell_test_set, cell_test_label,
 
                 image_level_accuracy(positive_train_loader, positive_test_loader, 
                                      negative_train_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root)
-                
+
                 end = time.time()
-                
+
             if gen_iterations % save_model_steps == 0 :
                 torch.save(netD.state_dict(), experiment_root + 'model/netD_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 torch.save(netG.state_dict(), experiment_root +'model/netG_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 torch.save(netD_D.state_dict(), experiment_root +'model/netD_D_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 torch.save(netD_Q.state_dict(), experiment_root +'model/netD_Q_'+str(purity)+'_'+str(entropy)+'_'+str(gen_iterations)+'.pth')
                 end = time.time()
-                
+
             gen_iterations += 1
-            
+
     return netD, netG, netD_D, netD_Q
 
 
