@@ -247,7 +247,7 @@ def _load_fov_as_nparray(imgdir, x, y, size=32):
         for i in range(0, len(cells)):
             image = imread(os.path.join(imgdir, cells[i]))
             if image.shape[0] != image.shape[1]:
-                print('skip ' + cells[i])
+                print('skip load as npy %s' % cells[i])
                 continue
             if image.shape[0] != size or image.shape[1] != size:
                 resize_image = imresize(image, [size, size], interp='nearest')
@@ -257,8 +257,9 @@ def _load_fov_as_nparray(imgdir, x, y, size=32):
                 _n_xnp = np.append(_n_xnp, n_arr_x, axis=0)
             else:
                 _n_xnp = n_arr_x
-        n_xnp.append(_n_xnp)
-        n_ynp.append([label])
+        if _n_xnp is not None and len(_n_xnp) > 0:
+            n_xnp.append(_n_xnp)
+            n_ynp.append([label])
     return n_xnp, n_ynp
 
 def load_fov_as_nparray(imgdir, imgs, size=32, test_size=0.2):
