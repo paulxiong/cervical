@@ -19,15 +19,27 @@
           <h3>Avg precision</h3>
           <b>0.996</b>
         </section>
-        <section class="precent">
-          <el-progress type="circle" class="precent" :percentage="95"></el-progress>
-          <h4 class="precent-title">Precision</h4>
-          <i class="el-icon-question"></i>
+        <section class="percent">
+          <el-progress type="circle" class="percent" :percentage="95"></el-progress>
+          <h4 class="percent-title">Precision</h4>
+          <el-tooltip placement="bottom" class="percent-tip">
+            <div slot="content">
+              percent
+              <br />表示精确度
+            </div>
+            <i class="el-icon-question"></i>
+          </el-tooltip>
         </section>
         <section class="recall">
           <el-progress type="circle" class="recall" :percentage="96"></el-progress>
           <h4 class="recall-title">Recall</h4>
-          <i class="el-icon-question"></i>
+          <el-tooltip placement="bottom" class="recall-tip">
+            <div slot="content">
+              recall
+              <br />表示有点东西
+            </div>
+            <i class="el-icon-question"></i>
+          </el-tooltip>
         </section>
       </div>
     </el-card>
@@ -41,10 +53,10 @@ export default {
   data() {
     return {
       value: ""
-    };
+    }
   },
   methods: {}
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -63,10 +75,10 @@ export default {
       flex-direction: column;
       justify-content: flex-start;
     }
-    .precent {
+    .percent {
       position: relative;
     }
-    .precent-title {
+    .percent-title {
       position: absolute;
       top: 10px;
       left: 30px;

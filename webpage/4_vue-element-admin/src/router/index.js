@@ -80,6 +80,27 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/train',
+    component: Layout,
+    redirect: '/train',
+    children: [
+      {
+        path: 'train',
+        component: () => import('@/views/train/index'),
+        name: '新建',
+        meta: { title: '新建', affix: true },
+        // hidden: true
+      },
+      {
+        path: 'trainDetails',
+        component: () => import('@/views/train/trainDetails'),
+        name: '详情',
+        meta: { title: '详情', affix: true },
+        // hidden: true
+      }
+    ]
+  },
+  {
     path: '/page1',
     component: Layout,
     redirect: '/page1',

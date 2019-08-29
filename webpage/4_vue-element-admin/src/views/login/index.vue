@@ -1,77 +1,76 @@
 <template>
   <div class="login-container">
-    <loginHeader :newName="'nb123'" :fuValue="fuValue"></loginHeader>
-    <el-form
-      ref="loginForm"
-      :model="loginForm"
-      :rules="loginRules"
-      class="login-form"
-      autocomplete="on"
-      label-position="left"
-    >
-      <div class="title-container">
-        <h3 class="title">Login Form</h3>
-      </div>
+    <loginHeader></loginHeader>
+    <section class="main flex">
+      <img class="img" src="../../assets/login.png" />
+      <el-form
+        ref="loginForm"
+        :model="loginForm"
+        :rules="loginRules"
+        class="login-form"
+        autocomplete="on"
+        label-position="left"
+      >
+        <div class="title-container">
+          <h3 class="title">讯动医疗</h3>
+        </div>
 
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          autocomplete="on"
-        />
-      </el-form-item>
-
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-        <el-form-item prop="password">
+        <el-form-item prop="username">
           <span class="svg-container">
-            <svg-icon icon-class="password" />
+            <svg-icon icon-class="user" />
           </span>
           <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
+            ref="username"
+            v-model="loginForm.username"
+            placeholder="Username"
+            name="username"
+            type="text"
+            tabindex="1"
             autocomplete="on"
-            @keyup.native="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
           />
-          <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-          </span>
         </el-form-item>
-      </el-tooltip>
 
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width:100%;margin-bottom:30px;"
-        @click.native.prevent="handleLogin"
-      >Login</el-button>
+        <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="Password"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+        </el-tooltip>
 
-      <div style="position:relative">
-        <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : 123</span>
-        </div>
-        <!--
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
-        </el-button>
-        -->
-      </div>
-    </el-form>
-
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;margin-bottom:30px;"
+          @click.native.prevent="handleLogin"
+        >Login</el-button>
+        <!-- <div style="position:relative">
+          <div class="tips">
+            <span>Username : admin</span>
+            <span>Password : 123</span>
+          </div>
+          <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+            Or connect with
+          </el-button>
+        </div>-->
+      </el-form>
+    </section>
     <el-dialog title="Or connect with" :visible.sync="showDialog">
       Can not be simulated on local, so please combine you own business simulation! ! !
       <br />
@@ -84,10 +83,10 @@
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate";
-import SocialSign from "./components/SocialSignin";
-import loginHeader from "./components/login-header";
-import loginFooter from "./components/login-footer";
+import { validUsername } from "@/utils/validate"
+import SocialSign from "./components/SocialSignin"
+import loginHeader from "./components/login-header"
+import loginFooter from "./components/login-footer"
 
 export default {
   name: "Login",
@@ -95,20 +94,20 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"));
+        callback(new Error("Please enter the correct user name"))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
-        callback(new Error("The password can not be less than 3 digits"));
+        callback(new Error("The password can not be less than 3 digits"))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
-      fuValue: '',
+      fuValue: "",
       loginForm: {
         username: "admin",
         password: "123"
@@ -127,15 +126,15 @@ export default {
       showDialog: false,
       redirect: undefined,
       otherQuery: {}
-    };
+    }
   },
   watch: {
     $route: {
       handler: function(route) {
-        const query = route.query;
+        const query = route.query
         if (query) {
-          this.redirect = query.redirect;
-          this.otherQuery = this.getOtherQuery(query);
+          this.redirect = query.redirect
+          this.otherQuery = this.getOtherQuery(query)
         }
       },
       immediate: true
@@ -146,9 +145,9 @@ export default {
   },
   mounted() {
     if (this.loginForm.username === "") {
-      this.$refs.username.focus();
+      this.$refs.username.focus()
     } else if (this.loginForm.password === "") {
-      this.$refs.password.focus();
+      this.$refs.password.focus()
     }
   },
   destroyed() {
@@ -161,54 +160,54 @@ export default {
           (shiftKey && (key >= "a" && key <= "z")) ||
           (!shiftKey && (key >= "A" && key <= "Z"))
         ) {
-          this.capsTooltip = true;
+          this.capsTooltip = true
         } else {
-          this.capsTooltip = false;
+          this.capsTooltip = false
         }
       }
       if (key === "CapsLock" && this.capsTooltip === true) {
-        this.capsTooltip = false;
+        this.capsTooltip = false
       }
     },
     showPwd() {
       if (this.passwordType === "password") {
-        this.passwordType = "";
+        this.passwordType = ""
       } else {
-        this.passwordType = "password";
+        this.passwordType = "password"
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();
-      });
+        this.$refs.password.focus()
+      })
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true;
+          this.loading = true
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
               this.$router.push({
                 path: this.redirect || "/",
                 query: this.otherQuery
-              });
-              this.loading = false;
+              })
+              this.loading = false
             })
             .catch(() => {
-              this.loading = false;
-            });
+              this.loading = false
+            })
         } else {
-          console.log("error submit!!");
-          return false;
+          console.log("error submit!!")
+          return false
         }
-      });
+      })
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
         if (cur !== "redirect") {
-          acc[cur] = query[cur];
+          acc[cur] = query[cur]
         }
-        return acc;
-      }, {});
+        return acc
+      }, {})
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
@@ -229,7 +228,7 @@ export default {
     //   }
     // }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -248,6 +247,12 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  .main {
+    justify-content: space-around;
+    .img {
+      margin-top: 150px;
+    }
+  }
   .el-input {
     display: inline-block;
     height: 47px;
@@ -292,10 +297,9 @@ $light_gray: #eee;
 
   .login-form {
     position: relative;
-    width: 520px;
+    width: 400px;
     max-width: 100%;
     padding: 160px 35px 0;
-    margin: 0 auto;
     overflow: hidden;
   }
 

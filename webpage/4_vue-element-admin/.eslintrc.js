@@ -35,7 +35,7 @@ module.exports = {
       'allowSingleLine': true
     }],
     'camelcase': [0, {
-      'properties': 'always'
+      'properties': 'never'
     }],
     'comma-dangle': [2, 'never'],
     'comma-spacing': [2, {
