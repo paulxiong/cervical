@@ -20,6 +20,7 @@
 import { getImgListOneByOne, getLabelByImageId } from '@/api/cervical'
 import { ImgServerUrl } from '@/const/config'
 import { page3ImgWidth } from '@/const/const'
+
 export default {
   name: 'Info',
   components: { },
@@ -128,7 +129,9 @@ export default {
 </script>
 
 <style scoped>
-  @import "annotorious/css/theme-dark/annotorious-dark.css";
+  /* @import "./annotorious/css/theme-dark/annotorious-dark.css"; */
+  @import "../../styles/annotorious-dark.css";
+
 </style>
 <style lang="scss">
   .page3-dashboard-container {

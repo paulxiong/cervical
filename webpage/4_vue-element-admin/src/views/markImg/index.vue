@@ -1,14 +1,14 @@
 <template>
-  <div class='temps'>{{value}}</div>
+  <div class='mark-img'>{{value}}</div>
 </template>
 
 <script>
 export default {
-  name: 'temps',
+  name: 'mark-img',
   components: {},
   data() {
     return {
-      value: 'temps'
+      value: 'mark-img'
     }
   },
   methods: {}
@@ -16,6 +16,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.temps {
+.mark-img {
 }
 </style>

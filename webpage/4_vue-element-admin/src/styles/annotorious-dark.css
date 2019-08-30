@@ -16,7 +16,7 @@
   position:absolute;
   top:6px;
   left:5px;
-  background:url(feather_icon.png);
+  background:url(../assets/annotorious/feather_icon.png);
   background-repeat:no-repeat;
   width:19px;
   height:22px;
@@ -100,7 +100,7 @@
 }
 
 .top-left:after, .annotorious-editor:after {
-  content:url(Indicator.png);
+  content:url(../assets/annotorious/Indicator.png);
   position:absolute;
   left:15px;
   top:-14px;
@@ -110,7 +110,7 @@
 }
 
 .top-right:after {
-  content:url(Indicator.png);
+  content:url(../assets/annotorious/Indicator.png);
   position:absolute;
   right:15px;
   top:-14px;
@@ -171,25 +171,25 @@
 
 .annotorious-popup-button-delete:hover {
   background-color:transparent;
-  background:url(DarkSprite.png) no-repeat;
+  background:url(../assets/annotorious/DarkSprite.png) no-repeat;
   background-position:0 -40px;
 }
 
 .annotorious-popup-button-delete {
-  background:url(DarkSprite.png) no-repeat;
+  background:url(../assets/annotorious/DarkSprite.png) no-repeat;
   background-position:0 -8px;
   outline:none;
 }
 
 .annotorious-popup-button-edit {
-  background:url(DarkSprite.png) no-repeat;
+  background:url(../assets/annotorious/DarkSprite.png) no-repeat;
   background-position:0 -70px;
   outline:none;
 }
 
 .annotorious-popup-button-edit:hover {
   background-color:transparent;
-  background:url(DarkSprite.png) no-repeat;
+  background:url(../assets/annotorious/DarkSprite.png) no-repeat;
   background-position:0 -99px;
 }
 
@@ -222,7 +222,7 @@
 }
 
 .annotorious-editor-button-container {
-  background:url(DarkSprite.png);
+  background:url(../assets/annotorious/DarkSprite.png);
   background-position:0 -1px;
   margin:0 10px 10px;
   background-repeat:repeat-x;

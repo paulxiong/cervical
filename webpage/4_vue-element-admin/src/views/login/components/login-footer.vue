@@ -8,7 +8,7 @@ export default {
   components: {},
   data() {
     return {
-      value: '反馈建议 | 关于我们 | 备案号-滇43876513123'
+      value: '反馈建议 | 关于我们 | 滇公网安备33043876513123号'
     }
   },
   methods: {}
