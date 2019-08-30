@@ -245,3 +245,19 @@ def only_train_svm(cell_datasets_path, experiment_root, rand=64, dis_category=5)
     netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
     train_svm_only(positive_train_npy, positive_test_npy, negative_train_npy, negative_test_npy,
                    netD, netG, netD_D, netD_Q, experiment_root, dis_category)
+
+def image_classification_predict(cell_datasets_path, experiment_root, rand=64, dis_category=5):
+    print(">>> loading cell and fov datasets ...:")
+    image = get_image_lists(cell_datasets_path)
+    # 获得细胞有几个类型
+    cell = get_images_type(image, cell1_fov0=1)
+    dis_category =  len(cell.keys())
+    #吧fov加载到内存，按npy的方式组织
+    negative_train_npy, negative_test_npy, positive_train_npy, positive_test_npy = \
+        load_fov_as_nparray(cell_datasets_path, image)
+    print(">>> loading datasets done:")
+    print(len(negative_train_npy), len(positive_train_npy))
+
+    netD, netG, netD_D, netD_Q = create_model(rand=rand, dis_category=dis_category)
+    netD, netG, netD_D, netD_Q, predict_label, feature_dics =  image_predict(positive_test_npy,  negative_test_npy,
+          netD, netG, netD_D, netD_Q, experiment_root,dis_category=dis_category)

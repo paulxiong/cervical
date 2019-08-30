@@ -262,10 +262,11 @@ def _load_fov_as_nparray(imgdir, x, y, size=32):
             n_ynp.append([label])
     return n_xnp, n_ynp
 
-def load_fov_as_nparray(imgdir, imgs, size=32, test_size=0.2):
+def load_fov_as_nparray(imgdir, imgs, size=32, test_size=0.1):
     if not os.path.exists(imgdir) or not os.path.isdir(imgdir):
         raise RuntimeError('not found folder: %s' % rootpath)
     nx, ny, px, py = _get_fov_positive_negative(imgs)
+    print(len(nx), len(px))
 
     nX_train, nX_test, ny_train, ny_test = \
         train_test_split(nx, ny, test_size=test_size, random_state=int(time.time()))

@@ -440,6 +440,7 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
     estimator = KMeans(init='k-means++', n_clusters=2, n_init=1)
     true_label = [1]*proportion_1.shape[0] + [0]*proportion_0.shape[0]+[1]*proportion_test_1.shape[0] + \
                  [0]*proportion_test_0.shape[0]
+    print("true_label: ", len(true_label), true_label)
     true_label_verse = [1-n for n in true_label]
     predict_label = estimator.fit_predict(np.concatenate([proportion_1,proportion_0, proportion_test_1, \
                         proportion_test_0],axis=0))
@@ -456,6 +457,7 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
     _f1_score = f1_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
                          predict_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:], average='weighted')
 
+    print("K-means predict_label: ", len(predict_label), predict_label.tolist())
     logstr = 'k-means - f1_score: {} precision: {} recall: {}\n'.format(_f1_score, _precision, _recall)
     print(logstr)
     with open(experiment_root + "log","a") as f:
@@ -476,6 +478,9 @@ def image_level_accuracy(positive_train_loader, positive_test_loader, negative_t
                              predict_label, average='weighted')
     _precision = precision_score(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:],
                              predict_label, average='weighted')
+    print("SVM true_label: ", len(true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:]), \
+          true_label[-proportion_test_1.shape[0]-proportion_test_0.shape[0]:])
+    print("SVM predict_label: ", len(predict_label), predict_label.tolist())
     logstr = 'SVM - f1_score: {} precision: {} recall: {}\n'.format(_f1_score, _precision, _recall)
     print(logstr)
 
@@ -660,8 +665,7 @@ def train(cell_train_set, cell_test_set, cell_test_label,
 
             optimizerQ.step()
 
-            if gen_iterations % 10 == 0 :
-
+            if gen_iterations % 100 == 0 :
                 batch_time = time.time() - end
                 end = time.time()
                 print('batch_time:{0}, epoch:{1}, gen_iterations:{2}, D_cost:{3}, mi_loss:{4}'.format(batch_time/10, epoch,
@@ -853,7 +857,7 @@ def train_representation(cell_array, test_array, test_label, netD, netG, netD_D,
 
             optimizerQ.step()
 
-            if gen_iterations % 10 == 0 and gen_iterations:
+            if gen_iterations % 100 == 0 and gen_iterations:
 
                 batch_time = time.time() - end
                 end = time.time()
@@ -1037,7 +1041,7 @@ def train_representation2(cell_array, test_array, test_label, netD, netG, netD_D
 
             optimizerQ.step()
 
-            if gen_iterations % 10 == 0 and gen_iterations:
+            if gen_iterations % 100 == 0 and gen_iterations:
 
                 batch_time = time.time() - end
                 end = time.time()
@@ -1160,3 +1164,67 @@ def train_svm_only(positive_train_npy, positive_test_npy, negative_train_npy, ne
                          negative_train_loader, negative_test_loader ,
                          netD, netD_Q, dis_category, experiment_root)
     return netD, netG, netD_D, netD_Q
+
+def image_level_predict(positive_test_loader, negative_test_loader , netD, netD_Q, dis_category, experiment_root):
+    clf_path = os.path.join(experiment_root, 'clf_model')
+    if not os.path.exists(clf_path):
+        os.makedirs(clf_path)
+
+    proportion_test_1 = get_proportion(positive_test_loader , netD, netD_Q, dis_category)
+    proportion_test_0 = get_proportion(negative_test_loader , netD, netD_Q, dis_category)
+
+    true_test_label =[1]*proportion_test_1.shape[0] + [0]*proportion_test_0.shape[0]
+
+    print("True test labels", true_test_label)
+
+    with open(experiment_root + '/clf_model/svm_1567073458337_f0.844105691057_r0.866666666667_p0.833725490196.model') as f:
+        clf = pickle.load(f)
+    predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
+
+    _f1_score = f1_score(true_test_label, predict_label, average='weighted')
+    _recall = recall_score(true_test_label, predict_label, average='weighted')
+    precision  = precision_score(true_test_label, predict_label, average='weighted')
+    print('SVM - f1_score:' + str(_f1_score) + 'recall:' + str(_recall) + 'precision:'+ str(precision))
+    print("SVM predict_label", predict_label)
+
+    with open(experiment_root + '/clf_model/kmean_1567073458337_f0.875252071478_r0.877777777778_p0.873055555556.model') as f:
+        clf = pickle.load(f)
+    predict_label = clf.predict(np.concatenate([proportion_test_1, proportion_test_0]))
+
+    _f1_score = f1_score(true_test_label, predict_label, average='weighted')
+    _recall = recall_score(true_test_label, predict_label, average='weighted')
+    precision  = precision_score(true_test_label, predict_label, average='weighted')
+    print('SVM - f1_score:' + str(_f1_score) + 'recall:' + str(_recall) + 'precision:'+ str(precision))
+    print("SVM predict_label", predict_label)
+
+    feature_dics = {}
+    return predict_label, feature_dics
+
+
+    feature_dics = {}
+    return predict_label, feature_dics
+
+def image_predict(positive_test_npy,  negative_test_npy, netD, netG, netD_D, netD_Q, experiment_root,dis_category=5):
+
+    path_netD =   os.path.join(experiment_root +   'model/netD_0.6670301708469647_0.8305400471430765_8900.pth')
+    path_netG =   os.path.join(experiment_root +   'model/netG_0.6670301708469647_0.8305400471430765_8900.pth')
+    path_netD_D = os.path.join(experiment_root + 'model/netD_D_0.6670301708469647_0.8305400471430765_8900.pth')
+    path_netD_Q = os.path.join(experiment_root + 'model/netD_Q_0.6670301708469647_0.8305400471430765_8900.pth')
+
+    positive_test_loader = [create_loader(normalized(n), shuffle=False, batchsize=64) for n in positive_test_npy]
+    negative_test_loader =  [create_loader(normalized(n), shuffle=False, batchsize=64) for n in negative_test_npy]
+
+    netD.load_state_dict(torch.load(path_netD))
+    netG.load_state_dict(torch.load(path_netG))
+    netD_D.load_state_dict(torch.load(path_netD_D))
+    netD_Q.load_state_dict(torch.load(path_netD_Q))
+
+    netD.eval()
+    netG.eval()
+    netD_D.eval()
+    netD_Q.eval()
+
+    #调用image_level_predict计算recall/precision
+    predict_label, feature_dics = image_level_predict(positive_test_loader, negative_test_loader,
+                                                      netD, netD_Q, dis_category, experiment_root)
+    return netD, netG, netD_D, netD_Q, predict_label, feature_dics
