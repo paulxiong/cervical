@@ -58,10 +58,10 @@ export default {
   },
   methods: {},
   mounted() {
-    setTimeout(() => { this.percentage1 = 27;this.percentage2 = 20 }, 200)
-    setTimeout(() => { this.percentage1 = 64;this.percentage2 = 40 }, 400)
-    setTimeout(() => { this.percentage1 = 88;this.percentage2 = 66 }, 600)
-    setTimeout(() => { this.percentage1 = 95;this.percentage2 = 96 }, 800)
+    setTimeout(() => { this.percentage1 = 27;this.percentage2 = 20 }, 4000)
+    setTimeout(() => { this.percentage1 = 64;this.percentage2 = 40 }, 4500)
+    setTimeout(() => { this.percentage1 = 88;this.percentage2 = 66 }, 5000)
+    setTimeout(() => { this.percentage1 = 95;this.percentage2 = 96 }, 5500)
   }
 }
 </script>
