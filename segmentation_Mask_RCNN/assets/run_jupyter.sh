@@ -14,5 +14,5 @@
 # limitations under the License.
 # ==============================================================================
 
-/usr/sbin/sshd -D
+/usr/sbin/sshd
 source /etc/bash.bashrc && jupyter notebook --notebook-dir=/tf --ip 0.0.0.0 --no-browser --allow-root
