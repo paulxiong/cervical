@@ -1,36 +1,24 @@
 {
-  "name": "vue-element-admin",
+  "name": "cervical",
   "version": "4.2.1",
-  "description": "A magical vue admin. An out-of-box UI solution for enterprise applications. Newest development stack of vue. Lots of awesome features",
-  "author": "Pan <panfree23@gmail.com>",
+  "description": "Doing something useful",
+  "author": "inpm",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
-    "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
-    "test:unit": "jest --clearCache && vue-cli-service test:unit",
-    "test:ci": "npm run lint && npm run test:unit",
-    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
-    "new": "plop"
+    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "keywords": [
     "vue",
     "admin",
-    "dashboard",
     "element-ui",
     "boilerplate",
     "admin-template",
     "management-system"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/PanJiaChen/vue-element-admin.git"
-  },
-  "bugs": {
-    "url": "https://github.com/PanJiaChen/vue-element-admin/issues"
-  },
   "dependencies": {
     "axios": "0.18.0",
     "clipboard": "2.0.4",
