@@ -2,10 +2,10 @@
   <div class="home">
     <h3>我的数据集 <el-button type="primary" @click="goNewTrain">新建数据集</el-button></h3>
     <section class="project-list flex">
-      <el-card v-for="(v,i) in 10" :key="i" class="box-card" shadow="hover" @click="goDetailsTrain">
+      <el-card v-for="(v,i) in 10" :key="i" class="box-card" shadow="hover">
         <div slot="header" class="clearfix">
           <span>TEST_{{i+1}}</span>
-          <el-button style="float: right; padding: 3px 0" type="text">查看详情</el-button>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="goDetailsTrain">查看详情</el-button>
         </div>
         
         <div class="content flex">
@@ -42,17 +42,22 @@ export default {
     return {
       reverse: true,
       activities: [{
-        content: '活动开始',
-        icon: 'el-icon-more',
-        type: 'warning',
+        content: '训练完成',
+        type: 'success',
+        size: 'large',
+        icon: 'el-icon-circle-check',
         timestamp: '2018-04-15'
       }, {
-        content: '通过审核',
-        color: '#0bbd87',
+        content: '开始训练',
+        type: 'warning',
+        size: 'large',
+        icon: 'el-icon-timer',
         timestamp: '2018-04-13'
       }, {
         content: '创建成功',
         type: 'primary',
+        size: 'large',
+        icon: 'el-icon-s-promotion',
         timestamp: '2018-04-11'
       }]
     }

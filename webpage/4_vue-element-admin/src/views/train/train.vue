@@ -25,10 +25,10 @@ export default {
   },
   methods: {},
   mounted() {
-    setTimeout(()=>{this.percentage=27},1000)
-    setTimeout(()=>{this.percentage=64},3000)
-    setTimeout(()=>{this.percentage=88},4000)
-    setTimeout(()=>{this.percentage=100},6000)    
+    setTimeout(()=>{this.percentage=27},3000)
+    setTimeout(()=>{this.percentage=64},5000)
+    setTimeout(()=>{this.percentage=88},7000)
+    setTimeout(()=>{this.percentage=100},9000)
   }
 };
 </script>

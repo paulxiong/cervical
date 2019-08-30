@@ -20,7 +20,7 @@
           <b>0.996</b>
         </section>
         <section class="percent">
-          <el-progress type="circle" class="percent" :percentage="95"></el-progress>
+          <el-progress type="circle" class="percent" :percentage="percentage1"></el-progress>
           <h4 class="percent-title">Precision</h4>
           <el-tooltip placement="bottom" class="percent-tip">
             <div slot="content">
@@ -31,7 +31,7 @@
           </el-tooltip>
         </section>
         <section class="recall">
-          <el-progress type="circle" class="recall" :percentage="96"></el-progress>
+          <el-progress type="circle" class="recall" :percentage="percentage2"></el-progress>
           <h4 class="recall-title">Recall</h4>
           <el-tooltip placement="bottom" class="recall-tip">
             <div slot="content">
@@ -52,10 +52,17 @@ export default {
   components: {},
   data() {
     return {
-      value: ""
+      percentage1: 10,
+      percentage2: 10
     }
   },
-  methods: {}
+  methods: {},
+  mounted() {
+    setTimeout(() => { this.percentage1 = 27;this.percentage2 = 20 }, 200)
+    setTimeout(() => { this.percentage1 = 64;this.percentage2 = 40 }, 400)
+    setTimeout(() => { this.percentage1 = 88;this.percentage2 = 66 }, 600)
+    setTimeout(() => { this.percentage1 = 95;this.percentage2 = 96 }, 800)
+  }
 }
 </script>
 

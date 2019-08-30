@@ -46,7 +46,7 @@
 
 <script>
 export default {
-  name: "start-train",
+  name: 'start-train',
   components: {},
   data() {
     return {

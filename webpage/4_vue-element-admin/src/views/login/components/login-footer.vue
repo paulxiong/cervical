@@ -4,11 +4,11 @@
 
 <script>
 export default {
-  name: "login-footer",
+  name: 'loginFooter',
   components: {},
   data() {
     return {
-      value: "反馈建议 | 关于我们 | 备案号-滇43876513123"
+      value: '反馈建议 | 关于我们 | 备案号-滇43876513123'
     }
   },
   methods: {}
