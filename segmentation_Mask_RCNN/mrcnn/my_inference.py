@@ -11,8 +11,8 @@ import model as modellib
 import pandas as pd
 import os
 import my_functions as f
-import visualize
 import time
+import cv2
 from config import Config
 
 class BowlConfig(Config):
@@ -62,7 +62,7 @@ class detector():
         self.debug = False
         self.inference_config = None
         self.logs_dir = './logs'
-
+        self.output_image_path = './output_image'
         if not os.path.exists(self.model_path):
             raise RuntimeError("not found: %s" % model_path)
         if not os.path.exists(self.original_img_path):
@@ -73,7 +73,7 @@ class detector():
     def detector_init(self):
         self.inference_config = BowlConfig()
         if self.debug is True:
-            inference_config.display()
+            self.inference_config.display()
 
         print("Loading weights from ", self.model_path)
         model = modellib.MaskRCNN(mode = "inference",
@@ -124,11 +124,8 @@ class detector():
            ## Make prediction for that image
            results = self.model.detect([original_image], verbose=0)
            r = results[0]
-           if self.debug:
-               visualize.display_instances(original_image, filename, r['rois'],
-                   r['masks'], r['class_ids'], r['scores'])
 
-           scores_masks = r['scores']    #判别物得分
+           scores_masks = r['scores']      #判别物得分
            final_rois = r["rois"]         #交并比得到的回归框坐标
 
            _rois = []
@@ -142,14 +139,29 @@ class detector():
                _rois.append([roi[0], roi[1], roi[2], roi[3], float(int(score * 100) / 100)])
 
            csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
-           pd_data = pd.DataFrame(_rois, columns=['x1', 'y1', 'x2', 'y2', 'score'])
+           pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
            save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
                        index = False, header = True)
+
+           if self.debug:
+               output_image_path = os.path.join(self.output_image_path, filename + '_.png')
+               for i in range(len(final_rois)):
+                  score = scores_masks[i]
+                  rois = final_rois[i,:]
+                  x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
+                  draw_color = (0, 0, 255)
+                  if (score >= 0.98):
+                       draw_color = (0, 0, 255)
+                  elif (0.94 < score < 0.98) :
+                       draw_color = (0, 255, 0)
+                  elif score <= 0.94 :
+                       draw_color = (255, 0, 0)
+                  cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
+               io.imsave(output_image_path, original_image)
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
     original_img_path = './origin_imgs'
     cells_rois_path = 'cells/rois'
-
     d = detector(model_path, original_img_path, cells_rois_path)
     d.detect_image()
