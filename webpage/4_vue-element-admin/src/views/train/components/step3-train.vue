@@ -55,7 +55,7 @@ export default {
   methods: {
     goTrain() {
       this.$router.push({
-        path: '/trainDetails'
+        path: '/train/detailsTrain'
       })
     }
   }

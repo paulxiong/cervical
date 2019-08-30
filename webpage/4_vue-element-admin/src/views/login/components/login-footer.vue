@@ -8,11 +8,11 @@ export default {
   components: {},
   data() {
     return {
-      value: "反馈建议"
-    };
+      value: "反馈建议 | 关于我们 | 备案号-滇43876513123"
+    }
   },
   methods: {}
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -22,5 +22,6 @@ export default {
   background: #fff;
   position: fixed;
   bottom: 0;
+  font-size: 14px;
 }
 </style>

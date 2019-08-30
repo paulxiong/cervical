@@ -2,7 +2,7 @@
   <div class="home">
     <h3>我的数据集 <el-button type="primary" @click="goNewTrain">新建数据集</el-button></h3>
     <section class="project-list flex">
-      <el-card v-for="(v,i) in 10" :key="i" class="box-card" shadow="hover">
+      <el-card v-for="(v,i) in 10" :key="i" class="box-card" shadow="hover" @click="goDetailsTrain">
         <div slot="header" class="clearfix">
           <span>TEST_{{i+1}}</span>
           <el-button style="float: right; padding: 3px 0" type="text">查看详情</el-button>
@@ -60,7 +60,12 @@ export default {
   methods: {
     goNewTrain() {
       this.$router.push({
-        path: '/train'
+        path: '/train/newTrain'
+      })
+    },
+    goDetailsTrain() {
+      this.$router.push({
+        path: '/train/detailsTrain'
       })
     }
   }
