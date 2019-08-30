@@ -8,6 +8,7 @@ import scipy.misc
 from shutil import copyfile
 from PIL import Image
 import shutil
+import cv2
 from pandas.core.frame import DataFrame
 
 def get_image_lists(original_img_path):
@@ -32,25 +33,28 @@ def get_image_lists(original_img_path):
         print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
     return image_list
 
-def crop_fov(img, cells_crop_file_path, x, y):
-    sides = [50]
+def crop_fov(img, cells_crop_file_path, x, y, side, sign):
     limit_x = img.shape[1]
     limit_y = img.shape[0]
-    print(limit_x, limit_y)
-    for side in sides:
-        x1 = x - side
-        x2 = x + side
-        y1 = y - side
-        y2 = y + side
-        x1 = int(min(limit_x, max(0, x1)))
-        x2 = int(max(x1+1, min(limit_x, x2)))
-        y1 = int(min(limit_y, max(0, y1)))
-        y2 = int(max(0, min(limit_y, y2)))
-        print(y1,y2,x1,x2)
-        #FIXME: 这里算的不对
+    x1 = x - side
+    x2 = x + side
+    y1 = y - side
+    y2 = y + side
+    x2 = int(max(0, min(limit_x, x2)))
+    x1 = int(max(0, min(x2-1, x1)))
+    y2 = int(max(0, min(limit_y, y2)))
+    y1 = int(max(0, min(y2-1, y1)))
+    if sign == 1:
         cropped = img[y1:y2,x1:x2,:]
         scipy.misc.imsave(cells_crop_file_path, cropped)
-        print(cells_crop_file_path)
+    color = []
+    if side == 50:
+        color = [0,255,0]
+    elif side == 55:
+        color = [255,0,0]
+    else:
+        color = [0,0,255]
+    cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
     return
 
 def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
@@ -60,17 +64,31 @@ def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
         imgpath = os.path.join(original_img_path, i)
         (filepath, filename) = os.path.split(imgpath)
 
-        csv_path = os.path.join(cells_rois_path, (filename + '_.csv_and.csv'))
+        csv_path = os.path.join(cells_rois_path, (filename + '_.csv_and.csv')) # 交集
+        print(csv_path)
+        csv_org_path = imgpath[:-3] + 'csv' # 医生csv
+        csv_seg_path = csv_path[:-8]
         if not os.path.exists(csv_path):
             print("not found %s" % csv_path)
             continue
         img = scipy.misc.imread(imgpath)
-        df1 = pd.read_csv(csv_path)
+        df1 = pd.read_csv(csv_path) # 交集csv
         for index, row in df1.iterrows():
             x, y = row['x'], row['y']
             cell_path = os.path.join(cells_crop_path, (filename + '_n_' + \
-                            str(row['type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.pg'))
-            crop_fov(img, cell_path, int(x), int(y))
+                            str(row['type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
+            crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 1)
+        df_org = pd.read_csv(csv_org_path) # 原始csv
+        for index_org, row_org in df_org.iterrows():
+            x, y = row_org['X'], row_org['Y']
+            crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 0)
+        df_seg = pd.read_csv(csv_seg_path) # 裁减csv
+        for index_seg, row_seg in df_seg.iterrows():
+            x1,x2, y1,y2 = row_seg['x1'], row_seg['x2'],row_seg['y1'],row_seg['y2']
+            y = int((x1+x2)/2)
+            x = int((y1+y2)/2)
+            crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 0)
+        cv2.imwrite(imgpath + '_abc.png', img)
     return
 
 if __name__ == '__main__':
