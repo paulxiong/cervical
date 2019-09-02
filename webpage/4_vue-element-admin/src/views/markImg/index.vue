@@ -1,5 +1,7 @@
 <template>
-  <div class='mark-img'>{{value}}</div>
+  <div class='mark-img'>
+    <h3>医生标注图片集</h3>
+  </div>
 </template>
 
 <script>

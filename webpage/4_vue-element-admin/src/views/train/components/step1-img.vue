@@ -1,14 +1,14 @@
 <template>
   <div class="checkImg">
     <el-input class="filter-input flex" placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
-
+      {{checkList}}
     <el-tree
       class="filter-tree flex"
-      :data="data"
+      :data="batchList"
       :props="defaultProps"
       show-checkbox
+      @check="getCheck"
       highlight-current
-      default-expand-all
       :filter-node-method="filterNode"
       ref="tree"
     ></el-tree>
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { getBatchInfo, getMedicalIdInfo, getimgnptypebymids } from '@/api/cervical'
 export default {
   name: "checkImg",
   watch: {
@@ -23,59 +24,65 @@ export default {
       this.$refs.tree.filter(val);
     }
   },
-
-  methods: {
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
-    }
-  },
-
   data() {
     return {
       filterText: "",
-      data: [{
-        id: 1,
-        label: "一级 1",
-        children: [{
-          id: 4,
-          label: "二级 1-1",
-        }, {
-          id: 4,
-          label: "二级 1-2",
-        }]
-      }, {
-        id: 2,
-        label: "一级 2",
-        children: [{
-          id: 5,
-          label: "二级 2-1"
-        }, {
-          id: 6,
-          label: "二级 2-2"
-        }]
-      }, {
-        id: 3,
-        label: "一级 3",
-        children: [{
-          id: 7,
-          label: "二级 3-1"
-        }, {
-          id: 8,
-          label: "二级 3-2"
-        }]
-      }],
+      batchList: [],
+      checkList: [],
       defaultProps: {
         children: "children",
         label: "label"
       }
     }
+  },
+
+  methods: {
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    getBatchInfo() {
+      getBatchInfo().then(res1 => {
+        const data1 = res1.data.data
+        data1.batchs.map(v => {
+          let obj = {}
+          obj['label'] = v
+          getMedicalIdInfo({ 'batchid': v }).then(res2 => {
+            const data2 = res2.data.data
+            let medicalids = []
+            data2.medicalids.map(item => {
+              item = {
+                'label': item
+              }
+              medicalids.push(item)
+            })
+            obj['children'] = medicalids
+            this.batchList.push(obj)
+          })
+        })
+      })
+    },
+    getCheck(checkedNodes,halfCheckedKeys) {
+      console.log(checkedNodes, halfCheckedKeys)
+      // console.log(this.$refs.tree.getCheckedNodes())
+      this.checkList = this.$refs.tree.getCheckedNodes()
+    }
+  },
+
+  mounted() {
+    this.getBatchInfo()
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .checkImg {
+  .filter-tree {
+    align-items: flex-start;
+    .el-tree-node__children {
+      display: flex;
+    }
+  }
   .filter-input {
     width: 500px;
     margin: 0 auto;
