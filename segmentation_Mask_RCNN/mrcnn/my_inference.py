@@ -124,63 +124,63 @@ class detector():
         pathList = self.get_image_lists()
 
         for filename in pathList:
-           image_path = os.path.join(self.original_img_path, filename)
-           print(image_path)
-           original_image = io.imread(image_path)
+            image_path = os.path.join(self.original_img_path, filename)
+            print(image_path)
+            original_image = io.imread(image_path)
 
-           if len(original_image.shape)<3:
-               original_image = img_as_ubyte(original_image)
-               original_image = np.expand_dims(original_image,2)
-               original_image = original_image[:,:,[0,0,0]] # flip r and b
-           original_image = original_image[:,:,:3]
+            if len(original_image.shape)<3:
+                original_image = img_as_ubyte(original_image)
+                original_image = np.expand_dims(original_image,2)
+                original_image = original_image[:,:,[0,0,0]] # flip r and b
+            original_image = original_image[:,:,:3]
 
-           ## Make prediction for that image
-           results = self.model.detect([original_image], verbose=0)
-           r = results[0]
+            ## Make prediction for that image
+            results = self.model.detect([original_image], verbose=0)
+            r = results[0]
 
-           scores_masks = r['scores']      #判别物得分
-           final_rois = r["rois"]         #交并比得到的回归框坐标
-           pred_masks = r['masks']
+            scores_masks = r['scores']      #判别物得分
+            final_rois = r["rois"]         #交并比得到的回归框坐标
+            pred_masks = r['masks']
 
-           _rois = []
-           threshold = float(0.90)
-           for i in range(0, len(scores_masks)):
-               score = scores_masks[i]
-               roi = final_rois[i]
-               if int(threshold*100) > int(score*100):
-                   print("%s drop roi, score=%f" % (filename, score))
-                   continue
+            _rois = []
+            threshold = float(0.90)
+            for i in range(0, len(scores_masks)):
+                score = scores_masks[i]
+                roi = final_rois[i]
+                if int(threshold*100) > int(score*100):
+                    print("%s drop roi, score=%f" % (filename, score))
+                    continue
 
-               mask_npy = pred_masks[:,:,i]
-               y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
-               mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-               x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
+                mask_npy = pred_masks[:,:,i]
+                y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
+                mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
 
-               _mask_npy = mask_npy[y1:y2, x1:x2]
-               np.save(image_path + '_mask_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
-               print(_mask_npy.shape)
-               _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
+                _mask_npy = mask_npy[y1:y2, x1:x2]
+                np.save(image_path + '_mask_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
+                print(_mask_npy.shape)
+                _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
 
-           csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
-           pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
-           save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
-                       index = False, header = True)
+            csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
+            pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
+            save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
+                        index = False, header = True)
 
-           if self.debug:
-               output_image_path = os.path.join(self.output_image_path, filename + '_.png')
-               for i in range(len(final_rois)):
-                  score = scores_masks[i]
-                  rois = final_rois[i,:]
-                  x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
-                  draw_color = (0, 0, 255)
-                  if (score >= 0.98):
-                       draw_color = (0, 0, 255)
-                  elif (0.94 < score < 0.98) :
-                       draw_color = (0, 255, 0)
-                  elif score <= 0.94 :
-                       draw_color = (255, 0, 0)
-                  cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
-               io.imsave(output_image_path, original_image)
+            if self.debug:
+                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
+                for i in range(len(final_rois)):
+                    score = scores_masks[i]
+                    rois = final_rois[i,:]
+                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
+                    draw_color = (0, 0, 255)
+                    if (score >= 0.98):
+                        draw_color = (0, 0, 255)
+                    elif (0.94 < score < 0.98) :
+                        draw_color = (0, 255, 0)
+                    elif score <= 0.94 :
+                        draw_color = (255, 0, 0)
+                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
+                io.imsave(output_image_path, original_image)
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
