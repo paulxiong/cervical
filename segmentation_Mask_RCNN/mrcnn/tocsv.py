@@ -58,7 +58,7 @@ def compare_roi(x, y, original_csv_path):
 
 def save_rois_as_csv(cells_rois_file_path, rois):
     csv_path = cells_rois_file_path + '_and.csv'
-    pd_data = pd.DataFrame(rois, columns=['x', 'y', 'type'])
+    pd_data = pd.DataFrame(rois, columns=['x', 'y', 'type', 'x1', 'x2', 'y1', 'y2'])
     save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
                 index = False, header = True)
     return
@@ -82,7 +82,7 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
             x = int((row['y2'] + row['y1']) / 2)
             ret, _type, org_x, org_y, org_num = compare_roi(x, y, org_csv_path)
             if ret is True:
-                rois.append([org_x, org_y, _type])
+                rois.append([org_x, org_y, _type, int(row['x1']), int(row['x2']), int(row['y1']), int(row['y2'])])
 
         if len(rois) > 0:
             print("org_label_num=%d  len(rois)=%d org_num=%d" % (rois_label_num, len(rois), org_num))

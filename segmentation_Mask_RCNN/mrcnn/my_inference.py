@@ -56,10 +56,11 @@ class BowlConfig(Config):
     USE_MINI_MASK = True
 
 class detector():
-    def __init__(self, model_path, original_img_path, cells_rois_path):
+    def __init__(self, model_path, original_img_path, cells_rois_path, cells_mask_npy_path):
         self.model_path = model_path
         self.original_img_path = original_img_path
         self.cells_rois_path = cells_rois_path
+        self.cells_mask_npy_path = cells_mask_npy_path
         self.debug = False
         self.inference_config = None
         self.logs_dir = './logs'
@@ -154,11 +155,10 @@ class detector():
                 mask_npy = pred_masks[:,:,i]
                 y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
                 mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 32)
 
                 _mask_npy = mask_npy[y1:y2, x1:x2]
-                np.save(image_path + '_mask_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
-                print(_mask_npy.shape)
+                np.save(self.cells_mask_npy_path + '/' + filename + '_mask_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
                 _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
 
             csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
@@ -186,5 +186,6 @@ if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
     original_img_path = './origin_imgs'
     cells_rois_path = 'cells/rois'
-    d = detector(model_path, original_img_path, cells_rois_path)
+    cells_mask_npy_path = 'cells/mask_npy'
+    d = detector(model_path, original_img_path, cells_rois_path, cells_mask_npy_path)
     d.detect_image()

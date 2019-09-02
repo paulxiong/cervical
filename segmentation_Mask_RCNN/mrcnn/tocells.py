@@ -56,6 +56,29 @@ def crop_fov(img, cells_crop_file_path, x, y, side, sign):
         color = [0,0,255]
     cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
     return
+
+def crop_fov2(img, cells_crop_file_path, x1, y1, x2, y2, sign):
+    if sign == 1: # 是否存成细胞图
+        cropped = img[y1:y2,x1:x2,:]
+        cv2.imwrite(cells_crop_file_path, cropped)
+    return cropped
+
+# 细胞原图加mask生成细胞核
+def processing_img(img, mask_npy_path):
+    #mask+原图 ==》img1
+    mask = np.load(mask_npy_path)
+    segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
+    img1 = img*segmentate
+
+    #背景换成白色
+    color_mean = img1.mean(axis=2)
+    for p in range(0, color_mean.shape[0]):
+        for q in range(0, color_mean.shape[1]):
+            if color_mean[p, q] == 0.0:
+                img1[p, q, :] = 255
+    cv2.imwrite(mask_npy_path + '_masked.png', img1)
+    return
+
 def getFOVlabel(type):
     label_N = [1, 5]
     FOVlabel = []
@@ -65,7 +88,7 @@ def getFOVlabel(type):
         FOVlabel = 'P'
     FOVlabel = '_' + FOVlabel + '_'
     return FOVlabel
-def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
+def crop_fovs(original_img_path, cells_rois_path, cells_crop_path, cells_npy_path):
     imgs = get_image_lists(original_img_path)
     print(imgs)
     for i in imgs:
@@ -86,10 +109,13 @@ def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
         if '1' in degug:
             df1 = pd.read_csv(csv_path) # 交集csv
             for index, row in df1.iterrows():
-                x, y = row['x'], row['y']
+                x1, y1, x2, y2 = int(row['x1']), int(row['y1']), int(row['x2']), int(row['y2'])
                 cell_path = os.path.join(cells_crop_path, (filename + getFOVlabel(row['type']) + \
-                                str(row['type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-                crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 1)
+                                str(row['type']) + '_' + str(int(x1)) + '_' + str(int(y1)) + '_w_h.png'))
+                crop_img = crop_fov2(img, cell_path, x1, y1, x2, y2, sign = 1)
+                npypath = '{}_mask_{}_{}_{}_{}.npy'.format(i, x1, y1, x2, y2)
+                npypath = os.path.join(cells_npy_path, npypath)
+                processing_img(crop_img, npypath)
         if '2' in degug:
             df_org = pd.read_csv(csv_org_path) # 原始csv
             for index_org, row_org in df_org.iterrows():
@@ -110,4 +136,4 @@ def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
     return
 
 if __name__ == '__main__':
-    crop_fovs('origin_imgs/', 'cells/rois/', 'cells/crop/')
+    crop_fovs('origin_imgs/', 'cells/rois/', 'cells/crop/', 'cells/mask_npy/')
