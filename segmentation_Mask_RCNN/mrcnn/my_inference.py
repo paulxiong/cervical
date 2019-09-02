@@ -14,6 +14,7 @@ import my_functions as f
 import time
 import cv2
 from config import Config
+import scipy
 
 class BowlConfig(Config):
     """Configuration for training on the toy shapes dataset.
@@ -106,6 +107,18 @@ class detector():
         if self.debug is True and allfiles_num > len(image_list):
             print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
         return image_list
+    def calculate_wh(slef, x, y, img, side):
+        limit_x = img.shape[1]
+        limit_y = img.shape[0]
+        x1 = x - side
+        x2 = x + side
+        y1 = y - side
+        y2 = y + side
+        x2 = int(max(0, min(limit_x, x2)))
+        x1 = int(max(0, min(x2-1, x1)))
+        y2 = int(max(0, min(limit_y, y2)))
+        y1 = int(max(0, min(y2-1, y1)))
+        return x1, y1, x2, y2
 
     def detect_image(self):
         pathList = self.get_image_lists()
@@ -127,6 +140,7 @@ class detector():
 
            scores_masks = r['scores']      #判别物得分
            final_rois = r["rois"]         #交并比得到的回归框坐标
+           pred_masks = r['masks']
 
            _rois = []
            threshold = float(0.90)
@@ -136,7 +150,16 @@ class detector():
                if int(threshold*100) > int(score*100):
                    print("%s drop roi, score=%f" % (filename, score))
                    continue
-               _rois.append([roi[0], roi[1], roi[2], roi[3], float(int(score * 100) / 100)])
+
+               mask_npy = pred_masks[:,:,i]
+               y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
+               mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
+               x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
+
+               _mask_npy = mask_npy[y1:y2, x1:x2]
+               np.save(image_path + '_mask_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
+               print(_mask_npy.shape)
+               _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
 
            csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
            pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
