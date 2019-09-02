@@ -158,7 +158,7 @@ class detector():
                 x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 32)
 
                 _mask_npy = mask_npy[y1:y2, x1:x2]
-                np.save(self.cells_mask_npy_path + '/' + filename + '_mask_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
+                np.save(self.cells_mask_npy_path + '/' + filename + '_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
                 _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
 
             csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
