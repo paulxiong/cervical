@@ -54,9 +54,17 @@ def crop_fov(img, cells_crop_file_path, x, y, side, sign):
         color = [255,0,0]
     else:
         color = [0,0,255]
-    #cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
+    cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
     return
-
+def getFOVlabel(type):
+    label_N = [1, 5]
+    FOVlabel = []
+    if type in label_N:
+        FOVlabel = 'N'
+    else:
+        FOVlabel = 'P'
+    FOVlabel = '_' + FOVlabel + '_'
+    return FOVlabel
 def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
     imgs = get_image_lists(original_img_path)
     print(imgs)
@@ -65,35 +73,40 @@ def crop_fovs(original_img_path, cells_rois_path, cells_crop_path):
         (filepath, filename) = os.path.split(imgpath)
 
         csv_path = os.path.join(cells_rois_path, (filename + '_.csv_and.csv')) # 交集
+        if not os.path.exists(csv_path):
+            continue
         print(csv_path)
         csv_org_path = imgpath[:-3] + 'csv' # 医生csv
         csv_seg_path = csv_path[:-8]
         if not os.path.exists(csv_path):
             print("not found %s" % csv_path)
             continue
-        img = scipy.misc.imread(imgpath).
-        print("test")
-#         df1 = pd.read_csv(csv_path) # 交集csv
-#         for index, row in df1.iterrows():
-#             x, y = row['x'], row['y']
-#             cell_path = os.path.join(cells_crop_path, (filename + '_n_' + \
-#                             str(row['type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-#             crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 0)
-#         df_org = pd.read_csv(csv_org_path) # 原始csv
-#         for index_org, row_org in df_org.iterrows():
-#             x, y = row_org['X'], row_org['Y']
-#             cell_path = os.path.join(cells_crop_path, (filename + '_n_' + \
-#                             str(row['type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-#             crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 0)
-        df_seg = pd.read_csv(csv_seg_path) # 裁减csv
-        for index_seg, row_seg in df_seg.iterrows():
-            x1,x2, y1,y2 = row_seg['x1'], row_seg['x2'],row_seg['y1'],row_seg['y2']
-            y = int((x1+x2)/2)
-            x = int((y1+y2)/2)
-            cell_path = os.path.join(cells_crop_path, (filename + '_n_' + \
-                            str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-            crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
-        #cv2.imwrite(imgpath + '_abc.png', img)
+        img = cv2.imread(imgpath) 
+        degug = ['1'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
+        if '1' in degug:
+            df1 = pd.read_csv(csv_path) # 交集csv
+            for index, row in df1.iterrows():
+                x, y = row['x'], row['y']
+                cell_path = os.path.join(cells_crop_path, (filename + getFOVlabel(row['type']) + \
+                                str(row['type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
+                crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 1)
+        if '2' in degug:
+            df_org = pd.read_csv(csv_org_path) # 原始csv
+            for index_org, row_org in df_org.iterrows():
+                x, y = row_org['X'], row_org['Y']
+                cell_path = os.path.join(cells_crop_path, (filename + getFOVlabel(row_org['Type']) + \
+                                str(row_org['Type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
+                crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 1)
+        if '3' in degug:
+            df_seg = pd.read_csv(csv_seg_path) # 裁减csv
+            for index_seg, row_seg in df_seg.iterrows():
+                x1,x2, y1,y2 = row_seg['x1'], row_seg['x2'],row_seg['y1'],row_seg['y2']
+                y = int((x1+x2)/2)
+                x = int((y1+y2)/2)
+                cell_path = os.path.join(cells_crop_path, (filename + getFOVlabel(row['type']) + \
+                                str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
+                crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
+        cv2.imwrite(imgpath + '_abc.png', img)
     return
 
 if __name__ == '__main__':

@@ -45,12 +45,11 @@ def compare_roi(x, y, original_csv_path):
     df2 = pd.read_csv(original_csv_path)
     org_num = df2.shape[0]
     limit = 200
-    min_distance = 1000000
+    min_distance = limit
     for index, row in df2.iterrows():
         org_x, org_y, _type = int(row['X']), int(row['Y']), int(row['Type'])
         L_temp = np.sqrt((np.square(org_x - x)) + np.square(org_y - y))
-#         if L_temp < limit and L_temp < min_distance:
-        if L_temp < min_distance:
+        if L_temp < limit and L_temp < min_distance:
             min_distance = L_temp
             _type2, org_x2, org_y2 = _type, org_x, org_y
     if min_distance < limit:
@@ -88,7 +87,6 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
         if len(rois) > 0:
             print("org_label_num=%d  len(rois)=%d org_num=%d" % (rois_label_num, len(rois), org_num))
             save_rois_as_csv(csv_path, rois)
-        
 
 if __name__ == "__main__":
     get_trusted_labels('origin_imgs/', 'cells/rois/')
