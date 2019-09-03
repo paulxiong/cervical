@@ -3,7 +3,7 @@
     <h2 class="flex">
       请确认训练信息，然后
       <el-button class="start-btn" type="danger" @click="goTrain">开始训练</el-button>
-      <i class="errInfo-btn">若信息有误，需要 <el-button type="info" size="mini">重新编辑</el-button></i>
+      <i class="errInfo-btn">若信息有误，需要 <el-button type="info" size="mini" @click="goBack">重新编辑</el-button></i>
     </h2>
     <section class="train-box-info flex">
       <section class="img tagContent">
@@ -64,6 +64,9 @@ export default {
           path: '/train/detailsTrain'
         })
       })
+    },
+    goBack() {
+      this.$parent.stepBack()
     }
   }
 }
