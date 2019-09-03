@@ -52,7 +52,7 @@ class cropper():
         self.cells_npy_path = os.path.join(rootpath, 'cells/mask_npy/')
         self.cells_crop_masked = os.path.join(rootpath, 'cells/crop_masked/')
 
-    def crop_fov(img, cells_crop_file_path, x, y, side, sign):
+    def crop_fov(self, img, cells_crop_file_path, x, y, side, sign):
         limit_x = img.shape[1]
         limit_y = img.shape[0]
         x1, x2, y1, y2 = (x - side), (x + side), (y - side), (y + side)
@@ -62,7 +62,7 @@ class cropper():
         y1 = int(max(0, min(y2-1, y1)))
         if sign == 1: # 是否存成细胞图
             cropped = img[y1:y2,x1:x2,:]
-            cv2.imwrite(cells_crop_file_path, cropped)
+            scipy.misc.imsave(cells_crop_file_path, cropped)
         color = []
         if side == 50: # 选择标记细胞边框颜色
             color = [0,255,0]
@@ -83,34 +83,28 @@ class cropper():
     def processing_img(self, img, npy_path, masked_path, expand_side):
         #mask+原图 ==》img1
         mask = np.load(npy_path)
-        #细胞边缘扩展(图像膨胀方法)
-        if expand_side == 2:
-            mask_w = mask.shape[0]
-            mask_h = mask.shape[1]
-            temp_mask = np.zeros((mask_w+6, mask_h+6)) # 用0扩展mask图一圈
-            temp_mask[3:mask_w+3, 3:mask_h+3] = mask
-            temp_mask_w = temp_mask.shape[0]
-            temp_mask_h = temp_mask.shape[1]
-            for i_temp_mask_w in range(3, temp_mask_w-7):
-                for i_temp_mask_h in range(3, temp_mask_h-7):
-                    filter_3_3 = np.zeros((5,5)) # 模板尺寸：5*5
-                    filter_3_3 = temp_mask[i_temp_mask_w-2:i_temp_mask_w+2, i_temp_mask_h-2:i_temp_mask_h+2]
-                    if np.mean(np.mean(filter_3_3)) != 0.0:
-                        mask[i_temp_mask_w-1-3:i_temp_mask_w+1-3, i_temp_mask_h-1-3:i_temp_mask_h+1-3] = 1
-
+        #细胞边缘扩展(图像膨胀方法，模板尺寸：3*3)
         if expand_side == 1:
             mask_w = mask.shape[0]
             mask_h = mask.shape[1]
-            temp_mask = np.zeros((mask_w+2, mask_h+2)) # 用0扩展mask图两圈
+            temp_mask = np.zeros((mask_w+2, mask_h+2)) # 用0扩展mask图一圈
             temp_mask[1:mask_w+1, 1:mask_h+1] = mask
             temp_mask_w = temp_mask.shape[0]
             temp_mask_h = temp_mask.shape[1]
             for i_temp_mask_w in range(1, temp_mask_w-2):
                 for i_temp_mask_h in range(1, temp_mask_h-2):
-                    filter_3_3 = np.zeros((3,3)) # 模板尺寸：3*3
-                    filter_3_3 = temp_mask[i_temp_mask_w-1:i_temp_mask_w+1, i_temp_mask_h-1:i_temp_mask_h+1]
+                    filter_3_3 = np.zeros((3,3))
+                    filter_3_3[0,0] = temp_mask[i_temp_mask_w-1, i_temp_mask_h-1]
+                    filter_3_3[0,1] = temp_mask[i_temp_mask_w-1, i_temp_mask_h]
+                    filter_3_3[0,2] = temp_mask[i_temp_mask_w-1, i_temp_mask_h+1]
+                    filter_3_3[1,0] = temp_mask[i_temp_mask_w, i_temp_mask_h-1]
+                    filter_3_3[1,1] = temp_mask[i_temp_mask_w, i_temp_mask_h] # 中心
+                    filter_3_3[1,2] = temp_mask[i_temp_mask_w, i_temp_mask_h+1]
+                    filter_3_3[2,0] = temp_mask[i_temp_mask_w+1, i_temp_mask_h-1]
+                    filter_3_3[2,1] = temp_mask[i_temp_mask_w+1, i_temp_mask_h]
+                    filter_3_3[2,2] = temp_mask[i_temp_mask_w+1, i_temp_mask_h+1]
                     if np.mean(np.mean(filter_3_3)) != 0.0:
-                        mask[i_temp_mask_w-1,i_temp_mask_h-1] = 1
+                        mask[i_temp_mask_w,i_temp_mask_h] = 1
                         
         segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
         img1 = img*segmentate
@@ -139,7 +133,7 @@ class cropper():
                 print("not found %s" % csv_path)
                 continue
             img = cv2.imread(imgpath) 
-            degug = ['1'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
+            degug = ['2'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
             if '1' in degug:
                 df1 = pd.read_csv(csv_path) # 交集csv
                 for index, row in df1.iterrows():
@@ -151,14 +145,14 @@ class cropper():
                     cell_type, fov_type = str(row['type']), get_fov_type(str(row['type']))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
-                    self.processing_img(crop_img, npy_path, masked_path, expand_side = 2)
+                    self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
             if '2' in degug:
                 df_org = pd.read_csv(csv_org_path) # 原始csv
                 for index_org, row_org in df_org.iterrows():
                     x, y = row_org['X'], row_org['Y']
                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row_org['Type']) + \
                                     str(row_org['Type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-                    crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 1)
+                    self.crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 1)
             if '3' in degug:
                 df_seg = pd.read_csv(csv_seg_path) # 裁减csv
                 for index_seg, row_seg in df_seg.iterrows():
@@ -167,8 +161,8 @@ class cropper():
                     x = int((y1+y2)/2)
                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
                                     str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-                    crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
-            #cv2.imwrite(imgpath + '_abc.png', img)
+                    self.crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
+            cv2.imwrite(imgpath + '_abc.png', img)
         return
 
 if __name__ == '__main__':
