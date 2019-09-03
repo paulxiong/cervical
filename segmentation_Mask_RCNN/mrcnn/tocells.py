@@ -62,7 +62,7 @@ class cropper():
         y1 = int(max(0, min(y2-1, y1)))
         if sign == 1: # 是否存成细胞图
             cropped = img[y1:y2,x1:x2,:]
-            scipy.misc.imsave(cells_crop_file_path, cropped)
+            cv2.imwrite(cells_crop_file_path, cropped)
         color = []
         if side == 50: # 选择标记细胞边框颜色
             color = [0,255,0]
@@ -83,50 +83,66 @@ class cropper():
     def processing_img(self, img, npy_path, masked_path, expand_side):
         #mask+原图 ==》img1
         mask = np.load(npy_path)
-        #细胞边缘扩展(图像膨胀方法，模板尺寸：3*3)
+        #细胞边缘扩展(图像膨胀方法)
+        if expand_side == 2:
+            mask_w = mask.shape[0]
+            mask_h = mask.shape[1]
+            temp_mask = np.zeros((mask_w+6, mask_h+6)) # 用0扩展mask图一圈
+            temp_mask[3:mask_w+3, 3:mask_h+3] = mask
+            temp_mask_w = temp_mask.shape[0]
+            temp_mask_h = temp_mask.shape[1]
+            for i_temp_mask_w in range(3, temp_mask_w-7):
+                for i_temp_mask_h in range(3, temp_mask_h-7):
+                    filter_5_5 = np.zeros((5,5)) # 模板尺寸：5*5
+                    filter_5_5 = temp_mask[i_temp_mask_w-2:i_temp_mask_w+2, i_temp_mask_h-2:i_temp_mask_h+2]
+                    if np.mean(np.mean(filter_5_5)) != 0.0:
+                        mask[i_temp_mask_w-1-3:i_temp_mask_w+1-3, i_temp_mask_h-1-3:i_temp_mask_h+1-3] = 1
+
         if expand_side == 1:
             mask_w = mask.shape[0]
             mask_h = mask.shape[1]
-            temp_mask = np.zeros((mask_w+2, mask_h+2)) # 用0扩展mask图一圈
+            temp_mask = np.zeros((mask_w+2, mask_h+2)) # 用0扩展mask图两圈
             temp_mask[1:mask_w+1, 1:mask_h+1] = mask
             temp_mask_w = temp_mask.shape[0]
             temp_mask_h = temp_mask.shape[1]
             for i_temp_mask_w in range(1, temp_mask_w-2):
                 for i_temp_mask_h in range(1, temp_mask_h-2):
-                    filter_3_3 = np.zeros((3,3))
-                    filter_3_3[0,0] = temp_mask[i_temp_mask_w-1, i_temp_mask_h-1]
-                    filter_3_3[0,1] = temp_mask[i_temp_mask_w-1, i_temp_mask_h]
-                    filter_3_3[0,2] = temp_mask[i_temp_mask_w-1, i_temp_mask_h+1]
-                    filter_3_3[1,0] = temp_mask[i_temp_mask_w, i_temp_mask_h-1]
-                    filter_3_3[1,1] = temp_mask[i_temp_mask_w, i_temp_mask_h] # 中心
-                    filter_3_3[1,2] = temp_mask[i_temp_mask_w, i_temp_mask_h+1]
-                    filter_3_3[2,0] = temp_mask[i_temp_mask_w+1, i_temp_mask_h-1]
-                    filter_3_3[2,1] = temp_mask[i_temp_mask_w+1, i_temp_mask_h]
-                    filter_3_3[2,2] = temp_mask[i_temp_mask_w+1, i_temp_mask_h+1]
+                    filter_3_3 = np.zeros((3,3)) # 模板尺寸：3*3
+                    filter_3_3 = temp_mask[i_temp_mask_w-1:i_temp_mask_w+1, i_temp_mask_h-1:i_temp_mask_h+1]
                     if np.mean(np.mean(filter_3_3)) != 0.0:
-                        mask[i_temp_mask_w,i_temp_mask_h] = 1
+                        mask[i_temp_mask_w-1,i_temp_mask_h-1] = 1
 
         segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
+        img1 = img*segmentate
 
-        #初始化和mask大小相等的出白色背景
-        white = np.zeros(segmentate.shape)
-        white[white == 0] = 255
+        #细胞尺寸补齐，尺寸统一为：64*64
+        limit_size = 64
+        if img1.shape[0]==64 and img1.shape[1]==64:
+            pass
+        else:
+            temp_w = img1.shape[0]
+            temp_h = img1.shape[1]
+            temp_img1 = np.zeros((limit_size, limit_size, 3))
+            num_str_w = int((limit_size - temp_w)/2)
+            num_str_h = int((limit_size - temp_h)/2)
+            temp_img1[num_str_w:num_str_w+temp_w, num_str_h:num_str_h+temp_h,:] = img1
+            img1 = temp_img1
 
-        #原图去反色
-        _img_not = np.subtract(white, img)
-        #用mask掩掉细胞质
-        _img_not2 = _img_not*segmentate
-        #去反色，背景黑变白，细胞核回复原色
-        img1 = np.subtract(white, _img_not2)
-
+        #背景换成白色
+        color_mean = img1.mean(axis=2)
+        for p in range(0, color_mean.shape[0]):
+            for q in range(0, color_mean.shape[1]):
+                if color_mean[p, q] == 0.0:
+                    img1[p, q, :] = 255
         cv2.imwrite(masked_path, img1)
         return
 
     def crop_fovs(self):
         imgs = get_image_lists(self.original_img_path)
-        step, total_steps = 0, len(imgs)
+        total_steps = len(imgs)
+        step = 0
         for i in imgs:
-            print("step %d/%d" % (step, total_steps))
+            print("step %s/%d" % (step, total_steps))
             step = step + 1
             imgpath = os.path.join(self.original_img_path, i)
             (filepath, filename) = os.path.split(imgpath)
@@ -146,13 +162,17 @@ class cropper():
                 for index, row in df1.iterrows():
                     x1, y1, x2, y2 = int(row['x1']), int(row['y1']), int(row['x2']), int(row['y2'])
                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
-                                    str(row['type']) + '_' + str(int(x1)) + '_' + str(int(y1)) + '_w_h.png'))
+                                    str(row['type']) + '_' + str(int(row['x'])) + '_' + str(int(row['y'])) + '_w_h.png'))
                     crop_img = self.crop_fov2(img, cell_path, x1, y1, x2, y2, sign = 1)
                     roi = [x1, y1, x2, y2]
                     cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
                     self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
+                    # 下面的注释代码方便调试医生csv，裁剪csv，交集csv细胞在FOV上标记，以调试交集csv产生方法和性能提升，需保留
+#                     x = int(row['x'])
+#                     y = int(row['y'])
+#                     self.crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 1) 
             if '2' in degug:
                 df_org = pd.read_csv(csv_org_path) # 原始csv
                 for index_org, row_org in df_org.iterrows():
