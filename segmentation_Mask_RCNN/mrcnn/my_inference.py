@@ -14,6 +14,7 @@ import my_functions as f
 import time
 import cv2
 from config import Config
+import scipy
 
 class BowlConfig(Config):
     """Configuration for training on the toy shapes dataset.
@@ -55,10 +56,11 @@ class BowlConfig(Config):
     USE_MINI_MASK = True
 
 class detector():
-    def __init__(self, model_path, original_img_path, cells_rois_path):
+    def __init__(self, model_path, original_img_path, cells_rois_path, cells_mask_npy_path):
         self.model_path = model_path
         self.original_img_path = original_img_path
         self.cells_rois_path = cells_rois_path
+        self.cells_mask_npy_path = cells_mask_npy_path
         self.debug = False
         self.inference_config = None
         self.logs_dir = './logs'
@@ -106,62 +108,84 @@ class detector():
         if self.debug is True and allfiles_num > len(image_list):
             print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
         return image_list
+    def calculate_wh(slef, x, y, img, side):
+        limit_x = img.shape[1]
+        limit_y = img.shape[0]
+        x1 = x - side
+        x2 = x + side
+        y1 = y - side
+        y2 = y + side
+        x2 = int(max(0, min(limit_x, x2)))
+        x1 = int(max(0, min(x2-1, x1)))
+        y2 = int(max(0, min(limit_y, y2)))
+        y1 = int(max(0, min(y2-1, y1)))
+        return x1, y1, x2, y2
 
     def detect_image(self):
         pathList = self.get_image_lists()
 
         for filename in pathList:
-           image_path = os.path.join(self.original_img_path, filename)
-           print(image_path)
-           original_image = io.imread(image_path)
+            image_path = os.path.join(self.original_img_path, filename)
+            print(image_path)
+            original_image = io.imread(image_path)
 
-           if len(original_image.shape)<3:
-               original_image = img_as_ubyte(original_image)
-               original_image = np.expand_dims(original_image,2)
-               original_image = original_image[:,:,[0,0,0]] # flip r and b
-           original_image = original_image[:,:,:3]
+            if len(original_image.shape)<3:
+                original_image = img_as_ubyte(original_image)
+                original_image = np.expand_dims(original_image,2)
+                original_image = original_image[:,:,[0,0,0]] # flip r and b
+            original_image = original_image[:,:,:3]
 
-           ## Make prediction for that image
-           results = self.model.detect([original_image], verbose=0)
-           r = results[0]
+            ## Make prediction for that image
+            results = self.model.detect([original_image], verbose=0)
+            r = results[0]
 
-           scores_masks = r['scores']      #判别物得分
-           final_rois = r["rois"]         #交并比得到的回归框坐标
+            scores_masks = r['scores']      #判别物得分
+            final_rois = r["rois"]         #交并比得到的回归框坐标
+            pred_masks = r['masks']
 
-           _rois = []
-           threshold = float(0.90)
-           for i in range(0, len(scores_masks)):
-               score = scores_masks[i]
-               roi = final_rois[i]
-               if int(threshold*100) > int(score*100):
-                   print("%s drop roi, score=%f" % (filename, score))
-                   continue
-               _rois.append([roi[0], roi[1], roi[2], roi[3], float(int(score * 100) / 100)])
+            _rois = []
+            threshold = float(0.90)
+            for i in range(0, len(scores_masks)):
+                score = scores_masks[i]
+                roi = final_rois[i]
+                if int(threshold*100) > int(score*100):
+                    print("%s drop roi, score=%f" % (filename, score))
+                    continue
 
-           csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
-           pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
-           save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
-                       index = False, header = True)
+                mask_npy = pred_masks[:,:,i]
+                y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
+                mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 32)
 
-           if self.debug:
-               output_image_path = os.path.join(self.output_image_path, filename + '_.png')
-               for i in range(len(final_rois)):
-                  score = scores_masks[i]
-                  rois = final_rois[i,:]
-                  x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
-                  draw_color = (0, 0, 255)
-                  if (score >= 0.98):
-                       draw_color = (0, 0, 255)
-                  elif (0.94 < score < 0.98) :
-                       draw_color = (0, 255, 0)
-                  elif score <= 0.94 :
-                       draw_color = (255, 0, 0)
-                  cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
-               io.imsave(output_image_path, original_image)
+                _mask_npy = mask_npy[y1:y2, x1:x2]
+                np.save(self.cells_mask_npy_path + '/' + filename + '_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
+                _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
+
+            csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
+            pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
+            save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
+                        index = False, header = True)
+
+            if self.debug:
+                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
+                for i in range(len(final_rois)):
+                    score = scores_masks[i]
+                    rois = final_rois[i,:]
+                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
+                    draw_color = (0, 0, 255)
+                    if (score >= 0.98):
+                        draw_color = (0, 0, 255)
+                    elif (0.94 < score < 0.98) :
+                        draw_color = (0, 255, 0)
+                    elif score <= 0.94 :
+                        draw_color = (255, 0, 0)
+                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
+                io.imsave(output_image_path, original_image)
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
     original_img_path = './origin_imgs'
     cells_rois_path = 'cells/rois'
-    d = detector(model_path, original_img_path, cells_rois_path)
+    cells_mask_npy_path = 'cells/mask_npy'
+    d = detector(model_path, original_img_path, cells_rois_path, cells_mask_npy_path)
     d.detect_image()
