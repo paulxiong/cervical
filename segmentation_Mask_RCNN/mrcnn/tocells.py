@@ -115,6 +115,19 @@ class cropper():
         segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
         img1 = img*segmentate
 
+        #细胞尺寸补齐，尺寸统一为：64*64
+        limit_size = 64
+        if img1.shape[0]==64 and img1.shape[1]==64:
+            pass
+        else:
+            temp_w = img1.shape[0]
+            temp_h = img1.shape[1]
+            temp_img1 = np.zeros((limit_size, limit_size, 3))
+            num_str_w = int((limit_size - temp_w)/2)
+            num_str_h = int((limit_size - temp_h)/2)
+            temp_img1[num_str_w:num_str_w+temp_w, num_str_h:num_str_h+temp_h,:] = img1
+            img1 = temp_img1
+
         #背景换成白色
         color_mean = img1.mean(axis=2)
         for p in range(0, color_mean.shape[0]):
@@ -126,7 +139,11 @@ class cropper():
 
     def crop_fovs(self):
         imgs = get_image_lists(self.original_img_path)
+        total_steps = len(imgs)
+        step = 0
         for i in imgs:
+            print("step %s/%d" % (step, total_steps))
+            step = step + 1
             imgpath = os.path.join(self.original_img_path, i)
             (filepath, filename) = os.path.split(imgpath)
 
@@ -151,7 +168,7 @@ class cropper():
                     cell_type, fov_type = str(row['type']), get_fov_type(str(row['type']))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
-                    self.processing_img(crop_img, npy_path, masked_path, expand_side = 2)
+                    self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
             if '2' in degug:
                 df_org = pd.read_csv(csv_org_path) # 原始csv
                 for index_org, row_org in df_org.iterrows():
