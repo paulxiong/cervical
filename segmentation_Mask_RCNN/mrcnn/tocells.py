@@ -105,16 +105,20 @@ class cropper():
                     filter_3_3[2,2] = temp_mask[i_temp_mask_w+1, i_temp_mask_h+1]
                     if np.mean(np.mean(filter_3_3)) != 0.0:
                         mask[i_temp_mask_w,i_temp_mask_h] = 1
-                        
-        segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
-        img1 = img*segmentate
 
-        #背景换成白色
-        color_mean = img1.mean(axis=2)
-        for p in range(0, color_mean.shape[0]):
-            for q in range(0, color_mean.shape[1]):
-                if color_mean[p, q] == 0.0:
-                    img1[p, q, :] = 255
+        segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
+
+        #初始化和mask大小相等的出白色背景
+        white = np.zeros(segmentate.shape)
+        white[white == 0] = 255
+
+        #原图去反色
+        _img_not = np.subtract(white, img)
+        #用mask掩掉细胞质
+        _img_not2 = _img_not*segmentate
+        #去反色，背景黑变白，细胞核回复原色
+        img1 = np.subtract(white, _img_not2)
+
         cv2.imwrite(masked_path, img1)
         return
 
