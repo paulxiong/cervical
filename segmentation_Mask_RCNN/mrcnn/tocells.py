@@ -80,9 +80,32 @@ class cropper():
         return cropped
 
     # 细胞原图加mask生成细胞核
-    def processing_img(self, img, npy_path, masked_path):
+    def processing_img(self, img, npy_path, masked_path, expand_side):
         #mask+原图 ==》img1
         mask = np.load(npy_path)
+        #细胞边缘扩展(图像膨胀方法，模板尺寸：3*3)
+        if expand_side == 1:
+            mask_w = mask.shape[0]
+            mask_h = mask.shape[1]
+            temp_mask = np.zeros((mask_w+2, mask_h+2)) # 用0扩展mask图一圈
+            temp_mask[1:mask_w+1, 1:mask_h+1] = mask
+            temp_mask_w = temp_mask.shape[0]
+            temp_mask_h = temp_mask.shape[1]
+            for i_temp_mask_w in range(1, temp_mask_w-2):
+                for i_temp_mask_h in range(1, temp_mask_h-2):
+                    filter_3_3 = np.zeros((3,3))
+                    filter_3_3[0,0] = temp_mask[i_temp_mask_w-1, i_temp_mask_h-1]
+                    filter_3_3[0,1] = temp_mask[i_temp_mask_w-1, i_temp_mask_h]
+                    filter_3_3[0,2] = temp_mask[i_temp_mask_w-1, i_temp_mask_h+1]
+                    filter_3_3[1,0] = temp_mask[i_temp_mask_w, i_temp_mask_h-1]
+                    filter_3_3[1,1] = temp_mask[i_temp_mask_w, i_temp_mask_h] # 中心
+                    filter_3_3[1,2] = temp_mask[i_temp_mask_w, i_temp_mask_h+1]
+                    filter_3_3[2,0] = temp_mask[i_temp_mask_w+1, i_temp_mask_h-1]
+                    filter_3_3[2,1] = temp_mask[i_temp_mask_w+1, i_temp_mask_h]
+                    filter_3_3[2,2] = temp_mask[i_temp_mask_w+1, i_temp_mask_h+1]
+                    if np.mean(np.mean(filter_3_3)) != 0.0:
+                        mask[i_temp_mask_w,i_temp_mask_h] = 1
+                        
         segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
         img1 = img*segmentate
 
@@ -122,7 +145,7 @@ class cropper():
                     cell_type, fov_type = str(row['type']), get_fov_type(str(row['type']))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
-                    self.processing_img(crop_img, npy_path, masked_path)
+                    self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
             if '2' in degug:
                 df_org = pd.read_csv(csv_org_path) # 原始csv
                 for index_org, row_org in df_org.iterrows():
