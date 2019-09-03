@@ -120,7 +120,10 @@ class cropper():
 
     def crop_fovs(self):
         imgs = get_image_lists(self.original_img_path)
+        step, total_steps = 0, len(imgs)
         for i in imgs:
+            print("step %d/%d" % (step, total_steps))
+            step = step + 1
             imgpath = os.path.join(self.original_img_path, i)
             (filepath, filename) = os.path.split(imgpath)
 
@@ -133,7 +136,7 @@ class cropper():
                 print("not found %s" % csv_path)
                 continue
             img = cv2.imread(imgpath) 
-            degug = ['2'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
+            degug = ['1'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
             if '1' in degug:
                 df1 = pd.read_csv(csv_path) # 交集csv
                 for index, row in df1.iterrows():
@@ -142,7 +145,7 @@ class cropper():
                                     str(row['type']) + '_' + str(int(x1)) + '_' + str(int(y1)) + '_w_h.png'))
                     crop_img = self.crop_fov2(img, cell_path, x1, y1, x2, y2, sign = 1)
                     roi = [x1, y1, x2, y2]
-                    cell_type, fov_type = str(row['type']), get_fov_type(str(row['type']))
+                    cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
                     self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)

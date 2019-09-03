@@ -67,8 +67,7 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
     #第一步查找预测的csv和医生的csv
     original_csv_names = get_csv_lists(original_csv_path)
 
-    total_steps = len(original_csv_names)
-    step = 0
+    step, total_steps = 0, len(original_csv_names)
     #比较求交集
     for i in original_csv_names:
         print("step %s/%d" % (step, total_steps))

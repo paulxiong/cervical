@@ -124,8 +124,7 @@ class detector():
     def detect_image(self):
         pathList = self.get_image_lists()
 
-        total_steps = len(pathList)
-        step = 0
+        step, total_steps = 0, len(pathList)
         for filename in pathList:
             step = step + 1
             image_path = os.path.join(self.original_img_path, filename)
