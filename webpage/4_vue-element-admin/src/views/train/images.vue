@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     getjobresult() {
-      getjobresult({ id: 94 }).then(res => {
+      getjobresult({ id: this.$route.query.id }).then(res => {
         this.objData = res.data.data
         this.input_datasets_img = this.objData.input_datasets_img
       });
