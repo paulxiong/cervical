@@ -7,13 +7,13 @@
         <el-step title="选择开始训练" description="步骤3" icon="el-icon-upload"></el-step>
       </el-steps>
 
-      <section class="btn flex">
+      <!-- <section class="btn flex">
         <el-button type="primary" icon="el-icon-arrow-left" @click="stepReduce">上一步</el-button>
         <el-button type="primary" @click="stepAdd">
           下一步
           <i class="el-icon-arrow-right el-icon--right"></i>
         </el-button>
-      </section>
+      </section> -->
     </section>
 
     <section class="main">
@@ -38,11 +38,11 @@ export default {
     }
   },
   methods: {
-    stepAdd() {
-      if (this.step++ > 2) this.step = 1
+    stepNext() {
+      this.step++
     },
-    stepReduce() {
-      if (--this.step < 1) this.step = 1
+    stepBack() {
+      this.step = 1
     }
   }
 }
@@ -52,7 +52,7 @@ export default {
 .train {
   padding: 30px;
   .step {
-    margin-bottom: 30px;
+    margin-bottom: 10px;
   }
 }
 </style>
