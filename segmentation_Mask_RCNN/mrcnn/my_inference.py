@@ -124,9 +124,12 @@ class detector():
     def detect_image(self):
         pathList = self.get_image_lists()
 
+        total_steps = len(pathList)
+        step = 0
         for filename in pathList:
+            step = step + 1
             image_path = os.path.join(self.original_img_path, filename)
-            print(image_path)
+            print("step %d/%d  %s" %(step, total_steps, image_path))
             original_image = io.imread(image_path)
 
             if len(original_image.shape)<3:

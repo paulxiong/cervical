@@ -67,11 +67,18 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
     #第一步查找预测的csv和医生的csv
     original_csv_names = get_csv_lists(original_csv_path)
 
+    total_steps = len(original_csv_names)
+    step = 0
     #比较求交集
     for i in original_csv_names:
+        print("step %s/%d" % (step, total_steps))
+        step = step + 1
         org_csv_path = os.path.join(original_csv_path, i) # 原始csv
         csv_path = get_cells_rois_csv(cells_rois_path, i) # 切割csv
 
+        if csv_path is None or not os.path.exists(csv_path):
+            print('not found %s ' % csv_path)
+            continue
         rois = []
         df1 = pd.read_csv(csv_path)
         rois_label_num = df1.shape[0]
