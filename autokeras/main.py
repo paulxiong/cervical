@@ -74,7 +74,7 @@ class cervical_autokeras():
         self.TEST_CSV_DIR = os.path.join(self.ROOTPATH, 'test_labels.csv')
         self.PREDICT_CSV_DIR = os.path.join(self.ROOTPATH, 'predict_labels.csv')
         #Path to generate model file
-        self.MODEL_DIR = os.path.join(self.ROOTPATH, opt.modfile)
+        self.MODEL_DIR = opt.modfile
         #If your memory is not enough, please turn down this value.(my computer memory 16GB)
         self.RESIZE = 128
         #Set the training time, this is half an hour
