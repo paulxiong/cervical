@@ -39,22 +39,25 @@ def get_cells_rois_csv(cells_rois_path, original_csv_name):
         return None
     return cells_rois_csv
 
-def compare_roi(x, y, Type, csv_path):
-    org_x, org_y, _type, x1, x2, y1, y2 = None, None, None, None, None, None, None
-    df2 = pd.read_csv(csv_path)
+def compare_roi(x_, y_, org_csv_path):
+    org_x, org_y, _type, x_temp, y_temp = None, None, None, None, None
+    x_temp = x_
+    y_temp = y_
+
+    df2 = pd.read_csv(org_csv_path)
     org_num = df2.shape[0]
-    limit = 300
+    limit = 20
     min_distance = 1000000
     for index, row in df2.iterrows():
-        x_center = int((row['x2'] + row['x1']) / 2)
-        y_center = int((row['y2'] + row['y1']) / 2)
-        L_temp = np.sqrt((np.square(x_center - x)) + np.square(y_center - y))
+        x_center = int(row['X'])
+        y_center = int(row['Y'])
+        L_temp = np.sqrt((np.square(x_center - x_temp)) + np.square(y_center - y_temp))
         if L_temp < min_distance:
             min_distance = L_temp
-            org_x, org_y, _type, x1, x2, y1, y2 = x, y, int(Type), int(row['x1']), int(row['x2']), int(row['y1']), int(row['y2'])
+            org_x, org_y, _type = x_temp, y_temp, int(row['Type'])
     if min_distance < limit:
-        return True, org_x, org_y, _type, x1, x2, y1, y2
-    return False, org_x, org_y, _type, x1, x2, y1, y2
+        return True, org_x, org_y, _type
+    return False, org_x, org_y, _type
 
 def save_rois_as_csv(cells_rois_file_path, rois):
     csv_path = cells_rois_file_path + '_and.csv'
@@ -79,12 +82,15 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
             print('not found %s ' % csv_path)
             continue
         rois = []
-        df1 = pd.read_csv(org_csv_path)
+        df1 = pd.read_csv(csv_path)
         rois_label_num = df1.shape[0]
         org_num = 0
         cnt = 0
         for index, row in df1.iterrows(): # 遍历切割csv
-            ret, org_x, org_y, _type, x1, x2, y1, y2 = compare_roi(row['X'], row['Y'], row['Type'], csv_path)
+            x1, y1, x2, y2 = row['x1'], row['y1'], row['x2'], row['y2']
+            x = int((x1 + x2)/2)
+            y = int((y1 + y2)/2)
+            ret, org_x, org_y, _type= compare_roi(x, y, org_csv_path)
             if ret is True:
                 rois.append([org_x, org_y, _type, x1, x2, y1, y2])
         if len(rois) > 0:
