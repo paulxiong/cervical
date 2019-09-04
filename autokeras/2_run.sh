@@ -25,6 +25,16 @@ do
   task_dir=$(echo ${array[1]} | sed 's/"//g')
   task_mod=$(echo ${array[2]} | sed 's/"//g')
   task_desc=$(echo ${array[3]} | sed 's/"//g')
+  
+  if [ ! -d ${task_dir} ]; then
+    echo "not found "${task_dir}
+    exit 1
+  fi
+
+  if [ ${task_type}'x' == 'predictx' ] && [ ! -f ${task_mod} ];then
+    echo "not found "${task_mod}
+    exit 1
+  fi
 
   echo $cnt'  '${task_desc}
   echo 'python main.py --task '${task_type}' --taskdir '${task_dir}' --modfile '${task_mod}
