@@ -115,9 +115,9 @@ class cropper():
         segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
         img1 = img*segmentate
 
-        #细胞尺寸补齐，尺寸统一为：64*64
-        limit_size = 64
-        if img1.shape[0]==64 and img1.shape[1]==64:
+        #细胞尺寸补齐，尺寸统一为：100*100
+        limit_size = 100
+        if img1.shape[0]==limit_size and img1.shape[1]==limit_size:
             pass
         else:
             temp_w = img1.shape[0]
