@@ -34,16 +34,6 @@ def get_image_lists(original_img_path):
         print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
     return image_list
 
-def getFOVlabel(type):
-    label_N = [1, 5, 12, 13, 14, 15]
-    FOVlabel = []
-    if type in label_N:
-        FOVlabel = 'N'
-    else:
-        FOVlabel = 'P'
-    FOVlabel = '_' + FOVlabel + '_'
-    return FOVlabel
-
 class cropper():
     def __init__(self, rootpath):
         self.original_img_path = os.path.join(rootpath, 'origin_imgs/')
@@ -148,15 +138,16 @@ class cropper():
                 df1 = pd.read_csv(csv_path) # 交集csv
                 for index, row in df1.iterrows():
                     x1, y1, x2, y2 = int(row['x1']), int(row['y1']), int(row['x2']), int(row['y2'])
-                    cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
-                                    str(row['type']) + '_' + str(int(row['x'])) + '_' + str(int(row['y'])) + '_w_h.png'))
+                    cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
+                    cell_path = os.path.join(self.cells_crop_path, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename,
+                                             fov_type, cell_type, x1, y1, x2, y2))
                     x = int((x1 + x2)/2)
                     y = int((y1 + y2)/2)
                     crop_img = self.crop_fov(img, cell_path, x1, y1, x2, y2, side = 50, sign = 1)
                     roi = [x1, y1, x2, y2]
-                    cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
-                    masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
+                    masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_maksed.png'.format(filename,
+                                               fov_type, cell_type, x1, y1, x2, y2))
                     self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
                     # 下面的注释代码方便调试医生csv，裁剪csv，交集csv细胞在FOV上标记，以调试交集csv产生方法和性能提升，需保留
 #                     x = int(row['x'])
