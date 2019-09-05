@@ -24,7 +24,7 @@
           </div>
           <el-timeline :reverse="reverse" class="timeline">
             <el-timeline-item
-              v-for="(activity, index) in activities"
+              v-for="(activity, index) in v.activities"
               :icon="activity.icon"
               :color="activity.color"
               :type="activity.type"
@@ -42,6 +42,7 @@
 <script>
 import { listdatasets } from '@/api/cervical'
 import { taskStatus, typeStatus } from '@/const/const'
+import { dateformat2 } from '@/utils/dateformat'
 
 export default {
   name: "home",
@@ -49,26 +50,7 @@ export default {
   data() {
     return {
       reverse: true,
-      dataList: [],
-      activities: [{
-        content: '训练完成',
-        type: 'success',
-        size: 'large',
-        icon: 'el-icon-circle-check',
-        timestamp: '2018-04-15'
-      }, {
-        content: '开始训练',
-        type: 'warning',
-        size: 'large',
-        icon: 'el-icon-timer',
-        timestamp: '2018-04-13'
-      }, {
-        content: '创建成功',
-        type: 'primary',
-        size: 'large',
-        icon: 'el-icon-s-promotion',
-        timestamp: '2018-04-11'
-      }]
+      dataList: []
     }
   },
   filters: {
@@ -92,6 +74,46 @@ export default {
     },
     listdatasets(limit, skip) {
       listdatasets({ 'limit': limit, 'skip': skip }).then(res => {
+        res.data.data.datasets.map(v => {
+          v.activities = [{
+            content: taskStatus[v.status].status,
+            type: 'success',
+            size: 'large',
+            icon: 'el-icon-circle-check',
+            timestamp: dateformat2(v.start_at)
+          }, {
+            content: '开始训练',
+            type: 'warning',
+            size: 'large',
+            icon: 'el-icon-timer',
+            timestamp: dateformat2(v.start_at)
+          }, {
+            content: '创建成功',
+            type: 'primary',
+            size: 'large',
+            icon: 'el-icon-s-promotion',
+            timestamp: dateformat2(v.created_at)
+          }]
+          // v.activities = [{
+          //   content: '训练完成',
+          //   type: 'success',
+          //   size: 'large',
+          //   icon: 'el-icon-circle-check',
+          //   timestamp: dateformat2(v.start_at)
+          // }, {
+          //   content: '开始训练',
+          //   type: 'warning',
+          //   size: 'large',
+          //   icon: 'el-icon-timer',
+          //   timestamp: dateformat2(v.start_at)
+          // }, {
+          //   content: '创建成功',
+          //   type: 'primary',
+          //   size: 'large',
+          //   icon: 'el-icon-s-promotion',
+          //   timestamp: dateformat2(v.created_at)
+          // }]
+        })
         this.dataList = res.data.data.datasets || []
       })
     }
@@ -121,9 +143,8 @@ export default {
       align-items: flex-start;
       justify-content: flex-start;
       .info {
-        width: 260px;
         line-height: 26px;
-        overflow: hidden;
+        margin-right: 50px;
       }
       .timeline {
         padding: 0;
