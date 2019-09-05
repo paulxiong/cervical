@@ -64,19 +64,14 @@ class cropper():
             cropped = img[y1:y2,x1:x2,:]
             cv2.imwrite(cells_crop_file_path, cropped)
         color = []
-        if side == 50: # 选择标记细胞边框颜色
-            color = [0,255,0]
-        elif side == 55:
-            color = [255,0,0]
-        else:
-            color = [0,0,255]
-        cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
-        return
-
-    def crop_fov2(self, img, cells_crop_file_path, x1, y1, x2, y2, sign):
-        if sign == 1: # 是否存成细胞图
-            cropped = img[y1:y2,x1:x2,:]
-            cv2.imwrite(cells_crop_file_path, cropped)
+        if sign != 1:
+            if side == 50: # 选择标记细胞边框颜色
+                color = [0,255,0]
+            elif side == 55:
+                color = [255,0,0]
+            else:
+                color = [0,0,255]
+            cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
         return cropped
 
     # 细胞原图加mask生成细胞核
@@ -111,7 +106,6 @@ class cropper():
                     filter_3_3 = temp_mask[i_temp_mask_w-1:i_temp_mask_w+1, i_temp_mask_h-1:i_temp_mask_h+1]
                     if np.mean(np.mean(filter_3_3)) != 0.0:
                         mask[i_temp_mask_w-1,i_temp_mask_h-1] = 1
-
         segmentate = np.tile(np.expand_dims(mask,axis=2),(1,1,3))
         img1 = img*segmentate
 
@@ -163,7 +157,9 @@ class cropper():
                     x1, y1, x2, y2 = int(row['x1']), int(row['y1']), int(row['x2']), int(row['y2'])
                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
                                     str(row['type']) + '_' + str(int(row['x'])) + '_' + str(int(row['y'])) + '_w_h.png'))
-                    crop_img = self.crop_fov2(img, cell_path, x1, y1, x2, y2, sign = 1)
+                    x = int((x1 + x2)/2)
+                    y = int((y1 + y2)/2)
+                    crop_img = self.crop_fov(img, cell_path, x, y, side = 50, sign = 1)
                     roi = [x1, y1, x2, y2]
                     cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
