@@ -52,14 +52,7 @@ class cropper():
         self.cells_npy_path = os.path.join(rootpath, 'cells/mask_npy/')
         self.cells_crop_masked = os.path.join(rootpath, 'cells/crop_masked/')
 
-    def crop_fov(self, img, cells_crop_file_path, x, y, side, sign):
-        limit_x = img.shape[1]
-        limit_y = img.shape[0]
-        x1, x2, y1, y2 = (x - side), (x + side), (y - side), (y + side)
-        x2 = int(max(0, min(limit_x, x2)))
-        x1 = int(max(0, min(x2-1, x1)))
-        y2 = int(max(0, min(limit_y, y2)))
-        y1 = int(max(0, min(y2-1, y1)))
+    def crop_fov(self, img, cells_crop_file_path, x1, y1, x2, y2, side, sign):
         if sign == 1: # 是否存成细胞图
             cropped = img[y1:y2,x1:x2,:]
             cv2.imwrite(cells_crop_file_path, cropped)
@@ -159,7 +152,7 @@ class cropper():
                                     str(row['type']) + '_' + str(int(row['x'])) + '_' + str(int(row['y'])) + '_w_h.png'))
                     x = int((x1 + x2)/2)
                     y = int((y1 + y2)/2)
-                    crop_img = self.crop_fov(img, cell_path, x, y, side = 50, sign = 1)
+                    crop_img = self.crop_fov(img, cell_path, x1, y1, x2, y2, side = 50, sign = 1)
                     roi = [x1, y1, x2, y2]
                     cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
