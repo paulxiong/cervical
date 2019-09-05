@@ -6,6 +6,8 @@ if [ ! -f ${tasklist} ] || [ ! -f main.py ]; then
 	echo "not found main.py or "${tasklist}
 fi
 
+rm *.log -f
+
 cnt=0
 while read line
 do
@@ -25,6 +27,10 @@ do
   task_dir=$(echo ${array[1]} | sed 's/"//g')
   task_mod=$(echo ${array[2]} | sed 's/"//g')
   task_desc=$(echo ${array[3]} | sed 's/"//g')
+
+  pushd ${task_dir}
+    rm -rf resize_* predict_error_data/* *.csv
+  popd
   
   if [ ! -d ${task_dir} ]; then
     echo "not found "${task_dir}
