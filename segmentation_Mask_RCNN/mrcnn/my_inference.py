@@ -169,7 +169,7 @@ class detector():
                 mask_npy = pred_masks[:,:,i]
                 y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
                 mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 32)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 100)
 
                 _mask_npy = mask_npy[y1:y2, x1:x2]
                 np.save(self.cells_mask_npy_path + '/' + filename + '_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
