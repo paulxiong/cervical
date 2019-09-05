@@ -13,8 +13,8 @@
             <i>id :</i> {{v.id}}<br/>
             <i>目录 :</i> {{v.dir}}<br/>
             <i>创建者 :</i> {{v.created_by}}<br/>
-            <i>类型 :</i> {{v.type}}<br/>
-            <i>状态 :</i> {{v.status}}<br/>
+            <i>类型 :</i> {{v.type | filtersType}}<br/>
+            <i>状态 :</i> {{v.status | filtersTaskStatus}}<br/>
             <!-- <i>批次 :</i> fujianfuyou<br/>
             <i>病例 :</i> 18237,28374,12943, ...<br/>
             <i>图片 :</i> <el-link type="primary">请进入详情查看</el-link><br/>
@@ -41,6 +41,8 @@
 
 <script>
 import { listdatasets } from '@/api/cervical'
+import { taskStatus, typeStatus } from '@/const/const'
+
 export default {
   name: "home",
   components: {},
@@ -67,6 +69,14 @@ export default {
         icon: 'el-icon-s-promotion',
         timestamp: '2018-04-11'
       }]
+    }
+  },
+  filters: {
+    filtersTaskStatus(value) {
+      return taskStatus[value].status
+    },
+    filtersType(value) {
+      return typeStatus[value].status
     }
   },
   methods: {
