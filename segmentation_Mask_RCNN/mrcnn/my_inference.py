@@ -5,7 +5,6 @@ import tensorflow as tf
 tf.set_random_seed(seed)
 import random
 random.seed(seed)
-from skimage import io
 from skimage import img_as_ubyte
 import model as modellib
 import pandas as pd
@@ -15,6 +14,7 @@ import time
 import cv2
 from config import Config
 import scipy
+import visualize
 
 class BowlConfig(Config):
     """Configuration for training on the toy shapes dataset.
@@ -101,7 +101,7 @@ class detector():
             ext = os.path.splitext(path1)[1]
             ext = ext.lower()
             if not ext in ['.jpg', '.png', '.jpeg', '.bmp']:
-                if self.debug:
+                if self.debug and (not ext in ['.csv']):
                     print(">>> unexpected file: %s, must be jpg/png/bmp" % path1)
             else:
                 image_list.append(i)
@@ -121,22 +121,35 @@ class detector():
         y1 = int(max(0, min(y2-1, y1)))
         return x1, y1, x2, y2
 
-    def detect_image(self):
+    def detect_image(self, gray=False):
         pathList = self.get_image_lists()
 
+        step, total_steps = 0, len(pathList)
         for filename in pathList:
+            step = step + 1
             image_path = os.path.join(self.original_img_path, filename)
-            print(image_path)
-            original_image = io.imread(image_path)
+            print("step %d/%d  %s" %(step, total_steps, image_path))
+            original_image = cv2.imread(image_path)
+            predict_img = original_image
 
-            if len(original_image.shape)<3:
-                original_image = img_as_ubyte(original_image)
-                original_image = np.expand_dims(original_image,2)
-                original_image = original_image[:,:,[0,0,0]] # flip r and b
-            original_image = original_image[:,:,:3]
+            if gray is True:
+                grayImage = cv2.cvtColor(original_image, cv2.COLOR_RGB2GRAY)
+                if len(grayImage.shape)<3:
+                    grayImage = img_as_ubyte(grayImage)
+                    grayImage = np.expand_dims(grayImage, 2)
+                    grayImage = grayImage[:,:,[0,0,0]] # flip r and b
+                grayImage = grayImage[:,:,:3]
+                predict_img = grayImage
+            else:
+                if len(original_image.shape)<3:
+                    original_image = img_as_ubyte(original_image)
+                    original_image = np.expand_dims(original_image,2)
+                    original_image = original_image[:,:,[0,0,0]] # flip r and b
+                original_image = original_image[:,:,:3]
+                predict_img = original_image
 
             ## Make prediction for that image
-            results = self.model.detect([original_image], verbose=0)
+            results = self.model.detect([predict_img], verbose=0)
             r = results[0]
 
             scores_masks = r['scores']      #判别物得分
@@ -147,6 +160,7 @@ class detector():
             threshold = float(0.90)
             for i in range(0, len(scores_masks)):
                 score = scores_masks[i]
+                classid = r['class_ids'][i]
                 roi = final_rois[i]
                 if int(threshold*100) > int(score*100):
                     print("%s drop roi, score=%f" % (filename, score))
@@ -155,7 +169,7 @@ class detector():
                 mask_npy = pred_masks[:,:,i]
                 y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
                 mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 32)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
 
                 _mask_npy = mask_npy[y1:y2, x1:x2]
                 np.save(self.cells_mask_npy_path + '/' + filename + '_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
@@ -167,6 +181,7 @@ class detector():
                         index = False, header = True)
 
             if self.debug:
+                visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
                 output_image_path = os.path.join(self.output_image_path, filename + '_.png')
                 for i in range(len(final_rois)):
                     score = scores_masks[i]
@@ -180,7 +195,7 @@ class detector():
                     elif score <= 0.94 :
                         draw_color = (255, 0, 0)
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
-                io.imsave(output_image_path, original_image)
+                cv2.imwrite(output_image_path, original_image)
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
@@ -188,4 +203,4 @@ if __name__ == "__main__":
     cells_rois_path = 'cells/rois'
     cells_mask_npy_path = 'cells/mask_npy'
     d = detector(model_path, original_img_path, cells_rois_path, cells_mask_npy_path)
-    d.detect_image()
+    d.detect_image(gray = True)

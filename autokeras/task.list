@@ -1,0 +1,8 @@
+# '#'号开头表示注释，代码自动跳过
+# 任务是从上往下依次执行的
+# 每个任务由4部分组成，每个部分用双引号引起来, 每个部分之间用逗号分隔，比如下面这个：
+# 每个部分内容不能包含空格
+# task, taskdir, modfile, 描述
+"train", "data/task1", "data/task1/Model.h5", "用task1的数据训练之后模型保存到data/task1/Model.h5"
+
+"predict", "data/task2", "data/task1/Model.h5", "用data/task1/Model.h5这个模型来预测data/task2这目录下predict里面的图片， 并显示结果"

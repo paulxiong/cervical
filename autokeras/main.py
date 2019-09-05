@@ -4,11 +4,14 @@ import os, csv, cv2, time, argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--task', choices = ['train', 'predict', 'predict2'], help='train or predict')
 parser.add_argument('--taskdir', help='fold path for train/predict')
+parser.add_argument('--modfile', help='model file path for train/predict')
 opt = parser.parse_args()
 if not (opt.task) or (opt.task != 'train' and opt.task != 'predict' and opt.task != 'predict2'):
     parser.error("specific a task such as '--task train'")
 if opt.taskdir is None or len(opt.taskdir) < 1:
     parser.error("specific path such as '--taskdir your/path/data'")
+if opt.modfile is None or len(opt.modfile) < 1:
+    parser.error("specific path such as '--modfile your/path/data/Model.h5'")
 
 from autokeras.utils import pickle_from_file
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
@@ -71,7 +74,7 @@ class cervical_autokeras():
         self.TEST_CSV_DIR = os.path.join(self.ROOTPATH, 'test_labels.csv')
         self.PREDICT_CSV_DIR = os.path.join(self.ROOTPATH, 'predict_labels.csv')
         #Path to generate model file
-        self.MODEL_DIR = os.path.join(self.ROOTPATH, 'Model.h5')
+        self.MODEL_DIR = opt.modfile
         #If your memory is not enough, please turn down this value.(my computer memory 16GB)
         self.RESIZE = 128
         #Set the training time, this is half an hour
