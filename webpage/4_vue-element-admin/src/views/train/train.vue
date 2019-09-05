@@ -1,9 +1,8 @@
 <template>
   <div class="train">
     <section class="header">
-      <div class="title flex">
-        <h2>Models</h2>
-        <el-button type="primary">new Model</el-button>
+      <div class="title">
+        <h2>TRAIN</h2>
       </div>
       <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
     </section>

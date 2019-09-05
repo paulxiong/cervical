@@ -1,5 +1,10 @@
 <template>
   <div class="evaluate">
+    <section class="header">
+      <div class="title">
+        <h2>EVALUATE</h2>
+      </div>
+    </section>
     <modelSelect></modelSelect>
   </div>
 </template>

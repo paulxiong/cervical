@@ -1,5 +1,54 @@
 <template>
-  <div class="images flex">
+  <div class="images">
+    <section class="header">
+      <div class="title">
+        <h2>IMAGES</h2>
+        <section class="info-box flex">
+          <div class="input-info info">
+            <el-badge is-dot class="badge">输入信息</el-badge>
+            <div class="img-list info-list">
+              <i>批次 :</i> fujianfuyou
+              <br />
+              <i>病例 :</i> 18237,28374,12943,34512
+              <br />
+              <i>图片 :</i>
+              <el-link class="link" type="primary">点击查看全部</el-link>
+              <br />
+              <i>医生标注 :</i> 2345asd.csv
+              <br />
+              <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
+              <br />
+              <i>N/p比例 :</i> 0.5
+            </div>
+          </div>
+          <div class="output-info info">
+            <el-badge is-dot class="badge">输出信息</el-badge>
+            <div class="img-list info-list">
+              <i>批次 :</i> fujianfuyou
+              <br />
+              <i>病例 :</i> 18237,28374,12943,34512
+              <br />
+              <i>图片 :</i>
+              <el-link class="link" type="primary">点击查看全部</el-link>
+              <br />
+              <i>医生标注 :</i> 2345asd.csv
+              <br />
+              <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
+              <br />
+              <i>N/p比例 :</i> 0.5
+            </div>
+          </div>
+          <div class="time-info info">
+            <el-badge is-dot class="badge">运行</el-badge>
+            <div class="time-list info-list">
+              <i>时长 :</i> 15min ~ 20min
+              <br />
+              <i>服务器 :</i> lambda-computer
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
     <section class="main">
       <el-tabs tab-position="left" @tab-click="tabClick">
         <el-tab-pane label="(step0) 原始数据">
@@ -148,6 +197,36 @@ export default {
 .images {
   padding: 0 30px;
   justify-content: space-between;
+}
+.output-info {
+  margin-left: 30px;
+}
+.time-info {
+  margin-left: 30px;
+}
+.info-box {
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+  .info {
+    padding: 20px;
+    box-shadow: 4px 2px 2px #ccc;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+  }
+  .info-list {
+    line-height: 36px;
+  }
+  .badge {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  i {
+    color: #666;
+    font-size: 14px;
+  }
 }
 .main {
   width: 100%;
