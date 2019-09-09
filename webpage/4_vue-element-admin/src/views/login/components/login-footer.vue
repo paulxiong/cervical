@@ -1,5 +1,5 @@
 <template>
-  <div class="login-footer flex">{{value}}</div>
+  <el-footer class="login-footer flex">{{value}}</el-footer>
 </template>
 
 <script>
@@ -18,7 +18,7 @@ export default {
 <style lang="scss" scoped>
 .login-footer {
   width: 100%;
-  height: 50px;
+  height: 7%;
   background: #fff;
   position: fixed;
   bottom: 0;

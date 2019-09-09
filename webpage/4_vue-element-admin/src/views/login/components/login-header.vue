@@ -1,8 +1,8 @@
 <template>
-  <div class="login-header flex">
+  <el-header class="login-header flex">
     <img class="logo" src="../../../assets/logo.png" alt="xd-logo" />
     <p class="p">{{value}}</p>
-  </div>
+  </el-header>
 </template>
 
 <script>
@@ -21,7 +21,7 @@ export default {
 <style lang="scss" scoped>
 .login-header {
   width: 100%;
-  height: 80px;
+  height: 10%;
   background: #fff;
   justify-content: space-between;
   position: fixed;

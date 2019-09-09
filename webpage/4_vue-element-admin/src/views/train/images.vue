@@ -3,47 +3,23 @@
     <section class="header">
       <div class="title">
         <h2>IMAGES</h2>
-        <section class="info-box flex">
+        <section class="info-box">
           <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
-            <div class="img-list info-list">
+            <div class="img-list info-list flex">
               <i>批次 :</i> fujianfuyou
-              <br />
               <i>病例 :</i> 18237,28374,12943,34512
-              <br />
-              <i>图片 :</i>
-              <el-link class="link" type="primary">点击查看全部</el-link>
-              <br />
+              <i>图片 :</i><el-link class="link" type="primary">点击查看全部</el-link>
               <i>医生标注 :</i> 2345asd.csv
-              <br />
               <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
-              <br />
               <i>N/p比例 :</i> 0.5
             </div>
           </div>
-          <div class="output-info info">
-            <el-badge is-dot class="badge">输出信息</el-badge>
-            <div class="img-list info-list">
-              <i>批次 :</i> fujianfuyou
-              <br />
-              <i>病例 :</i> 18237,28374,12943,34512
-              <br />
-              <i>图片 :</i>
-              <el-link class="link" type="primary">点击查看全部</el-link>
-              <br />
-              <i>医生标注 :</i> 2345asd.csv
-              <br />
-              <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
-              <br />
-              <i>N/p比例 :</i> 0.5
-            </div>
-          </div>
-          <div class="time-info info">
-            <el-badge is-dot class="badge">运行</el-badge>
-            <div class="time-list info-list">
-              <i>时长 :</i> 15min ~ 20min
-              <br />
-              <i>服务器 :</i> lambda-computer
+          <div class="progress-info">
+            <el-badge is-dot class="badge">状态进度</el-badge>
+            <div class="progress-box flex">
+              <el-tag effect="dark" type="info">送去处理</el-tag>
+              <el-progress class="progress" :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
             </div>
           </div>
         </section>
@@ -143,6 +119,7 @@ export default {
   components: {},
   data() {
     return {
+      percentage: 0,
       dir: 'dsEoM8RR/',
       hosturlpath16: ImgServerUrl + "/unsafe/32x0/scratch/",
       hosturlpath64: ImgServerUrl + "/unsafe/640x0/scratch/",
@@ -187,8 +164,12 @@ export default {
       }
     }
   },
-  created() {
+  mounted() {
     this.getjobresult();
+    setTimeout(()=>{this.percentage=27},1000)
+    setTimeout(()=>{this.percentage=64},3000)
+    setTimeout(()=>{this.percentage=88},5000)
+    setTimeout(()=>{this.percentage=100},7000)
   }
 };
 </script>
@@ -204,19 +185,24 @@ export default {
 .time-info {
   margin-left: 30px;
 }
+.progress-box {
+  justify-content: flex-start;
+  .progress {
+    width: 80%;
+    margin-left: 20px;
+  }
+}
+.progress-info {
+  margin-top: 20px;
+}
 .info-box {
   justify-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
-  margin-bottom: 30px;
-  .info {
-    padding: 20px;
-    box-shadow: 4px 2px 2px #ccc;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-  }
+  margin-bottom: 10px;
   .info-list {
-    line-height: 36px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
   .badge {
     font-size: 20px;

@@ -17,7 +17,7 @@
           <i>病例 :</i> 18237,28374,12943,34512
           <br />
           <i>图片 :</i>
-          <el-link class="link" type="primary">点击查看全部</el-link>
+          <el-link class="link" type="primary">点击查看全部<i class="el-icon-view el-icon--right"></i></el-link>
           <br />
           <i>医生标注 :</i> 2345asd.csv
           <br />
