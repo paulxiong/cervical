@@ -1,0 +1,24 @@
+basePath: '{{.BasePath}}'
+host: '{{.Host}}'
+info:
+  contact: {}
+  description: '{{.Description}}'
+  license: {}
+  title: '{{.Title}}'
+  version: '{{.Version}}'
+paths:
+  /api1/ping1:
+    get:
+      consumes:
+      - application/json
+      description: ping检查网络是否正常
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: pong
+          schema:
+            type: string
+      tags:
+      - API1
+swagger: "2.0"

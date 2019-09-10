@@ -12,9 +12,27 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+
+	_ "github.com/paulxiong/cervical/webpage/2_api_server/docs"
 )
 
-// Router 函数注册路由
+// @title Swagger Example API
+// @version 1.0
+// @description This is a sample server Petstore server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host petstore.swagger.io
+// @BasePath /v2
 func Router() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -35,6 +53,8 @@ func Router() *gin.Engine {
 		MaxAge:          12 * time.Hour,
 	})
 	r.Use(corsObject)
+
+	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
 
 	authMiddleware, err := middlewares.JwtMiddleware()
 	if err != nil {
