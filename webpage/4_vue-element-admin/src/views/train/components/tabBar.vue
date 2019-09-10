@@ -1,28 +1,16 @@
 <template>
   <section class="tabBar">
-    <!-- <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-      <el-tab-pane label="图片" name="images">
-        <imagesCom></imagesCom>
-      </el-tab-pane>
-      <el-tab-pane label="训练" name="train">
-        <trainCom></trainCom>
-      </el-tab-pane>
-      <el-tab-pane label="评估" name="evaluate">
-        <evaluateCom></evaluateCom>
-      </el-tab-pane>
-      <el-tab-pane label="预测" name="predict">
-        <predictCom></predictCom>
-      </el-tab-pane>
-    </el-tabs> -->
-    
-    <el-steps :active="active" finish-status="success" simple style="margin-top: 20px">
-      <el-step title="图片" icon="el-icon-picture"></el-step>
-      <el-step title="训练" ></el-step>
-      <el-step title="评估" ></el-step>
-      <el-step title="预测" ></el-step>
-    </el-steps>
+    <section class="step flex">
+      <el-button size="mini" :type="active===0?'success':'info'" @click="active=0"><i :class="percentage!==100?'el-icon-loading':'el-icon-finished'"></i> 图片</el-button>
+      <i class="el-icon-arrow-right icon-right"></i>
+      <el-button size="mini" :type="active===1?'success':'info'" @click="active=1" :disabled="percentage!==100"><i class="el-icon-finished"></i> 训练</el-button>
+      <i class="el-icon-arrow-right icon-right"></i>
+      <el-button size="mini" :type="active===2?'success':'info'" @click="active=2" :disabled="percentage!==100"><i class="el-icon-finished"></i> 评估</el-button>
+      <i class="el-icon-arrow-right icon-right"></i>
+      <el-button size="mini" :type="active===3?'success':'info'" @click="active=3" :disabled="percentage!==100"><i class="el-icon-finished"></i> 预测</el-button>
+    </section>
     <section class="box">
-      <imagesCom v-if="active===0"></imagesCom>
+      <imagesCom @finished="imagesFinished" v-if="active===0"></imagesCom>
       <trainCom v-if="active===1"></trainCom>
       <evaluateCom v-if="active===2"></evaluateCom>
       <predictCom v-if="active===3"></predictCom>
@@ -46,13 +34,33 @@ export default {
   data() {
     return {
       activeName: "images",
+      percentage: 0,
       active: 0
     };
   },
   methods: {
+    tabClick() {
+      console.log(123)
+    },
     handleClick(tab, event) {
       console.log(tab, event);
+    },
+    imagesFinished(percentage) {
+      this.percentage = percentage
     }
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.step {
+  margin-top: 20px;
+  padding: 10px 0;
+  background: #f5f7fa;
+  justify-content: space-around;
+  cursor: pointer;
+  .icon-right {
+    color: #c7cad2;
+  }
+}
+</style>

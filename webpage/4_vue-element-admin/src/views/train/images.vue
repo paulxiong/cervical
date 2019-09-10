@@ -17,14 +17,12 @@
           </div>
           <div class="progress-info">
             <el-badge is-dot class="badge">状态进度</el-badge>
-            <div class="progress-box flex">
-              <el-tag effect="dark" type="info">送去处理</el-tag>
-              <el-progress class="progress" :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
-            </div>
+            <el-progress class="progress" :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
           </div>
         </section>
       </div>
     </section>
+    <el-divider><i class="el-icon-picture"></i> 所有图片</el-divider>
     <section class="main">
       <el-tabs tab-position="left" @tab-click="tabClick">
         <el-tab-pane label="(step0) 原始数据">
@@ -162,6 +160,9 @@ export default {
           this.output_datasets_crop_p = this.objData.output_datasets_crop_p          
           break;
       }
+    },
+    finishedImages() {
+      this.$emit('finished', this.percentage)
     }
   },
   mounted() {
@@ -169,7 +170,7 @@ export default {
     setTimeout(()=>{this.percentage=27},1000)
     setTimeout(()=>{this.percentage=64},3000)
     setTimeout(()=>{this.percentage=88},5000)
-    setTimeout(()=>{this.percentage=100},7000)
+    setTimeout(()=>{this.percentage=100;this.finishedImages()},7000)
   }
 };
 </script>
@@ -184,13 +185,6 @@ export default {
 }
 .time-info {
   margin-left: 30px;
-}
-.progress-box {
-  justify-content: flex-start;
-  .progress {
-    width: 80%;
-    margin-left: 20px;
-  }
 }
 .progress-info {
   margin-top: 20px;
@@ -214,8 +208,10 @@ export default {
     font-size: 14px;
   }
 }
+.header {
+  margin-bottom: 30px;
+}
 .main {
-  width: 100%;
   .img {
     border: 1px solid #ccc;
     margin-right: 2px;
