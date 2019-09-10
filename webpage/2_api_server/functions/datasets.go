@@ -156,8 +156,6 @@ func NewJsonFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 	c.Desc = d.Desc
 	c.Status = d.Status
 	c.Dir = d.Dir
-	c.Createdatts = d.CreatedAtTs
-	c.Starttimets = d.StartTimeTs
 	c.Batchids = batchids
 	c.Medicalids = medicalids
 	c.Cntn = cntn

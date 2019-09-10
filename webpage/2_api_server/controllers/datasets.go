@@ -331,16 +331,17 @@ func CreateDataset(c *gin.Context) {
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   "",
+		"data":   dt.Id,
 	})
 
 	return
 }
 
 type jobResult struct {
-	Id     int64 `json:"id"`
-	Type   int   `json:"type"`
-	Status int   `json:"status"`
+	Id      int64 `json:"id"`
+	Type    int   `json:"type"`
+	Status  int   `json:"status"`
+	Percent int   `json:"percent"` // 完成百分比
 }
 
 func GetOneJob(c *gin.Context) {
@@ -380,6 +381,7 @@ func SetJobResult(c *gin.Context) {
 	}
 
 	m.UpdateDatasetsStatus(w.Id, w.Status)
+	m.UpdateDatasetsPercent(w.Id, int64(w.Percent))
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -403,10 +405,12 @@ func ListDatasets(c *gin.Context) {
 	if err != nil {
 		logger.Info.Println(err)
 	}
-	for idx, v := range ds {
-		ds[idx].CreatedAtTs = v.CreatedAt.Unix() * 1000
-		ds[idx].StartTimeTs = v.StartTime.Unix() * 1000
-	}
+	/*
+		for idx, v := range ds {
+			ds[idx].CreatedAtTs = v.CreatedAt.Unix() * 1000
+			ds[idx].StartTimeTs = v.StartTime.Unix() * 1000
+		}
+	*/
 
 	dts := listDatasets{}
 	dts.Datasets = ds
@@ -431,6 +435,20 @@ func GetJobResult(c *gin.Context) {
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
 		"data":   j,
+	})
+
+	return
+}
+
+func GetJobPercent(c *gin.Context) {
+	id_str := c.DefaultQuery("id", "0")
+	id, _ := strconv.ParseInt(id_str, 10, 64)
+
+	d, _ := m.GetOneDatasetById(int(id))
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   d.Percent,
 	})
 
 	return
