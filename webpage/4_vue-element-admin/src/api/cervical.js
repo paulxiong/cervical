@@ -8,6 +8,14 @@ export function getPing1(query) {
   })
 }
 
+export function getPercent(query) {
+  return request({
+    url: '/api1/jobpercent',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getDatasetLists(query) {
   return request({
     url: '/api1/dtinfo',

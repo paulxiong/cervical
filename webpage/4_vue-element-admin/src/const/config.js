@@ -3,7 +3,9 @@
 // export const ImgServerUrl = "http://medical.raidcdn.cn:3001"
 
 // for debug
-export const APIUrl = "http://9200.gpu.raidcdn.cn:9700"
+
+// export const APIUrl = "http://9200.gpu.raidcdn.cn:9700"
+export const APIUrl = "http://api.gpu.raidcdn.cn:9700"
 export const ImgServerUrl = "http://9201.gpu.raidcdn.cn:9700"
 
 // for local debug

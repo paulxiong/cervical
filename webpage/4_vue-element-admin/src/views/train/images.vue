@@ -9,7 +9,8 @@
             <div class="img-list info-list flex">
               <i>批次 :</i> fujianfuyou
               <i>病例 :</i> 18237,28374,12943,34512
-              <i>图片 :</i><el-link class="link" type="primary">点击查看全部</el-link>
+              <i>图片 :</i>
+              <el-link class="link" type="primary">点击查看全部</el-link>
               <i>医生标注 :</i> 2345asd.csv
               <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
               <i>N/p比例 :</i> 0.5
@@ -17,12 +18,20 @@
           </div>
           <div class="progress-info">
             <el-badge is-dot class="badge">状态进度</el-badge>
-            <el-progress class="progress" :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
+            <el-progress
+              class="progress"
+              :text-inside="true"
+              :stroke-width="26"
+              :percentage="percentage"
+              status="success"
+            ></el-progress>
           </div>
         </section>
       </div>
     </section>
-    <el-divider><i class="el-icon-picture"></i> 所有图片</el-divider>
+    <el-divider>
+      <i class="el-icon-picture"></i> 所有图片
+    </el-divider>
     <section class="main">
       <el-tabs tab-position="left" @tab-click="tabClick">
         <el-tab-pane label="(step0) 原始数据">
@@ -109,7 +118,7 @@
 </template>
 
 <script>
-import { getjobresult } from "@/api/cervical";
+import { getjobresult, getPercent } from "@/api/cervical";
 import { ImgServerUrl } from "@/const/config";
 
 export default {
@@ -139,6 +148,11 @@ export default {
         this.input_datasets_img = this.objData.input_datasets_img
       });
     },
+    getPercnet() {
+      getPercent({ id: this.$route.query.id }).then(res => {
+        this.percentage = res.data.data
+      })
+    },
     tabClick(tab, evt) {
       switch (tab.index) {
         case "0":
@@ -148,16 +162,16 @@ export default {
           this.input_datasets_denoising = this.objData.input_datasets_denoising
           break;
         case "2":
-          this.middle_mask = this.objData.middle_mask          
+          this.middle_mask = this.objData.middle_mask
           break;
         case "3":
-          this.output_datasets_crop_preview = this.objData.output_datasets_crop_preview          
+          this.output_datasets_crop_preview = this.objData.output_datasets_crop_preview
           break;
         case "4":
-          this.output_datasets_crop_n = this.objData.output_datasets_crop_n          
+          this.output_datasets_crop_n = this.objData.output_datasets_crop_n
           break;
         case "5":
-          this.output_datasets_crop_p = this.objData.output_datasets_crop_p          
+          this.output_datasets_crop_p = this.objData.output_datasets_crop_p
           break;
       }
     },
@@ -167,10 +181,10 @@ export default {
   },
   mounted() {
     this.getjobresult();
-    setTimeout(()=>{this.percentage=27},1000)
-    setTimeout(()=>{this.percentage=64},3000)
-    setTimeout(()=>{this.percentage=88},5000)
-    setTimeout(()=>{this.percentage=100;this.finishedImages()},7000)
+    setTimeout(() => { this.getPercnet() }, 1000)
+    setTimeout(() => { this.getPercnet() }, 3000)
+    setTimeout(() => { this.getPercnet() }, 5000)
+    setTimeout(() => { this.getPercnet(); this.finishedImages() }, 7000)
   }
 };
 </script>
