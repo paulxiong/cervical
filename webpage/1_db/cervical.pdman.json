@@ -921,6 +921,30 @@
               "notNull": true
             },
             {
+              "name": "PROCESS_TIME",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "开始处理(裁剪)时间"
+            },
+            {
+              "name": "PROCESS_PERCENT",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "处理(裁剪)进度，100表示完成"
+            },
+            {
+              "name": "TRAIN_TIME",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "开始训练时间"
+            },
+            {
+              "name": "TRAIN_PERCENT",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "训练进度，100表示完成"
+            },
+            {
               "name": "CREATED_BY",
               "type": "BigInt",
               "remark": "",

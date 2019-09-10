@@ -142,13 +142,13 @@ class cervical_autokeras():
                 x = np.reshape(x, (1, self.RESIZE, self.RESIZE, 3))
                 y = autokeras_model.predict(x)
                 if str(label) != str(y[0]):
-                    print("%s %s result=%s" % (images[index], label, y[0]))
+                    #print("%s %s result=%s" % (images[index], label, y[0]))
                     count_false = count_false + 1
                     error_image_dir = os.path.join(self.PREDICT_ERROR_IMG_DIR, label)
                     if not os.path.exists(error_image_dir):
                         os.makedirs(error_image_dir)
                     copyfile(img_path, os.path.join(error_image_dir, images[index]))
-            print("%s 的个数/准确率：%d %f" % (label, total, (total - count_false) / total))
+            print("%s 的个数/准确率：%d %f 出错的个数%d" % (label, total, (total - count_false) / total, count_false))
 
 if __name__ == "__main__":
     ca = cervical_autokeras(opt.taskdir)

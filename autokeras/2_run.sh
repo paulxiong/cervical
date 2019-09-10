@@ -41,6 +41,8 @@ do
     echo "not found "${task_mod}
     exit 1
   fi
+  #删除不是图片的文件 
+  find ${task_dir} -name ".ipynb_checkpoints" | xargs rm -rf
 
   echo $cnt'  '${task_desc}
   echo 'python main.py --task '${task_type}' --taskdir '${task_dir}' --modfile '${task_mod}
