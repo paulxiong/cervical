@@ -2,13 +2,7 @@
 
 #### 2 安装golang的模块
 ```
-$ go get -u github.com/appleboy/gin-jwt
-$ go get -u github.com/gin-gonic/gin
-$ go get -u github.com/jinzhu/gorm
-$ go get -u github.com/jinzhu/gorm/dialects/mysql
-$ go get -u github.com/pkg/errors
-$ go get -u github.com/Unknwon/goconfig
-$ go get -u github.com/qiniu/api.v7
+$ go get -u github.com/swaggo/swag/cmd/swag
 ```
 
 #### 3 本地运行源码

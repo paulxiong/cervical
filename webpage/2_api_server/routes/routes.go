@@ -15,24 +15,8 @@ import (
 
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-
-	_ "github.com/paulxiong/cervical/webpage/2_api_server/docs"
 )
 
-// @title Swagger Example API
-// @version 1.0
-// @description This is a sample server Petstore server.
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host petstore.swagger.io
-// @BasePath /v2
 func Router() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -72,7 +56,7 @@ func Router() *gin.Engine {
 	}
 
 	api1 := r.Group("/api1")
-	api1.GET("/ping1", ctr.Pong) //不需要登录就能ping的API
+	api1.GET("/ping", ctr.Pong) //不需要登录就能ping的API
 
 	api1.GET("/dtinfo", ctr.AllInfo)
 	api1.GET("/batchinfo", ctr.GetBatchInfo)
@@ -95,7 +79,7 @@ func Router() *gin.Engine {
 	api1.Use(authMiddleware.MiddlewareFunc())
 	{
 		api1.GET("/refresh_token", authMiddleware.RefreshHandler) // Refresh time can be longer than token timeout
-		api1.GET("/ping", ctr.Pong)
+		api1.GET("/authping", ctr.AuthPong)
 		//用户
 		api1.GET("/userinfo", ctr.GetUser)
 	}
