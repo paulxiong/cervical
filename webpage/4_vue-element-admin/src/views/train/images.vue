@@ -177,14 +177,20 @@ export default {
     },
     finishedImages() {
       this.$emit('finished', this.percentage)
+    },
+    timer() {
+      return setTimeout(() => {
+        this.getPercnet()
+        this.finishedImages()
+      }, 5000)
     }
   },
   mounted() {
     this.getjobresult();
-    setTimeout(() => { this.getPercnet() }, 1000)
-    setTimeout(() => { this.getPercnet() }, 3000)
-    setTimeout(() => { this.getPercnet() }, 5000)
-    setTimeout(() => { this.getPercnet(); this.finishedImages() }, 7000)
+    this.timer()
+  },
+  destroyed() {
+    clearTimeout(this.timer)
   }
 };
 </script>
