@@ -927,22 +927,40 @@
               "chnname": "开始处理(裁剪)时间"
             },
             {
-              "name": "PROCESS_PERCENT",
-              "type": "Integer",
+              "name": "PROCESS_END",
+              "type": "DateTime",
               "remark": "",
-              "chnname": "处理(裁剪)进度，100表示完成"
+              "chnname": "处理(裁剪)结束时间"
             },
             {
               "name": "TRAIN_TIME",
               "type": "DateTime",
               "remark": "",
-              "chnname": "开始训练时间"
+              "chnname": "开始训练的时间"
             },
             {
-              "name": "TRAIN_PERCENT",
+              "name": "TRAIN_END",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "训练结束的时间"
+            },
+            {
+              "name": "PREDICT_TIME",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "开始预测的时间"
+            },
+            {
+              "name": "PREDICT_END",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "预测结束的时间"
+            },
+            {
+              "name": "PERCENT",
               "type": "Integer",
               "remark": "",
-              "chnname": "训练进度，100表示完成"
+              "chnname": "处理数据/训练/预测的进度，100表示完成"
             },
             {
               "name": "CREATED_BY",
@@ -956,13 +974,6 @@
               "type": "DateTime",
               "remark": "",
               "chnname": "创建时间",
-              "notNull": true
-            },
-            {
-              "name": "START_TIME",
-              "type": "DateTime",
-              "remark": "",
-              "chnname": "开始处理的时间",
               "notNull": true
             },
             {

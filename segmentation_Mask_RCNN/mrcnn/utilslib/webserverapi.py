@@ -5,9 +5,9 @@ import sys, os
 from uuid import uuid1
 
 env_dist = os.environ
-webhost = env_dist.get('WEBURL', 'http://9200.gpu.raidcdn.cn:9700')
+webhost = env_dist.get('WEBURL', 'http://192.168.1.100:9000')
 
-debug_on = True
+debug_on = False
 ml_first = True
 
 logging.basicConfig()
@@ -19,7 +19,8 @@ requests_log.propagate = True
 def post2webserver(path=None, payload=None):
     if path is None or payload is None:
         return None
-    print(path, payload)
+    if debug_on:
+        print(path, payload)
 
     api_url = webhost + path
 
@@ -95,6 +96,6 @@ def get_one_job(status, _type):
         else:
             return None, None, None, None
 
-def post_job_status(jobid, status):
-    payload = {'id': jobid, 'status': status}
+def post_job_status(jobid, status, percent):
+    payload = {'id': jobid, 'status': status, 'percent': percent}
     post2webserver(path='/api1/jobresult', payload=payload)

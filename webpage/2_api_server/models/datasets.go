@@ -328,21 +328,21 @@ func GetCategoryById(id int) (c Category, e error) {
 }
 
 type Dataset struct {
-	Id             int64     `json:"id"             gorm:"column:ID"`              //ID
-	Type           int       `json:"type"           gorm:"column:TYPE"`            //分类
-	Desc           string    `json:"desc"           gorm:"column:DESCRIPTION"`     //描述
-	Status         int       `json:"status"         gorm:"column:STATUS"`          //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
-	Dir            string    `json:"dir"            gorm:"column:DIR"`             //文件夹名称(创建时间 + ID)
-	ProcessTime    time.Time `json:"processtime"    gorm:"column:PROCESS_TIME"`    //开始处理数据时间
-	ProcessPercent int64     `json:"processpercent" gorm:"column:PROCESS_PERCENT"` //处理数据的进度
-	TrainTime      time.Time `json:"traintime"      gorm:"column:TRAIN_TIME"`      //开始训练时间
-	TrainPercent   int64     `json:"trainpercent"   gorm:"column:TRAIN_PERCENT"`   //训练的进度
-	CreatedBy      int64     `json:"created_by"     gorm:"column:CREATED_BY"`      //创建者
-	CreatedAt      time.Time `json:"-"              gorm:"column:CREATED_TIME"`    //创建时间
-	StartTime      time.Time `json:"-"              gorm:"column:START_TIME"`      //开始处理的时间
-	UpdatedAt      time.Time `json:"-"              gorm:"column:UPDATED_TIME"`    //更新时间
-	CreatedAtTs    int64     `json:"created_at"     gorm:"-"  `                    //创建时间
-	StartTimeTs    int64     `json:"start_at"       gorm:"-"`                      //开始处理的时间
+	Id          int64     `json:"id"             gorm:"column:ID"`           //ID
+	Type        int       `json:"type"           gorm:"column:TYPE"`         //分类
+	Desc        string    `json:"desc"           gorm:"column:DESCRIPTION"`  //描述
+	Status      int       `json:"status"         gorm:"column:STATUS"`       //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
+	Dir         string    `json:"dir"            gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
+	ProcessTime time.Time `json:"processtime"    gorm:"column:PROCESS_TIME"` //开始处理数据时间
+	ProcessEnd  time.Time `json:"processend"     gorm:"column:PROCESS_END"`  //处理数据结束时间
+	TrainTime   time.Time `json:"traintime"      gorm:"column:TRAIN_TIME"`   //开始训练的时间
+	TrainEnd    time.Time `json:"trainend"       gorm:"column:TRAIN_END"`    //训练结束的时间
+	PredictTime time.Time `json:"predicttime"    gorm:"column:PREDICT_TIME"` //开始预测的时间
+	PredictEnd  time.Time `json:"predictend"     gorm:"column:PREDICT_END"`  //预测结束的时间
+	Percent     int64     `json:"percent"        gorm:"column:PERCENT"`      //处理数据/训练/预测的进度
+	CreatedBy   int64     `json:"created_by"     gorm:"column:CREATED_BY"`   //创建者
+	CreatedAt   time.Time `json:"-"              gorm:"column:CREATED_TIME"` //创建时间
+	UpdatedAt   time.Time `json:"-"              gorm:"column:UPDATED_TIME"` //更新时间
 }
 
 func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
@@ -352,14 +352,17 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 	if d.UpdatedAt.IsZero() {
 		d.UpdatedAt = time.Now()
 	}
-	if d.StartTime.IsZero() {
-		d.StartTime = time.Now()
-	}
 	if d.ProcessTime.IsZero() {
 		d.ProcessTime = time.Now()
+		d.ProcessEnd = time.Now()
 	}
 	if d.TrainTime.IsZero() {
 		d.TrainTime = time.Now()
+		d.TrainEnd = time.Now()
+	}
+	if d.PredictTime.IsZero() {
+		d.PredictTime = time.Now()
+		d.PredictEnd = time.Now()
 	}
 	return nil
 }
@@ -387,9 +390,6 @@ func (d *Dataset) CreateDatasets() (e error) {
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
-
-	d.CreatedAtTs = d.CreatedAt.Unix() * 1000
-	d.StartTimeTs = d.StartTime.Unix() * 1000
 	return ret2.Error
 }
 
@@ -407,8 +407,25 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	*/
 	d.Status = status
 	if status == 2 {
-		d.StartTime = time.Now()
+		d.ProcessTime = time.Now()
 	}
+
+	ret := db.Model(&d).Where("ID=?", did).Updates(d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}
+
+// UpdateDatasetsPercent 更新任务完成的百分比
+func UpdateDatasetsPercent(did int64, percent int64) (e error) {
+	d := Dataset{}
+	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
+	if ret2.Error != nil {
+		return ret2.Error
+	}
+
+	d.Percent = percent
 
 	ret := db.Model(&d).Where("ID=?", did).Updates(d)
 	if ret.Error != nil {
