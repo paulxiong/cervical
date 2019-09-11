@@ -1,49 +1,5 @@
 
 # coding: utf-8
-
-# # Tensorflow Multi-GPU VAE-GAN implementation
-
-# - This is an implementation of the VAE-GAN based on the implementation described in *<a href="http://arxiv.org/abs/1512.09300">Autoencoding beyond pixels using a learned similarity metric</a>*
-# - I implement a few useful things like
-#   - Visualizing Movement Through Z-Space
-#   - Latent Space Algebra
-#   - Spike Triggered Average Style Receptive Fields
-
-# ### How does a VAE-GAN work?
-# - We have three networks, an  <font color="#38761d"><strong>Encoder</strong></font>,
-# a <font color="#1155cc"><strong>Generator</strong></font>, and a <font color="#ff0000"><strong>Discriminator</strong></font>.
-#     - The <font color="#38761d"><strong>Encoder</strong></font> learns to map input x onto z space (latent space)
-#     - The <font color="#1155cc"><strong>Generator</strong></font> learns to generate x from z space
-#     - The <font color="#ff0000"><strong>Discriminator</strong></font> learns to discriminate whether the image being put in is real, or generated
-#
-# ### Diagram of basic network input and output
-
-# ![vae gan outline](network_outline.png)
-
-# ### `l_x_tilde` and `l_x` here become layers of *high level features* that the discriminator learns.
-# - we train the network to minimize the difference between the high level features of `x` and `x_tilde`
-# - This is basically an autoencoder that works on *high level features* rather than pixels
-# - Adding this *autoencoder* to a GAN helps to stabilize the GAN
-
-# ### Training
-# Train <font color="#38761d"><strong>Encoder</strong></font> on minimization of:
-# - `kullback_leibler_loss(z_x, gaussian)`
-# - `mean_squared_error(l_x_tilde_, l_x)`
-#
-# Train <font color="#1155cc"><strong>Generator</strong></font> on minimization of:
-# - `kullback_leibler_loss(z_x, gaussian)`
-# - `mean_squared_error(l_x_tilde_, l_x)`
-# - `-1*log(d_x_p)`
-#
-# Train <font color="#ff0000"><strong>Discriminator</strong></font> on minimization of:
-# - `-1*log(d_x) + log(1 - d_x_p)`
-#
-
-# In[1]:
-
-
-# Import all of our packages
-
 import os
 import numpy as np
 import prettytensor as pt
@@ -60,15 +16,6 @@ import h5py # for reading our dataset
 import ipywidgets as widgets
 from ipywidgets import interact, interactive, fixed
 
-#get_ipython().magic(u'matplotlib inline')
-
-
-# ## Parameters
-#
-
-# In[2]:
-
-
 dim1 = 64 # first dimension of input data
 dim2 = 64 # second dimension of input data
 dim3 = 3 # third dimension of input data (colors)
@@ -81,23 +28,9 @@ e_learning_rate = 1e-3
 g_learning_rate = 1e-3
 d_learning_rate = 1e-3
 
-
-# ### Which GPUs are we using?
-# - Set `gpus` to a list of the GPUs you're using. The network will then split up the work between those gpus
-
-# In[3]:
-
-
 gpus = [0] # Here I set CUDA to only see one GPU
 os.environ["CUDA_VISIBLE_DEVICES"]=','.join([str(i) for i in gpus])
 num_gpus = len(gpus) # number of GPUs to use
-
-
-# ### Reading the dataset from HDF5 format
-# - open `makedataset.ipynb' for instructions on how to build the dataset
-
-# In[4]:
-
 
 with h5py.File(''.join(['datasets/faces_dataset_new.h5']), 'r') as hf:
     faces = hf['images'].value
@@ -106,30 +39,15 @@ with h5py.File(''.join(['datasets/faces_dataset_new.h5']), 'r') as hf:
 
 print('load datasets/faces_dataset_new.h5 done !')
 
-# In[5]:
-
-
 # Normalize the dataset between 0 and 1
 faces = (faces/255.)
-
-
-# In[6]:
-
 
 # Just taking a look and making sure everything works
 #plt.imshow(np.reshape(faces[1], (64,64,3)), interpolation='nearest')
 
-
-# In[7]:
-
-
 # grab the faces back out after we've flattened them
 def create_image(im):
     return np.reshape(im,(dim1,dim2,dim3))
-
-
-# In[8]:
-
 
 # Lets just take a look at our channels
 cm = plt.cm.hot
@@ -144,9 +62,6 @@ test_face = faces[0].reshape(dim1,dim2,dim3)
 # ### A data iterator for batching (drawn up by Luke Metz)
 # - https://indico.io/blog/tensorflow-data-inputs-part1-placeholders-protobufs-queues/
 #
-
-# In[9]:
-
 
 def data_iterator():
     """ A simple data iterator """
@@ -164,24 +79,10 @@ def data_iterator():
 
 iter_ = data_iterator()
 
-
-# In[10]:
-
-
 iter_ = data_iterator()
 
-
-# In[11]:
-
-
 #face_batch, label_batch
-
-
 # ### Bald people
-
-# In[12]:
-
-
 #fig, ax = plt.subplots(nrows=1,ncols=4, figsize=(20,8))
 #ax[0].imshow(create_image(faces[labels[:,4] == 1][0]), interpolation='nearest')
 #ax[1].imshow(create_image(faces[labels[:,4] == 1][1]), interpolation='nearest')
@@ -196,9 +97,6 @@ iter_ = data_iterator()
 # <br /><br />
 # ![inception architecture](https://raw.githubusercontent.com/google/prettytensor/master/inception_module.png)
 # - They describe how to implement inception, in prettytensor, here: https://github.com/google/prettytensor
-
-# In[13]:
-
 
 def encoder(X):
     '''Create encoder network.
@@ -238,8 +136,6 @@ def generator(Z):
             flatten()
            )
 
-
-
 def discriminator(D_I):
     ''' A encodes
     Create a network that discriminates between images from a dataset and
@@ -266,9 +162,6 @@ def discriminator(D_I):
 # - This function is based upon the inference function from tensorflows cifar tutorials
 #   - https://github.com/tensorflow/tensorflow/blob/r0.10/tensorflow/models/image/cifar10/cifar10.py
 # - Notice I use `with tf.variable_scope("enc")`. This way, we can reuse these variables using `reuse=True`. We can also specify which variables to train using which error functions based upon the label `enc`
-
-# In[14]:
-
 
 def inference(x):
     """
@@ -308,9 +201,6 @@ def inference(x):
 # - **G_loss** - essentially the opposite of the D_loss, how good the generator is a tricking the discriminator
 # - ***notice we clip our values to make sure learning rates don't explode***
 
-# In[15]:
-
-
 def loss(x, x_tilde, z_x_log_sigma_sq, z_x_mean, d_x, d_x_p, l_x, l_x_tilde, dim1, dim2, dim3):
     """
     Loss functions for SSE, KL divergence, Discrim, Generator, Lth Layer Similarity
@@ -337,9 +227,6 @@ def loss(x, x_tilde, z_x_log_sigma_sq, z_x_mean, d_x, d_x_p, l_x, l_x_tilde, dim
 # - This function is taken directly from
 #     - https://github.com/tensorflow/tensorflow/blob/r0.10/tensorflow/models/image/cifar10/cifar10_multi_gpu_train.py
 # - Basically we're taking a list of gradients from each tower, and averaging them together
-
-# In[16]:
-
 
 def average_gradients(tower_grads):
     """Calculate the average gradient for each shared variable across all towers.
@@ -382,9 +269,6 @@ def average_gradients(tower_grads):
 # ### Plot network output
 # - This is just my ugly function to regularly plot the output of my network - tensorboard would probably be a better option for this
 
-# In[17]:
-
-
 def plot_network_output():
     """ Just plots the output of the network, error, reconstructions, etc
     """
@@ -421,16 +305,7 @@ def plot_network_output():
     #plt.show()
     fig.savefig(''.join(['imgs/leg_',str(epoch).zfill(4),'.png']),dpi=100)
 
-
-
-# In[18]:
-
-
 graph = tf.Graph()
-
-
-# In[19]:
-
 
 # Make lists to save the losses to
 # You should probably just be using tensorboard to do any visualization(or just use tensorboard...)
@@ -442,11 +317,7 @@ LL_loss_list = []
 dxp_list = []
 dx_list = []
 
-
 # ### With your graph, define what a step is (needed for multi-gpu), and what your optimizers are for each of your networks
-
-# In[20]:
-
 
 with graph.as_default():
     #with tf.Graph().as_default(), tf.device('/cpu:0'):
@@ -470,11 +341,7 @@ with graph.as_default():
 # - For each GPU we grab parameters corresponding to each network, we then calculate the gradients, and add them to the twoers to be averaged
 #
 
-# In[21]:
-
-
 with graph.as_default():
-
     # These are the lists of gradients for each tower
     tower_grads_e = []
     tower_grads_g = []
@@ -526,9 +393,6 @@ with graph.as_default():
 
 # ### Now lets average, and apply those gradients
 
-# In[22]:
-
-
 with graph.as_default():
     # Average the gradients
     grads_e = average_gradients(tower_grads_e)
@@ -543,9 +407,6 @@ with graph.as_default():
 
 # ### Now lets actually run our session
 
-# In[23]:
-
-
 with graph.as_default():
 
     # Start the Session
@@ -554,32 +415,19 @@ with graph.as_default():
     sess = tf.InteractiveSession(graph=graph,config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
     sess.run(init)
 
-
 # ### Get some example data to do visualizations with
-
-# In[24]:
-
 
 example_data, _ = iter_.next()
 np.shape(example_data)
 
-
 # ### Initialize our epoch number, and restore a saved network by uncommening `#tf.train...`
-
-# In[25]:
-
 
 epoch = 0
 #tf.train.Saver.restore(saver, sess, 'models/faces_multiGPU_64_0000.tfmod')
-
-
 # ### Now we actually run the network
 # - Importantly, notice how we define the learning rates
 #     - `e_current_lr = e_learning_rate*sigmoid(np.mean(d_real),-.5,10)`
 #         - we calculate the sigmoid of how the network has been performing, and squash the learning rate using a sigmoid based on that. So if the discriminator has been winning, it's learning rate will be low, and if the generator is winning, it's learning rate will be lower on the next batch.
-
-# In[26]:
-
 
 def sigmoid(x,shift,mult):
     """
@@ -587,19 +435,11 @@ def sigmoid(x,shift,mult):
     """
     return 1 / (1 + math.exp(-(x+shift)*mult))
 
-
-# In[27]:
-
-
 #fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,4))
 #plt.plot(np.arange(0,1,.01), [sigmoid(i/100.,-.5,10) for i in range(100)])
 #ax.set_xlabel('Mean of Discriminator(Real) or Discriminator(Fake)')
 #ax.set_ylabel('Multiplier for learning rate')
 #plt.title('Squashing the Learning Rate to balance Discrim/Gen network performance')
-
-
-# In[28]:
-
 
 total_batch = int(np.floor(num_examples / batch_size*num_gpus)) # how many batches are in an epoch
 
@@ -658,17 +498,11 @@ while epoch < num_epochs:
 # ### This is how we save our network
 # - Just uncomment, and name it.
 
-# In[29]:
-
-
 #saver.save(sess,''.join(['models/faces_multiGPU_64_',str(epoch).zfill(4),'.tfmod']))
 
 
 # ### Visualize movement through z-space
 # - we're using jupyter widgets to slide through z-space from one point to another
-
-# In[30]:
-
 
 n_steps = 20
 examples = 10
@@ -686,11 +520,6 @@ for f in range(n_steps):
     for i in range(examples):
         canvas[:,dim2*i:dim2*(i+1),:,f] = create_image(all_x_recon[i,:,f])
 
-
-
-# In[40]:
-
-
 #def plt_random_faces(f):
 #    fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,12))
 #    plt.imshow(canvas[:,:,:,f],interpolation='nearest')
@@ -702,15 +531,8 @@ for f in range(n_steps):
 # ### 'Spike Triggered Average' style receptive fields.
 # - We take a look at what makes a neuron respond, by taking a bunch of images, and averaging them based on how much the neuron was activated.
 
-# In[32]:
-
-
 def norm(x):
     return (x - np.min(x)) / np.max(x - np.min(x))
-
-
-# In[33]:
-
 
 # get a bunch of images and their corresponding z points in the network
 recon_z = np.random.normal(0,1,(batch_size,hidden_size))
@@ -722,12 +544,7 @@ for i in range(100):
     recon_l = np.concatenate((recon_l,rl),axis = 0)
     recon_x = np.concatenate((recon_x,rx),axis = 0)
 
-
 # #### Z-Neurons
-
-# In[34]:
-
-
 num_neurons = 25
 
 neuron = 0
@@ -742,10 +559,6 @@ for a in range(int(np.sqrt(num_neurons))):
 
 
 # #### Deep Descriminator Neurons
-
-# In[35]:
-
-
 num_neurons = 25
 
 neuron = 0
@@ -759,18 +572,9 @@ for a in range(int(np.sqrt(num_neurons))):
         #ax[(a,b)].axis('off')
         neuron+=1
 
-
 # ### Now lets try some latent space algebra
-
-# In[36]:
-
-
 # Here are the attribute types
 print [str(i) + ': ' + headers[i] for i in range(len(headers))]
-
-
-# In[50]:
-
 
 # Go through a bunch of inputs, get their z values and their attributes
 iter_ = data_iterator()
@@ -788,10 +592,6 @@ for i in range(200):
     all_recon_x = np.concatenate((all_recon_x,recon_x),axis = 0)
     all_attrib = np.concatenate((all_attrib,next_attrib),axis = 0)
 
-
-# In[51]:
-
-
 # for each attribute type, get the difference between the mean z-vector of faces with
 #   the attribute, and without the attribute
 attr_vector_list = []
@@ -806,17 +606,10 @@ for i in range(np.shape(all_attrib)[1]):
     avg_not_attr_list.append(average_not_attribute)
     attr_vector_list.append(average_attribute - average_not_attribute)
 
-
-# In[52]:
-
-
 feature_to_look_at = 9 # specify the attribute we want to look at
 
 
 # #### Look at some blonde people (bottom), and their reconstructions (top)
-
-# In[53]:
-
 
 # show some faces which have this attribute
 recon_faces = all_recon_x[all_attrib[:,feature_to_look_at] == 1,:]
@@ -834,33 +627,17 @@ for i in range(examples):
 
 
 # #### Take random z-points, and add the blonde vector
-
-# In[76]:
-
-
 recon_z = np.random.normal(0,1,(batch_size,hidden_size))
 recon_x = sess.run((x_tilde), {z_x: recon_z})
 
-
-# In[77]:
-
-
 recon_z_with_attribute = [recon_z[i] + attr_vector_list[feature_to_look_at] for i in range(len(recon_z))]
 recon_x_with_attribute = sess.run((x_tilde), {z_x: recon_z_with_attribute})
-
-
-# In[78]:
-
 
 examples = 12
 canvas = np.zeros((dim1*2,dim2*examples,dim3))
 for i in range(examples):
     canvas[:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
     canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(recon_x_with_attribute[i])
-
-
-# In[79]:
-
 
 #fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
 #ax.imshow(canvas)
@@ -869,10 +646,6 @@ for i in range(examples):
 
 
 # #### Look at the average blonde person, the average not blonde person, and their difference
-
-# In[58]:
-
-
 recon_z = np.random.normal(0,1,(batch_size,hidden_size))
 recon_z[0] = avg_attr_list[feature_to_look_at]
 recon_z[1] = avg_not_attr_list[feature_to_look_at]
@@ -880,18 +653,10 @@ recon_z[2] = attr_vector_list[feature_to_look_at]
 
 recon_x = sess.run((x_tilde), {z_x: recon_z})
 
-
-# In[59]:
-
-
 examples = 3
 canvas = np.zeros((dim1,dim2*examples,dim3))
 for i in range(examples):
     canvas[:,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
-
-
-# In[60]:
-
 
 #fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
 #ax.imshow(canvas)
@@ -908,9 +673,6 @@ for i in range(examples):
 # - [Open AI improving GANS](https://openai.com/blog/generative-models/)  [*(Github)*](https://github.com/openai/improved-gan)
 # - Other things which I am probably forgetting...
 #
-
-# In[84]:
-
 
 # this is just a little command to convert this as md for the github page
 #get_ipython().system(u'jupyter nbconvert --to markdown VAE-GAN-multi-gpu-celebA.ipynb')
