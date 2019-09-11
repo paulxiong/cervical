@@ -34,8 +34,8 @@ num_gpus = len(gpus) # number of GPUs to use
 
 with h5py.File(''.join(['datasets/faces_dataset_new.h5']), 'r') as hf:
     faces = hf['images'].value
-    headers = hf['headers'].value
-    labels = hf['label_input'].value
+    #headers = hf['headers'].value
+    #labels = hf['label_input'].value
 
 print('load datasets/faces_dataset_new.h5 done !')
 
@@ -73,11 +73,10 @@ def data_iterator():
             cur_idxs = idxs[batch_idx:batch_idx+batch_size]
             images_batch = faces[cur_idxs]
             #images_batch = images_batch.astype("float32")
-            labels_batch = labels[cur_idxs]
-            yield images_batch, labels_batch
+            #labels_batch = labels[cur_idxs]
+            #yield images_batch, labels_batch
+            yield images_batch, None
 
-
-iter_ = data_iterator()
 
 iter_ = data_iterator()
 
@@ -495,186 +494,186 @@ while epoch < num_epochs:
     epoch +=1
 
 
-# ### This is how we save our network
-# - Just uncomment, and name it.
-
-#saver.save(sess,''.join(['models/faces_multiGPU_64_',str(epoch).zfill(4),'.tfmod']))
-
-
-# ### Visualize movement through z-space
-# - we're using jupyter widgets to slide through z-space from one point to another
-
-n_steps = 20
-examples = 10
-all_x_recon = np.zeros((batch_size, dim1*dim2*dim3,n_steps))
-z_point_a= np.random.normal(0,1,(batch_size,hidden_size))
-z_point_b= np.random.normal(0,1,(batch_size,hidden_size))
-recon_z_step = (z_point_b - z_point_a)/n_steps
-for i in range(n_steps):
-    z_point_a += recon_z_step
-    all_x_recon[:,:,i] = sess.run((x_tilde), {z_x: z_point_a})
-
-canvas = np.zeros((dim1,dim2*examples,dim3, n_steps))
-print np.shape(canvas)
-for f in range(n_steps):
-    for i in range(examples):
-        canvas[:,dim2*i:dim2*(i+1),:,f] = create_image(all_x_recon[i,:,f])
-
-#def plt_random_faces(f):
-#    fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,12))
-#    plt.imshow(canvas[:,:,:,f],interpolation='nearest')
-#    plt.title('This slider won\.t work in Github')
-#    plt.show()
-#interact(plt_random_faces, f = (0,n_steps-1,1))
-
-
-# ### 'Spike Triggered Average' style receptive fields.
-# - We take a look at what makes a neuron respond, by taking a bunch of images, and averaging them based on how much the neuron was activated.
-
-def norm(x):
-    return (x - np.min(x)) / np.max(x - np.min(x))
-
-# get a bunch of images and their corresponding z points in the network
-recon_z = np.random.normal(0,1,(batch_size,hidden_size))
-recon_x, recon_l = sess.run((x_tilde, l_x_tilde), {z_x: recon_z})
-for i in range(100):
-    rz = np.random.normal(0,1,(batch_size,hidden_size))
-    rx, rl = sess.run((x_tilde, l_x_tilde), {z_x: rz})
-    recon_z= np.concatenate((recon_z,rz),axis = 0)
-    recon_l = np.concatenate((recon_l,rl),axis = 0)
-    recon_x = np.concatenate((recon_x,rx),axis = 0)
-
-# #### Z-Neurons
-num_neurons = 25
-
-neuron = 0
-fig, ax = plt.subplots(nrows=int(np.sqrt(num_neurons)),ncols=int(np.sqrt(num_neurons)), figsize=(18,12))
-for a in range(int(np.sqrt(num_neurons))):
-    for b in range(int(np.sqrt(num_neurons))):
-        proportions = (recon_z[:,neuron] - min(recon_z[:,neuron])) / max((recon_z[:,neuron] - min(recon_z[:,neuron])))
-        receptive_field = norm(np.sum(([proportions[i] * recon_x[i,:] for i in range(len(proportions))]),axis = 0)/np.sum(proportions)- np.mean(recon_x,axis = 0))
-        #ax[(a,b)].imshow(create_image(receptive_field), cmap=plt.cm.gray, interpolation='nearest')
-        #ax[(a,b)].axis('off')
-        neuron+=1
-
-
-# #### Deep Descriminator Neurons
-num_neurons = 25
-
-neuron = 0
-fig, ax = plt.subplots(nrows=int(np.sqrt(num_neurons)),ncols=int(np.sqrt(num_neurons)), figsize=(18,12))
-for a in range(int(np.sqrt(num_neurons))):
-    for b in range(int(np.sqrt(num_neurons))):
-        proportions = (recon_l[:,neuron] - min(recon_l[:,neuron])) / max((recon_l[:,neuron] - min(recon_l[:,neuron])))
-        receptive_field = norm(np.sum(([proportions[i] * recon_x[i,:] for i in range(len(proportions))]),axis = 0)/np.sum(proportions)- np.mean(recon_x,axis = 0))
-        #test = norm(test/np.mean(test_list, axis = 0))
-        #ax[(a,b)].imshow(create_image(receptive_field), cmap=plt.cm.gray, interpolation='nearest')
-        #ax[(a,b)].axis('off')
-        neuron+=1
-
-# ### Now lets try some latent space algebra
-# Here are the attribute types
-print [str(i) + ': ' + headers[i] for i in range(len(headers))]
-
-# Go through a bunch of inputs, get their z values and their attributes
-iter_ = data_iterator()
-all_batch, all_attrib = iter_.next()
-all_z = sess.run((z_x_mean), {all_input: all_batch})
-all_recon_x = sess.run((x_tilde), {z_x: all_z})
-
-for i in range(200):
-    next_batch, next_attrib = iter_.next()
-    recon_z = sess.run((z_x_mean), {all_input: next_batch})
-    recon_x = sess.run((x_tilde), {z_x: recon_z})
-
-    all_z = np.concatenate((all_z,recon_z),axis = 0)
-    all_batch = np.concatenate((all_batch,next_batch),axis = 0)
-    all_recon_x = np.concatenate((all_recon_x,recon_x),axis = 0)
-    all_attrib = np.concatenate((all_attrib,next_attrib),axis = 0)
-
-# for each attribute type, get the difference between the mean z-vector of faces with
-#   the attribute, and without the attribute
-attr_vector_list = []
-avg_attr_list = []
-avg_not_attr_list = []
-
-for i in range(np.shape(all_attrib)[1]):
-    has_attribute = all_attrib[:,i] == 1
-    average_attribute = np.mean(all_z[has_attribute], axis=0)
-    average_not_attribute = np.mean(all_z[has_attribute == False], axis=0)
-    avg_attr_list.append(average_attribute)
-    avg_not_attr_list.append(average_not_attribute)
-    attr_vector_list.append(average_attribute - average_not_attribute)
-
-feature_to_look_at = 9 # specify the attribute we want to look at
-
-
-# #### Look at some blonde people (bottom), and their reconstructions (top)
-
-# show some faces which have this attribute
-recon_faces = all_recon_x[all_attrib[:,feature_to_look_at] == 1,:]
-new_faces = all_batch[all_attrib[:,feature_to_look_at] == 1,:]
-
-examples = 4
-canvas = np.zeros((dim1*2,dim2*examples,dim3))
-for i in range(examples):
-    canvas[0:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_faces[i])
-    canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(new_faces[i])
-
-#fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
-#ax.imshow(canvas)
-#ax.axis('off')
-
-
-# #### Take random z-points, and add the blonde vector
-recon_z = np.random.normal(0,1,(batch_size,hidden_size))
-recon_x = sess.run((x_tilde), {z_x: recon_z})
-
-recon_z_with_attribute = [recon_z[i] + attr_vector_list[feature_to_look_at] for i in range(len(recon_z))]
-recon_x_with_attribute = sess.run((x_tilde), {z_x: recon_z_with_attribute})
-
-examples = 12
-canvas = np.zeros((dim1*2,dim2*examples,dim3))
-for i in range(examples):
-    canvas[:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
-    canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(recon_x_with_attribute[i])
-
-#fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
-#ax.imshow(canvas)
-#ax.axis('off')
-#plt.title('Top: random points in z space | Bottom: random points + blonde vector')
-
-
-# #### Look at the average blonde person, the average not blonde person, and their difference
-recon_z = np.random.normal(0,1,(batch_size,hidden_size))
-recon_z[0] = avg_attr_list[feature_to_look_at]
-recon_z[1] = avg_not_attr_list[feature_to_look_at]
-recon_z[2] = attr_vector_list[feature_to_look_at]
-
-recon_x = sess.run((x_tilde), {z_x: recon_z})
-
-examples = 3
-canvas = np.zeros((dim1,dim2*examples,dim3))
-for i in range(examples):
-    canvas[:,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
-
-#fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
-#ax.imshow(canvas)
-#ax.axis('off')
-#plt.title('Average Blonde Person | Average Not Blonde Person | ABP-ANBP')
-
-
-# ### This implementation is based on a few other things:
-# - [Autoencoding beyond pixels](http://arxiv.org/abs/1512.09300) [*(Github)*](https://github.com/andersbll/autoencoding_beyond_pixels)
-# - [VAE and GAN implementations in prettytensor/tensorflow (*Github*)](https://github.com/ikostrikov/TensorFlow-VAE-GAN-DRAW)
-# - [Tensorflow VAE tutorial](https://jmetzen.github.io/2015-11-27/vae.html)
-# - [DCGAN](https://arxiv.org/abs/1511.06434) [*(Github)*](https://github.com/Newmu/dcgan_code)
-# - [Torch GAN tutorial](http://torch.ch/blog/2015/11/13/gan.html) [*(Github)*](https://github.com/skaae/torch-gan)
-# - [Open AI improving GANS](https://openai.com/blog/generative-models/)  [*(Github)*](https://github.com/openai/improved-gan)
-# - Other things which I am probably forgetting...
-#
-
-# this is just a little command to convert this as md for the github page
-#get_ipython().system(u'jupyter nbconvert --to markdown VAE-GAN-multi-gpu-celebA.ipynb')
-#get_ipython().system(u'mv VAE-GAN-multi-gpu-celebA.md readme.md')
-
+#--## ### This is how we save our network
+#--## - Just uncomment, and name it.
+#--#
+#--##saver.save(sess,''.join(['models/faces_multiGPU_64_',str(epoch).zfill(4),'.tfmod']))
+#--#
+#--#
+#--## ### Visualize movement through z-space
+#--## - we're using jupyter widgets to slide through z-space from one point to another
+#--#
+#--#n_steps = 20
+#--#examples = 10
+#--#all_x_recon = np.zeros((batch_size, dim1*dim2*dim3,n_steps))
+#--#z_point_a= np.random.normal(0,1,(batch_size,hidden_size))
+#--#z_point_b= np.random.normal(0,1,(batch_size,hidden_size))
+#--#recon_z_step = (z_point_b - z_point_a)/n_steps
+#--#for i in range(n_steps):
+#--#    z_point_a += recon_z_step
+#--#    all_x_recon[:,:,i] = sess.run((x_tilde), {z_x: z_point_a})
+#--#
+#--#canvas = np.zeros((dim1,dim2*examples,dim3, n_steps))
+#--#print np.shape(canvas)
+#--#for f in range(n_steps):
+#--#    for i in range(examples):
+#--#        canvas[:,dim2*i:dim2*(i+1),:,f] = create_image(all_x_recon[i,:,f])
+#--#
+#--##def plt_random_faces(f):
+#--##    fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,12))
+#--##    plt.imshow(canvas[:,:,:,f],interpolation='nearest')
+#--##    plt.title('This slider won\.t work in Github')
+#--##    plt.show()
+#--##interact(plt_random_faces, f = (0,n_steps-1,1))
+#--#
+#--#
+#--## ### 'Spike Triggered Average' style receptive fields.
+#--## - We take a look at what makes a neuron respond, by taking a bunch of images, and averaging them based on how much the neuron was activated.
+#--#
+#--#def norm(x):
+#--#    return (x - np.min(x)) / np.max(x - np.min(x))
+#--#
+#--## get a bunch of images and their corresponding z points in the network
+#--#recon_z = np.random.normal(0,1,(batch_size,hidden_size))
+#--#recon_x, recon_l = sess.run((x_tilde, l_x_tilde), {z_x: recon_z})
+#--#for i in range(100):
+#--#    rz = np.random.normal(0,1,(batch_size,hidden_size))
+#--#    rx, rl = sess.run((x_tilde, l_x_tilde), {z_x: rz})
+#--#    recon_z= np.concatenate((recon_z,rz),axis = 0)
+#--#    recon_l = np.concatenate((recon_l,rl),axis = 0)
+#--#    recon_x = np.concatenate((recon_x,rx),axis = 0)
+#--#
+#--## #### Z-Neurons
+#--#num_neurons = 25
+#--#
+#--#neuron = 0
+#--#fig, ax = plt.subplots(nrows=int(np.sqrt(num_neurons)),ncols=int(np.sqrt(num_neurons)), figsize=(18,12))
+#--#for a in range(int(np.sqrt(num_neurons))):
+#--#    for b in range(int(np.sqrt(num_neurons))):
+#--#        proportions = (recon_z[:,neuron] - min(recon_z[:,neuron])) / max((recon_z[:,neuron] - min(recon_z[:,neuron])))
+#--#        receptive_field = norm(np.sum(([proportions[i] * recon_x[i,:] for i in range(len(proportions))]),axis = 0)/np.sum(proportions)- np.mean(recon_x,axis = 0))
+#--#        #ax[(a,b)].imshow(create_image(receptive_field), cmap=plt.cm.gray, interpolation='nearest')
+#--#        #ax[(a,b)].axis('off')
+#--#        neuron+=1
+#--#
+#--#
+#--## #### Deep Descriminator Neurons
+#--#num_neurons = 25
+#--#
+#--#neuron = 0
+#--#fig, ax = plt.subplots(nrows=int(np.sqrt(num_neurons)),ncols=int(np.sqrt(num_neurons)), figsize=(18,12))
+#--#for a in range(int(np.sqrt(num_neurons))):
+#--#    for b in range(int(np.sqrt(num_neurons))):
+#--#        proportions = (recon_l[:,neuron] - min(recon_l[:,neuron])) / max((recon_l[:,neuron] - min(recon_l[:,neuron])))
+#--#        receptive_field = norm(np.sum(([proportions[i] * recon_x[i,:] for i in range(len(proportions))]),axis = 0)/np.sum(proportions)- np.mean(recon_x,axis = 0))
+#--#        #test = norm(test/np.mean(test_list, axis = 0))
+#--#        #ax[(a,b)].imshow(create_image(receptive_field), cmap=plt.cm.gray, interpolation='nearest')
+#--#        #ax[(a,b)].axis('off')
+#--#        neuron+=1
+#--#
+#--## ### Now lets try some latent space algebra
+#--## Here are the attribute types
+#--#print [str(i) + ': ' + headers[i] for i in range(len(headers))]
+#--#
+#--## Go through a bunch of inputs, get their z values and their attributes
+#--#iter_ = data_iterator()
+#--#all_batch, all_attrib = iter_.next()
+#--#all_z = sess.run((z_x_mean), {all_input: all_batch})
+#--#all_recon_x = sess.run((x_tilde), {z_x: all_z})
+#--#
+#--#for i in range(200):
+#--#    next_batch, next_attrib = iter_.next()
+#--#    recon_z = sess.run((z_x_mean), {all_input: next_batch})
+#--#    recon_x = sess.run((x_tilde), {z_x: recon_z})
+#--#
+#--#    all_z = np.concatenate((all_z,recon_z),axis = 0)
+#--#    all_batch = np.concatenate((all_batch,next_batch),axis = 0)
+#--#    all_recon_x = np.concatenate((all_recon_x,recon_x),axis = 0)
+#--#    all_attrib = np.concatenate((all_attrib,next_attrib),axis = 0)
+#--#
+#--## for each attribute type, get the difference between the mean z-vector of faces with
+#--##   the attribute, and without the attribute
+#--#attr_vector_list = []
+#--#avg_attr_list = []
+#--#avg_not_attr_list = []
+#--#
+#--#for i in range(np.shape(all_attrib)[1]):
+#--#    has_attribute = all_attrib[:,i] == 1
+#--#    average_attribute = np.mean(all_z[has_attribute], axis=0)
+#--#    average_not_attribute = np.mean(all_z[has_attribute == False], axis=0)
+#--#    avg_attr_list.append(average_attribute)
+#--#    avg_not_attr_list.append(average_not_attribute)
+#--#    attr_vector_list.append(average_attribute - average_not_attribute)
+#--#
+#--#feature_to_look_at = 9 # specify the attribute we want to look at
+#--#
+#--#
+#--## #### Look at some blonde people (bottom), and their reconstructions (top)
+#--#
+#--## show some faces which have this attribute
+#--#recon_faces = all_recon_x[all_attrib[:,feature_to_look_at] == 1,:]
+#--#new_faces = all_batch[all_attrib[:,feature_to_look_at] == 1,:]
+#--#
+#--#examples = 4
+#--#canvas = np.zeros((dim1*2,dim2*examples,dim3))
+#--#for i in range(examples):
+#--#    canvas[0:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_faces[i])
+#--#    canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(new_faces[i])
+#--#
+#--##fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
+#--##ax.imshow(canvas)
+#--##ax.axis('off')
+#--#
+#--#
+#--## #### Take random z-points, and add the blonde vector
+#--#recon_z = np.random.normal(0,1,(batch_size,hidden_size))
+#--#recon_x = sess.run((x_tilde), {z_x: recon_z})
+#--#
+#--#recon_z_with_attribute = [recon_z[i] + attr_vector_list[feature_to_look_at] for i in range(len(recon_z))]
+#--#recon_x_with_attribute = sess.run((x_tilde), {z_x: recon_z_with_attribute})
+#--#
+#--#examples = 12
+#--#canvas = np.zeros((dim1*2,dim2*examples,dim3))
+#--#for i in range(examples):
+#--#    canvas[:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
+#--#    canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(recon_x_with_attribute[i])
+#--#
+#--##fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
+#--##ax.imshow(canvas)
+#--##ax.axis('off')
+#--##plt.title('Top: random points in z space | Bottom: random points + blonde vector')
+#--#
+#--#
+#--## #### Look at the average blonde person, the average not blonde person, and their difference
+#--#recon_z = np.random.normal(0,1,(batch_size,hidden_size))
+#--#recon_z[0] = avg_attr_list[feature_to_look_at]
+#--#recon_z[1] = avg_not_attr_list[feature_to_look_at]
+#--#recon_z[2] = attr_vector_list[feature_to_look_at]
+#--#
+#--#recon_x = sess.run((x_tilde), {z_x: recon_z})
+#--#
+#--#examples = 3
+#--#canvas = np.zeros((dim1,dim2*examples,dim3))
+#--#for i in range(examples):
+#--#    canvas[:,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
+#--#
+#--##fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
+#--##ax.imshow(canvas)
+#--##ax.axis('off')
+#--##plt.title('Average Blonde Person | Average Not Blonde Person | ABP-ANBP')
+#--#
+#--#
+#--## ### This implementation is based on a few other things:
+#--## - [Autoencoding beyond pixels](http://arxiv.org/abs/1512.09300) [*(Github)*](https://github.com/andersbll/autoencoding_beyond_pixels)
+#--## - [VAE and GAN implementations in prettytensor/tensorflow (*Github*)](https://github.com/ikostrikov/TensorFlow-VAE-GAN-DRAW)
+#--## - [Tensorflow VAE tutorial](https://jmetzen.github.io/2015-11-27/vae.html)
+#--## - [DCGAN](https://arxiv.org/abs/1511.06434) [*(Github)*](https://github.com/Newmu/dcgan_code)
+#--## - [Torch GAN tutorial](http://torch.ch/blog/2015/11/13/gan.html) [*(Github)*](https://github.com/skaae/torch-gan)
+#--## - [Open AI improving GANS](https://openai.com/blog/generative-models/)  [*(Github)*](https://github.com/openai/improved-gan)
+#--## - Other things which I am probably forgetting...
+#--##
+#--#
+#--## this is just a little command to convert this as md for the github page
+#--##get_ipython().system(u'jupyter nbconvert --to markdown VAE-GAN-multi-gpu-celebA.ipynb')
+#--##get_ipython().system(u'mv VAE-GAN-multi-gpu-celebA.md readme.md')
+#--#
