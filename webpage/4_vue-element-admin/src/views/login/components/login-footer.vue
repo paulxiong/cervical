@@ -1,5 +1,5 @@
 <template>
-  <el-footer class="login-footer flex">{{value}}</el-footer>
+  <el-footer class="login-footer flex">{{value}}<el-link class="link"  type="info" :underline="false" v-if="env === 'development'" href="http://9200.gpu.raidcdn.cn:9700/swagger/index.html" target="_blank">Swagger</el-link></el-footer>
 </template>
 
 <script>
@@ -8,7 +8,8 @@ export default {
   components: {},
   data() {
     return {
-      value: '反馈建议 | 关于我们 | 滇公网安备33043876513123号'
+      value: '反馈建议 | 关于我们 | 滇公网安备33043876513123号',
+      env: process.env.NODE_ENV
     }
   },
   methods: {}
@@ -23,5 +24,8 @@ export default {
   position: fixed;
   bottom: 0;
   font-size: 14px;
+  .link {
+    margin-left: 15px;
+  }
 }
 </style>
