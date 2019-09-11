@@ -26,8 +26,8 @@ def resize_img(input_dir, output_dir, RESIZE):
             os.makedirs(os.path.join(output_dir))
             cv2.imwrite(os.path.join(output_dir, img_name), img)
 
-resize_img("17P0603", "resize_17P0603", 64)
-data = glob(os.path.join("resize_17P0603", "*.png"))
+resize_img("data_org", "data_resize", 64)
+data = glob(os.path.join("data_resize", "*.png"))
 data = np.sort(data)
 print(len(data))
 
