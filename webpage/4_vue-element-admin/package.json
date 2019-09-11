@@ -5,9 +5,9 @@
   "author": "inpm",
   "license": "MIT",
   "scripts": {
-    "dev": "vue-cli-service serve",
-    "build:test": "vue-cli-service build --mode test",
-    "build:prod": "vue-cli-service build",
+    "dev": "vue-cli-service serve --swagger --fix",
+    "build:test": "vue-cli-service build --swagger --fix",
+    "build:prod": "vue-cli-service build --fix",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
