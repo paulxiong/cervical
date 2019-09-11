@@ -34,6 +34,14 @@ type Statistics struct {
 	CategoryLists []Category2 `json:"categorylists"`
 }
 
+// AllInfo 获得所有图片及标注的统计信息
+// @Description 获得所有图片及标注的统计信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/dtinfo [get]
 func AllInfo(c *gin.Context) {
 	st := Statistics{}
 	st.CategoryLists = make([]Category2, 0)
@@ -81,6 +89,14 @@ type BatchInfo struct {
 	Batchs []string `json:"batchs"`
 }
 
+// GetBatchInfo 获得所有批次信息
+// @Description 获得所有批次信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/batchinfo [get]
 func GetBatchInfo(c *gin.Context) {
 	total, bs, err := m.ListBatch(100, 0)
 	if err != nil {
@@ -106,6 +122,14 @@ type MedicalIdInfo struct {
 	MedicalIds []string `json:"medicalids"`
 }
 
+// GetMedicalIdInfo 获得所有病例信息
+// @Description 获得所有病例信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/medicalidinfo [get]
 func GetMedicalIdInfo(c *gin.Context) {
 	var total int = 0
 	allms := make([]string, 0)
@@ -141,6 +165,14 @@ type CategorysInfo struct {
 	Categorys []CategoryInfo `json:"categorys"`
 }
 
+// GetCategoryInfo 获得细胞分类信息
+// @Description 获得细胞分类信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/categoryinfo [get]
 func GetCategoryInfo(c *gin.Context) {
 	var ci CategorysInfo
 	ci.Categorys = make([]CategoryInfo, 0)
@@ -176,6 +208,14 @@ type wanted2 struct {
 	Images []string `json:"images"`
 }
 
+// GetImgListOfWanted 获得所选批/次病/细胞类型的图片
+// @Description 获得所选批/次病/细胞类型的图片
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/imglistsofwanted [get]
 func GetImgListOfWanted(c *gin.Context) {
 	images := wanted2{}
 	images.Images = make([]string, 0)
@@ -207,6 +247,14 @@ type imageslists struct {
 	Images []m.Image `json:"images"`
 }
 
+// GetImgListOneByOne 按数据库存储的顺序依次得到图片的信息
+// @Description 按数据库存储的顺序依次得到图片的信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/imglistsonebyone [get]
 func GetImgListOneByOne(c *gin.Context) {
 	limit_str := c.DefaultQuery("limit", "1")
 	skip_str := c.DefaultQuery("skip", "0")
@@ -237,6 +285,14 @@ type Labelslists struct {
 	H      int       `json:"imgh"`
 }
 
+// GetLabelByImageId 通过图片的ID获得对应的所有标注信息
+// @Description 通过图片的ID获得对应的所有标注信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/imglistsonebyone [get]
 func GetLabelByImageId(c *gin.Context) {
 	limit_str := c.DefaultQuery("limit", "1")
 	skip_str := c.DefaultQuery("skip", "0")
@@ -281,6 +337,14 @@ type imagesNPCount struct {
 	CountP int `json:"countp"`
 }
 
+// GetImagesNPTypeByMedicalId 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
+// @Description 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/getimgnptypebymids [post]
 func GetImagesNPTypeByMedicalId(c *gin.Context) {
 	cnt := imagesNPCount{}
 	w := imagesNPTypeByMedicalId{}
@@ -298,6 +362,14 @@ func GetImagesNPTypeByMedicalId(c *gin.Context) {
 	return
 }
 
+// CreateDataset 新建数据/项目
+// @Description 新建数据/项目
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/createdataset [post]
 func CreateDataset(c *gin.Context) {
 	w := imagesNPTypeByMedicalId{}
 	err := c.BindJSON(&w)
@@ -344,6 +416,14 @@ type jobResult struct {
 	Percent int   `json:"percent"` // 完成百分比
 }
 
+// GetOneJob python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
+// @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/job [post]
 func GetOneJob(c *gin.Context) {
 	w := jobResult{}
 	err := c.BindJSON(&w)
@@ -369,6 +449,14 @@ func GetOneJob(c *gin.Context) {
 	return
 }
 
+// SetJobResult python端更新任务状态/进度（数据处理/训练/预测）
+// @Description python端更新任务状态/进度（数据处理/训练/预测）
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/jobresult [post]
 func SetJobResult(c *gin.Context) {
 	w := jobResult{}
 	err := c.BindJSON(&w)
@@ -395,6 +483,14 @@ type listDatasets struct {
 	Total    int64       `json:"total"`
 }
 
+// ListDatasets 按数据库存储顺序依次获得数据/项目信息
+// @Description 按数据库存储顺序依次获得数据/项目信息
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/listdatasets [post]
 func ListDatasets(c *gin.Context) {
 	limit_str := c.DefaultQuery("limit", "1")
 	skip_str := c.DefaultQuery("skip", "0")
@@ -423,6 +519,14 @@ func ListDatasets(c *gin.Context) {
 	return
 }
 
+// GetJobResult 获得任务状态（数据处理/训练/预测）
+// @Description 获得任务状态（数据处理/训练/预测）
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/jobresult [get]
 func GetJobResult(c *gin.Context) {
 	id_str := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(id_str, 10, 64)
@@ -440,6 +544,14 @@ func GetJobResult(c *gin.Context) {
 	return
 }
 
+// GetJobPercent 获得任务进度（数据处理/训练/预测）
+// @Description 获得任务进度（数据处理/训练/预测）
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/jobpercent [get]
 func GetJobPercent(c *gin.Context) {
 	id_str := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(id_str, 10, 64)
@@ -454,6 +566,14 @@ func GetJobPercent(c *gin.Context) {
 	return
 }
 
+// GetJobLog 获得任务数据处理/训练/预测后端产生的log
+// @Description 获得任务数据处理/训练/预测后端产生的log
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/joblog [get]
 func GetJobLog(c *gin.Context) {
 	id_str := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(id_str, 10, 64)
@@ -471,6 +591,14 @@ func GetJobLog(c *gin.Context) {
 	return
 }
 
+// GetModelInfo 获得训练任务生成模型的信息
+// @Description 获得训练任务生成模型的信息
+// @tags API1 模型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/jobmodel [get]
 func GetModelInfo(c *gin.Context) {
 	id_str := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(id_str, 10, 64)
@@ -487,6 +615,14 @@ func GetModelInfo(c *gin.Context) {
 	return
 }
 
+// SaveModelInfo 把训练任务生成模型信息存数据库
+// @Description 把训练任务生成模型信息存数据库
+// @tags API1 模型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/savemodel [get]
 func SaveModelInfo(c *gin.Context) {
 	w := m.Model{}
 	err := c.BindJSON(&w)

@@ -1,0 +1,355 @@
+basePath: /
+host: 192.168.1.102:9000
+info:
+  contact:
+    email: ggxxde@163.com
+    name: API Support
+    url: http://9200.gpu.raidcdn.cn:9700
+  description: 这是API说明文档，开发服务器才有， 正式部署之后没有.
+  license:
+    name: Apache 2.0
+    url: http://9200.gpu.raidcdn.cn:9700
+  termsOfService: http://9200.gpu.raidcdn.cn:9700
+  title: API说明
+  version: "1.0"
+paths:
+  /api1/authping:
+    get:
+      consumes:
+      - application/json
+      description: ping检查网络是否正常，需要登录
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 连通性（需要认证）
+  /api1/batchinfo:
+    get:
+      consumes:
+      - application/json
+      description: 获得所有批次信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/categoryinfo:
+    get:
+      consumes:
+      - application/json
+      description: 获得细胞分类信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/createdataset:
+    post:
+      consumes:
+      - application/json
+      description: 新建数据/项目
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/dtinfo:
+    get:
+      consumes:
+      - application/json
+      description: 获得所有图片及标注的统计信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/getimgnptypebymids:
+    post:
+      consumes:
+      - application/json
+      description: 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/imglistsofwanted:
+    get:
+      consumes:
+      - application/json
+      description: 获得所选批/次病/细胞类型的图片
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/imglistsonebyone:
+    get:
+      consumes:
+      - application/json
+      description: 通过图片的ID获得对应的所有标注信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/job:
+    post:
+      consumes:
+      - application/json
+      description: python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 任务（需要认证）
+  /api1/joblog:
+    get:
+      consumes:
+      - application/json
+      description: 获得任务数据处理/训练/预测后端产生的log
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 任务（需要认证）
+  /api1/jobmodel:
+    get:
+      consumes:
+      - application/json
+      description: 获得训练任务生成模型的信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 模型（需要认证）
+  /api1/jobpercent:
+    get:
+      consumes:
+      - application/json
+      description: 获得任务进度（数据处理/训练/预测）
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 任务（需要认证）
+  /api1/jobresult:
+    get:
+      consumes:
+      - application/json
+      description: 获得任务状态（数据处理/训练/预测）
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 任务（需要认证）
+    post:
+      consumes:
+      - application/json
+      description: python端更新任务状态/进度（数据处理/训练/预测）
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 任务（需要认证）
+  /api1/listdatasets:
+    post:
+      consumes:
+      - application/json
+      description: 按数据库存储顺序依次获得数据/项目信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/medicalidinfo:
+    get:
+      consumes:
+      - application/json
+      description: 获得所有病例信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 数据/项目（需要认证）
+  /api1/ping:
+    get:
+      consumes:
+      - application/json
+      description: ping检查网络是否正常
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      tags:
+      - API1 连通性（不需要认证）
+  /api1/savemodel:
+    get:
+      consumes:
+      - application/json
+      description: 把训练任务生成模型信息存数据库
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 模型（需要认证）
+  /api1/userinfo:
+    get:
+      consumes:
+      - application/json
+      description: 获得当前用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"data\": \"ok\",\t\"status\": 200}"
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - API1 用户
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: 注册新用户
+      parameters:
+      - description: 邮箱
+        in: formData
+        name: Email
+        type: string
+      - description: 手机号码
+        in: formData
+        name: Mobile
+        required: true
+        type: string
+      - description: 用户名
+        in: formData
+        name: Username
+        type: string
+      - description: 密码
+        in: formData
+        name: Password
+        required: true
+        type: string
+      - description: 确认密码
+        in: formData
+        name: ConfirmPassword
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "{\"data\": \"ok\",\t\"status\": 200}"
+          schema:
+            type: string
+      tags:
+      - API1 用户
+swagger: "2.0"

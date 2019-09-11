@@ -13,7 +13,21 @@ import (
 	"time"
 
 	"github.com/fvbock/endless"
+
+	_ "github.com/paulxiong/cervical/webpage/2_api_server/docs"
 )
+
+// @title API说明
+// @version 1.0
+// @description 这是API说明文档，开发服务器才有， 正式部署之后没有.
+// @termsOfService http://9200.gpu.raidcdn.cn:9700
+// @contact.name API Support
+// @contact.url http://9200.gpu.raidcdn.cn:9700
+// @contact.email ggxxde@163.com
+// @license.name Apache 2.0
+// @license.url http://9200.gpu.raidcdn.cn:9700
+// @host 9200.gpu.raidcdn.cn:9700
+// @BasePath /
 
 func atexit() {
 }

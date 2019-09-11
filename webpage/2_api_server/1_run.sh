@@ -13,4 +13,5 @@ export EXPIRE_SECOND=2678400
 export QINIU_ACCESSKEY='xxxxx'
 export QINIU_SECRETKEY='xxxxx'
 export QINIU_BUCKET='mass'
+swag init
 go run main.go
