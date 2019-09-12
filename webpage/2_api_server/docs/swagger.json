@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "这是API说明文档，开发服务器才有， 正式部署之后没有.",
+        "description": "这是API说明文档，开发服务器才有， 正式部署之后没有。  认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格， token向管理员申请)",
         "title": "API说明",
         "termsOfService": "http://9200.gpu.raidcdn.cn:9700",
         "contact": {
@@ -15,7 +15,7 @@
         },
         "version": "1.0"
     },
-    "host": "192.168.1.102:9000",
+    "host": "9200.gpu.raidcdn.cn:9700",
     "basePath": "/",
     "paths": {
         "/api1/authping": {
@@ -254,6 +254,12 @@
                 "responses": {
                     "200": {
                         "description": "{\"ping\": \"pong\",\t\"status\": 200}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "{\"data\": \"cookie token is empty\", \"status\": 63}",
                         "schema": {
                             "type": "string"
                         }
@@ -514,9 +520,68 @@
                 "tags": [
                     "API1 用户"
                 ],
+                "summary": "用户信息",
                 "responses": {
                     "200": {
                         "description": "{\"data\": \"ok\",\t\"status\": 200}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "用户通过邮箱/用户名/手机号登录",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API1 用户"
+                ],
+                "summary": "登录",
+                "parameters": [
+                    {
+                        "description": "登录信息表单",
+                        "name": "Login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/controllers.login"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "expire\": \"当前token到期时间\", \"status\": 200, \"token\": \"token的字符串\",\"user\": {\"id\": 3,\"mobile\": \"string\",\"email\": \"string\",\"name\": \"string\",\"image\": \"http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg\",\"type_id\": 1000,\"created_at\": \"2019-09-12T10:05:39Z\",\"updated_at\": \"2019-09-12T03:34:17Z\"}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/logout": {
+            "post": {
+                "description": "已经登录用户注销",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "API1 用户"
+                ],
+                "summary": "已经登录用户注销",
+                "responses": {
+                    "200": {
+                        "description": "status\": 200, \"data\": \"ok\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -528,7 +593,7 @@
             "post": {
                 "description": "注册新用户",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -536,50 +601,101 @@
                 "tags": [
                     "API1 用户"
                 ],
+                "summary": "注册",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "邮箱",
-                        "name": "Email",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "手机号码",
-                        "name": "Mobile",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户名",
-                        "name": "Username",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "description": "密码",
-                        "name": "Password",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "确认密码",
-                        "name": "ConfirmPassword",
-                        "in": "formData",
-                        "required": true
+                        "description": "注册信息表单",
+                        "name": "Register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "$ref": "#/definitions/controllers.register"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"data\": \"ok\",\t\"status\": 200}",
+                        "description": "{\"data\": \"User already exist\",\t\"status\": 70}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 }
             }
+        }
+    },
+    "definitions": {
+        "controllers.login": {
+            "type": "object",
+            "required": [
+                "mobile",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "youremail@163.com 正确的邮箱格式"
+                },
+                "mobile": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "手机号码"
+                },
+                "password": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "用户密码"
+                },
+                "username": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "用户名，英文数字组成"
+                }
+            }
+        },
+        "controllers.register": {
+            "type": "object",
+            "required": [
+                "confirmPassword",
+                "mobile",
+                "password"
+            ],
+            "properties": {
+                "confirmPassword": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "确认密码"
+                },
+                "email": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "youremail@163.com 正确的邮箱格式"
+                },
+                "mobile": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "手机号码"
+                },
+                "password": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "设置密码"
+                },
+                "username": {
+                    "type": "string",
+                    "format": "string",
+                    "example": "用户名，英文数字组成"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

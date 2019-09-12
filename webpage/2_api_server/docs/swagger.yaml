@@ -1,11 +1,62 @@
 basePath: /
-host: 192.168.1.102:9000
+definitions:
+  controllers.login:
+    properties:
+      email:
+        example: youremail@163.com 正确的邮箱格式
+        format: string
+        type: string
+      mobile:
+        example: 手机号码
+        format: string
+        type: string
+      password:
+        example: 用户密码
+        format: string
+        type: string
+      username:
+        example: 用户名，英文数字组成
+        format: string
+        type: string
+    required:
+    - mobile
+    - password
+    type: object
+  controllers.register:
+    properties:
+      confirmPassword:
+        example: 确认密码
+        format: string
+        type: string
+      email:
+        example: youremail@163.com 正确的邮箱格式
+        format: string
+        type: string
+      mobile:
+        example: 手机号码
+        format: string
+        type: string
+      password:
+        example: 设置密码
+        format: string
+        type: string
+      username:
+        example: 用户名，英文数字组成
+        format: string
+        type: string
+    required:
+    - confirmPassword
+    - mobile
+    - password
+    type: object
+host: 9200.gpu.raidcdn.cn:9700
 info:
   contact:
     email: ggxxde@163.com
     name: API Support
     url: http://9200.gpu.raidcdn.cn:9700
-  description: 这是API说明文档，开发服务器才有， 正式部署之后没有.
+  description: 这是API说明文档，开发服务器才有， 正式部署之后没有。  认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格，
+    token向管理员申请)
   license:
     name: Apache 2.0
     url: http://9200.gpu.raidcdn.cn:9700
@@ -151,6 +202,10 @@ paths:
       responses:
         "200":
           description: "{\"ping\": \"pong\",\t\"status\": 200}"
+          schema:
+            type: string
+        "401":
+          description: '{"data": "cookie token is empty", "status": 63}'
           schema:
             type: string
       security:
@@ -312,44 +367,76 @@ paths:
             type: string
       security:
       - ApiKeyAuth: []
+      summary: 用户信息
+      tags:
+      - API1 用户
+  /user/login:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 用户通过邮箱/用户名/手机号登录
+      parameters:
+      - description: 登录信息表单
+        in: body
+        name: Login
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.login'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'expire": "当前token到期时间", "status": 200, "token": "token的字符串","user":
+            {"id": 3,"mobile": "string","email": "string","name": "string","image":
+            "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg","type_id":
+            1000,"created_at": "2019-09-12T10:05:39Z","updated_at": "2019-09-12T03:34:17Z"}}'
+          schema:
+            type: string
+      summary: 登录
+      tags:
+      - API1 用户
+  /user/logout:
+    post:
+      consumes:
+      - application/json
+      description: 已经登录用户注销
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'status": 200, "data": "ok"}'
+          schema:
+            type: string
+      summary: 已经登录用户注销
       tags:
       - API1 用户
   /user/register:
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: 注册新用户
       parameters:
-      - description: 邮箱
-        in: formData
-        name: Email
-        type: string
-      - description: 手机号码
-        in: formData
-        name: Mobile
+      - description: 注册信息表单
+        in: body
+        name: Register
         required: true
-        type: string
-      - description: 用户名
-        in: formData
-        name: Username
-        type: string
-      - description: 密码
-        in: formData
-        name: Password
-        required: true
-        type: string
-      - description: 确认密码
-        in: formData
-        name: ConfirmPassword
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/controllers.register'
+          type: object
       produces:
       - application/json
       responses:
         "200":
-          description: "{\"data\": \"ok\",\t\"status\": 200}"
+          description: "{\"data\": \"User already exist\",\t\"status\": 70}"
           schema:
             type: string
+      summary: 注册
       tags:
       - API1 用户
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

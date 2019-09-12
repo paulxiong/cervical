@@ -423,6 +423,7 @@ type jobResult struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 63}"
 // @Router /api1/job [post]
 func GetOneJob(c *gin.Context) {
 	w := jobResult{}

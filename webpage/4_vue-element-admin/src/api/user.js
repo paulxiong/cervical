@@ -18,7 +18,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/api1/ping1',
+    url: '/user/logout',
     method: 'get'
   })
 }

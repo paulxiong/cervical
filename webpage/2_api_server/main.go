@@ -19,7 +19,7 @@ import (
 
 // @title API说明
 // @version 1.0
-// @description 这是API说明文档，开发服务器才有， 正式部署之后没有.
+// @description 这是API说明文档，开发服务器才有， 正式部署之后没有。  认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格， token向管理员申请)
 // @termsOfService http://9200.gpu.raidcdn.cn:9700
 // @contact.name API Support
 // @contact.url http://9200.gpu.raidcdn.cn:9700
@@ -28,6 +28,11 @@ import (
 // @license.url http://9200.gpu.raidcdn.cn:9700
 // @host 9200.gpu.raidcdn.cn:9700
 // @BasePath /
+
+// JWT 认证, 认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格)
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func atexit() {
 }
