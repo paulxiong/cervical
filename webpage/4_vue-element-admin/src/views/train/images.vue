@@ -118,35 +118,35 @@
 </template>
 
 <script>
-import { getjobresult, getPercent } from "@/api/cervical";
-import { ImgServerUrl } from "@/const/config";
+import { getjobresult, getPercent } from '@/api/cervical'
+import { ImgServerUrl } from '@/const/config'
 
 export default {
-  name: "images",
+  name: 'images',
   components: {},
   data() {
     return {
       percentage: 0,
       dir: 'dsEoM8RR/',
-      hosturlpath16: ImgServerUrl + "/unsafe/32x0/scratch/",
-      hosturlpath64: ImgServerUrl + "/unsafe/640x0/scratch/",
-      hosturlpath200: ImgServerUrl + "/unsafe/200x0/scratch/",
-      hosturlpath645: ImgServerUrl + "/unsafe/800x0/scratch/",
+      hosturlpath16: ImgServerUrl + '/unsafe/32x0/scratch/',
+      hosturlpath64: ImgServerUrl + '/unsafe/640x0/scratch/',
+      hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
+      hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
       objData: {},
       input_datasets_img: [],
       input_datasets_denoising: [],
       middle_mask: [],
       output_datasets_crop_preview: [],
       output_datasets_crop_n: [],
-      output_datasets_crop_p: [],
-    };
+      output_datasets_crop_p: []
+    }
   },
   methods: {
     getjobresult() {
       getjobresult({ id: this.$route.query.id }).then(res => {
         this.objData = res.data.data
         this.input_datasets_img = this.objData.input_datasets_img
-      });
+      })
     },
     getPercnet() {
       getPercent({ id: this.$route.query.id }).then(res => {
@@ -155,44 +155,48 @@ export default {
     },
     tabClick(tab, evt) {
       switch (tab.index) {
-        case "0":
+        case '0':
           this.input_datasets_img = this.objData.input_datasets_img
-          break;
-        case "1":
+          break
+        case '1':
           this.input_datasets_denoising = this.objData.input_datasets_denoising
-          break;
-        case "2":
+          break
+        case '2':
           this.middle_mask = this.objData.middle_mask
-          break;
-        case "3":
+          break
+        case '3':
           this.output_datasets_crop_preview = this.objData.output_datasets_crop_preview
-          break;
-        case "4":
+          break
+        case '4':
           this.output_datasets_crop_n = this.objData.output_datasets_crop_n
-          break;
-        case "5":
+          break
+        case '5':
           this.output_datasets_crop_p = this.objData.output_datasets_crop_p
-          break;
+          break
       }
     },
     finishedImages() {
       this.$emit('finished', this.percentage)
     },
     timer() {
-      return setTimeout(() => {
+      return setInterval(() => {
+        if (this.percentage === 100) {
+          clearInterval(this.timer())
+        }
         this.getPercnet()
         this.finishedImages()
-      }, 5000)
+      }, 10000)
     }
   },
   mounted() {
-    this.getjobresult();
+    this.getjobresult()
+    this.getPercnet()
     this.timer()
   },
   destroyed() {
-    clearTimeout(this.timer)
+    clearInterval(this.timer())
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
