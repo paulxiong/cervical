@@ -17,10 +17,11 @@ import (
 // IdentityKey 区分用户的key
 var IdentityKey = "user.Id"
 
-type login struct {
-	Username      string `form:"username" json:"username"`
-	Password      string `form:"password" json:"password" binding:"required"`
-	EmailOrMobile string `form:"emailormobile" json:"emailormobile"`
+// LoginFormData 登录的表单数据
+type LoginFormData struct {
+	Username      string `form:"username" json:"username" example:"用户名" format:"string"`
+	Password      string `form:"password" json:"password" binding:"required" example:"密码" format:"string"`
+	EmailOrMobile string `form:"emailormobile" json:"emailormobile" example:"邮箱或者手机号" format:"string"`
 }
 
 // LoginWithPasswd 检查用户名密码是否匹配
@@ -68,8 +69,9 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			logger.Info.Println("Authenticator ")
-			var loginVals login
+			var loginVals LoginFormData
 			if err := c.ShouldBind(&loginVals); err != nil {
+				logger.Info.Println(err)
 				return "", jwt.ErrMissingLoginValues
 			}
 			userName := loginVals.Username
@@ -97,14 +99,14 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			logger.Info.Println("Unauthorized ", message, code)
-			if message == "" {
-				c.JSON(code, gin.H{"status": e.StatusLoginError, "data": message})
+			if message == "missing Username or Password" || message == "" {
+				c.JSON(code, gin.H{"status": e.StatusLoginInvalidData64, "data": message})
 			} else if message == "LoginUserNotFound" {
-				c.JSON(code, gin.H{"status": e.StatusLoginUserNotFound, "data": message})
+				c.JSON(code, gin.H{"status": e.StatusLoginUserNotFound61, "data": message})
 			} else if message == "LoginBadPasswd" {
-				c.JSON(code, gin.H{"status": e.StatusLoginBadPasswd, "data": message})
+				c.JSON(code, gin.H{"status": e.StatusLoginBadPasswd60, "data": message})
 			} else {
-				c.JSON(code, gin.H{"status": e.StatusLoginError, "data": message})
+				c.JSON(code, gin.H{"status": e.StatusLoginError63, "data": message})
 			}
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
@@ -114,7 +116,7 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			if exists == true && userTmp != nil {
 				userTmp2 := userTmp.(*m.User)
 				user.Id = userTmp2.Id
-				newtoken.UserId = userTmp2.Id
+				newtoken.UserID = userTmp2.Id
 			}
 			logger.Info.Println("LoginResponse")
 

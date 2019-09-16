@@ -161,17 +161,17 @@ func (u *User) CheckUserExist() (user *User, errcode int) {
 	user, err := u.Finduserbyname()
 	if err == nil && user != nil {
 		logger.Warning.Println("UserExisted " + u.Name)
-		return user, e.StatusRegisterUserExisted
+		return user, e.StatusRegisterUserExisted70
 	}
 	user, err = u.FinduserbyMobile()
 	if err == nil && user != nil {
 		logger.Warning.Println("MobileExisted " + u.Mobile)
-		return user, e.StatusRegisterMobileExisted
+		return user, e.StatusRegisterMobileExisted76
 	}
 	user, err = u.Finduserbyemail()
 	if err == nil && user != nil {
 		logger.Warning.Println("checkUserExist " + u.Email)
-		return user, e.StatusRegisterEmailExisted
+		return user, e.StatusRegisterEmailExisted71
 	}
 	return nil, e.StatusSucceed
 }
@@ -181,21 +181,21 @@ func CheckUserExist2(name string, email string, mobile string) (user *User, errc
 	user, err := u.Finduserbyname()
 	if err == nil && user != nil {
 		logger.Warning.Println("UserExisted " + u.Name)
-		return user, e.StatusRegisterUserExisted
+		return user, e.StatusRegisterUserExisted70
 	}
 
 	u = &User{Mobile: mobile}
 	user, err = u.FinduserbyMobile()
 	if err == nil && user != nil {
 		logger.Warning.Println("MobileExisted " + u.Mobile)
-		return user, e.StatusRegisterMobileExisted
+		return user, e.StatusRegisterMobileExisted76
 	}
 
 	u = &User{Email: email}
 	user, err = u.Finduserbyemail()
 	if err == nil && user != nil {
 		logger.Warning.Println("EmailExisted " + u.Email)
-		return user, e.StatusRegisterEmailExisted
+		return user, e.StatusRegisterEmailExisted71
 	}
 	return nil, e.StatusSucceed
 }

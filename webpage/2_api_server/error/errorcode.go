@@ -67,23 +67,24 @@ const (
 	StatusNotExtended                   = 510 // RFC 2774, 7
 	StatusNetworkAuthenticationRequired = 511 // RFC 6585, 6
 
-	/*lambda: */
+	/* lambda: */
 	StatusReqOK   = 200
 	StatusSucceed = 200
 
 	StatusPingFailed = 51
 
-	StatusLoginBadPasswd    = 60
-	StatusLoginUserNotFound = 61
-	StatusLoginError        = 63
+	StatusLoginBadPasswd60    = 60
+	StatusLoginUserNotFound61 = 61
+	StatusLoginError63        = 63
+	StatusLoginInvalidData64  = 64
 
-	StatusRegisterUserExisted    = 70
-	StatusRegisterEmailExisted   = 71
-	StatusRegisterPasswdMismatch = 72
-	StatusRegisterInvalidData    = 73
-	StatusRegisterNewUserFailed  = 74
-	StatusRegisterError          = 75
-	StatusRegisterMobileExisted  = 76
+	StatusRegisterUserExisted70    = 70
+	StatusRegisterEmailExisted71   = 71
+	StatusRegisterPasswdMismatch72 = 72
+	StatusRegisterInvalidData73    = 73
+	StatusRegisterNewUserFailed74  = 74
+	StatusRegisterError75          = 75
+	StatusRegisterMobileExisted76  = 76
 
 	StatusCourseNotFound = 80
 

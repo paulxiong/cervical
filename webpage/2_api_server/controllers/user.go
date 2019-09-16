@@ -4,17 +4,18 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
-	"github.com/paulxiong/cervical/webpage/2_api_server/middlewares"
+	mid "github.com/paulxiong/cervical/webpage/2_api_server/middlewares"
 	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
 
 	"github.com/gin-gonic/gin"
 )
 
+// AuthMiddleware jwt的全局变量
 var AuthMiddleware *jwt.GinJWTMiddleware
 
 func init() {
 	var err error
-	AuthMiddleware, err = middlewares.JwtMiddleware()
+	AuthMiddleware, err = mid.JwtMiddleware()
 	if err != nil {
 		logger.Error.Fatal("JWT Error:" + err.Error())
 	}
@@ -29,23 +30,23 @@ type register struct {
 }
 
 // RegisterUser 注册新用户
-// @Description 注册新用户
+// @Description 注册新用户 status： 76-手机号已经注册过 75-表单数据错误 74-新建用户失败 73-表单数据不对（密码或手机号为空） 72-两次密码不一致 71-邮箱已经注册过 70-用户已经存在
 // @Summary 注册
 // @tags API1 用户
 // @Accept  multipart/form-data
 // @Produce json
 // @Param Register body controllers.register true "注册信息表单"
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
-// @Success 200 {string} json "{"data": "User already exist",	"status": 70}"
+// @Failure 406 {string} json "{"data": "register faild", "status": 错误码}"
 // @Router /user/register [post]
 func RegisterUser(c *gin.Context) {
 	var reg register
 	var user m.User
-	err := c.BindJSON(&reg)
+	err := c.ShouldBindJSON(&reg)
 	if err != nil {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusRegisterError,
-			"data":   "RegisterUser failed",
+		c.JSON(e.StatusNotAcceptable, gin.H{
+			"status": e.StatusRegisterError75,
+			"data":   "register faild",
 		})
 		return
 	}
@@ -59,27 +60,27 @@ func RegisterUser(c *gin.Context) {
 	if user.Password == "" ||
 		user.Mobile == "" {
 		logger.Warning.Println("RegisterUser failed ", user)
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusRegisterInvalidData,
-			"data":   "RegisterUser failed",
+		c.JSON(e.StatusNotAcceptable, gin.H{
+			"status": e.StatusRegisterInvalidData73,
+			"data":   "register faild",
 		})
 		return
 	}
 
 	exituser, errorcode := user.CheckUserExist()
 	if exituser != nil {
-		c.JSON(e.StatusReqOK, gin.H{
+		c.JSON(e.StatusNotAcceptable, gin.H{
 			"status": errorcode,
-			"data":   "User already exist",
+			"data":   "register faild",
 		})
 		return
 	}
 
 	err = user.Newuser()
 	if err != nil {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusRegisterNewUserFailed,
-			"data":   "User already exist",
+		c.JSON(e.StatusNotAcceptable, gin.H{
+			"status": e.StatusRegisterNewUserFailed74,
+			"data":   "register faild",
 		})
 		return
 	}
@@ -93,13 +94,14 @@ func RegisterUser(c *gin.Context) {
 }
 
 // GetUser 获得当前用户信息
-// @Description 获得当前用户信息
+// @Description 获得当前用户信息 code: 200 用户信息获取成功  401 未登录
 // @Summary 用户信息
 // @tags API1 用户
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/userinfo [get]
 func GetUser(c *gin.Context) {
 	u, _ := m.GetUserFromContext(c)
@@ -111,6 +113,7 @@ func GetUser(c *gin.Context) {
 	return
 }
 
+// OptionUser option请求
 func OptionUser(c *gin.Context) {
 	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed})
 	return
@@ -124,13 +127,14 @@ type login struct {
 }
 
 // LoginUser 用户登录
-// @Description 用户通过邮箱/用户名/手机号登录
+// @Description 用户通过邮箱/用户名/手机号登录 	status: 60-密码错误  61-用户不存在 63-登录失败 64-表单数据错误
 // @Summary 登录
 // @tags API1 用户
-// @Accept  multipart/form-data
+// @Accept  json
 // @Produce json
-// @Param Login body controllers.login true "登录信息表单"
-// @Success 200 {string} json “{"expire": "当前token到期时间", "status": 200, "token": "token的字符串","user": {"id": 3,"mobile": "string","email": "string","name": "string","image": "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg","type_id": 1000,"created_at": "2019-09-12T10:05:39Z","updated_at": "2019-09-12T03:34:17Z"}}"
+// @Param Login body middlewares.LoginFormData true "登录信息表单"
+// @Success 200 {string} json "{"expire": "当前token到期时间", "status": 200, "token": "token的字符串","user": {"id": 3,"mobile": "string","email": "string","name": "string","image": "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg","type_id": 1000,"created_at": "2019-09-12T10:05:39Z","updated_at": "2019-09-12T03:34:17Z"}}"
+// @Failure 401 {string} json "{"data": "login faild", "status": 错误码}"
 // @Router /user/login [post]
 func LoginUser(c *gin.Context) {
 	AuthMiddleware.LoginHandler(c)
@@ -141,10 +145,12 @@ func LoginUser(c *gin.Context) {
 // @Description 已经登录用户注销
 // @Summary 已经登录用户注销
 // @tags API1 用户
+// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Success 200 {string} json “{"status": 200, "data": "ok"}"
-// @Router /user/logout [post]
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /user/logout [get]
 func LogoutUser(c *gin.Context) {
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,

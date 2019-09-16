@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	wxAppId           = "wx0bcd4ffee09955f1"                    // 填上自己的参数
+	wxAppID           = "wx0bcd4ffee09955f1"                    // 填上自己的参数
 	wxAppSecret       = "2bfd5a3afad0fd9b8f1ee7caa5613754"      // 填上自己的参数
 	oauth2RedirectURI = "http://1668u455y4.imwork.net/wx/page2" // 填上自己的参数
 	oauth2Scope       = "snsapi_userinfo"                       // 填上自己的参数
@@ -27,7 +27,7 @@ const (
 
 var (
 	sessionStorage                 = session.New(20*60, 60*60)
-	oauth2Endpoint oauth2.Endpoint = mpoauth2.NewEndpoint(wxAppId, wxAppSecret)
+	oauth2Endpoint oauth2.Endpoint = mpoauth2.NewEndpoint(wxAppID, wxAppSecret)
 )
 
 // 建立必要的 session, 然后跳转到授权页面
@@ -48,7 +48,7 @@ func _Page1Handler(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &cookie)
 
-	AuthCodeURL := mpoauth2.AuthCodeURL(wxAppId, oauth2RedirectURI, oauth2Scope, state)
+	AuthCodeURL := mpoauth2.AuthCodeURL(wxAppID, oauth2RedirectURI, oauth2Scope, state)
 	log.Println("AuthCodeURL:", AuthCodeURL)
 
 	http.Redirect(w, r, AuthCodeURL, http.StatusFound)
@@ -129,12 +129,12 @@ func WechatCallBack(c *gin.Context) {
 	p.Srv.ServeHTTP(c.Writer, c.Request, nil)
 }
 
-// 建立必要的 session, 然后跳转到授权页面
+// Page1Handler 建立必要的 session, 然后跳转到授权页面
 func Page1Handler(c *gin.Context) {
 	_Page1Handler(c.Writer, c.Request)
 }
 
-// 建立必要的 session, 然后跳转到授权页面
+// Page2Handler 建立必要的 session, 然后跳转到授权页面
 func Page2Handler(c *gin.Context) {
 	_Page2Handler(c.Writer, c.Request)
 }
