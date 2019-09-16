@@ -36,7 +36,7 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        setToken(`token ${data.token}`)
         resolve()
       }).catch(error => {
         reject(error)
@@ -109,7 +109,7 @@ const actions = {
       const token = role + '-token'
 
       commit('SET_TOKEN', token)
-      setToken(token)
+      setToken(`token ${token}`)
 
       const { roles } = await dispatch('getInfo')
 
