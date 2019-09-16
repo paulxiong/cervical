@@ -1,4 +1,5 @@
 #!/bin/bash
+swag init
 go build -v -o main.exe main.go
 if [ ! -f main.exe ]; then
     echo "not found main.exe"

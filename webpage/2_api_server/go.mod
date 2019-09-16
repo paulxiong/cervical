@@ -30,6 +30,7 @@ require (
 	github.com/toolkits/file v0.0.0-20160325033739-a5b3c5147e07
 	github.com/ugorji/go v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
+	golang.org/x/lint v0.0.0-20190909230951-414d861bb4ac // indirect
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
 	golang.org/x/sys v0.0.0-20190825160603-fb81701db80f // indirect
 	golang.org/x/tools v0.0.0-20190826060629-95c3470cfb70 // indirect
