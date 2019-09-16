@@ -1,5 +1,3 @@
-const config = require('../settings')
-
 // for release
 export const APIUrl =
   process.env.NODE_ENV === 'production'
@@ -10,7 +8,6 @@ export const ImgServerUrl =
     ? 'http://medical.raidcdn.cn:3001'
     : 'http://9201.gpu.raidcdn.cn:9700'
 
-console.log(config)
 // for local debug
 // export const APIUrl = 'http://192.168.1.100:9000'
 // export const ImgServerUrl = 'http://192.168.1.102:18000'

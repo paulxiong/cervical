@@ -5,8 +5,8 @@
   "author": "inpm",
   "license": "MIT",
   "scripts": {
-    "dev": "vue-cli-service serve --swagger --fix",
-    "build:test": "vue-cli-service build --swagger --fix",
+    "dev": "vue-cli-service serve --fix",
+    "build:test": "vue-cli-service build --fix",
     "build:prod": "vue-cli-service build --fix",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
