@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve --swagger --fix",
-    "build:test": "vue-cli-service build --swagger --fix",
-    "build:prod": "vue-cli-service build --fix",
+    "build:test": "vue-cli-service build --swagger --fix --mode alpha",
+    "build:prod": "vue-cli-service build --fix --mode prod",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
@@ -66,7 +66,6 @@
     "eslint": "5.15.3",
     "eslint-plugin-vue": "5.2.2",
     "html-webpack-plugin": "3.2.0",
-    "husky": "1.3.1",
     "mockjs": "1.0.1-beta3",
     "node-sass": "^4.9.0",
     "plop": "2.3.0",
