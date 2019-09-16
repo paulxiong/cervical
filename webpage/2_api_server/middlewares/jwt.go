@@ -14,6 +14,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// IdentityKey 区分用户的key
 var IdentityKey = "user.Id"
 
 type login struct {
@@ -22,6 +23,7 @@ type login struct {
 	EmailOrMobile string `form:"emailormobile" json:"emailormobile"`
 }
 
+// LoginWithPasswd 检查用户名密码是否匹配
 func LoginWithPasswd(name string, password string, emailormobile string) (*m.User, string) {
 	userFound, _ := m.CheckUserExist2(name, emailormobile, emailormobile)
 	if userFound == nil {
@@ -33,11 +35,11 @@ func LoginWithPasswd(name string, password string, emailormobile string) (*m.Use
 	if err != nil {
 		logger.Info.Println("Authenticator  password not match")
 		return nil, "LoginBadPasswd"
-	} else {
-		return userFound, ""
 	}
+	return userFound, ""
 }
 
+// JwtMiddleware jwt
 func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
@@ -58,9 +60,9 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			userId := int64(claims[IdentityKey].(float64))
+			userID := int64(claims[IdentityKey].(float64))
 			logger.Info.Println("IdentityHandler ")
-			user := &m.User{Id: userId}
+			user := &m.User{Id: userID}
 			m.SaveUsertoContext(c, user)
 			return user
 		},
@@ -80,18 +82,18 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			m.SaveUsertoContext(c, userFound)
 			if userFound == nil {
 				return "", errors.New(errstring)
-			} else {
-				return userFound, nil
 			}
-			return nil, jwt.ErrFailedAuthentication
+			return userFound, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			logger.Info.Println("Authorizator ", data)
 			return true
-			if v, ok := data.(*m.User); ok && v.Name == "admin" {
-				return true
-			}
-			return false
+			/*
+				if v, ok := data.(*m.User); ok && v.Name == "admin" {
+					return true
+				}
+				return false
+			*/
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			logger.Info.Println("Unauthorized ", message, code)
@@ -108,11 +110,11 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
 			user := &m.User{}
 			newtoken := &m.Token{}
-			user_tmp, exists := c.Get("user")
-			if exists == true && user_tmp != nil {
-				user_tmp2 := user_tmp.(*m.User)
-				user.Id = user_tmp2.Id
-				newtoken.UserId = user_tmp2.Id
+			userTmp, exists := c.Get("user")
+			if exists == true && userTmp != nil {
+				userTmp2 := userTmp.(*m.User)
+				user.Id = userTmp2.Id
+				newtoken.UserId = userTmp2.Id
 			}
 			logger.Info.Println("LoginResponse")
 

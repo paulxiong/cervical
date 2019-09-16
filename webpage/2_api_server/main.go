@@ -80,7 +80,7 @@ func main() {
 
 		err := server.ListenAndServe()
 		if err != nil {
-			logger.Error.Fatal("Server err: %v", err)
+			logger.Error.Fatal("Server err: ", err)
 		}
 	}
 }
