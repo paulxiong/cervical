@@ -10,11 +10,11 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/paulxiong/cervical/webpage/2_api_server/docs"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
+// Router 注册路由
 func Router() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -58,13 +58,13 @@ func Router() *gin.Engine {
 		// 数据
 		api1.GET("/dtinfo", ctr.AllInfo)
 		api1.GET("/batchinfo", ctr.GetBatchInfo)
-		api1.GET("/medicalidinfo", ctr.GetMedicalIdInfo)
+		api1.GET("/medicalidinfo", ctr.GetMedicalIDInfo)
 		api1.GET("/categoryinfo", ctr.GetCategoryInfo)
 		api1.POST("/imglistsofwanted", ctr.GetImgListOfWanted)
 		api1.GET("/imglistsonebyone", ctr.GetImgListOneByOne)
-		api1.GET("/getLabelbyimageid", ctr.GetLabelByImageId)
+		api1.GET("/getLabelbyimageid", ctr.GetLabelByImageID)
 		api1.POST("/createdataset", ctr.CreateDataset)
-		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalId)
+		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalID)
 		api1.GET("/listdatasets", ctr.ListDatasets)
 		// 任务
 		api1.POST("/job", ctr.GetOneJob)

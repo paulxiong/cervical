@@ -24,6 +24,7 @@ func Pong(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/authping [get]
 func AuthPong(c *gin.Context) {
 	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed, "ping": "pong"})
