@@ -1,8 +1,8 @@
 <template>
   <div class="start-train">
     <h2 class="flex">
-      请确认训练信息，然后
-      <el-button class="start-btn" type="danger" @click="goTrain">开始训练</el-button>
+      请<el-input v-model="inputName" autofocus placeholder="为数据集取个名字吧" class="inputName"></el-input>，然后
+      <el-button class="start-btn" type="danger" :disabled="!inputName.length" :loading="loading" @click="goTrain">开始训练</el-button>
       <i class="errInfo-btn">
         若信息有误，需要
         <el-button type="info" size="mini" @click="goBack">重新编辑</el-button>
@@ -57,15 +57,20 @@ export default {
   components: {},
   data() {
     return {
+      loading: false,
+      inputName: ''
     }
   },
   methods: {
     goTrain() {
+      this.loading = true
       let postData = JSON.parse(localStorage.getItem('POST_DATA'))
+      postData['desc'] = this.inputName
       createdataset(postData).then(res => {
         this.$router.push({
           path: '/'
         })
+        this.loading = false
       })
     },
     goBack() {
@@ -76,6 +81,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.inputName {
+  width: 200px;
+  margin: 0 7px;
+}
 .start-train {
   .badge {
     font-size: 20px;

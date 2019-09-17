@@ -62,7 +62,7 @@
             <el-input
               :key="passwordType"
               ref="password"
-              v-model="loginForm.password"
+              v-model="loginForm.confirmPassword"
               :type="passwordType"
               placeholder="确认密码"
               name="password"
@@ -87,7 +87,13 @@
         <div style="position:relative">
           <div class="tips">
             <el-link type="primary" :underline="false" icon="el-icon-key">忘记密码</el-link>
-            <el-link type="primary" :underline="false" icon="el-icon-user" class="register" @click="handleRegisterLogin">{{!register?'注册并登录':'登录'}}</el-link>
+            <el-link
+              type="primary"
+              :underline="false"
+              icon="el-icon-user"
+              class="register"
+              @click="handleRegisterLogin"
+            >{{!register?'注册':'登录'}}</el-link>
           </div>
         </div>
       </el-form>
@@ -104,7 +110,7 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import { validEmail, validPhone } from '@/utils/validate'
 import SocialSign from './components/SocialSignin'
 import loginHeader from './components/login-header'
 import loginFooter from './components/login-footer'
@@ -114,15 +120,22 @@ export default {
   components: { SocialSign, loginHeader, loginFooter },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
+      if (!validEmail(value) || !validPhone(value)) {
         callback()
+      } else {
+        callback(new Error('请输入正确的邮箱或手机号'))
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
-        callback(new Error('The password can not be less than 3 digits'))
+        callback(new Error('至少3位'))
+      } else {
+        callback()
+      }
+    }
+    const validateConfirmPassword = (rule, value, callback) => {
+      if (this.loginForm.password === this.loginForm.confirmPassword) {
+        callback(new Error('两次输入的密码不同'))
       } else {
         callback()
       }
@@ -132,7 +145,8 @@ export default {
       register: false,
       loginForm: {
         username: 'admin',
-        password: '123'
+        password: '123',
+        confirmPassword: ''
       },
       loginRules: {
         username: [
@@ -140,6 +154,9 @@ export default {
         ],
         password: [
           { required: true, trigger: 'blur', validator: validatePassword }
+        ],
+        confirmPassword: [
+          { required: true, trigger: 'blur', validator: validateConfirmPassword }
         ]
       },
       passwordType: 'password',
@@ -152,7 +169,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         const query = route.query
         if (query) {
           this.redirect = query.redirect
@@ -210,18 +227,39 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({
-                path: this.redirect || '/',
-                query: this.otherQuery
+          if (this.register) {
+            this.$store
+              .dispatch('user/register', this.loginForm)
+              .then(() => {
+                setTimeout(() => {
+                  this.$store
+                    .dispatch('user/login', this.loginForm)
+                    .then(() => {
+                      this.$router.push({
+                        path: this.redirect || '/',
+                        query: this.otherQuery
+                      })
+                      this.loading = false
+                    })
+                    .catch(() => {
+                      this.loading = false
+                    })
+                }, 1e3)
               })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+          } else {
+            this.$store
+              .dispatch('user/login', this.loginForm)
+              .then(() => {
+                this.$router.push({
+                  path: this.redirect || '/',
+                  query: this.otherQuery
+                })
+                this.loading = false
+              })
+              .catch(() => {
+                this.loading = false
+              })
+          }
         } else {
           console.log('error submit!!')
           return false

@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, register, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -34,6 +34,21 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        setToken(`token ${data.token}`)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // user login
+  register({ commit }, userInfo) {
+    const { username, password, confirmPassword } = userInfo
+    return new Promise((resolve, reject) => {
+      register({ username: username.trim(), password: password, confirmPassword: confirmPassword, email: '', mobile: username }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(`token ${data.token}`)
