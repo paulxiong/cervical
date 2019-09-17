@@ -48,6 +48,9 @@ func Router() *gin.Engine {
 
 	api1 := r.Group("/api1")
 	api1.GET("/ping", ctr.Pong) //不需要登录就能ping的API
+	// 任务
+	api1.POST("/job", ctr.GetOneJob)
+	api1.POST("/jobresult", ctr.SetJobResult)
 
 	api1.Use(ctr.CheckAuth)
 	{
@@ -67,8 +70,6 @@ func Router() *gin.Engine {
 		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalID)
 		api1.GET("/listdatasets", ctr.ListDatasets)
 		// 任务
-		api1.POST("/job", ctr.GetOneJob)
-		api1.POST("/jobresult", ctr.SetJobResult)
 		api1.GET("/jobresult", ctr.GetJobResult)
 		api1.GET("/jobpercent", ctr.GetJobPercent)
 		api1.GET("/joblog", ctr.GetJobLog)

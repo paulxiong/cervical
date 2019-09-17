@@ -33,58 +33,50 @@ lambdatest/
 
 要生成的目录结构
 scratch/
-└── 156256766279800000001
-    ├── input_datasets
-    │   └── 1807237_P
-    ├── input_datasets_denoising
-    │   └── 1807237_P_20190523_1807237_IMG005x022
-    │       └── images
-    ├── middle_mask
-    │   └── predict
-    │       └── test
-    │           └── colour
-    │               └── 1807237_P_20190523_1807237_IMG005x022
-    └── output_datasets
-        ├── 1807237_N_20190523_1807237_IMG001x014.JPG_output
-        │   ├── crops
-        │   └── preview
+└── vqoM7xEt
+    ├── 30.log
+    ├── cells
+    │   ├── crop
+    │   ├── crop_masked
+    │   ├── mask_npy
+    │   │   ├── 17P0603=1903779=P=IMG032x009.JPG_563_1885_663_1985.npy
+    │   │   ├── 17P0603=1903779=P=IMG032x009.JPG_563_1910_663_2010.npy
+    │   └── rois
+    │       ├── 17P0603=1903779=N=IMG033x021.JPG_.csv
+    │       └── 17P0603=1903779=P=IMG036x013.JPG_.csv
+    ├── filelist.csv
+    ├── info.json
+    └── origin_imgs
+        ├── 17P0603=1903779=N=IMG033x021.csv
+        ├── 17P0603=1903779=N=IMG033x021.JPG
 */
 const (
-	input_datasets           = "input_datasets"
-	input_datasets_denoising = "input_datasets_denoising"
-	middle_mask              = "middle_mask"
-	output_datasets          = "output_datasets"
-	image_root               = ""
-	csv_root                 = ""
-	scratch_root             = "scratch"
+	inputDatasets = "origin_imgs"
+	scratchRoot   = "scratch"
 )
 
+// JobInfo 存在硬盘的JSON文件，描述每个任务的属性
 type JobInfo struct {
-	Id                           int64    `json:"id"`
-	Desc                         string   `json:"desc"`
-	Dir                          string   `json:"dir"`
-	Batchids                     []string `json:"batchids"`
-	Medicalids                   []string `json:"medicalids"`
-	Status                       int      `json:"status"`
-	Cntn                         int      `json:"cntn"`
-	Cntp                         int      `json:"cntp"`
-	CellCntn                     int      `json:"cellcntn"`
-	CellCntp                     int      `json:"cellcntp"`
-	Createdatts                  int64    `json:"createdatts"`
-	Starttimets                  int64    `json:"starttimets"`
-	Input_datasets_img           []string `json:"input_datasets_img"`
-	Input_datasets_csv           []string `json:"input_datasets_csv"`
-	Input_datasets_denoising     []string `json:"input_datasets_denoising"`
-	Middle_mask                  []string `json:"middle_mask"`
-	Output_datasets_crop         []string `json:"output_datasets_crop"`
-	Output_datasets_crop_n       []string `json:"output_datasets_crop_n"`
-	Output_datasets_crop_p       []string `json:"output_datasets_crop_p"`
-	Output_datasets_npy          []string `json:"output_datasets_npy"`
-	Output_datasets_slide_npy    []string `json:"output_datasets_slide_npy"`
-	Output_datasets_crop_preview []string `json:"output_datasets_crop_preview"`
+	ID              int64    `json:"id"`
+	Desc            string   `json:"desc"`
+	Dir             string   `json:"dir"`
+	Batchids        []string `json:"batchids"`
+	Medicalids      []string `json:"medicalids"`
+	Status          int      `json:"status"`
+	Cntn            int      `json:"cntn"`
+	Cntp            int      `json:"cntp"`
+	CellCntn        int      `json:"cellcntn"`
+	CellCntp        int      `json:"cellcntp"`
+	Createdatts     int64    `json:"createdatts"`
+	Starttimets     int64    `json:"starttimets"`
+	OriginImgs      []string `json:"origin_imgs"`       // 存放原图以及原图对应的csv
+	CellsCrop       []string `json:"cells_crop"`        // 存放裁剪之后的细胞图
+	CellsCropMasked []string `json:"cells_crop_masked"` // 存放裁剪之后的细胞图去掉了背景
+	CellsMaskNpy    []string `json:"cells_mask_npy"`    // 存放细胞对应的掩码npy文件，npy是ndarray保存成了文件
+	CellsRois       []string `json:"cells_rois"`        // 存放细胞对应的的坐标
 }
 
-func WriteJson(cfg string, jsonByte []byte) {
+func writeJSON(cfg string, jsonByte []byte) {
 	if cfg == "" {
 		logger.Info.Println("please specify json file")
 	}
@@ -94,17 +86,19 @@ func WriteJson(cfg string, jsonByte []byte) {
 	}
 }
 
-func GetInfoJsonPath(d m.Dataset) string {
-	infopath := scratch_root + "/" + d.Dir + "/info.json"
+// GetInfoJSONPath 拿出info.json的路径
+func GetInfoJSONPath(d m.Dataset) string {
+	infopath := scratchRoot + "/" + d.Dir + "/info.json"
 	return infopath
 }
 
+// GetLogContent 读取任务的日志文件
 func GetLogContent(d m.Dataset, _type string) string {
 	logpath := ""
 	if _type == "c" {
-		logpath = scratch_root + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.Id)
+		logpath = scratchRoot + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.Id)
 	} else {
-		logpath = scratch_root + "/" + d.Dir + "/" + "log"
+		logpath = scratchRoot + "/" + d.Dir + "/" + "log"
 	}
 	data, err := ioutil.ReadFile(logpath)
 	if err != nil {
@@ -113,15 +107,16 @@ func GetLogContent(d m.Dataset, _type string) string {
 	return string(data)
 }
 
+// GetModelInfo 读取生成模型的日志文件
 func GetModelInfo(d m.Dataset, _type string) []m.Model {
 	logpath := ""
 	minfo := []m.Model{}
 	modeltype := 1 // 0未知 1UNET 2GAN 3SVM
 	if _type == "s" {
-		logpath = scratch_root + "/" + d.Dir + "/svm_model.txt"
+		logpath = scratchRoot + "/" + d.Dir + "/svm_model.txt"
 		modeltype = 3
 	} else {
-		logpath = scratch_root + "/" + d.Dir + "/gan_model.txt"
+		logpath = scratchRoot + "/" + d.Dir + "/gan_model.txt"
 		modeltype = 2
 	}
 
@@ -150,9 +145,10 @@ func GetModelInfo(d m.Dataset, _type string) []m.Model {
 	}
 }
 
-func NewJsonFile(d m.Dataset, batchids []string, medicalids []string, cntn int, cntp int) {
+// NewJSONFile 创建任务的时候把任务的部分信息存到JSON文件
+func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, cntp int) {
 	c := JobInfo{}
-	c.Id = d.Id
+	c.ID = d.Id
 	c.Desc = d.Desc
 	c.Status = d.Status
 	c.Dir = d.Dir
@@ -167,17 +163,18 @@ func NewJsonFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 		log.Println("ERROR:", err)
 	}
 
-	info := scratch_root + "/" + d.Dir + "/info.json"
-	WriteJson(info, data)
+	info := scratchRoot + "/" + d.Dir + "/info.json"
+	writeJSON(info, data)
 }
 
+// CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
 func CreateDataset(imgs []m.ImagesByMedicalId, dirname string) (n int, p int) {
-	err := os.MkdirAll(scratch_root+"/"+dirname, os.ModePerm) //创建多级目录
+	err := os.MkdirAll(scratchRoot+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)
 	}
 
-	filelist := scratch_root + "/" + dirname + "/filelist.csv"
+	filelist := scratchRoot + "/" + dirname + "/filelist.csv"
 	fd, err1 := os.OpenFile(filelist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)
@@ -188,22 +185,23 @@ func CreateDataset(imgs []m.ImagesByMedicalId, dirname string) (n int, p int) {
 	for _, v := range imgs {
 		imgpath := v.Batchid + "/" + v.Medicalid + "/Images/" + v.Imgpath
 		csvpath := v.Csvpath
-		topath := ""
+		toimgname := ""
 		if v.P1N0 == 0 {
-			topath = dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_N/"
+			toimgname = v.Batchid + "=" + v.Medicalid + "=N=" + v.Imgpath
 			cntn = cntn + 1
 		} else {
-			topath = dirname + "/" + input_datasets + "/" + v.Batchid + "_" + v.Medicalid + "_P/"
+			toimgname = v.Batchid + "=" + v.Medicalid + "=P=" + v.Imgpath
 			cntp = cntp + 1
 		}
-		s := imgpath + " " + csvpath + " " + topath
+		s := imgpath + " " + csvpath + " " + toimgname
 		fd.WriteString(s + "\n")
 	}
 	fd.Close()
 	return cntn, cntp
 }
 
-func LoadJsonFile(filename string) JobInfo {
+// LoadJSONFile 加载json文件内容成struct
+func LoadJSONFile(filename string) JobInfo {
 	j := JobInfo{}
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {

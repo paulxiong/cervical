@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import os, gc, sys, time
+import os, gc, sys, time, shutil
 from enum import Enum
-reload(sys)
-sys.setdefaultencoding('utf-8')
-#from segmentation.src.utilslib.logger import  logger
 from utilslib.webserverapi import get_one_job, post_job_status
+from utilslib.logger import logger
+from utilslib.fileinfo import copy_origin_imgs
+from utilslib.jsonfile import update_info_json
+from my_inference import detector
 
 localdebug = os.environ.get('DEBUG', 'False')
 
@@ -31,21 +32,55 @@ class cervical_seg():
         self.jobdir = jobdir
         self.jid = jobid
         self.percent = 0
-        self.scratchdir = os.environ.get('SCRATCHDIR', 'scratch/')
-        #for image classification and nuclei segmentation
-        self.experiment_root      = self.scratchdir + self.jobdir + "/"
-
-        if not os.path.exists(self.experiment_root):
-            os.makedirs(self.experiment_root)
-        if not os.path.exists(self.experiment_root + '/picture'):
-            os.makedirs(self.experiment_root + '/picture')
-        if not os.path.exists(self.experiment_root + '/model'):
-            os.makedirs(self.experiment_root + '/model')
-
+        self.scratchdir  = os.environ.get('SCRATCHDIR', 'scratch/')
+        self.rootdir     = os.path.join(self.scratchdir, self.jobdir) #每个任务的根目录
+        #裁剪
+        self.csvroot = os.environ.get('CSVDIR', './csv')
+        self.imgroot = os.environ.get('IMGDIR', './img')
+        self.model1_path = "./model/deepretina_final.h5" #mask-rcnn使用的模型
+        self.gray        = True #检测细胞用黑白图（无论True还是False，最终扣出的细胞是彩色的）
+        self.filelist    = os.path.join(self.rootdir, 'filelist.csv') #页面上选中的图片的列表
+        self.infojson    = os.path.join(self.rootdir, 'info.json') #存任务的所有信息
+        self.origin_imgs = os.path.join(self.rootdir, 'origin_imgs') #存放原图和原图对应的csv文件的目录
+        self.cells       = os.path.join(self.rootdir, 'cells') #存放细胞相关的，比如检测出来原图细胞的坐标csv文件，细胞的mask，裁剪出来的细胞
+        self.mask_npy    = os.path.join(self.cells, 'mask_npy') #ndarray 存成的npy文件，里面是每个细胞的mask
+        self.rois        = os.path.join(self.cells, 'rois') #存放细胞在原图里的坐标
+        self.crop        = os.path.join(self.cells, 'crop') #存放扣出来的细胞图，目前特指医生标注过的
+        self.crop_masked = os.path.join(self.cells, 'crop_masked') #存放扣出来的细胞图去掉了背景，目前特指医生标注过的
+        #初始化
+        self.prepare_fs()
+        # self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
         #log
-        #self.logger = logger(str(self.jobid), self.jobdir)
+        self.logger = logger(str(self.jid), self.rootdir)
+
+    def segmentation(self):
+        try:
+            #把原图和对应的CSV拷贝到任务目录下面
+            ret = copy_origin_imgs(self.filelist, self.imgroot, self.csvroot, self.origin_imgs, self.logger)
+            if ret == False:
+                return False
+            self.percent = 5
+
+            #开始从图片里面定位细胞
+            ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
+            if ret == False:
+                return False
+        except Exception as ex:
+            print(ex)
+            return False
+        return True
+
+    #初始化必要的文件夹
+    def prepare_fs(self):
+        dirs1 = [self.scratchdir, self.rootdir, self.origin_imgs, self.cells,
+                 self.mask_npy, self.rois, self.crop, self.crop_masked]
+        for folder in dirs1:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+
     def done(self, text):
         #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
+        self.percent = 100
         post_job_status(self.jid, 4, self.percent)
         print(text)
         return
@@ -60,27 +95,33 @@ class cervical_seg():
 
 if __name__ == '__main__':
     while 1:
-        if localdebug is not "True" and localdebug is not True:
+        #向服务器请求任务，任务的状态必须是 READ4PROCESS
+        if localdebug is not True and localdebug != "True":
             # datatype:  0未知1训练2预测
             jobid, status, dirname, jobtype = get_one_job(ds.READ4PROCESS.value, dt.TRAIN.value)
         else:
-            jobid = 95
-            status = 4
-            dirname = 'vwlN83JI'
+            jobid = 31
+            status = ds.READ4PROCESS.value
+            dirname = 'BVv1p1U6'
 
-        print(status, dirname)
-        if status != 1 or dirname is None:
+        #检查得到的任务是不是想要的
+        if status != ds.READ4PROCESS.value or dirname is None:
             time.sleep(5)
             continue
 
-        cgan = cervical_seg(jobid, dirname)
-        for i in range(0, 100):
-            time.sleep(1)
-            cgan.processing(i)
+        #新建任务
+        cseg = cervical_seg(jobid, dirname)
+        #开始处理任务
+        ret = cseg.segmentation()
+        #处理完之后更新任务信息到info.json
+        update_info_json(cseg)
+        #处理结果判断
+        if ret == True:
+            cseg.done('done!')
+        else:
+            cseg.failed("failed segmentation: %d %s" % (cseg.jid, cseg.jobdir))
 
-        cgan.done('done!')
-
-        del cgan
+        del cseg
         gc.collect()
         time.sleep(5)
 

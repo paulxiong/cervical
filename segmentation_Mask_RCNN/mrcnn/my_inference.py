@@ -108,7 +108,7 @@ class detector():
         if self.debug is True and allfiles_num > len(image_list):
             print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
         return image_list
-    def calculate_wh(slef, x, y, img, side):
+    def calculate_wh(self, x, y, img, side):
         limit_x = img.shape[1]
         limit_y = img.shape[0]
         x1 = x - side
@@ -121,14 +121,18 @@ class detector():
         y1 = int(max(0, min(y2-1, y1)))
         return x1, y1, x2, y2
 
-    def detect_image(self, gray=False):
+    def detect_image(self, gray=False, print2=None):
         pathList = self.get_image_lists()
+        if print2 is None:
+            print2 = print
 
         step, total_steps = 0, len(pathList)
+        if total_steps < 1:
+            return False
         for filename in pathList:
             step = step + 1
             image_path = os.path.join(self.original_img_path, filename)
-            print("step %d/%d  %s" %(step, total_steps, image_path))
+            print2("step %d/%d  %s" %(step, total_steps, image_path))
             original_image = cv2.imread(image_path)
             predict_img = original_image
 
@@ -163,7 +167,7 @@ class detector():
                 classid = r['class_ids'][i]
                 roi = final_rois[i]
                 if int(threshold*100) > int(score*100):
-                    print("%s drop roi, score=%f" % (filename, score))
+                    print2("%s drop roi, score=%f" % (filename, score))
                     continue
 
                 mask_npy = pred_masks[:,:,i]
@@ -196,6 +200,7 @@ class detector():
                         draw_color = (255, 0, 0)
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
                 cv2.imwrite(output_image_path, original_image)
+        return True
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"

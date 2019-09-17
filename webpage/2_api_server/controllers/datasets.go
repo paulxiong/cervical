@@ -415,7 +415,7 @@ func CreateDataset(c *gin.Context) {
 	dt.Status = 1
 	m.UpdateDatasetsStatus(dt.Id, dt.Status)
 
-	f.NewJsonFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
+	f.NewJSONFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -555,8 +555,8 @@ func GetJobResult(c *gin.Context) {
 
 	d, _ := m.GetOneDatasetById(int(id))
 
-	j := f.LoadJsonFile(f.GetInfoJsonPath(d))
-	logger.Info.Println(j.Id)
+	j := f.LoadJSONFile(f.GetInfoJSONPath(d))
+	logger.Info.Println(j.ID)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
