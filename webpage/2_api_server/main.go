@@ -19,7 +19,9 @@ import (
 
 // @title API说明
 // @version 1.0
-// @description 这是API说明文档，开发服务器才有， 正式部署之后没有。  认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格， token向管理员申请)
+// @description 这是API说明文档，开发服务器才有， 正式部署之后没有。
+// @description 认证时候填 "token eyJhbGciOiJIU..." (注意token后面有个空格， token向管理员申请)
+// @description 网络请求每次返回code比如200、404或者401。返回内容是JSON {status: 状态码, data: 具体内容}
 // @termsOfService http://9200.gpu.raidcdn.cn:9700
 // @contact.name API Support
 // @contact.url http://9200.gpu.raidcdn.cn:9700

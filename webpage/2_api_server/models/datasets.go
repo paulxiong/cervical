@@ -341,8 +341,8 @@ type Dataset struct {
 	PredictEnd  time.Time `json:"predictend"     gorm:"column:PREDICT_END"`  //预测结束的时间
 	Percent     int64     `json:"percent"        gorm:"column:PERCENT"`      //处理数据/训练/预测的进度
 	CreatedBy   int64     `json:"created_by"     gorm:"column:CREATED_BY"`   //创建者
-	CreatedAt   time.Time `json:"-"              gorm:"column:CREATED_TIME"` //创建时间
-	UpdatedAt   time.Time `json:"-"              gorm:"column:UPDATED_TIME"` //更新时间
+	CreatedAt   time.Time `json:"created_at"     gorm:"column:CREATED_TIME"` //创建时间
+	UpdatedAt   time.Time `json:"updated_at"     gorm:"column:UPDATED_TIME"` //更新时间
 }
 
 func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {

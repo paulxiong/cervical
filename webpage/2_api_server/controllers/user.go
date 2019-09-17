@@ -30,7 +30,16 @@ type register struct {
 }
 
 // RegisterUser 注册新用户
-// @Description 注册新用户 status： 76-手机号已经注册过 75-表单数据错误 74-新建用户失败 73-表单数据不对（密码或手机号为空） 72-两次密码不一致 71-邮箱已经注册过 70-用户已经存在
+// @Description 注册新用户 code: 200 注册请求成功,  406 注册失败
+// @Description status：
+// @Description 76 手机号已经注册过
+// @Description 75 表单数据错误
+// @Description 74 新建用户失败
+// @Description 73 表单数据不对（密码或手机号为空）
+// @Description 72 两次密码不一致
+// @Description 71 邮箱已经注册过
+// @Description 70 用户已经存在
+// @Description 200 注册成功
 // @Summary 注册
 // @tags API1 用户
 // @Accept  multipart/form-data
@@ -95,6 +104,7 @@ func RegisterUser(c *gin.Context) {
 
 // GetUser 获得当前用户信息
 // @Description 获得当前用户信息 code: 200 用户信息获取成功  401 未登录
+// @Description status: 200 成功  其他: 未登录
 // @Summary 用户信息
 // @tags API1 用户
 // @Accept  json
@@ -128,6 +138,7 @@ type login struct {
 
 // LoginUser 用户登录
 // @Description 用户通过邮箱/用户名/手机号登录 	status: 60-密码错误  61-用户不存在 63-登录失败 64-表单数据错误
+// @Description
 // @Summary 登录
 // @tags API1 用户
 // @Accept  json

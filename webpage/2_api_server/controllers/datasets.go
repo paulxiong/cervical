@@ -507,9 +507,11 @@ type listDatasets struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/listdatasets [post]
+// @Router /api1/listdatasets [get]
 func ListDatasets(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
