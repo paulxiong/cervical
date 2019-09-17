@@ -42,10 +42,10 @@
 <script>
 import { listdatasets } from '@/api/cervical'
 import { taskStatus, typeStatus } from '@/const/const'
-import { dateformat2 } from '@/utils/dateformat'
+import { dateformat3 } from '@/utils/dateformat'
 
 export default {
-  name: "home",
+  name: 'home',
   components: {},
   data() {
     return {
@@ -80,39 +80,20 @@ export default {
             type: 'success',
             size: 'large',
             icon: 'el-icon-circle-check',
-            timestamp: dateformat2(v.start_at)
+            timestamp: dateformat3(v.processtime)
           }, {
             content: '开始训练',
             type: 'warning',
             size: 'large',
             icon: 'el-icon-timer',
-            timestamp: dateformat2(v.start_at)
+            timestamp: dateformat3(v.traintime)
           }, {
             content: '创建成功',
             type: 'primary',
             size: 'large',
             icon: 'el-icon-s-promotion',
-            timestamp: dateformat2(v.created_at)
+            timestamp: dateformat3(v.created_at)
           }]
-          // v.activities = [{
-          //   content: '训练完成',
-          //   type: 'success',
-          //   size: 'large',
-          //   icon: 'el-icon-circle-check',
-          //   timestamp: dateformat2(v.start_at)
-          // }, {
-          //   content: '开始训练',
-          //   type: 'warning',
-          //   size: 'large',
-          //   icon: 'el-icon-timer',
-          //   timestamp: dateformat2(v.start_at)
-          // }, {
-          //   content: '创建成功',
-          //   type: 'primary',
-          //   size: 'large',
-          //   icon: 'el-icon-s-promotion',
-          //   timestamp: dateformat2(v.created_at)
-          // }]
         })
         this.dataList = res.data.data.datasets || []
       })
@@ -144,10 +125,10 @@ export default {
       justify-content: flex-start;
       .info {
         line-height: 26px;
-        margin-right: 50px;
       }
       .timeline {
         padding: 0;
+        margin-left: 30px;
       }
     }
   }

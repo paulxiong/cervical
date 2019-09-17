@@ -22,7 +22,7 @@
           <el-input
             ref="username"
             v-model="loginForm.username"
-            placeholder="Username"
+            placeholder="手机或邮箱"
             name="username"
             type="text"
             tabindex="1"
@@ -30,7 +30,7 @@
           />
         </el-form-item>
 
-        <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+        <el-tooltip v-model="capsTooltip" content="忘记密码了？" placement="right" manual>
           <el-form-item prop="password">
             <span class="svg-container">
               <svg-icon icon-class="password" />
@@ -40,7 +40,31 @@
               ref="password"
               v-model="loginForm.password"
               :type="passwordType"
-              placeholder="Password"
+              placeholder="密码"
+              name="password"
+              tabindex="2"
+              autocomplete="on"
+              @keyup.native="checkCapslock"
+              @blur="capsTooltip = false"
+              @keyup.enter.native="handleLogin"
+            />
+            <span class="show-pwd" @click="showPwd">
+              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+            </span>
+          </el-form-item>
+        </el-tooltip>
+
+        <el-tooltip v-if="register" v-model="capsTooltip" content="忘记密码了？" placement="right" manual>
+          <el-form-item prop="password">
+            <span class="svg-container">
+              <svg-icon icon-class="password" />
+            </span>
+            <el-input
+              :key="passwordType"
+              ref="password"
+              v-model="loginForm.password"
+              :type="passwordType"
+              placeholder="确认密码"
               name="password"
               tabindex="2"
               autocomplete="on"
@@ -57,18 +81,15 @@
         <el-button
           :loading="loading"
           type="primary"
-          style="width:100%;margin-bottom:30px;"
+          style="width:100%;margin-bottom:20px;"
           @click.native.prevent="handleLogin"
-        >Login</el-button>
-        <!-- <div style="position:relative">
+        >{{register?'注册并登录':'登录'}}</el-button>
+        <div style="position:relative">
           <div class="tips">
-            <span>Username : admin</span>
-            <span>Password : 123</span>
+            <el-link type="primary" :underline="false" icon="el-icon-key">忘记密码</el-link>
+            <el-link type="primary" :underline="false" icon="el-icon-user" class="register" @click="handleRegisterLogin">{{!register?'注册并登录':'登录'}}</el-link>
           </div>
-          <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-            Or connect with
-          </el-button>
-        </div>-->
+        </div>
       </el-form>
     </section>
     <el-dialog title="Or connect with" :visible.sync="showDialog">
@@ -83,44 +104,45 @@
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate"
-import SocialSign from "./components/SocialSignin"
-import loginHeader from "./components/login-header"
-import loginFooter from "./components/login-footer"
+import { validUsername } from '@/utils/validate'
+import SocialSign from './components/SocialSignin'
+import loginHeader from './components/login-header'
+import loginFooter from './components/login-footer'
 
 export default {
-  name: "Login",
+  name: 'Login',
   components: { SocialSign, loginHeader, loginFooter },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error("Please enter the correct user name"))
+        callback(new Error('Please enter the correct user name'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
-        callback(new Error("The password can not be less than 3 digits"))
+        callback(new Error('The password can not be less than 3 digits'))
       } else {
         callback()
       }
     }
     return {
-      fuValue: "",
+      fuValue: '',
+      register: false,
       loginForm: {
-        username: "admin",
-        password: "123"
+        username: 'admin',
+        password: '123'
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", validator: validateUsername }
+          { required: true, trigger: 'blur', validator: validateUsername }
         ],
         password: [
-          { required: true, trigger: "blur", validator: validatePassword }
+          { required: true, trigger: 'blur', validator: validatePassword }
         ]
       },
-      passwordType: "password",
+      passwordType: 'password',
       capsTooltip: false,
       loading: false,
       showDialog: false,
@@ -144,9 +166,9 @@ export default {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
-    if (this.loginForm.username === "") {
+    if (this.loginForm.username === '') {
       this.$refs.username.focus()
-    } else if (this.loginForm.password === "") {
+    } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
   },
@@ -154,26 +176,31 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    handleRegisterLogin() {
+      this.register = !this.register
+      this.loginForm.username = ''
+      this.loginForm.password = ''
+    },
     checkCapslock({ shiftKey, key } = {}) {
       if (key && key.length === 1) {
         if (
-          (shiftKey && (key >= "a" && key <= "z")) ||
-          (!shiftKey && (key >= "A" && key <= "Z"))
+          (shiftKey && (key >= 'a' && key <= 'z')) ||
+          (!shiftKey && (key >= 'A' && key <= 'Z'))
         ) {
           this.capsTooltip = true
         } else {
           this.capsTooltip = false
         }
       }
-      if (key === "CapsLock" && this.capsTooltip === true) {
+      if (key === 'CapsLock' && this.capsTooltip === true) {
         this.capsTooltip = false
       }
     },
     showPwd() {
-      if (this.passwordType === "password") {
-        this.passwordType = ""
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
       } else {
-        this.passwordType = "password"
+        this.passwordType = 'password'
       }
       this.$nextTick(() => {
         this.$refs.password.focus()
@@ -184,10 +211,10 @@ export default {
         if (valid) {
           this.loading = true
           this.$store
-            .dispatch("user/login", this.loginForm)
+            .dispatch('user/login', this.loginForm)
             .then(() => {
               this.$router.push({
-                path: this.redirect || "/",
+                path: this.redirect || '/',
                 query: this.otherQuery
               })
               this.loading = false
@@ -196,14 +223,14 @@ export default {
               this.loading = false
             })
         } else {
-          console.log("error submit!!")
+          console.log('error submit!!')
           return false
         }
       })
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
-        if (cur !== "redirect") {
+        if (cur !== 'redirect') {
           acc[cur] = query[cur]
         }
         return acc
@@ -244,12 +271,15 @@ $cursor: #fff;
     color: $cursor;
   }
 }
-
+.register {
+  margin-left: 20px;
+}
 /* reset element-ui css */
 .login-container {
   .main {
     justify-content: space-around;
     .img {
+      width: 36vw;
       margin-top: 150px;
     }
   }

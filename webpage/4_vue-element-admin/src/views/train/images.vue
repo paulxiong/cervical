@@ -120,6 +120,7 @@
 <script>
 import { getjobresult, getPercent } from '@/api/cervical'
 import { ImgServerUrl } from '@/const/config'
+let timer
 
 export default {
   name: 'images',
@@ -148,9 +149,10 @@ export default {
         this.input_datasets_img = this.objData.input_datasets_img
       })
     },
-    getPercnet() {
+    getPercent() {
       getPercent({ id: this.$route.query.id }).then(res => {
         this.percentage = res.data.data
+        this.finishedImages()
       })
     },
     tabClick(tab, evt) {
@@ -178,23 +180,22 @@ export default {
     finishedImages() {
       this.$emit('finished', this.percentage)
     },
-    timer() {
-      return setInterval(() => {
+    loopGetPercent() {
+      timer = setInterval(() => {
         if (this.percentage === 100) {
-          clearInterval(this.timer())
+          clearInterval(timer)
         }
-        this.getPercnet()
-        this.finishedImages()
-      }, 10000)
+        this.getPercent()
+      }, 1e4)
     }
   },
   mounted() {
     this.getjobresult()
-    this.getPercnet()
-    this.timer()
+    this.getPercent()
+    this.loopGetPercent()
   },
-  destroyed() {
-    clearInterval(this.timer())
+  beforedestroy() {
+    clearInterval(timer)
   }
 }
 </script>
