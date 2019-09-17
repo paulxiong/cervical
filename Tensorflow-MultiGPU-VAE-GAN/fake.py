@@ -52,16 +52,7 @@ def create_image(im):
 # Lets just take a look at our channels
 cm = plt.cm.hot
 test_face = faces[0].reshape(dim1,dim2,dim3)
-#fig, ax = plt.subplots(nrows=1,ncols=4, figsize=(20,8))
-#ax[0].imshow(create_image(test_face), interpolation='nearest')
-#ax[1].imshow(create_image(test_face)[:,:,0], interpolation='nearest', cmap=cm)
-#ax[2].imshow(create_image(test_face)[:,:,1], interpolation='nearest', cmap=cm)
-#ax[3].imshow(create_image(test_face)[:,:,2], interpolation='nearest', cmap=cm)
 
-
-# ### A data iterator for batching (drawn up by Luke Metz)
-# - https://indico.io/blog/tensorflow-data-inputs-part1-placeholders-protobufs-queues/
-#
 
 def data_iterator():
     """ A simple data iterator """
@@ -79,23 +70,6 @@ def data_iterator():
 
 
 iter_ = data_iterator()
-
-#face_batch, label_batch
-# ### Bald people
-#fig, ax = plt.subplots(nrows=1,ncols=4, figsize=(20,8))
-#ax[0].imshow(create_image(faces[labels[:,4] == 1][0]), interpolation='nearest')
-#ax[1].imshow(create_image(faces[labels[:,4] == 1][1]), interpolation='nearest')
-#ax[2].imshow(create_image(faces[labels[:,4] == 1][2]), interpolation='nearest')
-#ax[3].imshow(create_image(faces[labels[:,4] == 1][3]), interpolation='nearest')
-
-
-# ### Draw out the architecture of our network
-# - Each of these functions represent the <font color="#38761d"><strong>Encoder</strong></font>,
-# <font color="#1155cc"><strong>Generator</strong></font>, and <font color="#ff0000"><strong>Discriminator</strong></font> described above.
-# - It would be interesting to try and implement the inception architecture to do the same thing, next time around:
-# <br /><br />
-# ![inception architecture](https://raw.githubusercontent.com/google/prettytensor/master/inception_module.png)
-# - They describe how to implement inception, in prettytensor, here: https://github.com/google/prettytensor
 
 def encoder(X):
     '''Create encoder network.
@@ -157,11 +131,6 @@ def discriminator(D_I):
     return D, lth_layer
 
 
-# ### Defining the forward pass through the network
-# - This function is based upon the inference function from tensorflows cifar tutorials
-#   - https://github.com/tensorflow/tensorflow/blob/r0.10/tensorflow/models/image/cifar10/cifar10.py
-# - Notice I use `with tf.variable_scope("enc")`. This way, we can reuse these variables using `reuse=True`. We can also specify which variables to train using which error functions based upon the label `enc`
-
 def inference(x):
     """
     Run the models. Called inference because it does the same thing as tensorflow's cifar tutorial
@@ -192,14 +161,6 @@ def inference(x):
         return z_x_mean, z_x_log_sigma_sq, z_x, x_tilde, l_x_tilde, x_p, d_x, l_x, d_x_p, z_p
 
 
-# ### Loss - define our various loss functions
-# - **SSE** - we don't actually use this loss (also its the MSE), its just to see how close x is to x_tilde
-# - **KL Loss** - our VAE gaussian distribution loss.
-#   - See https://arxiv.org/abs/1312.6114
-# - **D_loss** - Our descriminator loss, how good the discriminator is at telling if something is real
-# - **G_loss** - essentially the opposite of the D_loss, how good the generator is a tricking the discriminator
-# - ***notice we clip our values to make sure learning rates don't explode***
-
 def loss(x, x_tilde, z_x_log_sigma_sq, z_x_mean, d_x, d_x_p, l_x, l_x_tilde, dim1, dim2, dim3):
     """
     Loss functions for SSE, KL divergence, Discrim, Generator, Lth Layer Similarity
@@ -221,11 +182,6 @@ def loss(x, x_tilde, z_x_log_sigma_sq, z_x_mean, d_x, d_x_p, l_x, l_x_tilde, dim
     LL_loss = tf.reduce_sum(tf.square(l_x - l_x_tilde))/dim1/dim2/dim3
     return SSE_loss, KL_loss, D_loss, G_loss, LL_loss
 
-
-# ### Average the gradients between towers
-# - This function is taken directly from
-#     - https://github.com/tensorflow/tensorflow/blob/r0.10/tensorflow/models/image/cifar10/cifar10_multi_gpu_train.py
-# - Basically we're taking a list of gradients from each tower, and averaging them together
 
 def average_gradients(tower_grads):
     """Calculate the average gradient for each shared variable across all towers.
@@ -265,9 +221,6 @@ def average_gradients(tower_grads):
     return average_grads
 
 
-# ### Plot network output
-# - This is just my ugly function to regularly plot the output of my network - tensorboard would probably be a better option for this
-
 def plot_network_output():
     """ Just plots the output of the network, error, reconstructions, etc
     """
@@ -303,8 +256,14 @@ def plot_network_output():
     leg.get_frame().set_alpha(0.5)
     #plt.show()
     fig.savefig(''.join(['imgs/leg_',str(epoch).zfill(4),'.png']),dpi=100)
+example_data_, _ = iter_.next()
+w_example_data, h_example_data = example_data_.shape[0], example_data_.shape[1]
 def plot_network_output_2():
-    for n in range(40):
+    for n in range(100):
+        print('>>>',n)
+        example_data, _ = iter_.next()
+        print(example_data.shape)
+        np.shape(example_data)
         random_x, recon_z, all_d= sess.run((x_p, z_x_mean, d_x_p), {all_input: example_data})
         top_d = np.argsort(np.squeeze(all_d))
         recon_x = sess.run((x_tilde), {z_x: recon_z})
@@ -329,7 +288,7 @@ def plot_network_output_2():
     #     #plt.margins(0,0)
     #     ax.axis('off')
     #     fig.savefig('abc.png', dpi=100)
-        for i in range(30):
+        for i in range(w_example_data):
             canvas[:,:,:] = create_image(recon_x[i])
             fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(64/100.0, 64/100.0))
             ax.imshow(canvas)
@@ -452,267 +411,8 @@ with graph.as_default():
     sess = tf.InteractiveSession(graph=graph,config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True))
     sess.run(init)
 
-# ### Get some example data to do visualizations with
-
-example_data, _ = iter_.next()
-np.shape(example_data)
-
-# ### Initialize our epoch number, and restore a saved network by uncommening `#tf.train...`
-
-epoch = 0
-#tf.train.Saver.restore(saver, sess, 'models/faces_multiGPU_64_0000.tfmod')
-# ### Now we actually run the network
-# - Importantly, notice how we define the learning rates
-#     - `e_current_lr = e_learning_rate*sigmoid(np.mean(d_real),-.5,10)`
-#         - we calculate the sigmoid of how the network has been performing, and squash the learning rate using a sigmoid based on that. So if the discriminator has been winning, it's learning rate will be low, and if the generator is winning, it's learning rate will be lower on the next batch.
-
-def sigmoid(x,shift,mult):
-    """
-    Using this sigmoid to discourage one network overpowering the other
-    """
-    return 1 / (1 + math.exp(-(x+shift)*mult))
-
-#fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,4))
-#plt.plot(np.arange(0,1,.01), [sigmoid(i/100.,-.5,10) for i in range(100)])
-#ax.set_xlabel('Mean of Discriminator(Real) or Discriminator(Fake)')
-#ax.set_ylabel('Multiplier for learning rate')
-#plt.title('Squashing the Learning Rate to balance Discrim/Gen network performance')
-
-total_batch = int(np.floor(num_examples / batch_size*num_gpus)) # how many batches are in an epoch
-
-# We balance of generator and discriminators learning rate by using a sigmoid function,
-#  encouraging the generator and discriminator be about equal
-d_real = 0
-d_fake = 0
-
-print('epoch (%d/%d) total_batch %d' % (epoch, num_epochs, total_batch))
-while epoch < num_epochs:
-    for i in tqdm.tqdm(range(total_batch)):
-        iter_ = data_iterator()
-        # balence gen and descrim
-        e_current_lr = e_learning_rate*sigmoid(np.mean(d_real),-.5,15)
-        g_current_lr = g_learning_rate*sigmoid(np.mean(d_real),-.5,15)
-        d_current_lr = d_learning_rate*sigmoid(np.mean(d_fake),-.5,15)
-        next_batches, _ = iter_.next()
-
-        _, _, _, D_err, G_err, KL_err, SSE_err, LL_err, d_fake,d_real = sess.run([
-                train_E, train_G, train_D,
-                D_loss, G_loss, KL_loss, SSE_loss, LL_loss,
-                d_x_p, d_x,
-
-            ],
-                                        {
-                lr_E: e_current_lr,
-                lr_G: g_current_lr,
-                lr_D: d_current_lr,
-                all_input: next_batches,
-                KL_param: 1,
-                G_param: 1,
-                LL_param: 1
-            }
-       )
-        #KL_err= SSE_err= LL_err = 1
-        # Save our lists
-        dxp_list.append(d_fake)
-        dx_list.append(d_real)
-        G_loss_list.append(G_err)
-        D_loss_list.append(D_err)
-        KL_loss_list.append(KL_err)
-        SSE_loss_list.append(SSE_err)
-        LL_loss_list.append(LL_err)
-
-        if i%300 == 0:
-            # print display network output
-            IPython.display.clear_output()
-            print('Epoch: '+str(epoch))
-            plot_network_output()
-            #plot_network_output_2()
-
-    # save network
-    saver.save(sess,''.join(['models/faces_multiGPU_64_',str(1).zfill(4),'.tfmod']))
-    epoch +=1
+tf.train.Saver.restore(saver, sess, 'models/faces_multiGPU_64_0001.tfmod')
 
 
-#--## ### This is how we save our network
-#--## - Just uncomment, and name it.
-#--#
-#--##saver.save(sess,''.join(['models/faces_multiGPU_64_',str(epoch).zfill(4),'.tfmod']))
-#--#
-#--#
-#--## ### Visualize movement through z-space
-#--## - we're using jupyter widgets to slide through z-space from one point to another
-#--#
-#--#n_steps = 20
-#--#examples = 10
-#--#all_x_recon = np.zeros((batch_size, dim1*dim2*dim3,n_steps))
-#--#z_point_a= np.random.normal(0,1,(batch_size,hidden_size))
-#--#z_point_b= np.random.normal(0,1,(batch_size,hidden_size))
-#--#recon_z_step = (z_point_b - z_point_a)/n_steps
-#--#for i in range(n_steps):
-#--#    z_point_a += recon_z_step
-#--#    all_x_recon[:,:,i] = sess.run((x_tilde), {z_x: z_point_a})
-#--#
-#--#canvas = np.zeros((dim1,dim2*examples,dim3, n_steps))
-#--#print np.shape(canvas)
-#--#for f in range(n_steps):
-#--#    for i in range(examples):
-#--#        canvas[:,dim2*i:dim2*(i+1),:,f] = create_image(all_x_recon[i,:,f])
-#--#
-#--##def plt_random_faces(f):
-#--##    fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,12))
-#--##    plt.imshow(canvas[:,:,:,f],interpolation='nearest')
-#--##    plt.title('This slider won\.t work in Github')
-#--##    plt.show()
-#--##interact(plt_random_faces, f = (0,n_steps-1,1))
-#--#
-#--#
-#--## ### 'Spike Triggered Average' style receptive fields.
-#--## - We take a look at what makes a neuron respond, by taking a bunch of images, and averaging them based on how much the neuron was activated.
-#--#
-#--#def norm(x):
-#--#    return (x - np.min(x)) / np.max(x - np.min(x))
-#--#
-#--## get a bunch of images and their corresponding z points in the network
-#--#recon_z = np.random.normal(0,1,(batch_size,hidden_size))
-#--#recon_x, recon_l = sess.run((x_tilde, l_x_tilde), {z_x: recon_z})
-#--#for i in range(100):
-#--#    rz = np.random.normal(0,1,(batch_size,hidden_size))
-#--#    rx, rl = sess.run((x_tilde, l_x_tilde), {z_x: rz})
-#--#    recon_z= np.concatenate((recon_z,rz),axis = 0)
-#--#    recon_l = np.concatenate((recon_l,rl),axis = 0)
-#--#    recon_x = np.concatenate((recon_x,rx),axis = 0)
-#--#
-#--## #### Z-Neurons
-#--#num_neurons = 25
-#--#
-#--#neuron = 0
-#--#fig, ax = plt.subplots(nrows=int(np.sqrt(num_neurons)),ncols=int(np.sqrt(num_neurons)), figsize=(18,12))
-#--#for a in range(int(np.sqrt(num_neurons))):
-#--#    for b in range(int(np.sqrt(num_neurons))):
-#--#        proportions = (recon_z[:,neuron] - min(recon_z[:,neuron])) / max((recon_z[:,neuron] - min(recon_z[:,neuron])))
-#--#        receptive_field = norm(np.sum(([proportions[i] * recon_x[i,:] for i in range(len(proportions))]),axis = 0)/np.sum(proportions)- np.mean(recon_x,axis = 0))
-#--#        #ax[(a,b)].imshow(create_image(receptive_field), cmap=plt.cm.gray, interpolation='nearest')
-#--#        #ax[(a,b)].axis('off')
-#--#        neuron+=1
-#--#
-#--#
-#--## #### Deep Descriminator Neurons
-#--#num_neurons = 25
-#--#
-#--#neuron = 0
-#--#fig, ax = plt.subplots(nrows=int(np.sqrt(num_neurons)),ncols=int(np.sqrt(num_neurons)), figsize=(18,12))
-#--#for a in range(int(np.sqrt(num_neurons))):
-#--#    for b in range(int(np.sqrt(num_neurons))):
-#--#        proportions = (recon_l[:,neuron] - min(recon_l[:,neuron])) / max((recon_l[:,neuron] - min(recon_l[:,neuron])))
-#--#        receptive_field = norm(np.sum(([proportions[i] * recon_x[i,:] for i in range(len(proportions))]),axis = 0)/np.sum(proportions)- np.mean(recon_x,axis = 0))
-#--#        #test = norm(test/np.mean(test_list, axis = 0))
-#--#        #ax[(a,b)].imshow(create_image(receptive_field), cmap=plt.cm.gray, interpolation='nearest')
-#--#        #ax[(a,b)].axis('off')
-#--#        neuron+=1
-#--#
-#--## ### Now lets try some latent space algebra
-#--## Here are the attribute types
-#--#print [str(i) + ': ' + headers[i] for i in range(len(headers))]
-#--#
-#--## Go through a bunch of inputs, get their z values and their attributes
-#--#iter_ = data_iterator()
-#--#all_batch, all_attrib = iter_.next()
-#--#all_z = sess.run((z_x_mean), {all_input: all_batch})
-#--#all_recon_x = sess.run((x_tilde), {z_x: all_z})
-#--#
-#--#for i in range(200):
-#--#    next_batch, next_attrib = iter_.next()
-#--#    recon_z = sess.run((z_x_mean), {all_input: next_batch})
-#--#    recon_x = sess.run((x_tilde), {z_x: recon_z})
-#--#
-#--#    all_z = np.concatenate((all_z,recon_z),axis = 0)
-#--#    all_batch = np.concatenate((all_batch,next_batch),axis = 0)
-#--#    all_recon_x = np.concatenate((all_recon_x,recon_x),axis = 0)
-#--#    all_attrib = np.concatenate((all_attrib,next_attrib),axis = 0)
-#--#
-#--## for each attribute type, get the difference between the mean z-vector of faces with
-#--##   the attribute, and without the attribute
-#--#attr_vector_list = []
-#--#avg_attr_list = []
-#--#avg_not_attr_list = []
-#--#
-#--#for i in range(np.shape(all_attrib)[1]):
-#--#    has_attribute = all_attrib[:,i] == 1
-#--#    average_attribute = np.mean(all_z[has_attribute], axis=0)
-#--#    average_not_attribute = np.mean(all_z[has_attribute == False], axis=0)
-#--#    avg_attr_list.append(average_attribute)
-#--#    avg_not_attr_list.append(average_not_attribute)
-#--#    attr_vector_list.append(average_attribute - average_not_attribute)
-#--#
-#--#feature_to_look_at = 9 # specify the attribute we want to look at
-#--#
-#--#
-#--## #### Look at some blonde people (bottom), and their reconstructions (top)
-#--#
-#--## show some faces which have this attribute
-#--#recon_faces = all_recon_x[all_attrib[:,feature_to_look_at] == 1,:]
-#--#new_faces = all_batch[all_attrib[:,feature_to_look_at] == 1,:]
-#--#
-#--#examples = 4
-#--#canvas = np.zeros((dim1*2,dim2*examples,dim3))
-#--#for i in range(examples):
-#--#    canvas[0:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_faces[i])
-#--#    canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(new_faces[i])
-#--#
-#--##fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
-#--##ax.imshow(canvas)
-#--##ax.axis('off')
-#--#
-#--#
-#--## #### Take random z-points, and add the blonde vector
-#--#recon_z = np.random.normal(0,1,(batch_size,hidden_size))
-#--#recon_x = sess.run((x_tilde), {z_x: recon_z})
-#--#
-#--#recon_z_with_attribute = [recon_z[i] + attr_vector_list[feature_to_look_at] for i in range(len(recon_z))]
-#--#recon_x_with_attribute = sess.run((x_tilde), {z_x: recon_z_with_attribute})
-#--#
-#--#examples = 12
-#--#canvas = np.zeros((dim1*2,dim2*examples,dim3))
-#--#for i in range(examples):
-#--#    canvas[:dim1,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
-#--#    canvas[dim1:,dim2*i:dim2*(i+1),:] = create_image(recon_x_with_attribute[i])
-#--#
-#--##fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
-#--##ax.imshow(canvas)
-#--##ax.axis('off')
-#--##plt.title('Top: random points in z space | Bottom: random points + blonde vector')
-#--#
-#--#
-#--## #### Look at the average blonde person, the average not blonde person, and their difference
-#--#recon_z = np.random.normal(0,1,(batch_size,hidden_size))
-#--#recon_z[0] = avg_attr_list[feature_to_look_at]
-#--#recon_z[1] = avg_not_attr_list[feature_to_look_at]
-#--#recon_z[2] = attr_vector_list[feature_to_look_at]
-#--#
-#--#recon_x = sess.run((x_tilde), {z_x: recon_z})
-#--#
-#--#examples = 3
-#--#canvas = np.zeros((dim1,dim2*examples,dim3))
-#--#for i in range(examples):
-#--#    canvas[:,dim2*i:dim2*(i+1),:] = create_image(recon_x[i])
-#--#
-#--##fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(18,6))
-#--##ax.imshow(canvas)
-#--##ax.axis('off')
-#--##plt.title('Average Blonde Person | Average Not Blonde Person | ABP-ANBP')
-#--#
-#--#
-#--## ### This implementation is based on a few other things:
-#--## - [Autoencoding beyond pixels](http://arxiv.org/abs/1512.09300) [*(Github)*](https://github.com/andersbll/autoencoding_beyond_pixels)
-#--## - [VAE and GAN implementations in prettytensor/tensorflow (*Github*)](https://github.com/ikostrikov/TensorFlow-VAE-GAN-DRAW)
-#--## - [Tensorflow VAE tutorial](https://jmetzen.github.io/2015-11-27/vae.html)
-#--## - [DCGAN](https://arxiv.org/abs/1511.06434) [*(Github)*](https://github.com/Newmu/dcgan_code)
-#--## - [Torch GAN tutorial](http://torch.ch/blog/2015/11/13/gan.html) [*(Github)*](https://github.com/skaae/torch-gan)
-#--## - [Open AI improving GANS](https://openai.com/blog/generative-models/)  [*(Github)*](https://github.com/openai/improved-gan)
-#--## - Other things which I am probably forgetting...
-#--##
-#--#
-#--## this is just a little command to convert this as md for the github page
-#--##get_ipython().system(u'jupyter nbconvert --to markdown VAE-GAN-multi-gpu-celebA.ipynb')
-#--##get_ipython().system(u'mv VAE-GAN-multi-gpu-celebA.md readme.md')
-#--#
+
+plot_network_output_2()
