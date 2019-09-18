@@ -79,7 +79,8 @@ def get_filelist(dirpath, suffix=['.jpg']):
         ext = os.path.splitext(path2)[1]
         ext = ext.lower()
         if not ext in suffix:
-            print("skip %s" % path2)
+            # print("skip %s" % path2)
+            continue
         else:
             files.append(path2)
     return files

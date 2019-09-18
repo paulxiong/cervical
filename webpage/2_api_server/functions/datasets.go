@@ -187,10 +187,10 @@ func CreateDataset(imgs []m.ImagesByMedicalId, dirname string) (n int, p int) {
 		csvpath := v.Csvpath
 		toimgname := ""
 		if v.P1N0 == 0 {
-			toimgname = v.Batchid + "=" + v.Medicalid + "=N=" + v.Imgpath
+			toimgname = v.Batchid + "AA" + v.Medicalid + "AANAA" + v.Imgpath
 			cntn = cntn + 1
 		} else {
-			toimgname = v.Batchid + "=" + v.Medicalid + "=P=" + v.Imgpath
+			toimgname = v.Batchid + "AA" + v.Medicalid + "AAPAA" + v.Imgpath
 			cntp = cntp + 1
 		}
 		s := imgpath + " " + csvpath + " " + toimgname
