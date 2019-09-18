@@ -34,12 +34,12 @@
     </el-divider>
     <section class="main">
       <el-tabs tab-position="left" @tab-click="tabClick">
-        <el-tab-pane label="(step0) 原始数据">
+        <el-tab-pane label="原图">
           <el-image
             class="img"
-            v-for="(img,idx) in input_datasets_img"
+            v-for="(img,idx) in origin_imgs"
             :key="idx"
-            :src="hosturlpath200 + dir + img"
+            :src="hosturlpath200 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -47,12 +47,12 @@
             </div>
           </el-image>
         </el-tab-pane>
-        <el-tab-pane label="(step1) 去噪后的数据">
+        <el-tab-pane label="细胞图">
           <el-image
             class="img"
-            v-for="(img,idx) in input_datasets_denoising"
+            v-for="(img,idx) in cells_crop"
             :key="idx"
-            :src="hosturlpath200 + dir + img"
+            :src="hosturlpath200 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -60,51 +60,12 @@
             </div>
           </el-image>
         </el-tab-pane>
-        <el-tab-pane label="(step2) mask图片">
+        <el-tab-pane label="细胞核图">
           <el-image
             class="img"
-            v-for="(img,idx) in middle_mask"
+            v-for="(img,idx) in cells_crop_masked"
             :key="idx"
-            :src="hosturlpath200 + dir + img"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-tab-pane>
-        <el-tab-pane label="(step3) 输出数据crop_preview">
-          <el-image
-            class="img"
-            v-for="(img,idx) in output_datasets_crop_preview"
-            :key="idx"
-            :src="hosturlpath200 + dir + img"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-tab-pane>
-        <el-tab-pane label="(step3) 输出数据crop N">
-          <el-image
-            class="img"
-            v-for="(img,idx) in output_datasets_crop_n"
-            :key="idx"
-            :src="hosturlpath200 + dir + img"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-tab-pane>
-        <el-tab-pane label="(step3) 输出数据crop P">
-          <el-image
-            class="img"
-            v-for="(img,idx) in output_datasets_crop_p"
-            :key="idx"
-            :src="hosturlpath200 + dir + img"
+            :src="hosturlpath200 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -134,19 +95,16 @@ export default {
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
       hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
       objData: {},
-      input_datasets_img: [],
-      input_datasets_denoising: [],
-      middle_mask: [],
-      output_datasets_crop_preview: [],
-      output_datasets_crop_n: [],
-      output_datasets_crop_p: []
+      origin_imgs: [],
+      cells_crop: [],
+      cells_crop_masked: []
     }
   },
   methods: {
     getjobresult() {
       getjobresult({ id: this.$route.query.id }).then(res => {
         this.objData = res.data.data
-        this.input_datasets_img = this.objData.input_datasets_img
+        this.origin_imgs = this.objData.origin_imgs
       })
     },
     getPercent() {
@@ -158,22 +116,15 @@ export default {
     tabClick(tab, evt) {
       switch (tab.index) {
         case '0':
-          this.input_datasets_img = this.objData.input_datasets_img
+          this.origin_imgs = this.objData.origin_imgs
           break
         case '1':
-          this.input_datasets_denoising = this.objData.input_datasets_denoising
+          this.cells_crop = this.objData.cells_crop
+          console.log(this.cells_crop,'c')
           break
         case '2':
-          this.middle_mask = this.objData.middle_mask
-          break
-        case '3':
-          this.output_datasets_crop_preview = this.objData.output_datasets_crop_preview
-          break
-        case '4':
-          this.output_datasets_crop_n = this.objData.output_datasets_crop_n
-          break
-        case '5':
-          this.output_datasets_crop_p = this.objData.output_datasets_crop_p
+          this.cells_crop_masked = this.objData.cells_crop_masked
+          console.log(this.cells_crop_masked,'m')
           break
       }
     },
