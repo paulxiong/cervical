@@ -148,7 +148,7 @@ class cropper():
                     crop_img = self.crop_fov(img, cell_path, x1, y1, x2, y2, side = 50, sign = 1)
                     roi = [x1, y1, x2, y2]
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
-                    masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_maksed.png'.format(filename,
+                    masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_masked.png'.format(filename,
                                                fov_type, cell_type, x1, y1, x2, y2))
                     self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
                     # 下面的注释代码方便调试医生csv，裁剪csv，交集csv细胞在FOV上标记，以调试交集csv产生方法和性能提升，需保留
@@ -171,7 +171,7 @@ class cropper():
                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
                                     str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
                     self.crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
-            cv2.imwrite(imgpath + '_abc.png', img)
+            #cv2.imwrite(imgpath + '_abc.png', img)
         return True
 
 if __name__ == '__main__':

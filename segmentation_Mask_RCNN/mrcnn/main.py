@@ -64,23 +64,24 @@ class cervical_seg():
                 self.logger.info('copy origin images failed')
                 return False
             self.processing(5)
-
             #开始从图片里面定位细胞
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
             if ret == False:
                 self.logger.info('detect cells failed')
                 return False
-
+            self.processing(45)
             #挑出医生标注过的坐标和检测出来的细胞的交集
             ret = get_trusted_labels(self.origin_imgs, self.rois)
             if ret == False:
                 self.logger.info('get_trusted_labels failed')
                 return False
+            self.processing(75)
             #上面挑出来的细胞扣成细胞图
             ret = self.c.crop_fovs()
             if ret == False:
                 self.logger.info('crop_fovs failed')
                 return False
+            self.processing(95)
         except Exception as ex:
             self.logger.info(ex)
             return False

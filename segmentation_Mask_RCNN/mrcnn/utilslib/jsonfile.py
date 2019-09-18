@@ -42,6 +42,10 @@ def update_info_json(job, status):
     job_info['cells_rois']        = _get_filelist(job.rois, startdir, suffix=['.csv'])
     job_info['status'] = status
 
+    #目前看来csv和npy对于前端没用
+    job_info['cells_mask_npy'] = []
+    job_info['cells_rois'] = []
+
     with open(job.infojson,'w',encoding='utf-8') as file:
         file.write(json.dumps(job_info, indent=2, ensure_ascii=False))
 
