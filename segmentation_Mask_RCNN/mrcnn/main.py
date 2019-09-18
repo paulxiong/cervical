@@ -60,7 +60,7 @@ class cervical_seg():
             if ret == False:
                 self.logger.info('copy origin images failed')
                 return False
-            self.percent = 5
+            self.processing(5)
 
             #开始从图片里面定位细胞
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
