@@ -6,6 +6,8 @@ from utilslib.logger import logger
 from utilslib.fileinfo import copy_origin_imgs
 from utilslib.jsonfile import update_info_json
 from my_inference import detector
+from tocsv import get_trusted_labels
+from tocells import cropper
 
 localdebug = os.environ.get('DEBUG', 'False')
 
@@ -50,6 +52,7 @@ class cervical_seg():
         #初始化
         self.prepare_fs()
         self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
+        self.c = cropper(self.rootdir)
         #log
         self.logger = logger(str(self.jid), self.rootdir)
 
@@ -66,6 +69,17 @@ class cervical_seg():
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
             if ret == False:
                 self.logger.info('detect cells failed')
+                return False
+
+            #挑出医生标注过的坐标和检测出来的细胞的交集
+            ret = get_trusted_labels(self.origin_imgs, self.rois)
+            if ret == False:
+                self.logger.info('get_trusted_labels failed')
+                return False
+            #上面挑出来的细胞扣成细胞图
+            ret = self.c.crop_fovs()
+            if ret == False:
+                self.logger.info('crop_fovs failed')
                 return False
         except Exception as ex:
             self.logger.info(ex)
@@ -113,14 +127,18 @@ if __name__ == '__main__':
 
         #新建任务
         cseg = cervical_seg(jobid, dirname)
+        #处理完之前更新任务信息到info.json，方便web展示原图
+        update_info_json(cseg, ds.PROCESSING.value)
         #开始处理任务
         ret = cseg.segmentation()
-        #处理完之后更新任务信息到info.json
-        update_info_json(cseg)
         #处理结果判断
         if ret == True:
+            #处理完之后更新任务信息到info.json
+            update_info_json(cseg, ds.PROCESSING_DONE.value)
             cseg.done('done!')
         else:
+            #处理完之后更新任务信息到info.json
+            update_info_json(cseg, ds.PROCESSING_ERR.value)
             cseg.failed("failed segmentation: %d %s" % (cseg.jid, cseg.jobdir))
 
         del cseg

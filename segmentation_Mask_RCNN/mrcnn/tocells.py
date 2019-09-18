@@ -118,6 +118,8 @@ class cropper():
         imgs = get_image_lists(self.original_img_path)
         total_steps = len(imgs)
         step = 0
+        if total_steps < 1:
+            return False
         for i in imgs:
             print("step %s/%d" % (step, total_steps))
             step = step + 1
@@ -170,7 +172,7 @@ class cropper():
                                     str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
                     self.crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
             cv2.imwrite(imgpath + '_abc.png', img)
-        return
+        return True
 
 if __name__ == '__main__':
     c = cropper('./')
