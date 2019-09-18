@@ -71,6 +71,8 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
     original_csv_names = get_csv_lists(original_csv_path)
 
     step, total_steps = 0, len(original_csv_names)
+    if total_steps < 1:
+        return False
     #比较求交集
     for i in original_csv_names:
         print("step %s/%d" % (step, total_steps))
@@ -96,6 +98,7 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
         if len(rois) > 0:
             print("org_label_num=%d  len(rois)=%d org_num=%d" % (rois_label_num, len(rois), org_num))
             save_rois_as_csv(csv_path, rois)
+    return True
 
 if __name__ == "__main__":
     t1 = time.time()

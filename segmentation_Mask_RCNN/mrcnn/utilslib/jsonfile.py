@@ -35,9 +35,9 @@ def update_info_json(job, status):
 
     startdir = os.path.join(job.scratchdir) + '/'
     job_info = load_json_file(job.infojson)
-    job_info['origin_imgs']       = _get_filelist(job.origin_imgs, startdir, suffix=['.jpg', '.JPG'])
-    job_info['cells_crop']        = _get_filelist(job.crop, startdir, suffix=['.jpg', '.JPG'])
-    job_info['cells_crop_masked'] = _get_filelist(job.crop_masked, startdir, suffix=['.jpg', '.JPG'])
+    job_info['origin_imgs']       = _get_filelist(job.origin_imgs, startdir, suffix=['.jpg', '.JPG', '.png'])
+    job_info['cells_crop']        = _get_filelist(job.crop, startdir, suffix=['.jpg', '.JPG', '.png'])
+    job_info['cells_crop_masked'] = _get_filelist(job.crop_masked, startdir, suffix=['.jpg', '.JPG', '.png'])
     job_info['cells_mask_npy']    = _get_filelist(job.mask_npy, startdir, suffix=['.npy'])
     job_info['cells_rois']        = _get_filelist(job.rois, startdir, suffix=['.csv'])
     job_info['status'] = status
