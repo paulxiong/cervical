@@ -113,14 +113,18 @@ if __name__ == '__main__':
 
         #新建任务
         cseg = cervical_seg(jobid, dirname)
+        #处理完之前更新任务信息到info.json，方便web展示原图
+        update_info_json(cseg, ds.PROCESSING.value)
         #开始处理任务
         ret = cseg.segmentation()
-        #处理完之后更新任务信息到info.json
-        update_info_json(cseg)
         #处理结果判断
         if ret == True:
+            #处理完之后更新任务信息到info.json
+            update_info_json(cseg, ds.PROCESSING_DONE.value)
             cseg.done('done!')
         else:
+            #处理完之后更新任务信息到info.json
+            update_info_json(cseg, ds.PROCESSING_ERR.value)
             cseg.failed("failed segmentation: %d %s" % (cseg.jid, cseg.jobdir))
 
         del cseg
