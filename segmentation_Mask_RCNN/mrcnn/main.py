@@ -49,7 +49,7 @@ class cervical_seg():
         self.crop_masked = os.path.join(self.cells, 'crop_masked') #存放扣出来的细胞图去掉了背景，目前特指医生标注过的
         #初始化
         self.prepare_fs()
-        # self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
+        self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
         #log
         self.logger = logger(str(self.jid), self.rootdir)
 
@@ -58,15 +58,17 @@ class cervical_seg():
             #把原图和对应的CSV拷贝到任务目录下面
             ret = copy_origin_imgs(self.filelist, self.imgroot, self.csvroot, self.origin_imgs, self.logger)
             if ret == False:
+                self.logger.info('copy origin images failed')
                 return False
             self.percent = 5
 
             #开始从图片里面定位细胞
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
             if ret == False:
+                self.logger.info('detect cells failed')
                 return False
         except Exception as ex:
-            print(ex)
+            self.logger.info(ex)
             return False
         return True
 
