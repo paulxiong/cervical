@@ -1,7 +1,7 @@
 <template>
   <div class="start-train">
     <h2 class="flex">
-      请<el-input v-model="inputName" autofocus placeholder="为数据集取个名字吧" class="inputName"></el-input>，然后
+      请<el-input v-model="inputName" autofocus placeholder="为数据集取个名字吧" @keyup.enter.native="goTrain" class="inputName"></el-input>，然后
       <el-button class="start-btn" type="danger" :disabled="!inputName.length" :loading="loading" @click="goTrain">开始训练</el-button>
       <i class="errInfo-btn">
         若信息有误，需要
@@ -64,7 +64,7 @@ export default {
   methods: {
     goTrain() {
       this.loading = true
-      let postData = JSON.parse(localStorage.getItem('POST_DATA'))
+      const postData = JSON.parse(localStorage.getItem('POST_DATA'))
       postData['desc'] = this.inputName
       createdataset(postData).then(res => {
         this.$router.push({

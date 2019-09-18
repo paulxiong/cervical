@@ -7,8 +7,8 @@
           <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
             <div class="img-list info-list flex">
-              <i>批次 :</i> fujianfuyou
-              <i>病例 :</i> 18237,28374,12943,34512
+              <i>批次 :</i> {{objData.batchids}}
+              <i>病例 :</i> {{objData.medicalids}}
               <i>图片 :</i>
               <el-link class="link" type="primary">点击查看全部</el-link>
               <i>医生标注 :</i> 2345asd.csv
@@ -73,13 +73,14 @@
             </div>
           </el-image>
         </el-tab-pane>
+        <el-tab-pane label="图片处理log">{{cLog}}</el-tab-pane>
       </el-tabs>
     </section>
   </div>
 </template>
 
 <script>
-import { getjobresult, getPercent } from '@/api/cervical'
+import { getjobresult, getPercent, getjoblog } from '@/api/cervical'
 import { ImgServerUrl } from '@/const/config'
 let timer
 
@@ -95,6 +96,7 @@ export default {
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
       hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
       objData: {},
+      cLog: '',
       origin_imgs: [],
       cells_crop: [],
       cells_crop_masked: []
@@ -113,6 +115,11 @@ export default {
         this.finishedImages()
       })
     },
+    getjoblog() {
+      getjoblog({ id: this.$route.query.id, type: 'c' }).then(res => {
+        this.cLog = res.data.data
+      })
+    },
     tabClick(tab, evt) {
       switch (tab.index) {
         case '0':
@@ -120,11 +127,9 @@ export default {
           break
         case '1':
           this.cells_crop = this.objData.cells_crop
-          console.log(this.cells_crop,'c')
           break
         case '2':
           this.cells_crop_masked = this.objData.cells_crop_masked
-          console.log(this.cells_crop_masked,'m')
           break
       }
     },
@@ -143,6 +148,7 @@ export default {
   mounted() {
     this.getjobresult()
     this.getPercent()
+    this.getjoblog()
     this.loopGetPercent()
   },
   beforedestroy() {
