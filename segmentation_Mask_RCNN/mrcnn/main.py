@@ -3,7 +3,7 @@ import os, gc, sys, time, shutil
 from enum import Enum
 from utilslib.webserverapi import get_one_job, post_job_status
 from utilslib.logger import logger
-from utilslib.fileinfo import copy_origin_imgs
+from utilslib.fileinfo import copy_origin_imgs, get_info_by_FOV
 from utilslib.jsonfile import update_info_json
 from my_inference import detector
 from tocsv import get_trusted_labels
@@ -49,6 +49,8 @@ class cervical_seg():
         self.rois        = os.path.join(self.cells, 'rois') #存放细胞在原图里的坐标
         self.crop        = os.path.join(self.cells, 'crop') #存放扣出来的细胞图，目前特指医生标注过的
         self.crop_masked = os.path.join(self.cells, 'crop_masked') #存放扣出来的细胞图去掉了背景，目前特指医生标注过的
+        self.statistics  = os.path.join(self.rootdir, 'statistics') #存放输入输出数据的信息统计csv
+        self.statistics_trusted_labels = os.path.join(self.statistics, str(self.jid) + '_trusted_labels.csv') #医生标注信息汇总
         #初始化
         self.prepare_fs()
         self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
@@ -64,6 +66,10 @@ class cervical_seg():
                 self.logger.info('copy origin images failed')
                 return False
             self.processing(5)
+            #处理完之前更新任务信息到info.json，方便web展示原图
+            update_info_json(self, ds.PROCESSING.value)
+            #统计医生的标注信息
+            get_info_by_FOV(self.origin_imgs, self.statistics_trusted_labels)
             #开始从图片里面定位细胞
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
             if ret == False:
@@ -89,7 +95,7 @@ class cervical_seg():
 
     #初始化必要的文件夹
     def prepare_fs(self):
-        dirs1 = [self.scratchdir, self.rootdir, self.origin_imgs, self.cells,
+        dirs1 = [self.scratchdir, self.rootdir, self.statistics, self.origin_imgs, self.cells,
                  self.mask_npy, self.rois, self.crop, self.crop_masked]
         for folder in dirs1:
             if not os.path.exists(folder):
@@ -128,8 +134,6 @@ if __name__ == '__main__':
 
         #新建任务
         cseg = cervical_seg(jobid, dirname)
-        #处理完之前更新任务信息到info.json，方便web展示原图
-        update_info_json(cseg, ds.PROCESSING.value)
         #开始处理任务
         ret = cseg.segmentation()
         #处理结果判断

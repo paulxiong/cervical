@@ -546,7 +546,7 @@ func ListDatasets(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} function.JobInfo
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobresult [get]
 func GetJobResult(c *gin.Context) {

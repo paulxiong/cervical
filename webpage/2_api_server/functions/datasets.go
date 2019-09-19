@@ -55,25 +55,35 @@ const (
 	scratchRoot   = "scratch"
 )
 
+type typesinfo struct {
+	CellType int `json:"celltype" example:"7"`   //细胞的类型
+	LabelCnt int `json:"labelcnt" example:"900"` //类型的个数
+}
+
 // JobInfo 存在硬盘的JSON文件，描述每个任务的属性
 type JobInfo struct {
-	ID              int64    `json:"id"`
-	Desc            string   `json:"desc"`
-	Dir             string   `json:"dir"`
-	Batchids        []string `json:"batchids"`
-	Medicalids      []string `json:"medicalids"`
-	Status          int      `json:"status"`
-	Cntn            int      `json:"cntn"`
-	Cntp            int      `json:"cntp"`
-	CellCntn        int      `json:"cellcntn"`
-	CellCntp        int      `json:"cellcntp"`
-	Createdatts     int64    `json:"createdatts"`
-	Starttimets     int64    `json:"starttimets"`
-	OriginImgs      []string `json:"origin_imgs"`       // 存放原图以及原图对应的csv
-	CellsCrop       []string `json:"cells_crop"`        // 存放裁剪之后的细胞图
-	CellsCropMasked []string `json:"cells_crop_masked"` // 存放裁剪之后的细胞图去掉了背景
-	CellsMaskNpy    []string `json:"cells_mask_npy"`    // 存放细胞对应的掩码npy文件，npy是ndarray保存成了文件
-	CellsRois       []string `json:"cells_rois"`        // 存放细胞对应的的坐标
+	ID              int64       `json:"id"                example:"1"`             //任务ID
+	Desc            string      `json:"desc"              example:"任务描述"`          //当前任务的文字描述
+	Dir             string      `json:"dir"               example:"任务目录"`          //任务执行的目录名，调试时候很有用
+	Batchids        []string    `json:"batchids"          example:"批次号"`           //批次号构成的数组
+	Medicalids      []string    `json:"medicalids"        example:"病历号"`           //病历号构成的数组
+	Status          int         `json:"status"            example:"4"`             //任务的状态码
+	Createdatts     int64       `json:"createdatts"       example:"1568891127753"` //创建数据集的时间
+	Starttimets     int64       `json:"starttimets"       example:"1568891127753"` //开始处理数据的时间
+	OriginImgs      []string    `json:"origin_imgs"       example:"原始图片路径"`        // 原始图片路径构成的数组
+	CellsCrop       []string    `json:"cells_crop"        example:"细胞图片"`          // 裁剪之后的细胞图路径构成的数组
+	CellsCropMasked []string    `json:"cells_crop_masked" example:"细胞核图片"`         // 裁剪之后的细胞核路径构成的数组
+	CellsMaskNpy    []string    `json:"cells_mask_npy"    example:"细胞核掩码"`         // 细胞核掩码，这里默认是空数组
+	CellsRois       []string    `json:"cells_rois"        example:"细胞核在FOV的坐标"`    // 细胞核坐标，这里默认是空数组
+	BatchCnt        int         `json:"batchcnt"          example:"1"`             //总的批次数
+	MedicalCnt      int         `json:"medicalcnt"        example:"2"`             //总的病例数
+	FovCnt          int         `json:"fovcnt"            example:"100"`           //总的图片数
+	FovnCnt         int         `json:"fovncnt"           example:"10"`            //FOV N的个数
+	FovpCnt         int         `json:"fovpcnt"           example:"90"`            //FOV P的个数
+	LabelnCnt       int         `json:"labelncnt"         example:"100"`           //n 的标注次数
+	LabelpCnt       int         `json:"labelpcnt"         example:"900"`           //p 的标注次数
+	LabelCnt        int         `json:"labelcnt"          example:"1000"`          //总的标注次数
+	Types           []typesinfo `json:"types"`                                     //各个type标注次数
 }
 
 func writeJSON(cfg string, jsonByte []byte) {
@@ -154,10 +164,8 @@ func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 	c.Dir = d.Dir
 	c.Batchids = batchids
 	c.Medicalids = medicalids
-	c.Cntn = cntn
-	c.Cntp = cntp
-	c.CellCntn = 0
-	c.CellCntp = 0
+	c.FovnCnt = cntn
+	c.FovpCnt = cntp
 	data, err := json.MarshalIndent(c, "", " ") //这里返回的data值，类型是[]byte
 	if err != nil {
 		log.Println("ERROR:", err)
@@ -187,10 +195,10 @@ func CreateDataset(imgs []m.ImagesByMedicalId, dirname string) (n int, p int) {
 		csvpath := v.Csvpath
 		toimgname := ""
 		if v.P1N0 == 0 {
-			toimgname = v.Batchid + "AA" + v.Medicalid + "AANAA" + v.Imgpath
+			toimgname = v.Batchid + "." + v.Medicalid + ".N." + v.Imgpath
 			cntn = cntn + 1
 		} else {
-			toimgname = v.Batchid + "AA" + v.Medicalid + "AAPAA" + v.Imgpath
+			toimgname = v.Batchid + "." + v.Medicalid + ".P." + v.Imgpath
 			cntp = cntp + 1
 		}
 		s := imgpath + " " + csvpath + " " + toimgname

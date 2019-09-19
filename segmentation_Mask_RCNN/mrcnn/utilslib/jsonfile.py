@@ -1,5 +1,6 @@
 import json, glob, os
 import numpy as np
+import pandas as pd
 
 #获得目录里面的文件，返回的路径以jobdir开始，目的是给前端显示
 #startdir表示要删除的路径的前面
@@ -41,6 +42,23 @@ def update_info_json(job, status):
     job_info['cells_mask_npy']    = _get_filelist(job.mask_npy, startdir, suffix=['.npy'])
     job_info['cells_rois']        = _get_filelist(job.rois, startdir, suffix=['.csv'])
     job_info['status'] = status
+
+    #统计医生标注的信息
+    if os.path.exists(job.statistics_trusted_labels) is True:
+        df = pd.read_csv(job.statistics_trusted_labels)
+        job_info['batchcnt']   = df.groupby(['batch']).size().shape[0] #总的批次数
+        job_info['medicalcnt'] = df.groupby(['medical']).size().shape[0] #总的病例数
+        job_info['fovcnt']     = df.groupby(['fov']).size().shape[0] #总的图片数
+        job_info['fovncnt']    = df[df.pn.isin(['N'])].groupby(['fov']).size().shape[0] #FOVN的个数
+        job_info['fovpcnt']    = df[df.pn.isin(['P'])].groupby(['fov']).size().shape[0] #FOVP的个数
+        job_info['labelncnt']  = df[df.cellpn.isin(['N'])].shape[0] #n的标注次数
+        job_info['labelpcnt']  = df[df.cellpn.isin(['P'])].shape[0] #p的标注次数
+        job_info['labelcnt']   = df.shape[0] #总的标注次数
+        types = [] #各个type标注次数
+        for celltype, df1 in df.groupby(['celltype']):
+            onetype = {'celltype': celltype, 'labelcnt': df1.shape[0]}
+            types.append(onetype)
+        job_info['types'] = types
 
     #目前看来csv和npy对于前端没用
     job_info['cells_mask_npy'] = []
