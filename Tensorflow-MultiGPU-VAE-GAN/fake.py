@@ -291,6 +291,10 @@ def plot_network_output_2():
         for i in range(w_example_data):
             canvas[:,:,:] = create_image(recon_x[i])
             fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(64/100.0, 64/100.0))
+            plt.gca().xaxis.set_major_locator(plt.NullLocator())
+            plt.gca().yaxis.set_major_locator(plt.NullLocator())
+            plt.subplots_adjust(top=1,bottom=0,left=0,right=1,hspace =0, wspace =0)
+            plt.margins(0,0)
             ax.imshow(canvas)
             ax.axis('off')
             fig.savefig('./fake/abc'+str(i)+'_'+str(n)+'_.png', dpi=100)

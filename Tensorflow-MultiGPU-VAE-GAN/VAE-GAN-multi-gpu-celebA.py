@@ -21,8 +21,10 @@ dim2 = 64 # second dimension of input data
 dim3 = 3 # third dimension of input data (colors)
 batch_size = 32 # size of batches to use (per GPU)
 hidden_size = 2048 # size of hidden (z) layer to use
-num_examples = 60000 # how many examples are in your training set
-num_epochs = 10000 # number of epochs to run
+# num_examples = 60000 # how many examples are in your training set
+# num_epochs = 10000 # number of epochs to run
+num_examples = 30000 # how many examples are in your training set
+num_epochs = 200 # number of epochs to run
 ### we can train our different networks  with different learning rates if we want to
 e_learning_rate = 1e-3
 g_learning_rate = 1e-3
