@@ -7,15 +7,18 @@
           <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
             <div class="img-list info-list flex">
-              <i>批次:</i>
+              <i>目录:</i>
+              &nbsp;{{objData.dir}}
+              <i>&nbsp;&nbsp;&nbsp;批次:</i>
               {{objData.batchids}}
               <i>&nbsp;&nbsp;&nbsp;病例:</i>
               {{objData.medicalids}}
               <i>&nbsp;&nbsp;&nbsp;图片:</i>
               <el-link class="link" type="primary">点击查看全部</el-link>
-              <i>&nbsp;&nbsp;&nbsp;医生标注:</i>&nbsp;2345asd.csv
-              <i>&nbsp;&nbsp;&nbsp;细胞类型:</i>&nbsp;1_Norm,&nbsp;2_LSIL,&nbsp;7_ASCUS
-              <i>&nbsp;&nbsp;&nbsp;N/p:</i>&nbsp;0/4
+              <i>&nbsp;&nbsp;&nbsp;标记次数/n标记次数/p标记次数:</i>
+              {{objData.labelcnt}}/{{objData.labelncnt}}/{{objData.labelpcnt}}
+              <i>&nbsp;&nbsp;&nbsp;n/p:</i>
+              &nbsp;{{objData.fovncnt}}/{{objData.fovpcnt}}
             </div>
           </div>
           <div class="progress-info">
@@ -131,6 +134,9 @@ export default {
         this.cLog = res.data.data
       })
     },
+    /**
+     * 切换展示时，为数组赋值
+     */
     tabClick(tab, evt) {
       switch (tab.index) {
         case '0':
@@ -144,13 +150,20 @@ export default {
           break
       }
     },
+    /**
+     * 子传父，通知父组件的图片状态更新为已完成
+     */
     finishedImages() {
       this.$emit('finished', this.percentage)
     },
+    /**
+     * 定时器轮训百分比
+     */
     loopGetPercent() {
       timer = setInterval(() => {
         if (this.percentage === 100) {
           clearInterval(timer)
+          this.getjobresult()
         }
         this.getPercent()
       }, 1e4)
