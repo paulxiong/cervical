@@ -3,7 +3,7 @@ import os, gc, sys, time, shutil
 from enum import Enum
 from utilslib.webserverapi import get_one_job, post_job_status
 from utilslib.logger import logger
-from utilslib.fileinfo import copy_origin_imgs, get_info_by_FOV
+from utilslib.fileinfo import copy_origin_imgs, get_info_by_FOV, get_info_by_cells
 from utilslib.jsonfile import update_info_json
 from my_inference import detector
 from tocsv import get_trusted_labels
@@ -43,6 +43,7 @@ class cervical_seg():
         self.gray        = True #检测细胞用黑白图（无论True还是False，最终扣出的细胞是彩色的）
         self.filelist    = os.path.join(self.rootdir, 'filelist.csv') #页面上选中的图片的列表
         self.infojson    = os.path.join(self.rootdir, 'info.json') #存任务的所有信息
+        self.infojson2   = os.path.join(self.rootdir, 'info2.json') #任务处理完之后的信息，不是上面开始之前的
         self.origin_imgs = os.path.join(self.rootdir, 'origin_imgs') #存放原图和原图对应的csv文件的目录
         self.cells       = os.path.join(self.rootdir, 'cells') #存放细胞相关的，比如检测出来原图细胞的坐标csv文件，细胞的mask，裁剪出来的细胞
         self.mask_npy    = os.path.join(self.cells, 'mask_npy') #ndarray 存成的npy文件，里面是每个细胞的mask
@@ -51,6 +52,7 @@ class cervical_seg():
         self.crop_masked = os.path.join(self.cells, 'crop_masked') #存放扣出来的细胞图去掉了背景，目前特指医生标注过的
         self.statistics  = os.path.join(self.rootdir, 'statistics') #存放输入输出数据的信息统计csv
         self.statistics_trusted_labels = os.path.join(self.statistics, str(self.jid) + '_trusted_labels.csv') #医生标注信息汇总
+        self.statistics_crop = os.path.join(self.statistics, str(self.jid) + '_crop_cells.csv') #裁剪之后的信息汇总
         #初始化
         self.prepare_fs()
         self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
@@ -88,6 +90,8 @@ class cervical_seg():
                 self.logger.info('crop_fovs failed')
                 return False
             self.processing(95)
+            #统计裁剪出来的细胞的信息
+            get_info_by_cells(self.crop, self.statistics_crop)
         except Exception as ex:
             self.logger.info(ex)
             return False

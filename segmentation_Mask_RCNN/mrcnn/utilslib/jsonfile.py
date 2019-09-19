@@ -42,6 +42,9 @@ def update_info_json(job, status):
     job_info['cells_mask_npy']    = _get_filelist(job.mask_npy, startdir, suffix=['.npy'])
     job_info['cells_rois']        = _get_filelist(job.rois, startdir, suffix=['.csv'])
     job_info['status'] = status
+    #目前看来csv和npy对于前端没用
+    job_info['cells_mask_npy'] = []
+    job_info['cells_rois'] = []
 
     #统计医生标注的信息
     if os.path.exists(job.statistics_trusted_labels) is True:
@@ -59,12 +62,30 @@ def update_info_json(job, status):
             onetype = {'celltype': celltype, 'labelcnt': df1.shape[0]}
             types.append(onetype)
         job_info['types'] = types
-
-    #目前看来csv和npy对于前端没用
-    job_info['cells_mask_npy'] = []
-    job_info['cells_rois'] = []
-
     with open(job.infojson,'w',encoding='utf-8') as file:
+        file.write(json.dumps(job_info, indent=2, ensure_ascii=False))
+
+    job_info['batchcnt'], job_info['medicalcnt'], job_info['fovcnt'], job_info['fovncnt'], \
+    job_info['fovpcnt'], job_info['labelncnt'], job_info['labelpcnt'], job_info['labelcnt'] = \
+        0, 0, 0, 0, 0, 0, 0, 0
+    job_info['types'] = []
+    #统计裁剪出细胞的信息
+    if os.path.exists(job.statistics_crop) is True:
+        df = pd.read_csv(job.statistics_crop)
+        job_info['batchcnt']   = df.groupby(['batch']).size().shape[0] #总的批次数
+        job_info['medicalcnt'] = df.groupby(['medical']).size().shape[0] #总的病例数
+        job_info['fovcnt']     = df.groupby(['fov']).size().shape[0] #总的图片数
+        job_info['fovncnt']    = df[df.pn.isin(['N'])].groupby(['fov']).size().shape[0] #FOVN的个数
+        job_info['fovpcnt']    = df[df.pn.isin(['P'])].groupby(['fov']).size().shape[0] #FOVP的个数
+        job_info['labelncnt']  = df[df.cellpn.isin(['N'])].shape[0] #n的细胞个数
+        job_info['labelpcnt']  = df[df.cellpn.isin(['P'])].shape[0] #p的细胞个数
+        job_info['labelcnt']   = df.shape[0] #总的细胞个数
+        types = [] #各个type细胞个数
+        for celltype, df1 in df.groupby(['celltype']):
+            onetype = {'celltype': celltype, 'labelcnt': df1.shape[0]}
+            types.append(onetype)
+        job_info['types'] = types
+    with open(job.infojson2,'w',encoding='utf-8') as file:
         file.write(json.dumps(job_info, indent=2, ensure_ascii=False))
 
     return True

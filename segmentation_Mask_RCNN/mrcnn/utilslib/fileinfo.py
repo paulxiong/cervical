@@ -38,6 +38,32 @@ def get_info_by_FOV(origin_img_path, tocsvpath):
     pdall.to_csv(tocsvpath, quoting = 1, mode = 'w', index = False, header = True)
     return True
 
+# 解析细胞图的文件名, 把所有的信息全部写入一个csv
+# csv的表头原图 批次  病例 原图NP 细胞类型 细胞NP x1 y1 x2 y2
+def get_info_by_cells(cells_crop_path, tocsvpath):
+    lists2 = get_filelist(cells_crop_path, suffix=['.png'])
+    if lists2 is None or len(lists2) < 1:
+        return False
+
+    labels = []
+    for filepath in lists2:
+        if filepath is None or len(filepath) < 2:
+            continue
+        path1, filename, suffix1 = get_filePath_fileName_fileExt(filepath)
+
+        arr = filename.split('.')
+        if len(arr) < 4:
+            print("invalied filename: %s" % filename)
+            continue
+        batchid, medicalid, pn = arr[0], arr[1], str(arr[2]).upper()
+        filename = filename + suffix1
+        cellpn, celltype, fov, x1, y1, x2, y2 = get_info_by_filename(filename)
+        labels.append([fov, filename, batchid, medicalid, pn, celltype, cellpn.upper(), x1, y1, x2, y2])
+    header = ['fov', 'cell', 'batch', 'medical', 'pn', 'celltype', 'cellpn', 'x1', 'y1', 'x2', 'y2']
+    pdall = pd.DataFrame(labels, columns=header)
+    pdall.to_csv(tocsvpath, quoting = 1, mode = 'w', index = False, header = True)
+    return True
+
 #得到医生标注的csv，返回的是csv的全路径，仅仅是医生标注的才有csv
 def get_origin_csvs(origin_imgs_dir):
     csv_lists = []
@@ -52,17 +78,20 @@ def get_origin_csvs(origin_imgs_dir):
 
 # 解析细胞图片文件名字，返回fov和cell的类型
 def get_info_by_filename(filename):
-    cell_type, fov_type, original_img_name = None, None, None
+    cell_type, fov_type, original_img_name, x1, y1, x2, y2 = \
+            None, None, None, None, None, None, None
 
     if filename is None or len(filename) < 2:
-        return fov_type, cell_type, original_img_name
+        return fov_type, cell_type, original_img_name, x1, y1, x2, y2
+    _, filename, _ = get_filePath_fileName_fileExt(filename)
     arr = filename.split('_')
     if len(arr) < 7:
         print("invalied filename: %s" % filename)
-        return fov_type, cell_type, original_img_name
-    cell_type = arr[2]
-    fov_type = arr[1]
-    return fov_type, cell_type, original_img_name
+        return fov_type, cell_type, original_img_name, x1, y1, x2, y2
+    cellpn, cell_type, x1, y1, x2, y2 = \
+            arr[1], arr[2], int(arr[3]), int(arr[4]), int(arr[5]), int(arr[6])
+    original_img_name = arr[0]
+    return cellpn.upper(), cell_type.upper(), original_img_name, x1, y1, x2, y2
 
 # 解析细胞图片文件名字，返回原图的名字
 def get_original_imgname_by_filename(filename):
