@@ -66,10 +66,10 @@ class cervical_seg():
                 self.logger.info('copy origin images failed')
                 return False
             self.processing(5)
-            #处理完之前更新任务信息到info.json，方便web展示原图
-            update_info_json(self, ds.PROCESSING.value)
             #统计医生的标注信息
             get_info_by_FOV(self.origin_imgs, self.statistics_trusted_labels)
+            #处理完之前更新任务信息到info.json，方便web展示原图
+            update_info_json(self, ds.PROCESSING.value)
             #开始从图片里面定位细胞
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
             if ret == False:
