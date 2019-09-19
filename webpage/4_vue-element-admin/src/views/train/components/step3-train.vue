@@ -1,8 +1,8 @@
 <template>
   <div class="start-train">
     <h2 class="flex">
-      请<el-input v-model="inputName" autofocus placeholder="为数据集取个名字吧" @keyup.enter.native="goTrain" class="inputName"></el-input>，然后
-      <el-button class="start-btn" type="danger" :disabled="!inputName.length" :loading="loading" @click="goTrain">开始训练</el-button>
+      请<el-input v-model="inputName" autofocus placeholder="为数据集取个名字吧" show-word-limit maxlength="10" @keyup.enter.native="goTrain" class="inputName"></el-input>，然后
+      <el-button class="start-btn" type="danger" :disabled="!inputName.length" :loading="loading" @click="goTrain">开始处理</el-button>
       <i class="errInfo-btn">
         若信息有误，需要
         <el-button type="info" size="mini" @click="goBack">重新编辑</el-button>
@@ -12,18 +12,18 @@
       <section class="img tagContent">
         <el-badge is-dot class="badge">训练集</el-badge>
         <div class="img-list info-list">
-          <i>批次 :</i> fujianfuyou
+          <i>批次 :</i> {{postData.batchids}}
           <br />
-          <i>病例 :</i> 18237,28374,12943,34512
+          <i>病例 :</i> {{postData.medicalids}}
           <br />
           <i>图片 :</i>
           <el-link class="link" type="primary">点击查看全部<i class="el-icon-view el-icon--right"></i></el-link>
           <br />
-          <i>医生标注 :</i> 2345asd.csv
+          <i>医生标注 :</i> 20192345asd.csv
           <br />
           <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
           <br />
-          <i>N/p比例 :</i> 0.5
+          <i>n/p比例 :</i> {{countNP.countn}}/{{countNP.countp}}
         </div>
       </section>
 
@@ -58,17 +58,18 @@ export default {
   data() {
     return {
       loading: false,
-      inputName: ''
+      inputName: '',
+      postData: JSON.parse(localStorage.getItem('POST_DATA')) || {},
+      countNP: JSON.parse(localStorage.getItem('countNP')) || {},
     }
   },
   methods: {
     goTrain() {
       this.loading = true
-      const postData = JSON.parse(localStorage.getItem('POST_DATA'))
-      postData['desc'] = this.inputName
-      createdataset(postData).then(res => {
+      this.postData['desc'] = this.inputName
+      createdataset(this.postData).then(res => {
         this.$router.push({
-          path: '/'
+          path: `/train/detailsTrain?id=${res.data.data}`
         })
         this.loading = false
       })

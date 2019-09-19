@@ -7,13 +7,15 @@
           <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
             <div class="img-list info-list flex">
-              <i>批次 :</i> {{objData.batchids}}
-              <i>病例 :</i> {{objData.medicalids}}
-              <i>图片 :</i>
+              <i>批次:</i>
+              {{objData.batchids}}
+              <i>&nbsp;&nbsp;&nbsp;病例:</i>
+              {{objData.medicalids}}
+              <i>&nbsp;&nbsp;&nbsp;图片:</i>
               <el-link class="link" type="primary">点击查看全部</el-link>
-              <i>医生标注 :</i> 2345asd.csv
-              <i>细胞类型 :</i> 1_Norm, 2_LSIL, 7_ASCUS
-              <i>N/p比例 :</i> 0.5
+              <i>&nbsp;&nbsp;&nbsp;医生标注:</i>&nbsp;2345asd.csv
+              <i>&nbsp;&nbsp;&nbsp;细胞类型:</i>&nbsp;1_Norm,&nbsp;2_LSIL,&nbsp;7_ASCUS
+              <i>&nbsp;&nbsp;&nbsp;N/p:</i>&nbsp;0/4
             </div>
           </div>
           <div class="progress-info">
@@ -73,7 +75,16 @@
             </div>
           </el-image>
         </el-tab-pane>
-        <el-tab-pane label="图片处理log">{{cLog}}</el-tab-pane>
+        <el-tab-pane label="图片处理log">
+          <el-input
+            v-model="cLog"
+            type="textarea"
+            :rows="2"
+            placeholder="裁剪log"
+            :autosize="{ minRows: 2, maxRows: 16}"
+            readonly
+          >1</el-input>
+        </el-tab-pane>
       </el-tabs>
     </section>
   </div>

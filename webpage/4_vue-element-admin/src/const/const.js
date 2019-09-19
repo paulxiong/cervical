@@ -18,5 +18,10 @@ export const typeStatus = [
   { 'id': 2, 'status': '测试' }
 ]
 
+export const createdBy = [
+  { 'id': 0, 'name': '普通用户' },
+  { 'id': 1, 'name': '超级管理员' }
+]
+
 // 标注页面把原图的宽缩放到几个像素点（原图太大了一个屏幕显示不过来）
 export const page3ImgWidth = 645

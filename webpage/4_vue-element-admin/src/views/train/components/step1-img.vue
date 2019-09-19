@@ -4,7 +4,7 @@
       <h3 class="np">
         选择的批次和病例中
         <br />
-        N:{{countNP.countn}} / p:{{countNP.countp}}
+        n/p : {{countNP.countn}}/{{countNP.countp}}
       </h3>
       <el-button type="primary" @click="nextStep" class="next-btn" :disabled="!checkList.length">
         下一步
@@ -102,13 +102,13 @@ export default {
     getimgnptypebymids(postBatchs, postMedicalIds) {
       let postData = {
         'batchids': postBatchs,
-        'desc': 'cy测试数据集',
         'medicalids': postMedicalIds,
         'type': 1
       }
       localStorage.setItem('POST_DATA', JSON.stringify(postData))
       getimgnptypebymids(postData).then(res => {
         this.countNP = res.data.data
+        localStorage.setItem('countNP', JSON.stringify(this.countNP))
       })
     }
   },
