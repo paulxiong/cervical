@@ -19,37 +19,34 @@ type Token struct {
 }
 
 // BeforeCreate insert token之前的hook
-func (u *Token) BeforeCreate(scope *gorm.Scope) error {
-	if u.CreatedAt.IsZero() {
-		u.CreatedAt = time.Now()
+func (token *Token) BeforeCreate(scope *gorm.Scope) error {
+	if token.CreatedAt.IsZero() {
+		token.CreatedAt = time.Now()
 	}
-	if u.UpdatedAt.IsZero() {
-		u.UpdatedAt = time.Now()
+	if token.UpdatedAt.IsZero() {
+		token.UpdatedAt = time.Now()
 	}
 	return nil
 }
 
 // UpdateToken token存在更新到数据库，不存在则新建
-func (newtoken *Token) UpdateToken(token string, expire time.Time) error {
-	newtoken.ID = newtoken.UserID
-	newtoken.Expire = expire
-	newtoken.Token = token
-	t := Token{ID: newtoken.UserID}
-	ret := db.Last(&t)
+func (token *Token) UpdateToken(tokenstr string, expire time.Time) error {
+	token.ID = token.UserID
+	token.Expire = expire
+	token.Token = tokenstr
+	t1 := Token{ID: token.UserID}
+	ret := db.Last(&t1)
 	if ret.Error != nil {
-		ret2 := db.Create(newtoken)
+		ret2 := db.Create(token)
 		if ret2.Error != nil {
 			return ret2.Error
-		} else {
-			return nil
 		}
-	} else {
-		newtoken.UpdatedAt = time.Now()
-		ret3 := db.Model(&t).Updates(newtoken)
-		if ret3.Error != nil {
-			return ret3.Error
-		} else {
-			return nil
-		}
+		return nil
 	}
+	token.UpdatedAt = time.Now()
+	ret3 := db.Model(&t1).Updates(token)
+	if ret3.Error != nil {
+		return ret3.Error
+	}
+	return nil
 }

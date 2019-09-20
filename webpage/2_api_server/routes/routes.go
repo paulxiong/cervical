@@ -40,6 +40,7 @@ func Router() *gin.Engine {
 	user := r.Group("/user")
 	user.POST("/register", ctr.RegisterUser)
 	user.POST("/login", ctr.LoginUser)
+	user.POST("/emailcode", ctr.GetEmailCode)
 	user.Use(ctr.CheckAuth)
 	{
 		user.GET("/info", ctr.GetUser)

@@ -23,6 +23,7 @@ func init() {
 
 type register struct {
 	Email           string `form:"email" json:"email" example:"youremail@163.com 正确的邮箱格式" format:"string"`
+	EmailCode       string `form:"emailcode" json:"emailcode" example:"123456正确的验证码" format:"string"`
 	Mobile          string `form:"mobile" json:"mobile" binding:"required,max=11" example:"手机号码" format:"string"`
 	Username        string `form:"username" json:"username" example:"用户名，英文数字组成" format:"string"`
 	Password        string `form:"password" json:"password" binding:"required,max=124" example:"设置密码" format:"string"`
@@ -32,6 +33,7 @@ type register struct {
 // RegisterUser 注册新用户
 // @Description 注册新用户 code: 200 注册请求成功,  406 注册失败
 // @Description status：
+// @Description 78 验证码无效
 // @Description 76 手机号已经注册过
 // @Description 75 表单数据错误
 // @Description 74 新建用户失败
@@ -59,11 +61,12 @@ func RegisterUser(c *gin.Context) {
 		})
 		return
 	}
+
 	user.Password = reg.Password
 	user.Name = reg.Username
 	user.Email = reg.Email
 	user.Mobile = reg.Mobile
-	user.TypeId = 1000 //普通用户TypeId=1000
+	user.TypeID = 1000 //普通用户TypeId=1000
 	user.Image = "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"
 
 	if user.Password == "" ||
@@ -83,6 +86,22 @@ func RegisterUser(c *gin.Context) {
 			"data":   "register faild",
 		})
 		return
+	}
+
+	//检查如果是邮箱注册，必须检查验证码的合法
+	if user.Email != "" {
+		valid, em, codeerr := m.CheckEmailCodeValied(user.Email)
+		if codeerr != nil {
+			c.JSON(e.StatusNotAcceptable, gin.H{
+				"status": e.StatusRegisterMailInvalid78,
+				"data":   "register faild",
+			})
+			return
+		}
+		//校验完之后丢弃这个校验码
+		if valid {
+			em.UpdateEmailInvalid()
+		}
 	}
 
 	err = user.Newuser()
@@ -173,5 +192,65 @@ func LogoutUser(c *gin.Context) {
 // CheckAuth 检查当前连接是否已经登录
 func CheckAuth(c *gin.Context) {
 	AuthMiddleware.MiddlewareFunc()(c)
+	return
+}
+
+type mailregister struct {
+	Email string `form:"email" json:"email" example:"youremail@163.com 正确的邮箱格式" format:"string"`
+}
+
+// GetEmailCode 用户注册时候获取邮箱验证码
+// @Description 注册时候获取邮箱验证码
+// @Summary 用户注册时候获取邮箱验证码
+// @Description status：
+// @Description 71 邮箱已经注册过
+// @Description 73 表单数据不对（邮箱为空或格式不对）
+// @Description 77 邮件发送出错
+// @tags API1 用户
+// @Accept  multipart/form-data
+// @Produce json
+// @Param Register body controllers.mailregister true "注册信息表单"
+// @Success 200 {string} json “{"status": 200, "data": "ok"}"
+// @Failure 406 {string} json "{"data": "", "status": 错误码}"
+// @Router /user/emailcode [POST]
+func GetEmailCode(c *gin.Context) {
+	var user m.User
+	var mregister mailregister
+	err := c.ShouldBindJSON(&mregister)
+	if err != nil {
+		logger.Info.Println(err)
+		c.JSON(e.StatusNotAcceptable, gin.H{
+			"status": e.StatusRegisterInvalidData73,
+			"data":   "send mail faild",
+		})
+		return
+	}
+
+	user.Email = mregister.Email
+	exituser, errorcode := user.CheckUserExist()
+	if exituser != nil {
+		logger.Info.Println(err)
+		c.JSON(e.StatusNotAcceptable, gin.H{
+			"status": errorcode,
+			"data":   "email exist",
+		})
+		return
+	}
+
+	err = m.SendRegisterCode(mregister.Email)
+	if err != nil {
+		logger.Info.Println(err)
+		c.JSON(e.StatusNotAcceptable, gin.H{
+			"status": e.StatusRegisterMailFailed77,
+			"data":   "sent email failed",
+		})
+		return
+
+	}
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   "ok",
+	})
 	return
 }

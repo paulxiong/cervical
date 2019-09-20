@@ -61,14 +61,14 @@ func AllInfo(c *gin.Context) {
 	totalP, _ := m.ListLabelCountByPN(1)
 
 	for _, v := range cs {
-		_total, _, _ := m.ListLabelByType(1, 0, int(v.Id))
-		_total2, _ := m.ListImageCntByLabelType(int(v.Id))
+		_total, _, _ := m.ListLabelByType(1, 0, int(v.ID))
+		_total2, _ := m.ListImageCntByLabelType(int(v.ID))
 		st.CategoryLists = append(st.CategoryLists, Category2{
 			Name:   v.Name,
 			Other:  v.Other,
 			P1N0:   v.P1N0,
 			Cnt:    _total,
-			ID:     int(v.Id),
+			ID:     int(v.ID),
 			CntImg: _total2,
 		})
 	}
@@ -142,7 +142,7 @@ func GetMedicalIDInfo(c *gin.Context) {
 	batchid := c.DefaultQuery("batchid", "")
 	batchids := strings.Split(batchid, "|")
 	for _, v := range batchids {
-		totalms, _ms, _ := m.ListMedicalIdByBatchId(100, 0, v)
+		totalms, _ms, _ := m.ListMedicalIDByBatchID(100, 0, v)
 		total = total + int(totalms)
 		for _, mdicalid := range _ms {
 			allms = append(allms, mdicalid)
@@ -189,7 +189,7 @@ func GetCategoryInfo(c *gin.Context) {
 	ci.Total = int(total)
 	for _, v := range cs {
 		ci.Categorys = append(ci.Categorys, CategoryInfo{
-			ID:      int(v.Id),
+			ID:      int(v.ID),
 			Name:    v.Name,
 			Num:     0,
 			Checked: false,
@@ -317,15 +317,15 @@ func GetLabelByImageID(c *gin.Context) {
 	labels := Labelslists{}
 	labels.Labels = make([]m.Label, 0)
 
-	img, err := m.GetImageById(imgid)
+	img, err := m.GetImageByID(imgid)
 	if err == nil {
 		labels.W = img.W
 		labels.H = img.H
 	}
 
-	total, _labels, _ := m.ListLabelByImageId(int(limit), int(skip), int(imgid))
+	total, _labels, _ := m.ListLabelByImageID(int(limit), int(skip), int(imgid))
 	for _, v := range _labels {
-		_c, _ := m.GetCategoryById(v.Type)
+		_c, _ := m.GetCategoryByID(v.Type)
 		v.TypeOut = _c.Name
 		labels.Labels = append(labels.Labels, v)
 	}
@@ -366,7 +366,7 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 	err := c.BindJSON(&w)
 	logger.Info.Println(err, w.Medicalids)
 
-	totaln, totalp, _ := m.ListImagesNPTypeByMedicalId(w.Medicalids)
+	totaln, totalp, _ := m.ListImagesNPTypeByMedicalID(w.Medicalids)
 	cnt.CountN = totaln
 	cnt.CountP = totalp
 	logger.Info.Println(totaln, totalp)
@@ -396,7 +396,7 @@ func CreateDataset(c *gin.Context) {
 	// usr, _ := m.GetUserFromContext(c)
 
 	dt := m.Dataset{}
-	dt.Id = 0
+	dt.ID = 0
 	dt.CreatedBy = 1
 	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
@@ -404,22 +404,22 @@ func CreateDataset(c *gin.Context) {
 	dt.Type = w.Type
 	dt.CreateDatasets()
 
-	imgs := make([]m.ImagesByMedicalId, 0)
+	imgs := make([]m.ImagesByMedicalID, 0)
 	for _, v := range w.Medicalids {
-		_imgs, _ := m.ListImagesByMedicalId(v)
+		_imgs, _ := m.ListImagesByMedicalID(v)
 		for _, v2 := range _imgs {
 			imgs = append(imgs, v2)
 		}
 	}
 	cntn, cntp := f.CreateDataset(imgs, dt.Dir)
 	dt.Status = 1
-	m.UpdateDatasetsStatus(dt.Id, dt.Status)
+	m.UpdateDatasetsStatus(dt.ID, dt.Status)
 
 	f.NewJSONFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   dt.Id,
+		"data":   dt.ID,
 	})
 
 	return
@@ -454,9 +454,9 @@ func GetOneJob(c *gin.Context) {
 		return
 	}
 	if w.Status == 1 {
-		m.UpdateDatasetsStatus(dt.Id, 2)
+		m.UpdateDatasetsStatus(dt.ID, 2)
 	} else if w.Status == 4 {
-		m.UpdateDatasetsStatus(dt.Id, 6)
+		m.UpdateDatasetsStatus(dt.ID, 6)
 	}
 
 	c.JSON(e.StatusReqOK, gin.H{
@@ -558,7 +558,7 @@ func GetJobResult(c *gin.Context) {
 	doneStr := c.DefaultQuery("done", "0")
 	done, _ := strconv.ParseInt(doneStr, 10, 64)
 
-	d, _ := m.GetOneDatasetById(int(id))
+	d, _ := m.GetOneDatasetByID(int(id))
 
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d, done))
 	logger.Info.Println(j.ID)
@@ -584,7 +584,7 @@ func GetJobPercent(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
-	d, _ := m.GetOneDatasetById(int(id))
+	d, _ := m.GetOneDatasetByID(int(id))
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -608,7 +608,7 @@ func GetJobLog(c *gin.Context) {
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	typeStr := c.DefaultQuery("type", "c") // c-- crop  t--train
 
-	d, _ := m.GetOneDatasetById(int(id))
+	d, _ := m.GetOneDatasetByID(int(id))
 
 	j := f.GetLogContent(d, typeStr)
 
@@ -634,7 +634,7 @@ func GetModelInfo(c *gin.Context) {
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	typeStr := c.DefaultQuery("type", "c") // s-- svm  g--gan
 
-	d, _ := m.GetOneDatasetById(int(id))
+	d, _ := m.GetOneDatasetByID(int(id))
 
 	j := f.GetModelInfo(d, typeStr)
 

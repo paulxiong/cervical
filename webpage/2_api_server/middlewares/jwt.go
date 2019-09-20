@@ -46,15 +46,15 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "xdedu",
 		Key:         []byte("xdedu secret key"),
-		Timeout:     time.Second * time.Duration(configs.Jwt.Expire_Second),
-		MaxRefresh:  time.Second * time.Duration(configs.Jwt.Expire_Second*60),
+		Timeout:     time.Second * time.Duration(configs.Jwt.ExpireSecond),
+		MaxRefresh:  time.Second * time.Duration(configs.Jwt.ExpireSecond*60),
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			logger.Info.Println("PayloadFunc")
 			user, ok := data.(*m.User)
 			if ok {
 				return jwt.MapClaims{
-					IdentityKey: user.Id,
+					IdentityKey: user.ID,
 				}
 			}
 			return jwt.MapClaims{}
@@ -63,7 +63,7 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			claims := jwt.ExtractClaims(c)
 			userID := int64(claims[IdentityKey].(float64))
 			logger.Info.Println("IdentityHandler ")
-			user := &m.User{Id: userID}
+			user := &m.User{ID: userID}
 			m.SaveUsertoContext(c, user)
 			return user
 		},
@@ -115,8 +115,8 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			userTmp, exists := c.Get("user")
 			if exists == true && userTmp != nil {
 				userTmp2 := userTmp.(*m.User)
-				user.Id = userTmp2.Id
-				newtoken.UserID = userTmp2.Id
+				user.ID = userTmp2.ID
+				newtoken.UserID = userTmp2.ID
 			}
 			logger.Info.Println("LoginResponse")
 

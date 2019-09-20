@@ -85,6 +85,8 @@ const (
 	StatusRegisterNewUserFailed74  = 74
 	StatusRegisterError75          = 75
 	StatusRegisterMobileExisted76  = 76
+	StatusRegisterMailFailed77     = 77
+	StatusRegisterMailInvalid78    = 78
 
 	StatusCourseNotFound = 80
 

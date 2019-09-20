@@ -10,8 +10,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Image FOV图片信息
 type Image struct {
-	Id        int64     `json:"id"           gorm:"column:ID"`
+	ID        int64     `json:"id"           gorm:"column:ID"`
 	Csvpath   string    `json:"csvpath"      gorm:"column:CSVPATH"`
 	Imgpath   string    `json:"imgpath"      gorm:"column:IMGPATH"`
 	W         int       `json:"w"            gorm:"column:W"` //X
@@ -22,6 +23,7 @@ type Image struct {
 	UpdatedAt time.Time `json:"updated_time" gorm:"column:UPDATED_TIME"`
 }
 
+// BeforeCreate insert之前的hook
 func (u *Image) BeforeCreate(scope *gorm.Scope) error {
 	if u.CreatedAt.IsZero() {
 		u.CreatedAt = time.Now()
@@ -32,7 +34,8 @@ func (u *Image) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-func GetImageById(imgid int64) (img Image, e error) {
+// GetImageByID 通过图片ID查找图片信息
+func GetImageByID(imgid int64) (img Image, e error) {
 	var retimg Image
 	ret := db.Model(&Image{}).Where("ID = ?", imgid).First(&retimg)
 	if ret.Error != nil {
@@ -41,6 +44,7 @@ func GetImageById(imgid int64) (img Image, e error) {
 	return retimg, ret.Error
 }
 
+// ListImage 依次按照ID顺序返回图片信息
 func ListImage(limit int, skip int) (totalNum int64, c []Image, e error) {
 	var _i []Image
 	var total int64 = 0
@@ -53,6 +57,7 @@ func ListImage(limit int, skip int) (totalNum int64, c []Image, e error) {
 	return total, _i, ret.Error
 }
 
+// ListImageCntByLabelType 通过标注的类型来依次列出有这种标注类型的FOV图片
 func ListImageCntByLabelType(t int) (totalNum int64, e error) {
 	type res struct {
 		Total int64
@@ -102,8 +107,8 @@ func ListBatch(limit int, skip int) (totalNum int64, c []string, e error) {
 	return ress.Total, _b, ret2.Error
 }
 
-// ListMedicalIdByBatchId 查出批次号下所有的病例
-func ListMedicalIdByBatchId(limit int, skip int, batchid string) (totalNum int64, c []string, e error) {
+// ListMedicalIDByBatchID 查出批次号下所有的病例
+func ListMedicalIDByBatchID(limit int, skip int, batchid string) (totalNum int64, c []string, e error) {
 	var _b []string
 	type res struct {
 		Total int64
@@ -159,8 +164,8 @@ func ListWantedImages(limit int, skip int, batchids []string, medicalids []strin
 	return _b, ret.Error
 }
 
-// ListImagesNPTypeByMedicalId 查找出MedicalId下图片的类型(N/P)的数量
-func ListImagesNPTypeByMedicalId(medicalids []string) (countN int, countP int, e error) {
+// ListImagesNPTypeByMedicalID 查找出MedicalId下图片的类型(N/P)的数量
+func ListImagesNPTypeByMedicalID(medicalids []string) (countN int, countP int, e error) {
 	type res struct {
 		Total int
 	}
@@ -180,7 +185,8 @@ func ListImagesNPTypeByMedicalId(medicalids []string) (countN int, countP int, e
 	return ressN.Total, ressP.Total, ret2.Error
 }
 
-type ImagesByMedicalId struct {
+// ImagesByMedicalID 某一病例下图片的信息
+type ImagesByMedicalID struct {
 	Csvpath   string `json:"csvpath"`
 	Imgpath   string `json:"imgpath"`
 	Batchid   string `json:"batchid"`
@@ -188,12 +194,12 @@ type ImagesByMedicalId struct {
 	P1N0      int    `json:"p1n0"` //是阴性还是阳性
 }
 
-// ListImagesByMedicalId 查找出MedicalId下图片所有图片，按照n/p分开
-func ListImagesByMedicalId(medicalid string) (imgs []ImagesByMedicalId, e error) {
+// ListImagesByMedicalID 查找出MedicalId下图片所有图片，按照n/p分开
+func ListImagesByMedicalID(medicalid string) (imgs []ImagesByMedicalID, e error) {
 	selector1 := "SELECT image.CSVPATH as csvpath, image.MEDICALID as medicalid, image.BATCHID as batchid, image.IMGPATH as imgpath from label,image,category where image.MEDICALID=? AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH;"
-	ressN := []ImagesByMedicalId{}
-	ressP := []ImagesByMedicalId{}
-	ressAll := make([]ImagesByMedicalId, 0)
+	ressN := []ImagesByMedicalID{}
+	ressP := []ImagesByMedicalID{}
+	ressAll := make([]ImagesByMedicalID, 0)
 	ret := db.Raw(selector1, medicalid, 0).Scan(&ressN)
 	if ret.Error != nil {
 		log.Println(ret.Error)
@@ -213,8 +219,9 @@ func ListImagesByMedicalId(medicalid string) (imgs []ImagesByMedicalId, e error)
 	return ressAll, ret2.Error
 }
 
+// Label 标注的信息
 type Label struct {
-	Id        int64     `json:"id"            gorm:"column:ID"`    //标注信息ID
+	ID        int64     `json:"id"            gorm:"column:ID"`    //标注信息ID
 	Imgid     int64     `json:"imgid"         gorm:"column:IMGID"` //所属图片的ID
 	Type      int       `json:"type"          gorm:"column:TYPE"`  //类新
 	TypeOut   string    `json:"typeout"       gorm:"-"`            //类新，前端使用数据库没有
@@ -226,6 +233,7 @@ type Label struct {
 	UpdatedAt time.Time `json:"updated_time"  gorm:"column:UPDATED_TIME"`
 }
 
+// BeforeCreate insert之前的hook
 func (u *Label) BeforeCreate(scope *gorm.Scope) error {
 	if u.CreatedAt.IsZero() {
 		u.CreatedAt = time.Now()
@@ -236,6 +244,7 @@ func (u *Label) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+// ListLabel 依次列出标注信息
 func ListLabel(limit int, skip int) (totalNum int64, l []Label, e error) {
 	var _l []Label
 	var total int64 = 0
@@ -248,6 +257,7 @@ func ListLabel(limit int, skip int) (totalNum int64, l []Label, e error) {
 	return total, _l, ret.Error
 }
 
+// ListLabelByType 通过标注细胞类型列出标注信息
 func ListLabelByType(limit int, skip int, t int) (totalNum int64, l []Label, e error) {
 	var _l []Label
 	var total int64 = 0
@@ -260,7 +270,8 @@ func ListLabelByType(limit int, skip int, t int) (totalNum int64, l []Label, e e
 	return total, _l, ret.Error
 }
 
-func ListLabelByImageId(limit int, skip int, imgid int) (totalNum int64, l []Label, e error) {
+// ListLabelByImageID 找出一张图片里面的所有标注信息
+func ListLabelByImageID(limit int, skip int, imgid int) (totalNum int64, l []Label, e error) {
 	var _l []Label
 	var total int64 = 0
 
@@ -272,6 +283,7 @@ func ListLabelByImageId(limit int, skip int, imgid int) (totalNum int64, l []Lab
 	return total, _l, ret.Error
 }
 
+// ListLabelCountByPN 统计P、N的标注总数
 func ListLabelCountByPN(pn int) (totalNum int64, e error) {
 	type res struct {
 		Total int64
@@ -286,8 +298,9 @@ func ListLabelCountByPN(pn int) (totalNum int64, e error) {
 	return ress.Total, ret.Error
 }
 
+// Category 标注、细胞的分类信息
 type Category struct {
-	Id        int64     `json:"id"     gorm:"column:ID"`           //分类ID
+	ID        int64     `json:"id"     gorm:"column:ID"`           //分类ID
 	Name      string    `json:"name"   gorm:"column:NAME"`         //名字
 	Other     string    `json:"other"  gorm:"column:OTHER"`        //描述
 	P1N0      int       `json:"p1n0"     gorm:"column:P1N0"`       //是阴性还是阳性
@@ -295,6 +308,7 @@ type Category struct {
 	UpdatedAt time.Time `json:"-"      gorm:"column:UPDATED_TIME"` //更新时间
 }
 
+// BeforeCreate insert 之前的hook
 func (u *Category) BeforeCreate(scope *gorm.Scope) error {
 	if u.CreatedAt.IsZero() {
 		u.CreatedAt = time.Now()
@@ -305,6 +319,7 @@ func (u *Category) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+// ListCategory 依次列出分类信息
 func ListCategory(limit int, skip int) (totalNum int64, c []Category, e error) {
 	var _c []Category
 	var total int64 = 0
@@ -317,7 +332,8 @@ func ListCategory(limit int, skip int) (totalNum int64, c []Category, e error) {
 	return total, _c, ret.Error
 }
 
-func GetCategoryById(id int) (c Category, e error) {
+// GetCategoryByID 通过ID查找分类的信息
+func GetCategoryByID(id int) (c Category, e error) {
 	var _c Category
 
 	ret := db.Model(&_c).Where("Id = ?", id).First(&_c)
@@ -327,8 +343,9 @@ func GetCategoryById(id int) (c Category, e error) {
 	return _c, ret.Error
 }
 
+// Dataset 数据集的信息
 type Dataset struct {
-	Id          int64     `json:"id"             gorm:"column:ID"`           //ID
+	ID          int64     `json:"id"             gorm:"column:ID"`           //ID
 	Type        int       `json:"type"           gorm:"column:TYPE"`         //分类
 	Desc        string    `json:"desc"           gorm:"column:DESCRIPTION"`  //描述
 	Status      int       `json:"status"         gorm:"column:STATUS"`       //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
@@ -345,6 +362,7 @@ type Dataset struct {
 	UpdatedAt   time.Time `json:"updated_at"     gorm:"column:UPDATED_TIME"` //更新时间
 }
 
+// BeforeCreate insert 之前的hook
 func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 	if d.CreatedAt.IsZero() {
 		d.CreatedAt = time.Now()
@@ -367,6 +385,7 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+// ListDataset 依次列出数据集
 func ListDataset(limit int, skip int) (totalNum int64, c []Dataset, e error) {
 	var _d []Dataset
 	var total int64 = 0
@@ -379,8 +398,9 @@ func ListDataset(limit int, skip int) (totalNum int64, c []Dataset, e error) {
 	return total, _d, ret.Error
 }
 
+// CreateDatasets 新建一个数据集
 func (d *Dataset) CreateDatasets() (e error) {
-	d.Id = 0
+	d.ID = 0
 	ret := db.Model(d).Save(&d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
@@ -393,6 +413,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 	return ret2.Error
 }
 
+// UpdateDatasetsStatus 更新数据集的状态
 func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
@@ -434,6 +455,7 @@ func UpdateDatasetsPercent(did int64, percent int64) (e error) {
 	return ret.Error
 }
 
+// GetOneDatasetsToProcess 请求一个制定状态和类型的数据集去处理
 func GetOneDatasetsToProcess(status int, _type int) (dt Dataset, e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("STATUS=? AND TYPE=?", status, _type).First(&d)
@@ -443,7 +465,8 @@ func GetOneDatasetsToProcess(status int, _type int) (dt Dataset, e error) {
 	return d, ret2.Error
 }
 
-func GetOneDatasetById(id int) (dt Dataset, e error) {
+// GetOneDatasetByID 通过ID查找数据集
+func GetOneDatasetByID(id int) (dt Dataset, e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", id).First(&d)
 	if ret2.Error != nil {
@@ -452,8 +475,9 @@ func GetOneDatasetById(id int) (dt Dataset, e error) {
 	return d, ret2.Error
 }
 
+// Model 模型信息
 type Model struct {
-	Id        int       `json:"id"    gorm:"column:ID"`
+	ID        int       `json:"id"    gorm:"column:ID"`
 	Type      int       `json:"type"  gorm:"column:TYPE"`
 	Index     int       `json:"index" gorm:"-"`
 	DId       int64     `json:"did"   gorm:"column:DID"`
@@ -462,21 +486,22 @@ type Model struct {
 	CreatedAt time.Time `json:"-"     gorm:"column:CREATED_TIME"` //创建时间
 	UpdatedAt time.Time `json:"-"     gorm:"column:UPDATED_TIME"` //更新时间
 	// gan
-	TotalEpoch       int     `json:"total_epoch"      gorm:"-"`
-	ErrD_real        float32 `json:"errD_real"        gorm:"-"`
-	ErrD_fake        float32 `json:"errD_fake"        gorm:"-"`
-	Gradient_penalty float32 `json:"gradient_penalty" gorm:"-"`
-	D_cost           float32 `json:"D_cost"           gorm:"-"`
-	Mi_loss          float32 `json:"mi_loss"          gorm:"-"`
-	Purity           float32 `json:"purity"           gorm:"-"`
-	Entropy          float32 `json:"entropy"          gorm:"-"`
+	TotalEpoch      int     `json:"total_epoch"      gorm:"-"`
+	ErrDReal        float32 `json:"errD_real"        gorm:"-"`
+	ErrDFake        float32 `json:"errD_fake"        gorm:"-"`
+	GradientPenalty float32 `json:"gradient_penalty" gorm:"-"`
+	DCost           float32 `json:"D_cost"           gorm:"-"`
+	MiLoss          float32 `json:"mi_loss"          gorm:"-"`
+	Purity          float32 `json:"purity"           gorm:"-"`
+	Entropy         float32 `json:"entropy"          gorm:"-"`
 	// svm
 	Ts        int     `json:"ts"        gorm:"-"`
-	F1_score  float32 `json:"f1_score"  gorm:"-"`
+	F1Score   float32 `json:"f1_score"  gorm:"-"`
 	Recall    float32 `json:"recall"    gorm:"-"`
 	Precision float32 `json:"precision" gorm:"-"`
 }
 
+// BeforeCreate insert之前的hook
 func (d *Model) BeforeCreate(scope *gorm.Scope) error {
 	if d.CreatedAt.IsZero() {
 		d.CreatedAt = time.Now()
@@ -487,8 +512,9 @@ func (d *Model) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+// CreateModelInfo 把模型信息记录到数据库
 func (d *Model) CreateModelInfo() (e error) {
-	d.Id = 0
+	d.ID = 0
 	_d := Model{}
 
 	ret2 := db.Model(d).Where("PATH=?", d.Path).First(&_d)
@@ -496,7 +522,7 @@ func (d *Model) CreateModelInfo() (e error) {
 		logger.Info.Println(ret2.Error)
 	}
 
-	if _d.Id > 0 {
+	if _d.ID > 0 {
 		return ret2.Error
 	}
 

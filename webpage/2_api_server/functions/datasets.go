@@ -111,7 +111,7 @@ func GetInfoJSONPath(d m.Dataset, isDone int64) string {
 func GetLogContent(d m.Dataset, _type string) string {
 	logpath := ""
 	if _type == "c" {
-		logpath = scratchRoot + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.Id)
+		logpath = scratchRoot + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.ID)
 	} else {
 		logpath = scratchRoot + "/" + d.Dir + "/" + "log"
 	}
@@ -152,7 +152,7 @@ func GetModelInfo(d m.Dataset, _type string) []m.Model {
 		_minfo := m.Model{}
 		if err2 := json.Unmarshal([]byte(line), &_minfo); err2 == nil {
 			_minfo.Type = modeltype
-			_minfo.DId = d.Id
+			_minfo.DId = d.ID
 			minfo = append(minfo, _minfo)
 		} else {
 			logger.Info.Println(err2)
@@ -163,7 +163,7 @@ func GetModelInfo(d m.Dataset, _type string) []m.Model {
 // NewJSONFile 创建任务的时候把任务的部分信息存到JSON文件
 func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, cntp int) {
 	c := JobInfo{}
-	c.ID = d.Id
+	c.ID = d.ID
 	c.Desc = d.Desc
 	c.Status = d.Status
 	c.Dir = d.Dir
@@ -181,7 +181,7 @@ func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
-func CreateDataset(imgs []m.ImagesByMedicalId, dirname string) (n int, p int) {
+func CreateDataset(imgs []m.ImagesByMedicalID, dirname string) (n int, p int) {
 	err := os.MkdirAll(scratchRoot+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)

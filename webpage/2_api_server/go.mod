@@ -35,5 +35,6 @@ require (
 	golang.org/x/sys v0.0.0-20190825160603-fb81701db80f // indirect
 	golang.org/x/tools v0.0.0-20190826060629-95c3470cfb70 // indirect
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0 // indirect
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )
