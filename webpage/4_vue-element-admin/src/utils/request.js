@@ -3,6 +3,7 @@ import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import { APIUrl } from '@/const/config'
+import { errCode } from '@/const/errCode'
 
 // create an axios instance
 const service = axios.create({
@@ -31,8 +32,14 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
+    console.log(response, 'response')
     if (response.data.status === 200) {
       return response
+    } else {
+      Message.error({
+        message: errCode[response.data.status].msg,
+        type: 'error'
+      })
     }
   },
   /**

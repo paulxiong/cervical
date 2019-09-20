@@ -37,6 +37,7 @@
           <el-input
             key="code"
             ref="code"
+            maxlength="6"
             v-model="loginForm.code"
             type="text"
             placeholder="邮箱验证码"
@@ -250,6 +251,9 @@ export default {
                     })
                 }, 1e3)
               })
+              .catch(() => {
+                this.loading = false
+              })
           } else {
             this.$store
               .dispatch('user/login', this.loginForm)
@@ -265,7 +269,6 @@ export default {
               })
           }
         } else {
-          console.log('error submit!!')
           return false
         }
       })
