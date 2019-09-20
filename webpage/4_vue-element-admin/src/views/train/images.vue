@@ -7,18 +7,23 @@
           <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
             <div class="img-list info-list flex">
-              <i>目录:</i>
-              &nbsp;{{objData.dir}}
-              <i>&nbsp;&nbsp;&nbsp;批次:</i>
-              {{objData.batchids}}
-              <i>&nbsp;&nbsp;&nbsp;病例:</i>
-              {{objData.medicalids}}
-              <i>&nbsp;&nbsp;&nbsp;图片:</i>
-              <el-link class="link" type="primary">点击查看全部</el-link>
-              <i>&nbsp;&nbsp;&nbsp;标记次数/n标记次数/p标记次数:</i>
-              {{objData.labelcnt}}/{{objData.labelncnt}}/{{objData.labelpcnt}}
-              <i>&nbsp;&nbsp;&nbsp;n/p:</i>
-              &nbsp;{{objData.fovncnt}}/{{objData.fovpcnt}}
+              <i>目录:</i><span>{{objData.dir}}</span>
+              <i>批次:</i><span>{{objData.batchids}}</span>
+              <i>病例:</i><span>{{objData.medicalids}}</span>
+              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i><span>{{objData.fovcnt}}/{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
+              <i>标记次数/n标记次数/p标记次数:</i><span>{{objData.labelcnt}}/{{objData.labelncnt}}/{{objData.labelpcnt}}</span>
+              <i>n/p:</i><span>{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
+            </div>
+          </div>
+          <div class="output-info info">
+            <el-badge is-dot class="badge">输出信息</el-badge>
+            <div class="img-list info-list flex">
+              <i>目录:</i><span>{{objData2.dir}}</span>
+              <i>批次:</i><span>{{objData2.batchids}}</span>
+              <i>病例:</i><span>{{objData2.medicalids}}</span>
+              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i><span>{{objData2.fovcnt}}/{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
+              <i>标记次数/n标记次数/p标记次数:</i><span>{{objData2.labelcnt}}/{{objData2.labelncnt}}/{{objData2.labelpcnt}}</span>
+              <i>n/p:</i><span>{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
             </div>
           </div>
           <div class="progress-info">
@@ -110,6 +115,7 @@ export default {
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
       hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
       objData: {},
+      objData2: {},
       cLog: '',
       origin_imgs: [],
       cells_crop: [],
@@ -118,9 +124,12 @@ export default {
   },
   methods: {
     getjobresult() {
-      getjobresult({ id: this.$route.query.id }).then(res => {
+      getjobresult({ id: this.$route.query.id, done: '0' }).then(res => {
         this.objData = res.data.data
         this.origin_imgs = this.objData.origin_imgs
+      })
+      getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
+        this.objData2 = res.data.data
       })
     },
     getPercent() {
@@ -151,7 +160,7 @@ export default {
       }
     },
     /**
-     * 子传父，通知父组件的图片状态更新为已完成
+     * 通知父组件的图片状态更新为已完成
      */
     finishedImages() {
       this.$emit('finished', this.percentage)
@@ -187,7 +196,7 @@ export default {
   justify-content: space-between;
 }
 .output-info {
-  margin-left: 30px;
+  margin-top: 20px;
 }
 .time-info {
   margin-left: 30px;
@@ -207,11 +216,14 @@ export default {
   .badge {
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   i {
     color: #666;
     font-size: 14px;
+  }
+  span {
+    margin-right: 16px;
   }
 }
 .header {
