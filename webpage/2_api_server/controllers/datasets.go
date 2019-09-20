@@ -541,11 +541,13 @@ func ListDatasets(c *gin.Context) {
 }
 
 // GetJobResult 获得任务状态（数据处理/训练/预测）
-// @Description 获得任务状态（数据处理/训练/预测）
+// @Description 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
 // @tags API1 任务（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param id query string false "id, default 1"
+// @Param done query string false "查看完成前的标注信息还是完成后的细胞统计信息, default 0 是完成之前的标注信息， 1是完成之后的细胞信息"
 // @Success 200 {object} function.JobInfo
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobresult [get]
@@ -553,9 +555,12 @@ func GetJobResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
+	doneStr := c.DefaultQuery("done", "0")
+	done, _ := strconv.ParseInt(doneStr, 10, 64)
+
 	d, _ := m.GetOneDatasetById(int(id))
 
-	j := f.LoadJSONFile(f.GetInfoJSONPath(d))
+	j := f.LoadJSONFile(f.GetInfoJSONPath(d, done))
 	logger.Info.Println(j.ID)
 
 	c.JSON(e.StatusReqOK, gin.H{

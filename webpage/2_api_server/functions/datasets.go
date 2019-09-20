@@ -60,7 +60,7 @@ type typesinfo struct {
 	LabelCnt int `json:"labelcnt" example:"900"` //类型的个数
 }
 
-// JobInfo 存在硬盘的JSON文件，描述每个任务的属性
+// JobInfo 存在硬盘的JSON文件，描述每个任务的属性，info.json是初始化时候，info2.json是裁剪结束之后
 type JobInfo struct {
 	ID              int64       `json:"id"                example:"1"`             //任务ID
 	Desc            string      `json:"desc"              example:"任务描述"`          //当前任务的文字描述
@@ -75,15 +75,15 @@ type JobInfo struct {
 	CellsCropMasked []string    `json:"cells_crop_masked" example:"细胞核图片"`         // 裁剪之后的细胞核路径构成的数组
 	CellsMaskNpy    []string    `json:"cells_mask_npy"    example:"细胞核掩码"`         // 细胞核掩码，这里默认是空数组
 	CellsRois       []string    `json:"cells_rois"        example:"细胞核在FOV的坐标"`    // 细胞核坐标，这里默认是空数组
-	BatchCnt        int         `json:"batchcnt"          example:"1"`             //总的批次数
-	MedicalCnt      int         `json:"medicalcnt"        example:"2"`             //总的病例数
-	FovCnt          int         `json:"fovcnt"            example:"100"`           //总的图片数
-	FovnCnt         int         `json:"fovncnt"           example:"10"`            //FOV N的个数
-	FovpCnt         int         `json:"fovpcnt"           example:"90"`            //FOV P的个数
-	LabelnCnt       int         `json:"labelncnt"         example:"100"`           //n 的标注次数
-	LabelpCnt       int         `json:"labelpcnt"         example:"900"`           //p 的标注次数
-	LabelCnt        int         `json:"labelcnt"          example:"1000"`          //总的标注次数
-	Types           []typesinfo `json:"types"`                                     //各个type标注次数
+	BatchCnt        int         `json:"batchcnt"          example:"1"`             //总的批次数, 初始化和结束时候的值可能不一样
+	MedicalCnt      int         `json:"medicalcnt"        example:"2"`             //总的病例数，初始化和结束时候的值可能不一样
+	FovCnt          int         `json:"fovcnt"            example:"100"`           //总的图片数，初始化和结束时候的值可能不一样
+	FovnCnt         int         `json:"fovncnt"           example:"10"`            //FOV N的个数，初始化和结束时候的值可能不一样
+	FovpCnt         int         `json:"fovpcnt"           example:"90"`            //FOV P的个数，初始化和结束时候的值可能不一样
+	LabelnCnt       int         `json:"labelncnt"         example:"100"`           //n 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	LabelpCnt       int         `json:"labelpcnt"         example:"900"`           //p 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	LabelCnt        int         `json:"labelcnt"          example:"1000"`          //总的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	Types           []typesinfo `json:"types"`                                     //各个type标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
 }
 
 func writeJSON(cfg string, jsonByte []byte) {
@@ -96,9 +96,14 @@ func writeJSON(cfg string, jsonByte []byte) {
 	}
 }
 
-// GetInfoJSONPath 拿出info.json的路径
-func GetInfoJSONPath(d m.Dataset) string {
-	infopath := scratchRoot + "/" + d.Dir + "/info.json"
+// GetInfoJSONPath 拿出info.json的路径, isDone=1表示拿出裁剪完之后的细胞统计信息，isDone=0表示拿出裁剪之前的标注信息
+func GetInfoJSONPath(d m.Dataset, isDone int64) string {
+	infopath := scratchRoot + "/" + d.Dir + "/"
+	if isDone == 0 {
+		infopath = infopath + "info.json"
+	} else {
+		infopath = infopath + "info2.json"
+	}
 	return infopath
 }
 
