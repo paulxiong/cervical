@@ -117,6 +117,7 @@
 import { validEmail } from '@/utils/validate'
 import loginHeader from './components/login-header'
 import loginFooter from './components/login-footer'
+import { getCode } from '@/api/user'
 let timer
 
 export default {
@@ -207,6 +208,7 @@ export default {
     },
     sendCode() {
       if (!validEmail(this.loginForm.username)) return
+      getCode({ 'email': this.loginForm.username })
       timer = setInterval(() => {
         this.time--
         if (this.time === 0) {
