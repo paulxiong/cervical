@@ -80,13 +80,13 @@ func FindEmailbyToAddr(toaddr string) (*Email, error) {
 }
 
 // CheckEmailCodeValied 检查验证码是否正确，邮件是否有效
-func CheckEmailCodeValied(toaddr string) (bool, *Email, error) {
+func CheckEmailCodeValied(toaddr string, code string) (bool, *Email, error) {
 	em, err := FindEmailbyToAddr(toaddr)
 	if err != nil {
 		return false, em, err
 	}
 	//过期了,失效了，没发送成功, 没找到邮件记录
-	if time.Now().Before(em.Exire) || em.Valid == 0 || em.Status != 1 || em.ID < 1 {
+	if time.Now().Before(em.Exire) || em.Valid == 0 || em.Status != 1 || em.ID < 1 || em.Code != code {
 		return false, em, err
 	}
 	return true, em, err

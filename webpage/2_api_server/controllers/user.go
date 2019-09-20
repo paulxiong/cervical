@@ -24,7 +24,7 @@ func init() {
 type register struct {
 	Email           string `form:"email" json:"email" example:"youremail@163.com 正确的邮箱格式" format:"string"`
 	EmailCode       string `form:"emailcode" json:"emailcode" example:"123456正确的验证码" format:"string"`
-	Mobile          string `form:"mobile" json:"mobile" binding:"required,max=11" example:"手机号码" format:"string"`
+	Mobile          string `form:"mobile" json:"mobile" binding:"max=11" example:"手机号码" format:"string"`
 	Username        string `form:"username" json:"username" example:"用户名，英文数字组成" format:"string"`
 	Password        string `form:"password" json:"password" binding:"required,max=124" example:"设置密码" format:"string"`
 	ConfirmPassword string `form:"confirmPassword" json:"confirmPassword" binding:"required,eqfield=Password,max=124" example:"确认密码" format:"string"`
@@ -37,7 +37,7 @@ type register struct {
 // @Description 76 手机号已经注册过
 // @Description 75 表单数据错误
 // @Description 74 新建用户失败
-// @Description 73 表单数据不对（密码或手机号为空）
+// @Description 73 表单数据不对（密码或手机号/邮箱/用户名为空）
 // @Description 72 两次密码不一致
 // @Description 71 邮箱已经注册过
 // @Description 70 用户已经存在
@@ -55,6 +55,7 @@ func RegisterUser(c *gin.Context) {
 	var user m.User
 	err := c.ShouldBindJSON(&reg)
 	if err != nil {
+		logger.Info.Println(err)
 		c.JSON(e.StatusNotAcceptable, gin.H{
 			"status": e.StatusRegisterError75,
 			"data":   "register faild",
@@ -69,8 +70,7 @@ func RegisterUser(c *gin.Context) {
 	user.TypeID = 1000 //普通用户TypeId=1000
 	user.Image = "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"
 
-	if user.Password == "" ||
-		user.Mobile == "" {
+	if user.Password == "" || (user.Name == "" && user.Email == "" && user.Mobile == "") {
 		logger.Warning.Println("RegisterUser failed ", user)
 		c.JSON(e.StatusNotAcceptable, gin.H{
 			"status": e.StatusRegisterInvalidData73,
@@ -90,7 +90,7 @@ func RegisterUser(c *gin.Context) {
 
 	//检查如果是邮箱注册，必须检查验证码的合法
 	if user.Email != "" {
-		valid, em, codeerr := m.CheckEmailCodeValied(user.Email)
+		valid, em, codeerr := m.CheckEmailCodeValied(user.Email, reg.EmailCode)
 		if codeerr != nil {
 			c.JSON(e.StatusNotAcceptable, gin.H{
 				"status": e.StatusRegisterMailInvalid78,
