@@ -30,27 +30,6 @@
           />
         </el-form-item>
 
-        <el-form-item prop="code" v-if="register">
-          <span class="svg-container">
-            <svg-icon icon-class="email" />
-          </span>
-          <el-input
-            key="code"
-            ref="code"
-            maxlength="6"
-            v-model="loginForm.code"
-            type="text"
-            placeholder="邮箱验证码"
-            name="code"
-            tabindex="2"
-            autocomplete="on"
-          />
-          <span class="show-pwd">
-            <svg-icon icon-class="guide" @click="sendCode" v-if="time === 60" />
-            <i v-else>{{time}}</i>
-          </span>
-        </el-form-item>
-
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -88,6 +67,27 @@
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+
+        <el-form-item prop="code" v-if="register">
+          <span class="svg-container">
+            <svg-icon icon-class="email" />
+          </span>
+          <el-input
+            key="code"
+            ref="code"
+            maxlength="6"
+            v-model="loginForm.code"
+            type="text"
+            placeholder="邮箱验证码"
+            name="code"
+            tabindex="2"
+            autocomplete="on"
+          />
+          <span class="show-pwd">
+            <svg-icon icon-class="guide" @click="sendCode" v-if="time === 60" />
+            <i v-else>{{time}}</i>
           </span>
         </el-form-item>
 

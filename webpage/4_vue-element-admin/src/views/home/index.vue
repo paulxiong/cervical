@@ -27,11 +27,11 @@
             {{v.created_by | filterCreated}}
             <br />
             <i>类型 :</i>
-            {{v.type | filtersType}}
+            {{v.type | filtersStatus}}
             <br />
             <i>状态 :</i>
             <el-tag
-              :type="v.status===4?'success':'warning'"
+              :type="v.status | filtersTaskType"
               effect="dark"
             >{{v.status | filtersTaskStatus}}</el-tag>
             <!-- <i>批次 :</i> fujianfuyou<br/>
@@ -75,10 +75,13 @@ export default {
     filterCreated(value) {
       return createdBy[value].name
     },
+    filtersTaskType(value) {
+      return taskStatus[value].type
+    },
     filtersTaskStatus(value) {
       return taskStatus[value].status
     },
-    filtersType(value) {
+    filtersStatus(value) {
       return typeStatus[value].status
     }
   },
