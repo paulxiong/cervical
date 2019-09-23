@@ -21,7 +21,7 @@ func Router() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	r.StaticFile("/favicon.png", "./web/dist/favicon.ico")
+	r.StaticFile("/favicon.ico", "./web/dist/favicon.ico")
 	r.StaticFile("/", "./web/dist/")
 	r.StaticFS("/static", http.Dir("./web/dist/static"))
 	r.NoRoute(func(c *gin.Context) { c.JSON(404, gin.H{"text": "Not Found."}) })
