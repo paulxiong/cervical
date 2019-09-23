@@ -1,19 +1,14 @@
 <template>
   <div class="train">
     <section class="header">
-      <div class="title">
+      <div class="title flex">
         <h2>TRAIN</h2>
+        <el-button type="danger" @click="handleTrain" :disabled="checkboxCell.length<2">开始训练</el-button>
       </div>
       <div class="cellTypes">
         <el-badge is-dot class="badge">请选择细胞类型</el-badge>
-        <el-checkbox-group v-model="checkboxCell" @change="checkCellTypes" size="mini">
-          <el-checkbox
-            v-for="v in cellTypes"
-            :key="v.celltype"
-            checked
-            :label="v"
-            border
-          ></el-checkbox>
+        <el-checkbox-group v-model="checkboxCell" size="mini">
+          <el-checkbox v-for="(v, i) in cellTypes" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
         </el-checkbox-group>
       </div>
       <div class="progress-info">
@@ -44,8 +39,8 @@ export default {
     }
   },
   methods: {
-    checkCellTypes(val) {
-      console.log(val)
+    handleTrain() {
+      console.log(this.checkboxCell)
     }
   }
 }
@@ -62,9 +57,9 @@ export default {
       }
     }
     .badge {
-        font-weight: bold;
-        margin-bottom: 5px;
-      }
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
     .cellTypes {
       margin-bottom: 20px;
     }
