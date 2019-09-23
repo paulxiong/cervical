@@ -32,7 +32,6 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    console.log(response, 'response')
     if (response.data.status === 200) {
       return response
     } else {

@@ -64,6 +64,7 @@
             name="password"
             tabindex="2"
             autocomplete="on"
+            @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />

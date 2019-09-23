@@ -7,23 +7,35 @@
           <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
             <div class="img-list info-list flex">
-              <i>目录:</i><span>{{objData.dir}}</span>
-              <i>批次:</i><span>{{objData.batchids}}</span>
-              <i>病例:</i><span>{{objData.medicalids}}</span>
-              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i><span>{{objData.fovcnt}}/{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
-              <i>标记次数/n标记次数/p标记次数:</i><span>{{objData.labelcnt}}/{{objData.labelncnt}}/{{objData.labelpcnt}}</span>
-              <i>n/p:</i><span>{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
+              <i>目录:</i>
+              <span>{{objData.dir}}</span>
+              <i>批次:</i>
+              <span>{{objData.batchids}}</span>
+              <i>病例:</i>
+              <span>{{objData.medicalids}}</span>
+              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i>
+              <span>{{objData.fovcnt}}/{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
+              <i>标记次数/n标记次数/p标记次数:</i>
+              <span>{{objData.labelcnt}}/{{objData.labelncnt}}/{{objData.labelpcnt}}</span>
+              <i>n/p:</i>
+              <span>{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
             </div>
           </div>
           <div class="output-info info">
             <el-badge is-dot class="badge">输出信息</el-badge>
             <div class="img-list info-list flex">
-              <i>目录:</i><span>{{objData2.dir}}</span>
-              <i>批次:</i><span>{{objData2.batchids}}</span>
-              <i>病例:</i><span>{{objData2.medicalids}}</span>
-              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i><span>{{objData2.fovcnt}}/{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
-              <i>标记次数/n标记次数/p标记次数:</i><span>{{objData2.labelcnt}}/{{objData2.labelncnt}}/{{objData2.labelpcnt}}</span>
-              <i>n/p:</i><span>{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
+              <i>目录:</i>
+              <span>{{objData2.dir}}</span>
+              <i>批次:</i>
+              <span>{{objData2.batchids}}</span>
+              <i>病例:</i>
+              <span>{{objData2.medicalids}}</span>
+              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i>
+              <span>{{objData2.fovcnt}}/{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
+              <i>标记次数/n标记次数/p标记次数:</i>
+              <span>{{objData2.labelcnt}}/{{objData2.labelncnt}}/{{objData2.labelpcnt}}</span>
+              <i>n/p:</i>
+              <span>{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
             </div>
           </div>
           <div class="progress-info">
@@ -130,6 +142,7 @@ export default {
       })
       getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
         this.objData2 = res.data.data
+        localStorage.setItem('cellTypes', JSON.stringify(this.objData2.types || []))
       })
     },
     getPercent() {
@@ -214,7 +227,6 @@ export default {
     flex-wrap: wrap;
   }
   .badge {
-    font-size: 20px;
     font-weight: bold;
     margin-bottom: 5px;
   }

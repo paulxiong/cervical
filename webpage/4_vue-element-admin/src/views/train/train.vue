@@ -4,32 +4,51 @@
       <div class="title">
         <h2>TRAIN</h2>
       </div>
-      <el-progress :text-inside="true" :stroke-width="26" :percentage="percentage"  status="success"></el-progress>
+      <div class="cellTypes">
+        <el-badge is-dot class="badge">请选择细胞类型</el-badge>
+        <el-checkbox-group v-model="checkboxCell" @change="checkCellTypes" size="mini">
+          <el-checkbox
+            v-for="v in cellTypes"
+            :key="v.celltype"
+            checked
+            :label="v"
+            border
+          ></el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <div class="progress-info">
+        <el-badge is-dot class="badge">状态进度</el-badge>
+        <el-progress
+          :text-inside="true"
+          :stroke-width="26"
+          :percentage="percentage"
+          status="success"
+        ></el-progress>
+      </div>
     </section>
     <modelCard></modelCard>
   </div>
 </template>
 
 <script>
-import modelSelect from "./components/model-select"
-import modelCard from "./components/model-card"
+import modelCard from './components/model-card'
 
 export default {
-  name: "train",
-  components: { modelSelect, modelCard },
+  name: 'train',
+  components: { modelCard },
   data() {
     return {
-      percentage: 0
-    };
+      percentage: 100,
+      cellTypes: JSON.parse(localStorage.getItem('cellTypes')) || [],
+      checkboxCell: []
+    }
   },
-  methods: {},
-  mounted() {
-    setTimeout(()=>{this.percentage=27},3000)
-    setTimeout(()=>{this.percentage=64},5000)
-    setTimeout(()=>{this.percentage=88},7000)
-    setTimeout(()=>{this.percentage=100},9000)
+  methods: {
+    checkCellTypes(val) {
+      console.log(val)
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -41,6 +60,13 @@ export default {
       h2 {
         margin-right: 10px;
       }
+    }
+    .badge {
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+    .cellTypes {
+      margin-bottom: 20px;
     }
   }
 }
