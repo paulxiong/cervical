@@ -226,3 +226,28 @@ func LoadJSONFile(filename string) JobInfo {
 	}
 	return j
 }
+
+// TrainJobInfo 存在硬盘的JSON文件，描述每个训练任务的属性，train.json是初始化时候，train2.json是训练结束之后
+type TrainJobInfo struct {
+	ID     int64  `json:"id"     example:"1"`    //任务ID
+	Status int    `json:"status" example:"4"`    //任务的状态码
+	Dir    string `json:"dir"    example:"任务目录"` //任务执行的目录名，调试时候很有用
+	Types  []int  `json:"types"  example:"7"`    //训练哪几个类型的细胞
+}
+
+// NewTrainJSONFile 创建训练任务的时候把任务的部分信息存到JSON文件
+func NewTrainJSONFile(id int64, types []int, dirname string, status int) {
+	t := TrainJobInfo{
+		ID:     id,
+		Dir:    dirname,
+		Types:  types,
+		Status: status,
+	}
+	data, err := json.MarshalIndent(t, "", " ") //这里返回的data值，类型是[]byte
+	if err != nil {
+		log.Println("ERROR:", err)
+	}
+	info := scratchRoot + "/" + dirname + "/train.json"
+	logger.Info.Println(info)
+	writeJSON(info, data)
+}

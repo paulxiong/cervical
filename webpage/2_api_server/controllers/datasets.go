@@ -674,3 +674,49 @@ func SaveModelInfo(c *gin.Context) {
 	}
 	return
 }
+
+type trainpostdata struct {
+	ID        int64 `json:"id"        example:"1"` //任务ID，或者叫做数据集的ID
+	Celltypes []int `json:"celltypes" example:"7"` //选择哪几个类型做训练
+}
+
+// Train 根据传递来的细胞类型，创建训练任务
+// @Description 创建训练任务
+// @Description status：
+// @Description 200 创建
+// @Summary 创建训练任务
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Train body controllers.trainpostdata true "要创建的训练任务信息"
+// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Router /api1/train [post]
+func Train(c *gin.Context) {
+	var postdata trainpostdata
+	if err := c.ShouldBind(&postdata); err != nil || len(postdata.Celltypes) < 2 {
+		logger.Info.Println(err)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "invalied postdata",
+		})
+		return
+	}
+
+	d, err1 := m.GetOneDatasetByID(int(postdata.ID))
+	if err1 != nil || d.Status != 4 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets is not ready for train",
+		})
+		return
+	}
+
+	f.NewTrainJSONFile(postdata.ID, postdata.Celltypes, d.Dir, d.Status)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   "ok",
+	})
+	return
+}
