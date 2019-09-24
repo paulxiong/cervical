@@ -1,24 +1,35 @@
 # -*- coding: utf-8 -*-
-import os, csv, cv2, time, argparse
-# 匹配参数放在这里是因为如果参数不对就可以报错退出，否则后面的import会占用很长时间然后再报错退出
-parser = argparse.ArgumentParser()
-parser.add_argument('--task', choices = ['train', 'predict', 'predict2'], help='train or predict')
-parser.add_argument('--taskdir', help='fold path for train/predict')
-parser.add_argument('--modfile', help='model file path for train/predict')
-opt = parser.parse_args()
-if not (opt.task) or (opt.task != 'train' and opt.task != 'predict' and opt.task != 'predict2'):
-    parser.error("specific a task such as '--task train'")
-if opt.taskdir is None or len(opt.taskdir) < 1:
-    parser.error("specific path such as '--taskdir your/path/data'")
-if opt.modfile is None or len(opt.modfile) < 1:
-    parser.error("specific path such as '--modfile your/path/data/Model.h5'")
-
+import os, csv, cv2, time, argparse, gc
+from enum import Enum
 from autokeras.utils import pickle_from_file
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 from shutil import copyfile, rmtree
 import pandas as pd
+from utilslib.jsonfile import load_json_file
+from utilslib.webserverapi import get_one_job, post_job_status
+
+localdebug = os.environ.get('DEBUG', 'False')
+
+# datasets status
+class ds(Enum):
+    INIT            = 0 #0初始化
+    READY4PROCESS   = 1 #1用户要求开始处理
+    PROCESSING      = 2 #2开始处理
+    PROCESSING_ERR  = 3 #3处理出错
+    PROCESSING_DONE = 4 #4处理完成
+    PATH_ERR        = 5 #5目录不存在
+    READY4TRAIN     = 6 #6用户要求开始训练
+    TRAINNING       = 7 #7开始训练
+    TRAINNING_ERR   = 8 #8训练出错
+    TRAINNING_DONE  = 9 #9训练完成
+
+# datasets type
+class dt(Enum):
+    UNKNOWN  = 0 #0未知
+    TRAIN    = 1 #1训练
+    PREDICT  = 2 #2预测
 
 def timestamp():
     return time.strftime("%Y%m%d_%H%M%S", time.localtime())
@@ -91,8 +102,9 @@ def get_cell_lists_for_train(csvpath, cropdir, celltype):
 #出入需要的细胞类型数组，传出一个字典
 def get_datasets_for_train(csvpath, cellsdir, celltypes=[1, 7]):
     typetree = {}
+    print(csvpath)
     if not os.path.exists(csvpath):
-        return False, lists
+        return False, typetree
     for i in celltypes:
         ret, l = get_cell_lists_for_train(csvpath, cellsdir, i)
         key = str(i)
@@ -100,15 +112,19 @@ def get_datasets_for_train(csvpath, cellsdir, celltypes=[1, 7]):
     return True, typetree
 
 class cervical_autokeras():
-    def __init__(self, ROOTPATH):
+    def __init__(self, jobid, jobdir):
+        self.jid = jobid
+        self.jobdir = jobdir
+        self.scratchdir  = os.environ.get('SCRATCHDIR', 'scratch/')
         #训练、预测任务的顶层目录, 训练是按照时间随机生成的，预测是人为指定的
-        self.ROOTPATH = ROOTPATH
+        self.ROOTPATH = os.path.join(self.scratchdir, self.jobdir) #每个任务的根目录
         #保存中间过程的目录
         self.TEMP_DIR = os.path.join(self.ROOTPATH, 'autokeras')
         #裁剪出来的细胞图存放的位置
         self.CELL_DIR = os.path.join(self.ROOTPATH, 'cells')
+        self.TRAINJSON = os.path.join(self.ROOTPATH, 'train.json')
         self.STATISTICS_DIR = os.path.join(self.ROOTPATH, 'statistics')
-        self.CELL_CROP_CSV = os.path.join(self.STATISTICS_DIR, '55_crop_cells.csv')
+        self.CELL_CROP_CSV = os.path.join(self.STATISTICS_DIR, str(self.jid) + '_crop_cells.csv')
         self.CELL_CROP_DIR = os.path.join(self.CELL_DIR, 'crop')
         #Folder for storing training images
         self.TRAIN_IMG_DIR = os.path.join(self.ROOTPATH, 'train')
@@ -125,16 +141,19 @@ class cervical_autokeras():
         self.TEST_CSV_DIR = os.path.join(self.ROOTPATH, 'test_labels.csv')
         self.PREDICT_CSV_DIR = os.path.join(self.ROOTPATH, 'predict_labels.csv')
         #Path to generate model file
-        self.MODEL_DIR = opt.modfile
+        self.MODEL_DIR = os.path.join(self.ROOTPATH, 'Modelak.h5')
         #If your memory is not enough, please turn down this value.(my computer memory 16GB)
         self.RESIZE = 128
         #Set the training time, this is half an hour
         self.TIME = 0.5*60*60
+        self.percent = 0
 
         self.clean_fold()
 
     def clean_fold(self):
-        dirs = [self.RESIZE_TRAIN_IMG_DIR, self.RESIZE_TEST_IMG_DIR, self.RESIZE_PREDICT_IMG_DIR, self.PREDICT_ERROR_IMG_DIR]
+        dirs = [self.RESIZE_TRAIN_IMG_DIR, self.RESIZE_TEST_IMG_DIR, \
+                self.RESIZE_PREDICT_IMG_DIR, self.PREDICT_ERROR_IMG_DIR, \
+                self.TEMP_DIR]
         files = [self.TRAIN_CSV_DIR, self.TEST_CSV_DIR, self.PREDICT_CSV_DIR]
         for d in dirs:
             if os.path.exists(d):
@@ -200,12 +219,44 @@ class cervical_autokeras():
                         os.makedirs(error_image_dir)
                     copyfile(img_path, os.path.join(error_image_dir, images[index]))
             print("%s 的个数/准确率：%d %f 出错的个数%d" % (label, total, (total - count_false) / total, count_false))
+    def done(self, text):
+        self.percent = 100
+        post_job_status(self.jid, ds.TRAINNING_DONE.value, self.percent)
+        print(text)
+        return
+    def processing(self, percent):
+        self.percent = percent
+        post_job_status(self.jid, ds.TRAINNING.value, self.percent)
+        return
+    def failed(self, text):
+        post_job_status(self.jid, ds.TRAINNING_ERR.value, self.percent)
+        print(text)
+        return
 
 if __name__ == "__main__":
-    ca = cervical_autokeras(opt.taskdir)
-    ret, typetree = get_datasets_for_train(ca.CELL_CROP_CSV, ca.CELL_CROP_DIR, celltypes=[1, 7])
+    while 1:
+        #向服务器请求任务，任务的状态必须是 READY4TRAIN
+        if localdebug is not True and localdebug != "True":
+            # datatype:  0未知1训练2预测
+            jobid, status, dirname, jobtype = get_one_job(ds.READY4TRAIN.value, dt.TRAIN.value)
+        else:
+            jobid = 31
+            status = ds.READY4TRAIN.value
+            dirname = 'BVv1p1U6'
 
-    if opt.task == 'train':
+        print(jobid, status, dirname, jobtype)
+        #检查得到的任务是不是想要的
+        if status != ds.READY4TRAIN.value or dirname is None:
+            time.sleep(5)
+            continue
+
+        ca = cervical_autokeras(jobid, dirname)
+        #取出要训练的细胞类型
+        jsonfile=load_json_file(ca.TRAINJSON)
+        celltypes = jsonfile['types']
+        ret, typetree = get_datasets_for_train(ca.CELL_CROP_CSV, ca.CELL_CROP_DIR, celltypes=celltypes)
+        ca.processing(10)
+
         print ("Resize images...")
         resize_img2(typetree, ca.RESIZE_TRAIN_IMG_DIR, ca.RESIZE)
         resize_img2(typetree, ca.RESIZE_TEST_IMG_DIR, ca.RESIZE)
@@ -213,19 +264,29 @@ if __name__ == "__main__":
         write_csv(ca.RESIZE_TRAIN_IMG_DIR, ca.TRAIN_CSV_DIR)
         write_csv(ca.RESIZE_TEST_IMG_DIR, ca.TEST_CSV_DIR)
         print ("============Load...=================")
+        ca.processing(20)
         ca.train_autokeras()
-    elif opt.task == 'predict':
-        print ("Resize images...")
-        resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
-        print ("write csv...")
-        write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
-        print ("============Load...=================")
-        ca.predict_autokeras()
 
-    elif opt.task == 'predict2':
-        print ("Resize images...")
-        resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
-        print ("write csv...")
-        write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
-        print ("============Load...=================")
-        ca.predict_autokeras2()
+        ca.done("done!")
+        #elif opt.task == 'predict':
+        #    print ("Resize images...")
+        #    resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
+        #    print ("write csv...")
+        #    write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
+        #    print ("============Load...=================")
+        #    ca.predict_autokeras()
+
+        #elif opt.task == 'predict2':
+        #    print ("Resize images...")
+        #    resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
+        #    print ("write csv...")
+        #    write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
+        #    print ("============Load...=================")
+        #    ca.predict_autokeras2()
+
+        del ca
+        gc.collect()
+        time.sleep(5)
+
+        if localdebug is "True" or localdebug is True:
+            break

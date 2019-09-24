@@ -14,14 +14,15 @@ localdebug = os.environ.get('DEBUG', 'False')
 # datasets status
 class ds(Enum):
     INIT            = 0 #0初始化
-    READ4PROCESS    = 1 #1用户要求开始处理
+    READY4PROCESS   = 1 #1用户要求开始处理
     PROCESSING      = 2 #2开始处理
     PROCESSING_ERR  = 3 #3处理出错
     PROCESSING_DONE = 4 #4处理完成
     PATH_ERR        = 5 #5目录不存在
-    TRAINNING       = 6 #6开始训练
-    TRAINNING_ERR   = 7 #7训练出错
-    TRAINNING_DONE  = 8 #8训练完成
+    READY4TRAIN     = 6 #6用户要求开始训练
+    TRAINNING       = 7 #7开始训练
+    TRAINNING_ERR   = 8 #8训练出错
+    TRAINNING_DONE  = 9 #9训练完成
 
 # datasets type
 class dt(Enum):
@@ -106,33 +107,32 @@ class cervical_seg():
                 os.makedirs(folder)
 
     def done(self, text):
-        #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
         self.percent = 100
-        post_job_status(self.jid, 4, self.percent)
+        post_job_status(self.jid, ds.PROCESSING_DONE.value, self.percent)
         print(text)
         return
     def processing(self, percent):
         self.percent = percent
-        post_job_status(self.jid, 2, self.percent)
+        post_job_status(self.jid, ds.PROCESSING.value, self.percent)
         return
     def failed(self, text):
-        post_job_status(self.jid, 3, self.percent)
+        post_job_status(self.jid, ds.PROCESSING_ERR.value, self.percent)
         print(text)
         return
 
 if __name__ == '__main__':
     while 1:
-        #向服务器请求任务，任务的状态必须是 READ4PROCESS
+        #向服务器请求任务，任务的状态必须是 READY4PROCESS
         if localdebug is not True and localdebug != "True":
             # datatype:  0未知1训练2预测
-            jobid, status, dirname, jobtype = get_one_job(ds.READ4PROCESS.value, dt.TRAIN.value)
+            jobid, status, dirname, jobtype = get_one_job(ds.READY4PROCESS.value, dt.TRAIN.value)
         else:
             jobid = 31
-            status = ds.READ4PROCESS.value
+            status = ds.READY4PROCESS.value
             dirname = 'BVv1p1U6'
 
         #检查得到的任务是不是想要的
-        if status != ds.READ4PROCESS.value or dirname is None:
+        if status != ds.READY4PROCESS.value or dirname is None:
             time.sleep(5)
             continue
 
