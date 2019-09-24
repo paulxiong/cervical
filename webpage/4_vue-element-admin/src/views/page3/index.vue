@@ -111,7 +111,7 @@ export default {
     },
     handleCurrentChange(val) {
       console.log('handleCurrentChange被触发了')
-      console.log('tableData: ', this.tableData);
+      console.log('tableData: ', this.tableData)
       this.imgurl =
         ImgServerUrl +
         '/unsafe/' +
@@ -133,9 +133,7 @@ export default {
       // this.getImgListOneByOne(Number(val), 0);
     },
     handleCurrentChange2(val) {
-      console.log('handleCurrentChange2被触发了')
       this.getImgListOneByOne(10, (Number(val) - 1) * 10)
-      console.log('val', val);
     },
     getImgListOneByOne(limit, skip) {
       getImgListOneByOne({ limit: limit, skip: skip }).then(response => {

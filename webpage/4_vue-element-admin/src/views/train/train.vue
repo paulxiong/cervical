@@ -3,7 +3,11 @@
     <section class="header">
       <div class="title flex">
         <h2>TRAIN</h2>
-        <el-button type="danger" @click="handleTrain" :disabled="checkboxCell.length<2">开始训练</el-button>
+        <el-button
+          type="danger"
+          @click="handleTrain"
+          :disabled="checkboxCell.length<2 || startedTrain === 'ok'"
+        >开始训练</el-button>
       </div>
       <div class="cellTypes">
         <el-badge is-dot class="badge">请选择细胞类型</el-badge>
@@ -36,12 +40,22 @@ export default {
     return {
       percentage: 100,
       cellTypes: JSON.parse(localStorage.getItem('cellTypes')) || [],
-      checkboxCell: []
+      checkboxCell: [],
+      startedTrain: ''
     }
   },
   methods: {
     handleTrain() {
-      console.log(this.checkboxCell)
+      let postCelltypes = []
+      this.checkboxCell.map(v => {
+        postCelltypes.push(v.celltype)
+      })
+      createTrain({
+        id: parseInt(this.$route.query.id),
+        celltypes: postCelltypes
+      }).then(res => {
+        this.startedTrain = res.data.data
+      })
     }
   }
 }

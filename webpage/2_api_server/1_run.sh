@@ -4,7 +4,8 @@ export SERVER_PORT=9000
 export LOG_OUT='enable'
 export LOG_GIN='enable'
 export LOG_LEVEL='Info'
-export MYSQL_HOST='192.168.1.102'
+# dev.medical.raidcdn.cn  192.168.1.102
+export MYSQL_HOST='dev.medical.raidcdn.cn'
 export MYSQL_PORT='3309'
 export MYSQL_DB='datasets'
 export MYSQL_USR='mysql'
