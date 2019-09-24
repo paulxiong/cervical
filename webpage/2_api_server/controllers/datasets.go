@@ -36,6 +36,7 @@ type Statistics struct {
 }
 
 // AllInfo 获得所有图片及标注的统计信息
+// @Summary 获得所有图片及标注的统计信息
 // @Description 获得所有图片及标注的统计信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -93,6 +94,7 @@ type BatchInfo struct {
 }
 
 // GetBatchInfo 获得所有批次信息
+// @Summary 获得所有批次信息
 // @Description 获得所有批次信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -128,6 +130,7 @@ type MedicalIDInfo struct {
 }
 
 // GetMedicalIDInfo 获得所有病例信息
+// @Summary 获得所有病例信息
 // @Description 获得所有病例信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -174,6 +177,7 @@ type CategorysInfo struct {
 }
 
 // GetCategoryInfo 获得细胞分类信息
+// @Summary 获得细胞分类信息
 // @Description 获得细胞分类信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -218,6 +222,7 @@ type wanted2 struct {
 }
 
 // GetImgListOfWanted 获得所选批/次病/细胞类型的图片
+// @Summary 获得所选批/次病/细胞类型的图片
 // @Description 获得所选批/次病/细胞类型的图片
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -258,6 +263,7 @@ type imageslists struct {
 }
 
 // GetImgListOneByOne 按数据库存储的顺序依次得到图片的信息
+// @Summary 按数据库存储的顺序依次得到图片的信息
 // @Description 按数据库存储的顺序依次得到图片的信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -298,6 +304,7 @@ type Labelslists struct {
 }
 
 // GetLabelByImageID 通过图片的ID获得对应的所有标注信息
+// @Summary 通过图片的ID获得对应的所有标注信息
 // @Description 通过图片的ID获得对应的所有标注信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -352,6 +359,7 @@ type imagesNPCount struct {
 }
 
 // GetImagesNPTypeByMedicalID 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
+// @Summary 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
 // @Description 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -378,6 +386,7 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 }
 
 // CreateDataset 新建数据/项目
+// @Summary 新建数据/项目
 // @Description 新建数据/项目
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -433,6 +442,7 @@ type jobResult struct {
 }
 
 // GetOneJob python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
+// @Summary python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -467,6 +477,7 @@ func GetOneJob(c *gin.Context) {
 }
 
 // SetJobResult python端更新任务状态/进度（数据处理/训练/预测）
+// @Summary python端更新任务状态/进度（数据处理/训练/预测）
 // @Description python端更新任务状态/进度（数据处理/训练/预测）
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -502,6 +513,7 @@ type listDatasets struct {
 }
 
 // ListDatasets 按数据库存储顺序依次获得数据/项目信息
+// @Summary 按数据库存储顺序依次获得数据/项目信息
 // @Description 按数据库存储顺序依次获得数据/项目信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -541,6 +553,7 @@ func ListDatasets(c *gin.Context) {
 }
 
 // GetJobResult 获得任务状态（数据处理/训练/预测）
+// @Summary 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
 // @Description 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -572,6 +585,7 @@ func GetJobResult(c *gin.Context) {
 }
 
 // GetJobPercent 获得任务进度（数据处理/训练/预测）
+// @Summary 获得任务进度（数据处理/训练/预测）
 // @Description 获得任务进度（数据处理/训练/预测）
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -595,6 +609,7 @@ func GetJobPercent(c *gin.Context) {
 }
 
 // GetJobLog 获得任务数据处理/训练/预测后端产生的log
+// @Summary 获得任务数据处理/训练/预测后端产生的log
 // @Description 获得任务数据处理/训练/预测后端产生的log
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -621,6 +636,7 @@ func GetJobLog(c *gin.Context) {
 }
 
 // GetModelInfo 获得训练任务生成模型的信息
+// @Summary 获得训练任务生成模型的信息
 // @Description 获得训练任务生成模型的信息
 // @tags API1 模型（需要认证）
 // @Accept  json
@@ -646,6 +662,7 @@ func GetModelInfo(c *gin.Context) {
 }
 
 // SaveModelInfo 把训练任务生成模型信息存数据库
+// @Summary 把训练任务生成模型信息存数据库
 // @Description 把训练任务生成模型信息存数据库
 // @tags API1 模型（需要认证）
 // @Accept  json
@@ -681,6 +698,7 @@ type trainpostdata struct {
 }
 
 // Train 根据传递来的细胞类型，创建训练任务
+// @Summary 根据传递来的细胞类型，创建训练任务
 // @Description 创建训练任务
 // @Description status：
 // @Description 200 创建
