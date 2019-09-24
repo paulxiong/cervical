@@ -1,13 +1,5 @@
 import request from '@/utils/request'
 
-export function getPing1(query) {
-  return request({
-    url: '/api1/ping1',
-    method: 'get',
-    params: query
-  })
-}
-
 export function getPercent(query) {
   return request({
     url: '/api1/jobpercent',
@@ -35,14 +27,6 @@ export function getBatchInfo(query) {
 export function getMedicalIdInfo(query) {
   return request({
     url: '/api1/medicalidinfo',
-    method: 'get',
-    params: query
-  })
-}
-
-export function getCategoryInfo(query) {
-  return request({
-    url: '/api1/categoryinfo',
     method: 'get',
     params: query
   })
@@ -117,6 +101,14 @@ export function getjoblog(query) {
     url: '/api1/joblog',
     method: 'get',
     params: query
+  })
+}
+
+export function createTrain(data) {
+  return request({
+    url: '/api1/train',
+    method: 'post',
+    data
   })
 }
 

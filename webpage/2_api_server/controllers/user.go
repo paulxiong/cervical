@@ -55,7 +55,6 @@ func RegisterUser(c *gin.Context) {
 	var user m.User
 	err := c.ShouldBindJSON(&reg)
 	if err != nil {
-		logger.Info.Println(err)
 		c.JSON(e.StatusNotAcceptable, gin.H{
 			"status": e.StatusRegisterError75,
 			"data":   "register faild",

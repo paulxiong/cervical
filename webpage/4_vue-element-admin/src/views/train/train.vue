@@ -27,6 +27,7 @@
 
 <script>
 import modelCard from './components/model-card'
+import { createTrain } from '@/api/cervical'
 
 export default {
   name: 'train',

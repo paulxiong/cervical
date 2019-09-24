@@ -178,7 +178,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler(route) {
         const query = route.query
         if (query) {
           this.redirect = query.redirect
