@@ -714,6 +714,9 @@ func Train(c *gin.Context) {
 
 	f.NewTrainJSONFile(postdata.ID, postdata.Celltypes, d.Dir, d.Status)
 
+	// 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
+	m.UpdateDatasetsStatus(d.ID, 6)
+
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
 		"data":   "ok",

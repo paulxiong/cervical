@@ -348,7 +348,7 @@ type Dataset struct {
 	ID          int64     `json:"id"             gorm:"column:ID"`           //ID
 	Type        int       `json:"type"           gorm:"column:TYPE"`         //分类
 	Desc        string    `json:"desc"           gorm:"column:DESCRIPTION"`  //描述
-	Status      int       `json:"status"         gorm:"column:STATUS"`       //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6开始训练 7训练出错 8训练完成
+	Status      int       `json:"status"         gorm:"column:STATUS"`       //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
 	Dir         string    `json:"dir"            gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
 	ProcessTime time.Time `json:"processtime"    gorm:"column:PROCESS_TIME"` //开始处理数据时间
 	ProcessEnd  time.Time `json:"processend"     gorm:"column:PROCESS_END"`  //处理数据结束时间
@@ -413,7 +413,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 	return ret2.Error
 }
 
-// UpdateDatasetsStatus 更新数据集的状态
+// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
 func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
@@ -429,6 +429,8 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d.Status = status
 	if status == 2 {
 		d.ProcessTime = time.Now()
+	} else if status == 6 {
+		d.TrainTime = time.Now()
 	}
 
 	ret := db.Model(&d).Where("ID=?", did).Updates(d)
@@ -455,7 +457,7 @@ func UpdateDatasetsPercent(did int64, percent int64) (e error) {
 	return ret.Error
 }
 
-// GetOneDatasetsToProcess 请求一个制定状态和类型的数据集去处理
+// GetOneDatasetsToProcess 请求一个指定状态和类型的数据集去处理
 func GetOneDatasetsToProcess(status int, _type int) (dt Dataset, e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("STATUS=? AND TYPE=?", status, _type).First(&d)
