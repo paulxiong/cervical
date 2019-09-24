@@ -48,8 +48,10 @@ class vae_auto():
             copyfile(self.MODELS+'/'+m, self.MODELSCOPY+'/'+m)
 
 if __name__ == "__main__":
-    vae = vae_auto('red_7')
-    vae.clean_folds()
-    vae.datasets()
-    vae.train()
-    vae.save_data()
+    dstname = ['hunhe_1','hunhe_7']
+    for n in dstname:
+        vae = vae_auto(n)
+        vae.clean_folds()
+        vae.datasets()
+        vae.train()
+        vae.save_data()

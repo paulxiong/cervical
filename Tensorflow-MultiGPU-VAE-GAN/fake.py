@@ -19,7 +19,7 @@ from ipywidgets import interact, interactive, fixed
 dim1 = 64 # first dimension of input data
 dim2 = 64 # second dimension of input data
 dim3 = 3 # third dimension of input data (colors)
-batch_size = 32 # size of batches to use (per GPU)
+batch_size = 20 # size of batches to use (per GPU)
 hidden_size = 2048 # size of hidden (z) layer to use
 num_examples = 60000 # how many examples are in your training set
 num_epochs = 10000 # number of epochs to run
@@ -259,7 +259,9 @@ def plot_network_output():
 example_data_, _ = iter_.next()
 w_example_data, h_example_data = example_data_.shape[0], example_data_.shape[1]
 def plot_network_output_2():
-    for n in range(100):
+    temp_2 = os.listdir('./data_org')
+    range_max_1 = int(len(temp_2)/batch_size) - 3
+    for n in range(range_max_1):
         print('>>>',n)
         example_data, _ = iter_.next()
         print(example_data.shape)
