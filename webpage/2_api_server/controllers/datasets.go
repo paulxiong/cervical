@@ -741,3 +741,37 @@ func Train(c *gin.Context) {
 	})
 	return
 }
+
+// GetTrainResult 获取训练结果及信息
+// @Summary 获取训练结果及信息
+// @Description 获取训练结果及信息
+// @Description status：
+// @Description 200 成功
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "数据集的ID, default 0"
+// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Router /api1/trainresult [get]
+func GetTrainResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "1")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	d, err := m.GetOneDatasetByID(int(id))
+	if err != nil || d.Status != 9 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets trainning not finished or not found",
+		})
+		return
+	}
+
+	modinfo := f.LoadModJSONFile(d.Dir)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   modinfo,
+	})
+	return
+}

@@ -1053,7 +1053,7 @@
             {
               "name": "TYPE",
               "type": "Integer",
-              "remark": "0未知1UNET2GAN3SVM",
+              "remark": "0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS",
               "chnname": "类型",
               "notNull": true
             },
@@ -1076,6 +1076,18 @@
               "remark": "",
               "chnname": "模型路径",
               "notNull": true
+            },
+            {
+              "name": "RECALL",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "召回率"
+            },
+            {
+              "name": "PRECISION",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "准确率"
             },
             {
               "name": "CREATED_BY",

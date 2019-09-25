@@ -479,28 +479,16 @@ func GetOneDatasetByID(id int) (dt Dataset, e error) {
 
 // Model 模型信息
 type Model struct {
-	ID        int       `json:"id"    gorm:"column:ID"`
-	Type      int       `json:"type"  gorm:"column:TYPE"`
-	Index     int       `json:"index" gorm:"-"`
-	DId       int64     `json:"did"   gorm:"column:DID"`
-	Path      string    `json:"-"     gorm:"column:PATH"`
-	Desc      string    `json:"desc"  gorm:"column:DESCRIPTION"`  //描述
-	CreatedAt time.Time `json:"-"     gorm:"column:CREATED_TIME"` //创建时间
-	UpdatedAt time.Time `json:"-"     gorm:"column:UPDATED_TIME"` //更新时间
-	// gan
-	TotalEpoch      int     `json:"total_epoch"      gorm:"-"`
-	ErrDReal        float32 `json:"errD_real"        gorm:"-"`
-	ErrDFake        float32 `json:"errD_fake"        gorm:"-"`
-	GradientPenalty float32 `json:"gradient_penalty" gorm:"-"`
-	DCost           float32 `json:"D_cost"           gorm:"-"`
-	MiLoss          float32 `json:"mi_loss"          gorm:"-"`
-	Purity          float32 `json:"purity"           gorm:"-"`
-	Entropy         float32 `json:"entropy"          gorm:"-"`
-	// svm
-	Ts        int     `json:"ts"        gorm:"-"`
-	F1Score   float32 `json:"f1_score"  gorm:"-"`
-	Recall    float32 `json:"recall"    gorm:"-"`
-	Precision float32 `json:"precision" gorm:"-"`
+	ID        int       `json:"id"         gorm:"column:ID"`           //id
+	Type      int       `json:"type"       gorm:"column:TYPE"`         //模型类别 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS
+	DID       int64     `json:"did"        gorm:"column:DID"`          //dataset Id，被哪次dataset训练的
+	Path      string    `json:"path"       gorm:"column:PATH"`         //模型文件路径
+	Desc      string    `json:"desc"       gorm:"column:DESCRIPTION"`  //模型的文字描述
+	Recall    int       `json:"recall"     gorm:"RECALL"`              //训练评估得到的召回率,整数66表示66%
+	Precision int       `json:"precision"  gorm:"PRECISION"`           //训练评估得到的准确率,整数66表示66%
+	CreatedAt time.Time `json:"created_at" gorm:"column:CREATED_TIME"` //创建时间
+	UpdatedAt time.Time `json:"updated_at" gorm:"column:UPDATED_TIME"` //更新时间
+	CreatedBy int64     `json:"-"          gorm:"column:CREATED_BY"`   //创建者ID
 }
 
 // BeforeCreate insert之前的hook
