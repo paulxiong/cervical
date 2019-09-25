@@ -68,7 +68,6 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  margin-top: 20px;
   i {
     color: #ccc;
     font-style: normal;

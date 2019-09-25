@@ -1,17 +1,16 @@
 <template>
   <div class="train">
     <section class="header">
-      <div class="title flex">
-        <h2>TRAIN</h2>
+      <div class="cellTypes">
+        <el-badge is-dot class="badge">选择细胞类型</el-badge>
         <el-button
           type="danger"
+          size="small"
+          class="train-btn"
           @click="handleTrain"
           :disabled="checkboxCell.length<2 || startedTrain === 'ok' || jobResult.status >= 6"
         >开始训练</el-button>
-      </div>
-      <div class="cellTypes">
-        <el-badge is-dot class="badge">请选择细胞类型</el-badge>
-        <el-checkbox-group v-model="checkboxCell" size="mini">
+        <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
           <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
         </el-checkbox-group>
       </div>
@@ -25,7 +24,10 @@
         ></el-progress>
       </div>
     </section>
-    <modelCard></modelCard>
+    <section class="model-info">
+      <el-badge is-dot class="badge">模型信息</el-badge>
+      <modelCard></modelCard>
+    </section>
   </div>
 </template>
 
@@ -72,16 +74,17 @@ export default {
 <style lang="scss" scoped>
 .train {
   padding: 0 30px;
-  .header {
-    .title {
-      justify-content: flex-start;
-      h2 {
-        margin-right: 10px;
-      }
-    }
-    .badge {
+  .badge {
       font-weight: bold;
       margin-bottom: 5px;
+    }
+  .header {
+    margin: 30px 0;
+    .train-btn {
+      margin-left: 10px;
+    }
+    .cell-checkbox {
+      margin-top: 10px;
     }
     .cellTypes {
       margin-bottom: 20px;

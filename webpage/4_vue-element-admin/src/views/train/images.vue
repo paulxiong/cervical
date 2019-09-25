@@ -1,34 +1,32 @@
 <template>
   <div class="images">
     <section class="header">
-      <div class="title">
-        <h2>IMAGES</h2>
-        <section class="info-box">
-          <el-table :data="tableData" stripe border style="width: 100%">
-            <el-table-column prop="name" label="类型"></el-table-column>
-            <el-table-column prop="dir" label="目录"></el-table-column>
-            <el-table-column prop="batchids" label="批次"></el-table-column>
-            <el-table-column prop="medicalids" label="病例" width="180"></el-table-column>
-            <el-table-column prop="fovcnt" label="图片总数"></el-table-column>
-            <el-table-column prop="fovncnt" label="fov-n个数"></el-table-column>
-            <el-table-column prop="fovpcnt" label="fov-p个数"></el-table-column>
-            <el-table-column prop="labelcnt" label="标记次数"></el-table-column>
-            <el-table-column prop="labelncnt" label="n标记次数"></el-table-column>
-            <el-table-column prop="labelpcnt" label="p标记次数"></el-table-column>
-            <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
-          </el-table>
-          <div class="progress-info">
-            <el-badge is-dot class="badge">状态进度</el-badge>
-            <el-progress
-              class="progress"
-              :text-inside="true"
-              :stroke-width="26"
-              :percentage="percentage"
-              status="success"
-            ></el-progress>
-          </div>
-        </section>
-      </div>
+      <section class="info-box">
+        <el-badge is-dot class="badge">信息展示</el-badge>
+        <el-table :data="tableData" stripe border style="width: 100%">
+          <el-table-column prop="name" label="类型"></el-table-column>
+          <el-table-column prop="dir" label="目录"></el-table-column>
+          <el-table-column prop="batchids" label="批次"></el-table-column>
+          <el-table-column prop="medicalids" label="病例" width="180"></el-table-column>
+          <el-table-column prop="fovcnt" label="图片总数"></el-table-column>
+          <el-table-column prop="fovncnt" label="fov-n个数"></el-table-column>
+          <el-table-column prop="fovpcnt" label="fov-p个数"></el-table-column>
+          <el-table-column prop="labelcnt" label="标记次数"></el-table-column>
+          <el-table-column prop="labelncnt" label="n标记次数"></el-table-column>
+          <el-table-column prop="labelpcnt" label="p标记次数"></el-table-column>
+          <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
+        </el-table>
+        <div class="progress-info">
+          <el-badge is-dot class="badge">状态进度</el-badge>
+          <el-progress
+            class="progress"
+            :text-inside="true"
+            :stroke-width="26"
+            :percentage="percentage"
+            status="success"
+          ></el-progress>
+        </div>
+      </section>
     </section>
     <el-divider>
       <i class="el-icon-picture"></i> 所有图片
@@ -123,8 +121,10 @@ export default {
       getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
         this.objData2 = Object.assign(this.objData2, res.data.data)
         localStorage.setItem('jobResult', JSON.stringify(this.objData2))
-        this.tableData.push(this.objData, this.objData2)
       })
+      setTimeout(() => {
+        this.tableData.push(this.objData, this.objData2)
+      }, 1e3)
     },
     getPercent() {
       getPercent({ id: this.$route.query.id }).then(res => {
@@ -216,7 +216,7 @@ export default {
   }
 }
 .header {
-  margin-bottom: 30px;
+  margin: 30px 0;
 }
 .main {
   .img {
