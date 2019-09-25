@@ -574,7 +574,7 @@ func GetJobResult(c *gin.Context) {
 	d, _ := m.GetOneDatasetByID(int(id))
 
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d, done))
-	logger.Info.Println(j.ID)
+	j.Status = d.Status
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
