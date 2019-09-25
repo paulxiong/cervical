@@ -6,13 +6,13 @@
         <el-button
           type="danger"
           @click="handleTrain"
-          :disabled="checkboxCell.length<2 || startedTrain === 'ok'"
+          :disabled="checkboxCell.length<2 || startedTrain === 'ok' || jobResult.status >= 6"
         >开始训练</el-button>
       </div>
       <div class="cellTypes">
         <el-badge is-dot class="badge">请选择细胞类型</el-badge>
         <el-checkbox-group v-model="checkboxCell" size="mini">
-          <el-checkbox v-for="(v, i) in cellTypes" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
+          <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
         </el-checkbox-group>
       </div>
       <div class="progress-info">
@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       percentage: 100,
-      cellTypes: JSON.parse(localStorage.getItem('cellTypes')) || [],
+      jobResult: JSON.parse(localStorage.getItem('jobResult')) || [],
       checkboxCell: [],
       startedTrain: ''
     }

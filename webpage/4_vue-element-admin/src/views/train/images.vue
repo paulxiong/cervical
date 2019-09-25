@@ -4,7 +4,7 @@
       <div class="title">
         <h2>IMAGES</h2>
         <section class="info-box">
-          <el-table :data="tableData" style="width: 100%">
+          <el-table :data="tableData" stripe border style="width: 100%">
             <el-table-column prop="name" label="类型"></el-table-column>
             <el-table-column prop="dir" label="目录"></el-table-column>
             <el-table-column prop="batchids" label="批次"></el-table-column>
@@ -17,40 +17,6 @@
             <el-table-column prop="labelpcnt" label="p标记次数"></el-table-column>
             <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
           </el-table>
-          <!-- <div class="input-info info">
-            <el-badge is-dot class="badge">输入信息</el-badge>
-            <div class="img-list info-list flex">
-              <i>目录:</i>
-              <span>{{objData.dir}}</span>
-              <i>批次:</i>
-              <span>{{objData.batchids}}</span>
-              <i>病例:</i>
-              <span>{{objData.medicalids}}</span>
-              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i>
-              <span>{{objData.fovcnt}}/{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
-              <i>标记次数/n标记次数/p标记次数:</i>
-              <span>{{objData.labelcnt}}/{{objData.labelncnt}}/{{objData.labelpcnt}}</span>
-              <i>n/p:</i>
-              <span>{{objData.fovncnt}}/{{objData.fovpcnt}}</span>
-            </div>
-          </div>
-          <div class="output-info info">
-            <el-badge is-dot class="badge">输出信息</el-badge>
-            <div class="img-list info-list flex">
-              <i>目录:</i>
-              <span>{{objData2.dir}}</span>
-              <i>批次:</i>
-              <span>{{objData2.batchids}}</span>
-              <i>病例:</i>
-              <span>{{objData2.medicalids}}</span>
-              <i>图片总数/FOV&nbsp;N个数/FOV&nbsp;P个数:</i>
-              <span>{{objData2.fovcnt}}/{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
-              <i>标记次数/n标记次数/p标记次数:</i>
-              <span>{{objData2.labelcnt}}/{{objData2.labelncnt}}/{{objData2.labelpcnt}}</span>
-              <i>n/p:</i>
-              <span>{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
-            </div>
-          </div>-->
           <div class="progress-info">
             <el-badge is-dot class="badge">状态进度</el-badge>
             <el-progress
@@ -156,7 +122,7 @@ export default {
       })
       getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
         this.objData2 = Object.assign(this.objData2, res.data.data)
-        localStorage.setItem('cellTypes', JSON.stringify(this.objData2.types || []))
+        localStorage.setItem('jobResult', JSON.stringify(this.objData2))
         this.tableData.push(this.objData, this.objData2)
       })
     },
@@ -221,9 +187,6 @@ export default {
 .images {
   padding: 0 30px;
   justify-content: space-between;
-}
-.output-info {
-  margin-top: 20px;
 }
 .time-info {
   margin-left: 30px;
