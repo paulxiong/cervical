@@ -102,12 +102,19 @@ class cervical_autokeras():
         test_data = test_data.astype('float32') / 255
         print("Train data shape:", train_data.shape)
 
+        #clf = ImageClassifier(verbose=True, path=self.TEMP_DIR, resume=True)
         clf = ImageClassifier(verbose=True, path=self.TEMP_DIR)
         clf.fit(train_data, train_labels, time_limit=self.TIME)
         clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
 
         y = clf.evaluate(test_data, test_labels)
         print("Evaluate:", y)
+
+        print(clf.cnn.searcher.n_classes)
+        print(clf.cnn.searcher.input_shape)
+        print(clf.cnn.searcher.verbose)
+        print(clf.cnn.searcher.history)
+        print(clf.cnn.searcher.model_count)
 
         # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
         # clf.export_keras_model(MODEL_DIR)

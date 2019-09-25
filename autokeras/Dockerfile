@@ -1,5 +1,5 @@
 #FROM tensorflow/tensorflow:1.13.2-gpu-py3
-FROM tensorflow/tensorflow:1.13.2-gpu-py3-jupyter
+FROM tensorflow/tensorflow:1.10.0-gpu-py3
 ENV DEBIAN_FRONTEND "noninteractive"
 RUN mv /etc/apt/sources.list.d/cuda.list /etc/apt/sources.list.d/cuda.list.bk && \
     mv /etc/apt/sources.list.d/nvidia-ml.list /etc/apt/sources.list.d/nvidia-ml.list.bk && \
