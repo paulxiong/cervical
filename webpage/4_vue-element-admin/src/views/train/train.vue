@@ -31,7 +31,7 @@
 
 <script>
 import modelCard from './components/model-card'
-import { createTrain } from '@/api/cervical'
+import { createTrain, getTrainresult } from '@/api/cervical'
 
 export default {
   name: 'train',
@@ -56,7 +56,15 @@ export default {
       }).then(res => {
         this.startedTrain = res.data.data
       })
+    },
+    getTrainresult() {
+      getTrainresult({ 'id': this.$route.query.id }).then(res => {
+        console.log(res.data.data)
+      })
     }
+  },
+  mounted() {
+    this.getTrainresult()
   }
 }
 </script>

@@ -4,7 +4,20 @@
       <div class="title">
         <h2>IMAGES</h2>
         <section class="info-box">
-          <div class="input-info info">
+          <el-table :data="tableData" style="width: 100%">
+            <el-table-column prop="name" label="类型"></el-table-column>
+            <el-table-column prop="dir" label="目录"></el-table-column>
+            <el-table-column prop="batchids" label="批次"></el-table-column>
+            <el-table-column prop="medicalids" label="病例" width="180"></el-table-column>
+            <el-table-column prop="fovcnt" label="图片总数"></el-table-column>
+            <el-table-column prop="fovncnt" label="fov-n个数"></el-table-column>
+            <el-table-column prop="fovpcnt" label="fov-p个数"></el-table-column>
+            <el-table-column prop="labelcnt" label="标记次数"></el-table-column>
+            <el-table-column prop="labelncnt" label="n标记次数"></el-table-column>
+            <el-table-column prop="labelpcnt" label="p标记次数"></el-table-column>
+            <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
+          </el-table>
+          <!-- <div class="input-info info">
             <el-badge is-dot class="badge">输入信息</el-badge>
             <div class="img-list info-list flex">
               <i>目录:</i>
@@ -37,7 +50,7 @@
               <i>n/p:</i>
               <span>{{objData2.fovncnt}}/{{objData2.fovpcnt}}</span>
             </div>
-          </div>
+          </div>-->
           <div class="progress-info">
             <el-badge is-dot class="badge">状态进度</el-badge>
             <el-progress
@@ -126,8 +139,9 @@ export default {
       hosturlpath64: ImgServerUrl + '/unsafe/640x0/scratch/',
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
       hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
-      objData: {},
-      objData2: {},
+      tableData: [],
+      objData: { 'name': '输入信息' },
+      objData2: { 'name': '输出信息' },
       cLog: '',
       origin_imgs: [],
       cells_crop: [],
@@ -137,12 +151,13 @@ export default {
   methods: {
     getjobresult() {
       getjobresult({ id: this.$route.query.id, done: '0' }).then(res => {
-        this.objData = res.data.data
+        this.objData = Object.assign(this.objData, res.data.data)
         this.origin_imgs = this.objData.origin_imgs
       })
       getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
-        this.objData2 = res.data.data
+        this.objData2 = Object.assign(this.objData2, res.data.data)
         localStorage.setItem('cellTypes', JSON.stringify(this.objData2.types || []))
+        this.tableData.push(this.objData, this.objData2)
       })
     },
     getPercent() {
@@ -173,7 +188,7 @@ export default {
       }
     },
     /**
-     * 通知父组件的图片状态更新为已完成
+     * 父组件的图片状态更新为已完成
      */
     finishedImages() {
       this.$emit('finished', this.percentage)
@@ -185,10 +200,9 @@ export default {
       timer = setInterval(() => {
         if (this.percentage === 100) {
           clearInterval(timer)
-          this.getjobresult()
         }
         this.getPercent()
-      }, 1e4)
+      }, 1e3)
     }
   },
   mounted() {

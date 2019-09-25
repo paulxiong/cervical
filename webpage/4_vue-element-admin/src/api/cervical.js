@@ -127,3 +127,11 @@ export function savemodel(data) {
     data
   })
 }
+
+export function getTrainresult(query) {
+  return request({
+    url: '/api1/trainresult',
+    method: 'get',
+    params: query
+  })
+}
