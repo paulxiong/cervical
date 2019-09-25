@@ -7,7 +7,7 @@ from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 from shutil import copyfile, rmtree
 import pandas as pd
-from utilslib.jsonfile import load_json_file
+from utilslib.jsonfile import load_json_file, update_model_info_json
 from utilslib.webserverapi import get_one_job, post_job_status
 
 localdebug = os.environ.get('DEBUG', 'False')
@@ -123,6 +123,7 @@ class cervical_autokeras():
         #裁剪出来的细胞图存放的位置
         self.CELL_DIR = os.path.join(self.ROOTPATH, 'cells')
         self.TRAINJSON = os.path.join(self.ROOTPATH, 'train.json')
+        self.MODJSON = os.path.join(self.ROOTPATH, 'mod.json')
         self.STATISTICS_DIR = os.path.join(self.ROOTPATH, 'statistics')
         self.CELL_CROP_CSV = os.path.join(self.STATISTICS_DIR, str(self.jid) + '_crop_cells.csv')
         self.CELL_CROP_DIR = os.path.join(self.CELL_DIR, 'crop')
@@ -267,6 +268,8 @@ if __name__ == "__main__":
         ca.processing(20)
         ca.train_autokeras()
 
+        #更新模型信息
+        update_model_info_json(ca)
         ca.done("done!")
         #elif opt.task == 'predict':
         #    print ("Resize images...")

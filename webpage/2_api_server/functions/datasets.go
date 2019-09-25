@@ -152,7 +152,7 @@ func GetModelInfo(d m.Dataset, _type string) []m.Model {
 		_minfo := m.Model{}
 		if err2 := json.Unmarshal([]byte(line), &_minfo); err2 == nil {
 			_minfo.Type = modeltype
-			_minfo.DId = d.ID
+			_minfo.DID = d.ID
 			minfo = append(minfo, _minfo)
 		} else {
 			logger.Info.Println(err2)
@@ -250,4 +250,34 @@ func NewTrainJSONFile(id int64, types []int, dirname string, status int) {
 	info := scratchRoot + "/" + dirname + "/train.json"
 	logger.Info.Println(info)
 	writeJSON(info, data)
+}
+
+// LoadTrainJSONFile 加载json文件内容成struct
+func LoadTrainJSONFile(filename string) TrainJobInfo {
+	j := TrainJobInfo{}
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return j
+	}
+	err = json.Unmarshal(data, &j)
+	if err != nil {
+		return j
+	}
+	return j
+}
+
+// LoadModJSONFile 加载json文件内容成struct
+func LoadModJSONFile(dirname string) m.Model {
+	filename := scratchRoot + "/" + dirname + "/mod.json"
+	j := m.Model{}
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		logger.Info.Println(err)
+		return j
+	}
+	err = json.Unmarshal(data, &j)
+	if err != nil {
+		return j
+	}
+	return j
 }
