@@ -80,6 +80,14 @@ export function listdatasets(query) {
   })
 }
 
+export function getCategoryInfo(query) {
+  return request({
+    url: '/api1/categoryinfo',
+    method: 'get',
+    params: query
+  })
+}
+
 export function jobresult(data) {
   return request({
     url: '/api1/jobresult',

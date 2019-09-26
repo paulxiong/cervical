@@ -13,7 +13,7 @@
 import modelSelect from './components/model-select'
 
 export default {
-  name: 'predict',
+  name: 'Predict',
   components: { modelSelect },
   data() {
     return {}
