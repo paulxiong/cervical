@@ -38,14 +38,14 @@ func Router() *gin.Engine {
 
 	/* 用户相关的API */
 	user := r.Group("/user")
-	api1.GET("/userinfo", ctr.GetUser)
 	user.POST("/register", ctr.RegisterUser)
 	user.POST("/login", ctr.LoginUser)
-	user.POST("/emailcode", ctr.GetEmailCode)
 	user.Use(ctr.CheckAuth)
 	{
 		user.GET("/info", ctr.GetUser)
 		user.GET("/logout", ctr.LogoutUser)
+		user.GET("/userinfo", ctr.GetUser)
+		user.POST("/emailcode", ctr.GetEmailCode)
 	}
 
 	api1 := r.Group("/api1")

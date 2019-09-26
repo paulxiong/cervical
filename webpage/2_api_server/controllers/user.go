@@ -130,7 +130,7 @@ func RegisterUser(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/userinfo [get]
+// @Router /user/userinfo [get]
 func GetUser(c *gin.Context) {
 	u, _ := m.GetUserFromContext(c)
 
