@@ -635,28 +635,38 @@ func GetJobLog(c *gin.Context) {
 	return
 }
 
-// GetModelInfo 获得训练任务生成模型的信息
-// @Summary 获得训练任务生成模型的信息
-// @Description 获得训练任务生成模型的信息
+type listMods struct {
+	Models []m.Model `json:"models"`
+	Total  int64     `json:"total"`
+}
+
+// GetModelLists 获得模型的信息列表
+// @Summary 获得模型的信息列表
+// @Description 获得模型的信息列表
 // @tags API1 模型（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Success 200 {object} controllers.listMods
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/jobmodel [get]
-func GetModelInfo(c *gin.Context) {
-	idStr := c.DefaultQuery("id", "1")
-	id, _ := strconv.ParseInt(idStr, 10, 64)
-	typeStr := c.DefaultQuery("type", "c") // s-- svm  g--gan
+// @Router /api1/listmodel [get]
+func GetModelLists(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
-	d, _ := m.GetOneDatasetByID(int(id))
-
-	j := f.GetModelInfo(d, typeStr)
+	total, mods, _ := m.ListModel(int(limit), int(skip))
+	lm := listMods{
+		Models: mods,
+		Total:  total,
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   j,
+		"data":   lm,
 	})
 	return
 }

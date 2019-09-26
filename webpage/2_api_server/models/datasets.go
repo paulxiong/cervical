@@ -531,6 +531,19 @@ func (d *Model) CreateModelInfo() (e error) {
 	return ret.Error
 }
 
+// ListModel 依次列出模型
+func ListModel(limit int, skip int) (totalNum int64, c []Model, e error) {
+	var _d []Model
+	var total int64 = 0
+
+	db.Model(&Model{}).Count(&total)
+	ret := db.Model(&Model{}).Limit(limit).Offset(skip).Find(&_d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _d, ret.Error
+}
+
 // FindModelInfoByPath 通过模型文件路径查找模型信息
 func FindModelInfoByPath(modpath string) (m *Model, e error) {
 	_d := Model{}
