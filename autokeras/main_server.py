@@ -160,7 +160,8 @@ class cervical_autokeras():
         for d in dirs:
             if os.path.exists(d):
                 rmtree(d)
-            os.makedirs(d)
+            if not os.path.exists(d):
+                os.makedirs(d)
         for f in files:
             if os.path.exists(f):
                 os.remove(f)
@@ -174,14 +175,19 @@ class cervical_autokeras():
         test_data = test_data.astype('float32') / 255
         print("Train data shape:", train_data.shape)
 
-        clf = ImageClassifier(verbose=True, path=self.TEMP_DIR)
+        clf = ImageClassifier(verbose=True, path=self.TEMP_DIR, resume=False)
         clf.fit(train_data, train_labels, time_limit=self.TIME)
         clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
 
-        y = clf.evaluate(test_data, test_labels)
-        print("Evaluate:", y)
+        evaluate_value = clf.evaluate(test_data, test_labels)
+        print("Evaluate:", evaluate_value)
+
+        # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
+        # clf.export_keras_model(MODEL_DIR)
+        clf.export_autokeras_model(self.MODEL_DIR)
 
         #统计训练信息
+        dic = {}
         ishape = clf.cnn.searcher.input_shape
         dic['n_train'] = train_data.shape[0]  #训练总共用了多少图
         dic['n_classes'] = clf.cnn.searcher.n_classes
@@ -189,14 +195,12 @@ class cervical_autokeras():
         dic['history'] = clf.cnn.searcher.history
         dic['model_count'] = clf.cnn.searcher.model_count
         dic['best_model'] = clf.cnn.searcher.get_best_model_id()
-        best_model = [item for item in dic['history'] if item['model_id'] == 6]
-        dic['loss'] = best_model[0]['loss']
-        dic['metric_value'] = best_model[0]['metric_value']
+        best_model = [item for item in dic['history'] if item['model_id'] == dic['best_model']]
+        if len(best_model) > 0:
+            dic['loss'] = best_model[0]['loss']
+            dic['metric_value'] = best_model[0]['metric_value']
+        dic['evaluate_value'] = evaluate_value
         self.traininfo = dic
-
-        # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
-        # clf.export_keras_model(MODEL_DIR)
-        clf.export_autokeras_model(self.MODEL_DIR)
 
     def predict_autokeras(self):
         #Load images
