@@ -148,6 +148,7 @@ class cervical_autokeras():
         #Set the training time, this is half an hour
         self.TIME = 0.5*60*60
         self.percent = 0
+        self.traininfo = {}
 
         self.clean_fold()
 
@@ -179,6 +180,19 @@ class cervical_autokeras():
 
         y = clf.evaluate(test_data, test_labels)
         print("Evaluate:", y)
+
+        #统计训练信息
+        ishape = clf.cnn.searcher.input_shape
+        dic['n_train'] = train_data.shape[0]  #训练总共用了多少图
+        dic['n_classes'] = clf.cnn.searcher.n_classes
+        dic['input_shape'] = str(ishape[0]) + 'x' + str(ishape[1]) + 'x' + str(ishape[2])
+        dic['history'] = clf.cnn.searcher.history
+        dic['model_count'] = clf.cnn.searcher.model_count
+        dic['best_model'] = clf.cnn.searcher.get_best_model_id()
+        best_model = [item for item in dic['history'] if item['model_id'] == 6]
+        dic['loss'] = best_model[0]['loss']
+        dic['metric_value'] = best_model[0]['metric_value']
+        self.traininfo = dic
 
         # clf.load_searcher().load_best_model().produce_keras_model().save(MODEL_DIR)
         # clf.export_keras_model(MODEL_DIR)

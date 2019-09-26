@@ -35,14 +35,14 @@ def update_model_info_json(job):
         return False
     job_info = load_json_file(job.TRAINJSON)
 
-    mod = {}
+    mod = job.traininfo
     mod['id'] = 0
     mod['type'] = 5
     mod['did'] = job.jid
     mod['path'] = job.MODEL_DIR
     mod['desc'] = ''
     mod['recall'] = -1
-    mod['precision'] = -1
+    mod['precision'] = mod['metric_value']
 
     with open(job.MODJSON, 'w', encoding='utf-8') as file:
         file.write(json.dumps(mod, indent=2, ensure_ascii=False))
