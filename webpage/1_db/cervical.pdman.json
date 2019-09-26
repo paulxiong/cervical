@@ -1079,15 +1079,63 @@
             },
             {
               "name": "RECALL",
-              "type": "Integer",
+              "type": "Double",
               "remark": "",
               "chnname": "召回率"
             },
             {
-              "name": "PRECISION",
-              "type": "Integer",
+              "name": "PRECISION1",
+              "type": "Double",
               "remark": "",
               "chnname": "准确率"
+            },
+            {
+              "name": "n_train",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "训练用了多少张图片"
+            },
+            {
+              "name": "n_classes",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "训练有几个分类"
+            },
+            {
+              "name": "input_shape",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "训练输入的尺寸"
+            },
+            {
+              "name": "model_count",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "产生的模型个数"
+            },
+            {
+              "name": "best_model",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "本次训练出的所有模型里面最优模型是第几个"
+            },
+            {
+              "name": "loss",
+              "type": "Double",
+              "remark": "",
+              "chnname": "损失"
+            },
+            {
+              "name": "metric_value",
+              "type": "Double",
+              "remark": "",
+              "chnname": "训练的准确度"
+            },
+            {
+              "name": "evaluate_value",
+              "type": "Double",
+              "remark": "",
+              "chnname": "评估准确度"
             },
             {
               "name": "CREATED_BY",

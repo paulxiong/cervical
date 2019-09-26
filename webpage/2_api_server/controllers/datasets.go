@@ -635,49 +635,92 @@ func GetJobLog(c *gin.Context) {
 	return
 }
 
-// GetModelInfo 获得训练任务生成模型的信息
-// @Summary 获得训练任务生成模型的信息
-// @Description 获得训练任务生成模型的信息
+type listMods struct {
+	Models []m.Model `json:"models"`
+	Total  int64     `json:"total"`
+}
+
+// GetModelLists 获得模型的信息列表
+// @Summary 获得模型的信息列表
+// @Description 获得模型的信息列表
 // @tags API1 模型（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Success 200 {object} controllers.listMods
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/jobmodel [get]
-func GetModelInfo(c *gin.Context) {
-	idStr := c.DefaultQuery("id", "1")
-	id, _ := strconv.ParseInt(idStr, 10, 64)
-	typeStr := c.DefaultQuery("type", "c") // s-- svm  g--gan
+// @Router /api1/listmodel [get]
+func GetModelLists(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
-	d, _ := m.GetOneDatasetByID(int(id))
-
-	j := f.GetModelInfo(d, typeStr)
+	total, mods, _ := m.ListModel(int(limit), int(skip))
+	lm := listMods{
+		Models: mods,
+		Total:  total,
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   j,
+		"data":   lm,
 	})
 	return
 }
 
+type savemod struct {
+	ID   int64  `json:"id"   example:"1"`          //任务ID，或者叫做数据集的ID
+	Desc string `json:"desc" example:"某某的训练得到的模型"` //模型的文字描述
+}
+
 // SaveModelInfo 把训练任务生成模型信息存数据库
 // @Summary 把训练任务生成模型信息存数据库
-// @Description 把训练任务生成模型信息存数据库
+// @Description 把训练任务生成模型信息存数据库, 模型信息直接从后端取，前端不需要传回去
 // @tags API1 模型（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param SaveModel body controllers.savemod true "保存模型的信息"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/savemodel [get]
+// @Router /api1/savemodel [post]
 func SaveModelInfo(c *gin.Context) {
-	w := m.Model{}
+	w := savemod{}
 	err := c.BindJSON(&w)
 
-	logger.Info.Println(w, err)
+	d, err := m.GetOneDatasetByID(int(w.ID))
+	if err != nil || d.Status != 9 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets trainning not finished or not found",
+		})
+		return
+	}
 
-	err = w.CreateModelInfo()
+	modinfo := f.LoadModJSONFile(d.Dir)
+	if modinfo.Path == "" {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "load modinfo failed",
+		})
+		return
+	}
+
+	ret := modinfo.ModelInfoSaved()
+	if ret == true {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "model already saved",
+		})
+		return
+	}
+
+	modinfo.ID = 0
+
+	err = modinfo.CreateModelInfo()
 	if err == nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -752,7 +795,7 @@ func Train(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param id query string false "数据集的ID, default 0"
-// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Success 200 {object} models.Model
 // @Router /api1/trainresult [get]
 func GetTrainResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
