@@ -28,7 +28,7 @@
           <a target="_blank" href="#">
             <el-dropdown-item>{{userInfo.name}}</el-dropdown-item>
           </a>
-          <el-dropdown-item divided>
+          <el-dropdown-item divided style="text-align:center;">
             <span style="display:block;" @click="logout">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>

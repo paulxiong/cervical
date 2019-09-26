@@ -26,7 +26,7 @@
     </section>
     <section class="model-info">
       <el-badge is-dot class="badge">模型信息</el-badge>
-      <modelCard></modelCard>
+      <modelCard :trainInfo="trainInfo"></modelCard>
     </section>
   </div>
 </template>
@@ -43,6 +43,7 @@ export default {
       percentage: 100,
       jobResult: JSON.parse(localStorage.getItem('jobResult')) || [],
       checkboxCell: [],
+      trainInfo: {},
       startedTrain: ''
     }
   },
@@ -61,7 +62,7 @@ export default {
     },
     getTrainresult() {
       getTrainresult({ 'id': this.$route.query.id }).then(res => {
-        console.log(res.data.data)
+        this.trainInfo = res.data.data
       })
     }
   },
