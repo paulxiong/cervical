@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <section class="train-info">
-      <el-form label-position="left">
+      <el-form label-position="left" class="flex train-form">
         <el-form-item label="id">
           <span>{{ trainInfo.id }}</span>
         </el-form-item>
@@ -131,6 +131,10 @@ export default {
   }
   b {
     font-size: 22px;
+  }
+  .train-form {
+    justify-content: flex-start;
+    align-items: flex-start;
   }
   .model-info {
     justify-content: space-around;
