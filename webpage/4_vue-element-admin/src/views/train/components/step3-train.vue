@@ -60,7 +60,7 @@ export default {
       loading: false,
       inputName: '',
       postData: JSON.parse(localStorage.getItem('POST_DATA')) || {},
-      countNP: JSON.parse(localStorage.getItem('countNP')) || {},
+      countNP: JSON.parse(localStorage.getItem('countNP')) || {}
     }
   },
   methods: {

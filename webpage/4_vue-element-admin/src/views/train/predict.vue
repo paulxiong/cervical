@@ -10,16 +10,16 @@
 </template>
 
 <script>
-import modelSelect from "./components/model-select"
+import modelSelect from './components/model-select'
 
 export default {
-  name: "predict",
+  name: 'predict',
   components: { modelSelect },
   data() {
-    return {};
+    return {}
   },
   methods: {}
-};
+}
 </script>
 
 <style lang="scss" scoped>

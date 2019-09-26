@@ -11,6 +11,13 @@
         <i class="el-icon-arrow-right el-icon--right"></i>
       </el-button>
     </section>
+    <section class="train-type flex">
+      <h3>此数据集将用作</h3>
+      <el-radio-group v-model="trainType" class="type-raido" size="small">
+        <el-radio-button label="训练"></el-radio-button>
+        <el-radio-button label="预测"></el-radio-button>
+      </el-radio-group>
+    </section>
     <el-input class="filter-input flex" placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
     <el-tree
       class="filter-tree flex"
@@ -36,7 +43,8 @@ export default {
   },
   data() {
     return {
-      filterText: "",
+      filterText: '',
+      trainType: '训练',
       batchList: [],
       countNP: {
         countn: 0,
@@ -64,6 +72,7 @@ export default {
         data1.batchs.map(v => {
           let obj = {}
           obj['label'] = v
+          console.log(v)
           getMedicalIdInfo({ 'batchid': v }).then(res2 => {
             const data2 = res2.data.data
             let medicalids = []
@@ -103,7 +112,7 @@ export default {
       let postData = {
         'batchids': postBatchs,
         'medicalids': postMedicalIds,
-        'type': 1
+        'type': this.trainType === '训练' ? 1 : 2
       }
       localStorage.setItem('POST_DATA', JSON.stringify(postData))
       getimgnptypebymids(postData).then(res => {
@@ -134,6 +143,9 @@ export default {
     .el-tree-node__children {
       display: flex;
     }
+  }
+  .type-raido {
+    margin-left: 20px;
   }
   .filter-input {
     width: 30%;
