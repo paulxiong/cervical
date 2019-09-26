@@ -25,8 +25,8 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <a target="_blank" href="https://github.com/paulxiong/cervical">
-            <el-dropdown-item>Github</el-dropdown-item>
+          <a target="_blank" href="#">
+            <el-dropdown-item>{{userInfo.name}}</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">登出</span>
@@ -54,6 +54,11 @@ export default {
     Screenfull,
     SizeSelect,
     Search
+  },
+  data() {
+    return {
+      userInfo: JSON.parse(localStorage.getItem('USER_INFO')) || {}
+    }
   },
   computed: {
     ...mapGetters([

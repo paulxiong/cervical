@@ -38,6 +38,7 @@ func Router() *gin.Engine {
 
 	/* 用户相关的API */
 	user := r.Group("/user")
+	api1.GET("/userinfo", ctr.GetUser)
 	user.POST("/register", ctr.RegisterUser)
 	user.POST("/login", ctr.LoginUser)
 	user.POST("/emailcode", ctr.GetEmailCode)
@@ -57,8 +58,6 @@ func Router() *gin.Engine {
 	{
 		api1.GET("/refresh_token", ctr.AuthMiddleware.RefreshHandler) // Refresh time can be longer than token timeout
 		api1.GET("/authping", ctr.AuthPong)
-		//用户
-		api1.GET("/userinfo", ctr.GetUser)
 		// 数据
 		api1.GET("/dtinfo", ctr.AllInfo)
 		api1.GET("/batchinfo", ctr.GetBatchInfo)

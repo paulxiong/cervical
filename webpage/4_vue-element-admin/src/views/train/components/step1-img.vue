@@ -35,10 +35,10 @@
 <script>
 import { getBatchInfo, getMedicalIdInfo, getimgnptypebymids } from '@/api/cervical'
 export default {
-  name: "checkImg",
+  name: 'CheckImg',
   watch: {
     filterText(val) {
-      this.$refs.tree.filter(val);
+      this.$refs.tree.filter(val)
     }
   },
   data() {
@@ -52,16 +52,16 @@ export default {
       },
       checkList: [],
       defaultProps: {
-        children: "children",
-        label: "label"
+        children: 'children',
+        label: 'label'
       }
     }
   },
 
   methods: {
     filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     nextStep() {
       this.$parent.stepNext()
@@ -70,12 +70,12 @@ export default {
       getBatchInfo().then(res1 => {
         const data1 = res1.data.data
         data1.batchs.map(v => {
-          let obj = {}
+          const obj = {}
           obj['label'] = v
           console.log(v)
           getMedicalIdInfo({ 'batchid': v }).then(res2 => {
             const data2 = res2.data.data
-            let medicalids = []
+            const medicalids = []
             data2.medicalids.map(item => {
               item = {
                 'label': item
@@ -109,7 +109,7 @@ export default {
       this.getimgnptypebymids(postBatchs, postMedicalIds)
     },
     getimgnptypebymids(postBatchs, postMedicalIds) {
-      let postData = {
+      const postData = {
         'batchids': postBatchs,
         'medicalids': postMedicalIds,
         'type': this.trainType === '训练' ? 1 : 2

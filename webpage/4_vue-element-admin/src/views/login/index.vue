@@ -119,7 +119,7 @@
 import { validEmail } from '@/utils/validate'
 import loginHeader from './components/login-header'
 import loginFooter from './components/login-footer'
-import { getCode } from '@/api/user'
+import { getCode, getUserInfo } from '@/api/user'
 let timer
 
 export default {
@@ -229,6 +229,11 @@ export default {
         this.$refs.password.focus()
       })
     },
+    getUserInfo() {
+      getUserInfo().then(res => {
+        localStorage.setItem('USER_INFO', JSON.stringify(res.data.data))
+      })
+    },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
@@ -241,6 +246,7 @@ export default {
                   this.$store
                     .dispatch('user/login', this.loginForm)
                     .then(() => {
+                      this.getUserInfo()
                       this.$router.push({
                         path: this.redirect || '/',
                         query: this.otherQuery
@@ -259,6 +265,7 @@ export default {
             this.$store
               .dispatch('user/login', this.loginForm)
               .then(() => {
+                this.getUserInfo()
                 this.$router.push({
                   path: this.redirect || '/',
                   query: this.otherQuery

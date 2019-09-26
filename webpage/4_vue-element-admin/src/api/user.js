@@ -8,6 +8,14 @@ export function login(data) {
   })
 }
 
+export function getUserInfo(query) {
+  return request({
+    url: '/user/userinfo',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getCode(data) {
   return request({
     url: '/user/emailcode',
