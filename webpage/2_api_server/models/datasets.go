@@ -479,16 +479,24 @@ func GetOneDatasetByID(id int) (dt Dataset, e error) {
 
 // Model 模型信息
 type Model struct {
-	ID        int       `json:"id"         gorm:"column:ID"`           //id
-	Type      int       `json:"type"       gorm:"column:TYPE"`         //模型类别 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS
-	DID       int64     `json:"did"        gorm:"column:DID"`          //dataset Id，被哪次dataset训练的
-	Path      string    `json:"path"       gorm:"column:PATH"`         //模型文件路径
-	Desc      string    `json:"desc"       gorm:"column:DESCRIPTION"`  //模型的文字描述
-	Recall    int       `json:"recall"     gorm:"RECALL"`              //训练评估得到的召回率,整数66表示66%
-	Precision int       `json:"precision"  gorm:"PRECISION"`           //训练评估得到的准确率,整数66表示66%
-	CreatedAt time.Time `json:"created_at" gorm:"column:CREATED_TIME"` //创建时间
-	UpdatedAt time.Time `json:"updated_at" gorm:"column:UPDATED_TIME"` //更新时间
-	CreatedBy int64     `json:"-"          gorm:"column:CREATED_BY"`   //创建者ID
+	ID            int       `json:"id"             gorm:"column:ID"`             //id
+	Type          int       `json:"type"           gorm:"column:TYPE"`           //模型类别 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS
+	DID           int64     `json:"did"            gorm:"column:DID"`            //dataset Id，被哪次dataset训练的
+	Path          string    `json:"path"           gorm:"column:PATH"`           //模型文件路径
+	Desc          string    `json:"desc"           gorm:"column:DESCRIPTION"`    //模型的文字描述
+	Recall        float32   `json:"recall"         gorm:"column:RECALL"`         //训练评估得到的召回率,整数0.66表示66%
+	Precision     float32   `json:"precision"      gorm:"column:PRECISION1"`     //训练评估得到的准确率,整数0.66表示66%
+	Ntrain        int       `json:"n_train"        gorm:"column:n_train"`        //训练用了多少张图片
+	Nclasses      int       `json:"n_classes"      gorm:"column:n_classes"`      //训练有几个分类
+	InputShape    string    `json:"input_shape"    gorm:"column:input_shape"`    //训练输入的尺寸
+	ModelCount    int       `json:"model_count"    gorm:"column:model_count"`    //产生的模型个数
+	BestModel     int       `json:"best_model"     gorm:"column:best_model"`     //本次训练出的所有模型里面最优模型是第几个
+	Loss          float32   `json:"loss"           gorm:"column:loss"`           //损失
+	MetricValue   float32   `json:"metric_value"   gorm:"column:metric_value"`   //训练的准确度
+	EvaluateValue float32   `json:"evaluate_value" gorm:"column:evaluate_value"` //评估准确度
+	CreatedAt     time.Time `json:"created_at"     gorm:"column:CREATED_TIME"`   //创建时间
+	UpdatedAt     time.Time `json:"updated_at"     gorm:"column:UPDATED_TIME"`   //更新时间
+	CreatedBy     int64     `json:"-"              gorm:"column:CREATED_BY"`     //创建者ID
 }
 
 // BeforeCreate insert之前的hook
@@ -521,4 +529,29 @@ func (d *Model) CreateModelInfo() (e error) {
 		logger.Info.Println(ret.Error)
 	}
 	return ret.Error
+}
+
+// FindModelInfoByPath 通过模型文件路径查找模型信息
+func FindModelInfoByPath(modpath string) (m *Model, e error) {
+	_d := Model{}
+
+	ret2 := db.Model(&_d).Where("PATH=?", modpath).First(&_d)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+	return &_d, ret2.Error
+}
+
+// ModelInfoSaved 判断模型信息是否已经存入数据库
+func (d *Model) ModelInfoSaved() bool {
+	_d := Model{}
+
+	ret2 := db.Model(&_d).Where("PATH=?", d.Path).First(&_d)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+	if _d.Path != "" && len(_d.Path) > 0 {
+		return true
+	}
+	return false
 }
