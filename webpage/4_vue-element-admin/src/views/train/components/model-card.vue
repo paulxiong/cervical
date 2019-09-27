@@ -97,8 +97,9 @@ export default {
 .card {
   margin-top: 10px;
   i {
-    color: #ccc;
+    color: #666;
     font-style: normal;
+    margin-right: 10px;
   }
   b {
     font-size: 22px;

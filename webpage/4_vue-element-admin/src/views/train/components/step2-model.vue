@@ -9,12 +9,12 @@
     <section class="info flex">
       <section class="model-info">
         <h4>模型选择</h4>
-        <el-select class="model-option" v-model="value" clearable placeholder="请选择">
+        <el-select class="model-option" v-model="model" clearable placeholder="请选择">
           <el-option
             v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            :key="item.id"
+            :label="item.desc"
+            :value="item"
           ></el-option>
         </el-select>      
       </section>
@@ -28,41 +28,38 @@
 </template> 
 
 <script>
+import { getListmodel } from '@/api/cervical'
 export default {
-  name: "checkModel",
+  name: 'CheckModel',
   components: {},
   data() {
     return {
       cutInput: 100,
-      options: [
-        {
-          value: "选项1",
-          label: "Cell0822019_v2019081220904"
-        },
-        {
-          value: "选项2",
-          label: "Aell0822019_v201242304"
-        },
-        {
-          value: "选项3",
-          label: "Bell0822019_v20193242342340904"
-        },
-        {
-          value: "选项4",
-          label: "Dell0822019_v2012342320904"
-        },
-        {
-          value: "选项5",
-          label: "Tell0822019_v2ad213081220904"
-        }
-      ],
-      value: "选项1"
+      options: [],
+      model: ''
     }
   },
   methods: {
     nextStep() {
+      /**
+       * 保存model和参数信息并下一步
+       */
+      const modelInfo = {
+        cutSize: this.cutInput,
+        model: this.model,
+      }
+      localStorage.setItem('MODEL_INFO', JSON.stringify(modelInfo))
       this.$parent.stepNext()
+    },
+    getListmodel() {
+      getListmodel().then(res => {
+        this.options = res.data.data.models
+        this.model = this.options[0]
+      })
     }
+  },
+  mounted() {
+    this.getListmodel()
   }
 }
 </script>

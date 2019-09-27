@@ -21,9 +21,9 @@
           <el-table-column prop="fovcnt" label="图片总数"></el-table-column>
           <el-table-column prop="fovncnt" label="fov-n个数"></el-table-column>
           <el-table-column prop="fovpcnt" label="fov-p个数"></el-table-column>
-          <el-table-column prop="labelcnt" label="标记次数"></el-table-column>
-          <el-table-column prop="labelncnt" label="n标记次数"></el-table-column>
-          <el-table-column prop="labelpcnt" label="p标记次数"></el-table-column>
+          <el-table-column prop="labelcnt" label="标记次数或输出细胞个数"></el-table-column>
+          <el-table-column prop="labelncnt" label="n标记次数或输出细胞个数"></el-table-column>
+          <el-table-column prop="labelpcnt" label="p标记次数或输出细胞个数"></el-table-column>
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
@@ -93,7 +93,7 @@ import { ImgServerUrl } from '@/const/config'
 let timer
 
 export default {
-  name: 'images',
+  name: 'Images',
   components: {},
   data() {
     return {

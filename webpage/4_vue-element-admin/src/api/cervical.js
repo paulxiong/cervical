@@ -143,3 +143,11 @@ export function getTrainresult(query) {
     params: query
   })
 }
+
+export function getListmodel(query) {
+  return request({
+    url: '/api1/listmodel',
+    method: 'get',
+    params: query
+  })
+}
