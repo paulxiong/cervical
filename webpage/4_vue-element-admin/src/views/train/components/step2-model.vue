@@ -16,9 +16,17 @@
             :label="item.desc"
             :value="item"
           ></el-option>
-        </el-select>      
+        </el-select>
       </section>
 
+      <section class="param">
+        <h4>图片色彩</h4>
+        <el-radio-group v-model="imgColor">
+          <el-radio-button label="黑白"></el-radio-button>
+          <el-radio-button label="彩色"></el-radio-button>
+        </el-radio-group>
+      </section>
+      
       <section class="param">
         <h4>裁剪大小(单位px)</h4>
         <el-input class="input" v-model="cutInput" placeholder="请输入裁剪大小"></el-input>
@@ -34,6 +42,7 @@ export default {
   components: {},
   data() {
     return {
+      imgColor: '黑白',
       cutInput: 100,
       options: [],
       model: ''
@@ -45,6 +54,7 @@ export default {
        * 保存model和参数信息并下一步
        */
       const modelInfo = {
+        imgColor: this.imgColor,
         cutSize: this.cutInput,
         model: this.model,
       }
@@ -70,8 +80,8 @@ export default {
     width: 150px;
     font-weight: bold;
   }
-  .model-info {
-    margin-right: 30px;
+  .param {
+    margin-left: 30px;
   }
   .input {
     width: 200px;

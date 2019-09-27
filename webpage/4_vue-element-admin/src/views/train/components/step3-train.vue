@@ -1,8 +1,23 @@
 <template>
   <div class="start-train">
     <h2 class="title flex">
-      请<el-input v-model="inputName" autofocus placeholder="为数据集取个名字吧" show-word-limit maxlength="30" @keyup.enter.native="goTrain" class="input-name"></el-input>，然后
-      <el-button class="start-btn" type="danger" :disabled="!inputName.length" :loading="loading" @click="goTrain">开始处理</el-button>
+      请
+      <el-input
+        v-model="inputName"
+        autofocus
+        placeholder="为数据集取个名字吧"
+        show-word-limit
+        maxlength="30"
+        @keyup.enter.native="goTrain"
+        class="input-name"
+      ></el-input>，然后
+      <el-button
+        class="start-btn"
+        type="danger"
+        :disabled="!inputName.length"
+        :loading="loading"
+        @click="goTrain"
+      >开始处理</el-button>
       <i class="errInfo-btn">
         若信息有误，需要
         <el-button type="info" size="mini" @click="goBack">重新编辑</el-button>
@@ -10,7 +25,15 @@
     </h2>
     <section class="train-box-info">
       <el-card shadow="hover">
-        <el-badge is-dot class="badge">训练集</el-badge>
+        <div class="info-header flex">
+          <el-badge is-dot class="badge">训练集</el-badge>
+          <el-tag
+            class="info-tag"
+            effect="dark"
+            size="small"
+            type="info"
+          >{{postData.type===1?'训练':'预测'}}</el-tag>
+        </div>
         <div class="info-list flex">
           <section class="info">
             <i>批次</i>
@@ -34,12 +57,28 @@
         <el-badge is-dot class="badge">模型及参数</el-badge>
         <div class="info-list flex">
           <section class="info">
+            <i>模型ID</i>
+            <b>{{modelInfo.model.id}}</b>
+          </section>
+          <section class="info">
             <i>模型</i>
             <b>{{modelInfo.model.desc}}</b>
           </section>
           <section class="info">
+            <i>图片色彩</i>
+            <b>{{modelInfo.imgColor}}</b>
+          </section>
+          <section class="info">
             <i>裁剪大小</i>
             <b>{{modelInfo.cutSize}}</b>
+          </section>
+          <section class="info">
+            <i>Precision</i>
+            <b>{{modelInfo.model.precision}}</b>
+          </section>
+          <section class="info">
+            <i>Recall</i>
+            <b>{{modelInfo.model.recall}}</b>
           </section>
         </div>
       </el-card>
@@ -93,6 +132,9 @@ export default {
     font-weight: bold;
     margin-bottom: 10px;
   }
+  .info-tag {
+    margin-left: 10px;
+  }
   i {
     color: #666;
     font-style: normal;
@@ -111,7 +153,10 @@ export default {
   .start-btn {
     margin-left: 10px;
   }
-  
+  .info-header {
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
   .info-list {
     justify-content: space-around;
     flex-wrap: wrap;
