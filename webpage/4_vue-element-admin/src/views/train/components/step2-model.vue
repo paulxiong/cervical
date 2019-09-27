@@ -26,14 +26,13 @@
           <el-radio-button label="彩色"></el-radio-button>
         </el-radio-group>
       </section>
-      
       <section class="param">
         <h4>裁剪大小(单位px)</h4>
         <el-input class="input" v-model="cutInput" placeholder="请输入裁剪大小"></el-input>
       </section>
     </section>
   </div>
-</template> 
+</template>
 
 <script>
 import { getListmodel } from '@/api/cervical'
@@ -56,7 +55,7 @@ export default {
       const modelInfo = {
         imgColor: this.imgColor,
         cutSize: this.cutInput,
-        model: this.model,
+        model: this.model
       }
       localStorage.setItem('MODEL_INFO', JSON.stringify(modelInfo))
       this.$parent.stepNext()

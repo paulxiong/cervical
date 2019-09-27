@@ -82,7 +82,7 @@ export default {
   },
   filters: {
     filterModelType(value) {
-      return modelType[value].name
+      return modelType[value]
     }
   },
   methods: {

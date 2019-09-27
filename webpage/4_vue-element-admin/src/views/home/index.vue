@@ -73,7 +73,7 @@ export default {
   },
   filters: {
     filterCreated(value) {
-      return createdBy[value].name
+      return createdBy[value]
     },
     filtersTaskType(value) {
       return taskStatus[value].type
@@ -82,7 +82,7 @@ export default {
       return taskStatus[value].status
     },
     filtersStatus(value) {
-      return typeStatus[value].status
+      return typeStatus[value]
     }
   },
   methods: {
@@ -135,6 +135,7 @@ export default {
   i {
     color: #666;
     font-size: 14px;
+    font-style: normal;
   }
   .project-list {
     justify-content: flex-start;

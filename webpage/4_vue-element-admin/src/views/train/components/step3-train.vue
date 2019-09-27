@@ -54,7 +54,15 @@
         </div>
       </el-card>
       <el-card style="margin-top:20px;" shadow="hover">
-        <el-badge is-dot class="badge">模型及参数</el-badge>
+        <div class="info-header flex">
+          <el-badge is-dot class="badge">模型及参数</el-badge>
+          <el-tag
+            class="info-tag"
+            effect="dark"
+            size="small"
+            type="info"
+          >{{modelInfo.model.type | filterModelType}}</el-tag>
+        </div>
         <div class="info-list flex">
           <section class="info">
             <i>模型ID</i>
@@ -88,6 +96,8 @@
 
 <script>
 import { createdataset } from '@/api/cervical'
+import { modelType } from '@/const/const'
+
 export default {
   name: 'StartTrain',
   components: {},
@@ -98,6 +108,11 @@ export default {
       postData: JSON.parse(localStorage.getItem('POST_DATA')),
       countNP: JSON.parse(localStorage.getItem('countNP')),
       modelInfo: JSON.parse(localStorage.getItem('MODEL_INFO'))
+    }
+  },
+  filters: {
+    filterModelType(value) {
+      return modelType[value].name
     }
   },
   methods: {

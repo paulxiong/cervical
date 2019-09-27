@@ -14,25 +14,24 @@ export const taskStatus = {
 
 // 训练类型
 export const typeStatus = {
-  0: { status: '预测' },
-  1: { status: '训练' },
-  2: { status: '测试' }
+  1: '训练',
+  2: '预测'
 }
 
 // 用户
 export const createdBy = {
-  0: { name: '普通用户' },
-  1: { name: '超级管理员' }
+  0: '普通用户',
+  1: '超级管理员'
 }
 
 // 训练模型类型
 export const modelType = {
-  0: { name: '未知' },
-  1: { name: 'UNET' },
-  2: { name: 'GAN' },
-  3: { name: 'SVM' },
-  4: { name: 'MASKRCNN' },
-  5: { name: 'AUTOKERAS' }
+  0: '未知',
+  1: 'UNET',
+  2: 'GAN',
+  3: 'SVM',
+  4: 'MASKRCNN',
+  5: 'AUTOKERAS'
 }
 
 // 标注页面把原图的宽缩放到几个像素点（原图太大了一个屏幕显示不过来）
