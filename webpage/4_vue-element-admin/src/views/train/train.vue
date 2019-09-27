@@ -2,6 +2,15 @@
   <div class="train">
     <section class="header">
       <div class="cellTypes">
+        <div class="progress-info">
+          <el-badge is-dot class="badge">状态进度</el-badge>
+          <el-progress
+            :text-inside="true"
+            :stroke-width="26"
+            :percentage="percentage"
+            status="success"
+          ></el-progress>
+        </div>
         <el-badge is-dot class="badge">选择细胞类型</el-badge>
         <el-button
           type="danger"
@@ -14,15 +23,6 @@
           <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
         </el-checkbox-group>
       </div>
-      <div class="progress-info">
-        <el-badge is-dot class="badge">状态进度</el-badge>
-        <el-progress
-          :text-inside="true"
-          :stroke-width="26"
-          :percentage="percentage"
-          status="success"
-        ></el-progress>
-      </div>
     </section>
     <section class="model-info">
       <el-badge is-dot class="badge">模型信息</el-badge>
@@ -30,9 +30,10 @@
         type="danger"
         size="small"
         class="save-btn"
+        :disabled="!trainInfo.desc"
         @click="saveModel"
       >保存模型</el-button>
-      <modelCard :trainInfo="trainInfo"></modelCard>
+      <modelCard :trainInfo="trainInfo" @changeDesc="changeDesc"></modelCard>
     </section>
   </div>
 </template>
@@ -42,7 +43,7 @@ import modelCard from './components/model-card'
 import { createTrain, getTrainresult, savemodel } from '@/api/cervical'
 
 export default {
-  name: 'train',
+  name: 'Train',
   components: { modelCard },
   data() {
     return {
@@ -55,7 +56,7 @@ export default {
   },
   methods: {
     handleTrain() {
-      let postCelltypes = []
+      const postCelltypes = []
       this.checkboxCell.map(v => {
         postCelltypes.push(v.celltype)
       })
@@ -71,14 +72,17 @@ export default {
         this.trainInfo = res.data.data
       })
     },
+    changeDesc(val) {
+      this.trainInfo.desc = val
+    },
     saveModel() {
       savemodel({
         'id': this.trainInfo.did,
-        'desc': '某某的训练得到的模型'
+        'desc': this.trainInfo.desc
       }).then(res => {
         this.$message({
           message: res.data.data,
-          type: 'success'
+          type: 'info'
         })
       })
     }
@@ -93,11 +97,14 @@ export default {
 .train {
   padding: 0 30px;
   .badge {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
   .header {
     margin: 30px 0;
+    .progress-info {
+      margin-bottom: 20px;
+    }
     .train-btn {
       margin-left: 10px;
     }

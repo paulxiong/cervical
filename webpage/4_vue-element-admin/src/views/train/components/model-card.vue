@@ -2,7 +2,17 @@
   <div class="card">
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
-        <span>{{trainInfo.desc?trainInfo.desc:'模型名称'}}</span>
+        <el-input
+          class="model-input"
+          type="text"
+          placeholder="请输入模型名称"
+          v-model="trainInfo.desc"
+          maxlength="30"
+          @blur="emitDesc"
+          @keyup.enter.native="emitDesc"
+          show-word-limit
+        >
+        </el-input>
         <b style="display:block;">{{trainInfo.type | filterModelType}}</b>
         <div class="score flex">
           <section class="precision-info">
@@ -89,6 +99,11 @@ import { modelType } from '@/const/const'
 export default {
   name: 'Card',
   components: {},
+  data() {
+    return {
+      modelDesc: ''
+    }
+  },
   props: {
     trainInfo: {
       type: Object,
@@ -99,7 +114,12 @@ export default {
     filterModelType(value) {
       return modelType[value].name
     }
-  }
+  },
+  methods: {
+    emitDesc() {
+      this.$emit('changeDesc', this.trainInfo.desc)
+    }
+  },
 }
 </script>
 
@@ -113,10 +133,13 @@ export default {
   b {
     font-size: 22px;
   }
+  .model-input {
+    width: 50%;
+  }
   .card-header {
     justify-content: space-between;
     .precision-info {
-      margin-right: 10px;
+      margin-right: 20px;
     }
   }
   .model-info {

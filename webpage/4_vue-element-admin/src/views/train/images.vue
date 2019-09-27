@@ -2,6 +2,16 @@
   <div class="images">
     <section class="header">
       <section class="info-box">
+        <div class="progress-info">
+          <el-badge is-dot class="badge">状态进度</el-badge>
+          <el-progress
+            class="progress"
+            :text-inside="true"
+            :stroke-width="26"
+            :percentage="percentage"
+            status="success"
+          ></el-progress>
+        </div>
         <el-badge is-dot class="badge">信息展示</el-badge>
         <el-table :data="tableData" stripe border style="width: 100%">
           <el-table-column prop="name" label="类型"></el-table-column>
@@ -16,16 +26,6 @@
           <el-table-column prop="labelpcnt" label="p标记次数"></el-table-column>
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
-        <div class="progress-info">
-          <el-badge is-dot class="badge">状态进度</el-badge>
-          <el-progress
-            class="progress"
-            :text-inside="true"
-            :stroke-width="26"
-            :percentage="percentage"
-            status="success"
-          ></el-progress>
-        </div>
       </section>
     </section>
     <el-divider>
@@ -192,7 +192,7 @@ export default {
   margin-left: 30px;
 }
 .progress-info {
-  margin-top: 20px;
+  margin-bottom: 20px;
 }
 .info-box {
   justify-content: flex-start;
