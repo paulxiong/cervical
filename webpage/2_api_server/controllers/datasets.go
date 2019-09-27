@@ -719,6 +719,7 @@ func SaveModelInfo(c *gin.Context) {
 	}
 
 	modinfo.ID = 0
+	modinfo.Desc = w.Desc
 
 	err = modinfo.CreateModelInfo()
 	if err == nil {
