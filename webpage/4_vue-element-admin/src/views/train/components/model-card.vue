@@ -1,74 +1,54 @@
 <template>
   <div class="card">
-    <section class="train-info">
-      <el-form label-position="left" class="flex train-form">
-        <el-form-item label="id">
-          <span>{{ trainInfo.id }}</span>
-        </el-form-item>
-        <el-form-item label="描述">
-          <span>{{ trainInfo.desc }}</span>
-        </el-form-item>
-        <el-form-item label="本次训练出的所有模型里面最优模型是第几个">
-          <span>{{ trainInfo.best_model }}</span>
-        </el-form-item>
-        <el-form-item label="被哪次dataset训练的">
-          <span>{{ trainInfo.did }}</span>
-        </el-form-item>
-        <el-form-item label="评估准确度">
-          <span>{{ trainInfo.evaluate_value }}</span>
-        </el-form-item>
-        <el-form-item label="训练输入的尺寸">
-          <span>{{ trainInfo.input_shape }}</span>
-        </el-form-item>
-        <el-form-item label="损失">
-          <span>{{ trainInfo.loss }}</span>
-        </el-form-item>
-        <el-form-item label="训练的准确度">
-          <span>{{ trainInfo.metric_value }}</span>
-        </el-form-item>
-        <el-form-item label="产生的模型个数">
-          <span>{{ trainInfo.model_count }}</span>
-        </el-form-item>
-        <el-form-item label="训练有几个分类">
-          <span>{{ trainInfo.n_classes }}</span>
-        </el-form-item>
-        <el-form-item label="训练用了多少张图片">
-          <span>{{ trainInfo.n_train }}</span>
-        </el-form-item>
-        <el-form-item label="模型文件路径">
-          <span>{{ trainInfo.path }}</span>
-        </el-form-item>
-        <el-form-item label="训练评估得到的准确率">
-          <span>{{ trainInfo.precision }}</span>
-        </el-form-item>
-        <el-form-item label="训练评估得到的召回率">
-          <span>{{ trainInfo.recall }}</span>
-        </el-form-item>
-        <el-form-item label="模型类别">
-          <span>{{ trainInfo.type }}</span>
-        </el-form-item>
-      </el-form>
-    </section>
-    <!-- <el-card class="box-card" shadow="hover">
-      <div slot="header" class="clearfix">
-        <span>Cell20198_231125978646576151</span>
+    <el-card class="box-card" shadow="hover">
+      <div slot="header" class="flex card-header">
+        <span>{{trainInfo.desc?trainInfo.desc:'模型名称'}}</span>
+        <b style="display:block;">{{trainInfo.type | filterModelType}}</b>
+        <div class="score flex">
+          <section class="precision-info">
+            <i>Precision</i>
+            <b>{{trainInfo.precision}}</b>
+          </section>
+          <section class="recall-info">
+            <i>Recall</i>
+            <b>{{trainInfo.recall}}</b>
+          </section>
+        </div>
       </div>
       <div class="flex model-info">
-        <section class="info flex created">
-          <h3>Created</h3>
+        <section class="info">
+          <i>Datasets ID:</i>
+          <b>{{trainInfo.did}}</b>
+        </section>
+        <section class="info">
+          <i>路径</i>
+          <b>{{trainInfo.path}}</b>
+        </section>
+        <section class="info">
+          <i>训练有几个分类</i>
+          <b>{{trainInfo.n_classes}}</b>
+        </section>
+        <section class="info">
+          <i>训练用了多少张图片</i>
+          <b>{{trainInfo.n_train}}</b>
+        </section>
+        <section class="info">
+          <i>训练准确度</i>
+          <b>{{trainInfo.metric_value}}</b>
+        </section>
+        <section class="info">
+          <i>评估准确度</i>
+          <b>{{trainInfo.evaluate_value}}</b>
+        </section>
+        <section class="info">
+          <i>创建时间</i>
           <b>{{trainInfo.created_at}}</b>
-          <i>1 computer hour</i>
         </section>
-        <section class="info flex analyzed">
-          <h3>Analyzed</h3>
-          <b>5238 images</b>
-          <i>2 labels,520 test images</i>
+        <section class="info">
+          <i>更新时间</i>
+          <b>{{trainInfo.updated_at}}</b>
         </section>
-        <section class="info flex avg">
-          <h3>Avg precision</h3>
-          <b>0.996</b>
-        </section>
-        <section class="percent">
+        <!-- <section class="percent">
           <el-progress
             type="circle"
             class="percent"
@@ -97,9 +77,9 @@
             </div>
             <i class="el-icon-question"></i>
           </el-tooltip>
-        </section>
+        </section> -->
       </div>
-    </el-card> -->
+    </el-card>
   </div>
 </template>
 
@@ -125,6 +105,7 @@ export default {
 
 <style lang="scss" scoped>
 .card {
+  margin-top: 10px;
   i {
     color: #ccc;
     font-style: normal;
@@ -132,15 +113,18 @@ export default {
   b {
     font-size: 22px;
   }
-  .train-form {
-    justify-content: flex-start;
-    align-items: flex-start;
+  .card-header {
+    justify-content: space-between;
+    .precision-info {
+      margin-right: 10px;
+    }
   }
   .model-info {
     justify-content: space-around;
+    flex-wrap: wrap;
     .info {
-      flex-direction: column;
-      justify-content: flex-start;
+      width: 50%;
+      margin: 10px 0;
     }
     .percent {
       position: relative;

@@ -26,6 +26,12 @@
     </section>
     <section class="model-info">
       <el-badge is-dot class="badge">模型信息</el-badge>
+      <el-button
+        type="danger"
+        size="small"
+        class="save-btn"
+        @click="saveModel"
+      >保存模型</el-button>
       <modelCard :trainInfo="trainInfo"></modelCard>
     </section>
   </div>
@@ -33,7 +39,7 @@
 
 <script>
 import modelCard from './components/model-card'
-import { createTrain, getTrainresult } from '@/api/cervical'
+import { createTrain, getTrainresult, savemodel } from '@/api/cervical'
 
 export default {
   name: 'train',
@@ -64,6 +70,17 @@ export default {
       getTrainresult({ 'id': this.$route.query.id }).then(res => {
         this.trainInfo = res.data.data
       })
+    },
+    saveModel() {
+      savemodel({
+        'id': this.trainInfo.did,
+        'desc': '某某的训练得到的模型'
+      }).then(res => {
+        this.$message({
+          message: res.data.data,
+          type: 'success'
+        })
+      })
     }
   },
   mounted() {
@@ -90,6 +107,9 @@ export default {
     .cellTypes {
       margin-bottom: 20px;
     }
+  }
+  .save-btn {
+    margin-left: 10px;
   }
 }
 </style>
