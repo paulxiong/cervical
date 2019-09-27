@@ -50,43 +50,13 @@
           <i>评估准确度</i>
           <b>{{trainInfo.evaluate_value}}</b>
         </section>
-        <section class="info">
+        <!-- <section class="info">
           <i>创建时间</i>
           <b>{{trainInfo.created_at}}</b>
         </section>
         <section class="info">
           <i>更新时间</i>
           <b>{{trainInfo.updated_at}}</b>
-        </section>
-        <!-- <section class="percent">
-          <el-progress
-            type="circle"
-            class="percent"
-            :percentage="trainInfo.precision===-1?0:trainInfo.precision"
-          ></el-progress>
-          <h4 class="percent-title">Precision</h4>
-          <el-tooltip placement="bottom" class="percent-tip">
-            <div slot="content">
-              percent
-              <br />表示精确度
-            </div>
-            <i class="el-icon-question"></i>
-          </el-tooltip>
-        </section>
-        <section class="recall">
-          <el-progress
-            type="circle"
-            class="recall"
-            :percentage="trainInfo.recall===-1?0:trainInfo.recall"
-          ></el-progress>
-          <h4 class="recall-title">Recall</h4>
-          <el-tooltip placement="bottom" class="recall-tip">
-            <div slot="content">
-              recall
-              <br />表示有点东西
-            </div>
-            <i class="el-icon-question"></i>
-          </el-tooltip>
         </section> -->
       </div>
     </el-card>
