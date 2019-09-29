@@ -390,7 +390,7 @@ func ListDataset(limit int, skip int, _type int, order int) (totalNum int64, c [
 	//type, default 1, 0未知 1训练 2预测 10全部类型
 	var _d []Dataset
 	var total int64 = 0
-	db.Model(&Dataset{}).Count(&total)
+	ret := db.Model(&Dataset{}).Count(&total)
 
 	orderStr := "CREATED_TIME DESC"
 	//order, default 1, 1倒序，0顺序
@@ -399,15 +399,15 @@ func ListDataset(limit int, skip int, _type int, order int) (totalNum int64, c [
 	}
 
 	if _type == 0 || _type == 10 {
-		ret := db.Model(&Dataset{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
+		ret = db.Model(&Dataset{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
 		if ret.Error != nil {
 			logger.Info.Println(ret.Error)
 		}
-	}
-
-	ret := db.Model(&Dataset{}).Where("TYPE=?", _type).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
-	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+	} else {
+		ret = db.Model(&Dataset{}).Where("TYPE=?", _type).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
 	}
 	return total, _d, ret.Error
 }
