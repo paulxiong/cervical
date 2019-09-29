@@ -1,15 +1,28 @@
 // 裁剪图片、训练的状态
 export const taskStatus = {
-  0: { status: '初始化 ', type: 'info' },
-  1: { status: '送去处理', type: 'warning' },
-  2: { status: '开始处理', type: 'warning' },
-  3: { status: '处理出错', type: 'danger' },
-  4: { status: '处理完成', type: 'success' },
-  5: { status: '目录不存在', type: 'danger' },
-  6: { status: '送去训练', type: 'warning' },
-  7: { status: '开始训练', type: 'warning' },
-  8: { status: '训练出错', type: 'danger' },
-  9: { status: '训练完成', type: 'success' }
+  0: '初始化',
+  1: '送去处理',
+  2: '开始处理',
+  3: '处理出错',
+  4: '处理完成',
+  5: '目录不存在',
+  6: '送去训练',
+  7: '开始训练',
+  8: '训练出错',
+  9: '训练完成'
+}
+
+export const taskType = {
+  0: 'info',
+  1: 'warning',
+  2: 'warning',
+  3: 'danger',
+  4: 'success',
+  5: 'danger',
+  6: 'warning',
+  7: 'warning',
+  8: 'danger',
+  9: 'success'
 }
 
 // 训练类型

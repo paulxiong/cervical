@@ -20,7 +20,7 @@
             <i>id :</i>
             {{v.id}}
             <br />
-            <i>目录 :</i>
+            <i>路径 :</i>
             {{v.dir}}
             <br />
             <i>创建者 :</i>
@@ -34,14 +34,8 @@
               :type="v.status | filtersTaskType"
               effect="dark"
             >{{v.status | filtersTaskStatus}}</el-tag>
-            <!-- <i>批次 :</i> fujianfuyou<br/>
-            <i>病例 :</i> 18237,28374,12943, ...<br/>
-            <i>图片 :</i> <el-link type="primary">请进入详情查看</el-link><br/>
-            <i>医生标注 :</i> 2345asd.csv<br/>
-            <i>细胞类型 :</i> 1_Norm, 7_ASCUS, ...<br/>
-            <i>n/p比例 :</i> 0.5-->
           </div>
-          <el-timeline :reverse="reverse" class="timeline">
+          <el-timeline reverse class="timeline">
             <el-timeline-item
               v-for="(activity, index) in v.activities"
               :icon="activity.icon"
@@ -59,15 +53,14 @@
 
 <script>
 import { listdatasets } from '@/api/cervical'
-import { taskStatus, typeStatus, createdBy } from '@/const/const'
+import { taskStatus, typeStatus, taskType, createdBy } from '@/const/const'
 import { dateformat3 } from '@/utils/dateformat'
 
 export default {
-  name: 'home',
+  name: 'Home',
   components: {},
   data() {
     return {
-      reverse: true,
       dataList: []
     }
   },
@@ -76,10 +69,10 @@ export default {
       return createdBy[value]
     },
     filtersTaskType(value) {
-      return taskStatus[value].type
+      return taskType[value]
     },
     filtersTaskStatus(value) {
-      return taskStatus[value].status
+      return taskStatus[value]
     },
     filtersStatus(value) {
       return typeStatus[value]
@@ -96,8 +89,8 @@ export default {
         path: `/train/detailsTrain?id=${id}`
       })
     },
-    listdatasets(limit, skip) {
-      listdatasets({ 'limit': limit, 'skip': skip }).then(res => {
+    listdatasets(limit, skip, type) {
+      listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
         res.data.data.datasets.map(v => {
           v.activities = [{
             content: taskStatus[v.status].status,
@@ -124,7 +117,7 @@ export default {
     }
   },
   mounted() {
-    this.listdatasets(100, 0)
+    this.listdatasets(100, 0, 0)
   }
 }
 </script>
