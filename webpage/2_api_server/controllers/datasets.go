@@ -826,3 +826,38 @@ func GetTrainResult(c *gin.Context) {
 	})
 	return
 }
+
+type predictpostdata struct {
+	MID int64 `json:"mid" example:"1"` //模型的ID
+	DID int64 `json:"did" example:"1"` //用来做预测的数据集的ID
+}
+
+// Predict 根据传递来的模型ID，数据集ID做预测
+// @Summary 根据传递来的模型ID，数据集ID做预测
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Predict body controllers.predictpostdata true "要创建的训练任务信息"
+// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Router /api1/predict [post]
+func Predict(c *gin.Context) {
+	var postdata predictpostdata
+	if err := c.ShouldBind(&postdata); err != nil || postdata.MID < 1 || postdata.DID < 1 {
+		logger.Info.Println(err)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "invalied postdata",
+		})
+		return
+	}
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   "ok",
+	})
+	return
+}
