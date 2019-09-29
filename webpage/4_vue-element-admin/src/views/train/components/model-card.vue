@@ -29,12 +29,19 @@
       </div>
       <div class="flex model-info">
         <section class="info">
+          <i>ID:</i>
+          <b>{{trainInfo.id}}</b>
+        </section><section class="info">
           <i>Datasets ID:</i>
           <b>{{trainInfo.did}}</b>
         </section>
         <section class="info">
           <i>路径</i>
           <b>{{trainInfo.path}}</b>
+        </section>
+        <section class="info">
+          <i>损失:</i>
+          <b>{{trainInfo.loss}}</b>
         </section>
         <section class="info">
           <i>训练有几个分类</i>
