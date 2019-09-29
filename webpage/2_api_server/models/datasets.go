@@ -404,6 +404,7 @@ func ListDataset(limit int, skip int, _type int, order int) (totalNum int64, c [
 			logger.Info.Println(ret.Error)
 		}
 	} else {
+		db.Model(&Dataset{}).Where("TYPE=?", _type).Count(&total)
 		ret = db.Model(&Dataset{}).Where("TYPE=?", _type).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
 		if ret.Error != nil {
 			logger.Info.Println(ret.Error)
