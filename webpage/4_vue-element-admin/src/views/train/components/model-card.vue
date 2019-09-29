@@ -2,7 +2,7 @@
   <div class="card">
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
-        <b v-if="predict === 'predict'">{{trainInfo.desc}}</b>
+        <b v-if="predict === 'predict'">{{trainInfo.desc || `第${trainInfo.id}个模型`}}</b>
         <el-input
           class="model-input"
           type="text"
