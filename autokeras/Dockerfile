@@ -15,8 +15,8 @@ ADD assets/run_jupyter.sh /run_jupyter.sh
 ENV LANG "en_US.UTF-8"
 ENV PYTHONUNBUFFERED "0"
 WORKDIR /tf/data
-ADD main_server.py /tf/data/main_server.py
-ADD utilslib  /tf/data
 ADD requirements.txt /tf/data/requirements.txt
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir && \
     rm -rf /root/.nv/ && rm -rf requirements.txt && ls -alh
+ADD main_server.py /tf/data/main_server.py
+ADD utilslib  /tf/data/utilslib
