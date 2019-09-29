@@ -2,6 +2,7 @@
   <div class="card">
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
+        <b v-if="predict === 'predict'">{{trainInfo.desc}}</b>
         <el-input
           class="model-input"
           type="text"
@@ -11,6 +12,7 @@
           @blur="emitDesc"
           @keyup.enter.native="emitDesc"
           show-word-limit
+          v-else
         >
         </el-input>
         <b style="display:block;">{{trainInfo.type | filterModelType}}</b>
@@ -77,6 +79,9 @@ export default {
   props: {
     trainInfo: {
       type: Object
+    },
+    predict: {
+      type: String
     }
   },
   filters: {
