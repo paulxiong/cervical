@@ -160,6 +160,7 @@ def main():
             'path_helper': args.path_helper
         }, is_best, args.path_helper['ckpt_path'])
         del avg_gen_net
+
 def main1():
     args = cfg.parse_args()
     torch.cuda.manual_seed(args.random_seed)
@@ -201,10 +202,9 @@ def main1():
     dis_scheduler = LinearLrDecay(dis_optimizer, args.d_lr, 0.0, 0, args.max_iter * args.n_critic)
 
     # set up data_loader
-    dataset = datasets.ImageDataset(args)
+    dataset = datasets.ImageDataset1(args)
     
     print("dataset:",dataset)
-  #  np.savetxt("./dataset.txt",dataset,delimiter=',')
     print("dataset_type:",type(dataset))
     
     train_loader = dataset.train
@@ -306,4 +306,4 @@ def main1():
 
 
 if __name__ == '__main__':
-    main1()
+    main()
