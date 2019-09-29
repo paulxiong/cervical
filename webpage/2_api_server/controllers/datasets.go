@@ -522,16 +522,22 @@ type listDatasets struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
+// @Param type query string false "type, default 1, 0未知 1训练 2预测 10全部类型"
+// @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listdatasets [get]
 func ListDatasets(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
+	typeStr := c.DefaultQuery("type", "1")
+	orderStr := c.DefaultQuery("order", "1")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	_type, _ := strconv.ParseInt(typeStr, 10, 64)
+	_order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	total, ds, err := m.ListDataset(int(limit), int(skip))
+	total, ds, err := m.ListDataset(int(limit), int(skip), int(_type), int(_order))
 	if err != nil {
 		logger.Info.Println(err)
 	}

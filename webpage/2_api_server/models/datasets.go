@@ -386,12 +386,26 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 }
 
 // ListDataset 依次列出数据集
-func ListDataset(limit int, skip int) (totalNum int64, c []Dataset, e error) {
+func ListDataset(limit int, skip int, _type int, order int) (totalNum int64, c []Dataset, e error) {
+	//type, default 1, 0未知 1训练 2预测 10全部类型
 	var _d []Dataset
 	var total int64 = 0
-
 	db.Model(&Dataset{}).Count(&total)
-	ret := db.Model(&Dataset{}).Limit(limit).Offset(skip).Find(&_d)
+
+	orderStr := "CREATED_TIME DESC"
+	//order, default 1, 1倒序，0顺序
+	if order == 0 {
+		orderStr = "CREATED_TIME ASC"
+	}
+
+	if _type == 0 || _type == 10 {
+		ret := db.Model(&Dataset{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+	}
+
+	ret := db.Model(&Dataset{}).Where("TYPE=?", _type).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
