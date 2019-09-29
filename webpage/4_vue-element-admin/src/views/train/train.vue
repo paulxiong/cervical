@@ -1,6 +1,13 @@
 <template>
   <div class="train">
     <section class="header">
+      <el-button
+        type="danger"
+        size="small"
+        class="train-btn"
+        @click="handleTrain"
+        :disabled="checkboxCell.length<2 || startedTrain === 'ok' || jobResult.status >= 6"
+      >开始训练</el-button>
       <div class="cellTypes">
         <div class="progress-info">
           <el-badge is-dot class="badge">状态进度</el-badge>
@@ -12,13 +19,6 @@
           ></el-progress>
         </div>
         <el-badge is-dot class="badge">选择细胞类型</el-badge>
-        <el-button
-          type="danger"
-          size="small"
-          class="train-btn"
-          @click="handleTrain"
-          :disabled="checkboxCell.length<2 || startedTrain === 'ok' || jobResult.status >= 6"
-        >开始训练</el-button>
         <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
           <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
         </el-checkbox-group>
@@ -47,7 +47,7 @@ export default {
   components: { modelCard },
   data() {
     return {
-      percentage: 100,
+      percentage: 50,
       jobResult: JSON.parse(localStorage.getItem('jobResult')) || [],
       checkboxCell: [],
       trainInfo: {},
@@ -82,7 +82,7 @@ export default {
       }).then(res => {
         this.$message({
           message: res.data.data,
-          type: 'info'
+          type: 'success'
         })
       })
     }
@@ -101,12 +101,11 @@ export default {
     margin-bottom: 5px;
   }
   .header {
-    margin: 30px 0;
     .progress-info {
       margin-bottom: 20px;
     }
     .train-btn {
-      margin-left: 10px;
+      margin: 20px 0;
     }
     .cell-checkbox {
       margin-top: 10px;

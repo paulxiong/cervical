@@ -1,6 +1,12 @@
 <template>
   <div class="predict">
     <section class="header">
+      <el-button
+        type="danger"
+        size="small"
+        class="predict-btn"
+        @click="createPredict"
+      >开始预测</el-button>
       <div class="progress-info">
         <el-badge is-dot class="badge">状态进度</el-badge>
         <el-progress
@@ -47,14 +53,14 @@
 <script>
 import modelCard from './components/model-card'
 import datasetsCard from './components/datasets-card'
-import { listdatasets, getListmodel, getTrainresult } from '@/api/cervical'
+import { listdatasets, getListmodel, getTrainresult, createPredict } from '@/api/cervical'
 
 export default {
   name: 'Predict',
   components: { modelCard, datasetsCard },
   data() {
     return {
-      percentage: 100,
+      percentage: 50,
       predict: 'predict',
       options: [],
       model: 0,
@@ -89,6 +95,14 @@ export default {
         this.dataList = res.data.data.datasets
         this.datasetsInfo = this.dataList[0]
       })
+    },
+    createPredict() {
+      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id }).then(res => {
+        this.$message({
+          message: res.data.data,
+          type: 'success'
+        })
+      })
     }
   },
   mounted() {
@@ -104,6 +118,9 @@ export default {
   .badge {
     font-weight: bold;
     margin-bottom: 5px;
+  }
+  .predict-btn {
+    margin-top: 20px;
   }
   .model-option {
     display: block;

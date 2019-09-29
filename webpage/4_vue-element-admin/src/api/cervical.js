@@ -151,3 +151,11 @@ export function getListmodel(query) {
     params: query
   })
 }
+
+export function createPredict(data) {
+  return request({
+    url: '/api1/predict',
+    method: 'post',
+    data
+  })
+}
