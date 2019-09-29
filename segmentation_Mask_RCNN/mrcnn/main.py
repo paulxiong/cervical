@@ -120,19 +120,39 @@ class cervical_seg():
         print(text)
         return
 
+def get_segmentation_job():
+    jobid, dirname = 0, None
+    #向服务器请求任务，任务的状态必须是 READY4PROCESS, 训练用的数据集
+    if localdebug is not True and localdebug != "True":
+        # datatype:  0未知1训练2预测
+        jobid, status, dirname, jobtype = get_one_job(ds.READY4PROCESS.value, dt.TRAIN.value)
+    else:
+        jobid = 31
+        status = ds.READY4PROCESS.value
+        dirname = 'BVv1p1U6'
+    #检查得到的任务是不是想要的
+    if status != ds.READY4PROCESS.value or dirname is None:
+        jobid, dirname = 0, None
+    else:
+        return jobid, dirname
+
+    #向服务器请求任务，任务的状态必须是 READY4PROCESS, 预测用的数据集
+    if localdebug is not True and localdebug != "True":
+        # datatype:  0未知1训练2预测
+        jobid, status, dirname, jobtype = get_one_job(ds.READY4PROCESS.value, dt.PREDICT.value)
+    else:
+        jobid = 31
+        status = ds.READY4PROCESS.value
+        dirname = 'BVv1p1U6'
+    #检查得到的任务是不是想要的
+    if status != ds.READY4PROCESS.value or dirname is None:
+        jobid, dirname = 0, None
+    return jobid, dirname
+
 if __name__ == '__main__':
     while 1:
-        #向服务器请求任务，任务的状态必须是 READY4PROCESS
-        if localdebug is not True and localdebug != "True":
-            # datatype:  0未知1训练2预测
-            jobid, status, dirname, jobtype = get_one_job(ds.READY4PROCESS.value, dt.TRAIN.value)
-        else:
-            jobid = 31
-            status = ds.READY4PROCESS.value
-            dirname = 'BVv1p1U6'
-
-        #检查得到的任务是不是想要的
-        if status != ds.READY4PROCESS.value or dirname is None:
+        jobid, dirname = get_segmentation_job()
+        if jobid == 0 or dirname is None or dirname == "":
             time.sleep(5)
             continue
 
