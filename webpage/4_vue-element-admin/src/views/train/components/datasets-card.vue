@@ -10,7 +10,7 @@
       </div>
       <div class="flex model-info">
         <section class="info">
-          <i>Datasets ID:</i>
+          <i>ID:</i>
           <b>{{datasets.id}}</b>
         </section>
         <section class="info">
