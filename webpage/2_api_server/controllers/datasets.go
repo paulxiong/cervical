@@ -348,10 +348,10 @@ func GetLabelByImageID(c *gin.Context) {
 
 // imagesNPTypeByMedicalID 选中的批次、病例的传入参数
 type imagesNPTypeByMedicalID struct {
-	Batchids   []string `json:"batchids"`
-	Medicalids []string `json:"medicalids"`
-	Desc       string   `json:"desc"`
-	Type       int      `json:"type"`
+	Batchids   []string `json:"batchids"`   //批次号数组
+	Medicalids []string `json:"medicalids"` //病历号数组
+	Desc       string   `json:"desc"`       //数据集的文字描述
+	Type       int      `json:"type"`       //数据集的类型，0未知1训练2预测
 }
 type imagesNPCount struct {
 	CountN int `json:"countn"`
@@ -392,6 +392,7 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param createdataset body controllers.imagesNPTypeByMedicalID true "创建数据集"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/createdataset [post]
