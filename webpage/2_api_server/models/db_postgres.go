@@ -27,12 +27,11 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	/*
-		//设置默认表名前缀
-		gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-			return "prefix_" + defaultTableName
-		}
-	*/
+
+	//设置默认表名前缀
+	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
+		return configs.MySQL.Prefix + defaultTableName
+	}
 	db.LogMode(false)
 	db.SingularTable(true)
 	db.DB().SetMaxIdleConns(10)

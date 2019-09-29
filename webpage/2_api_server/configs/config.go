@@ -16,6 +16,7 @@ type MySqlcfg struct {
 	User     string
 	Database string
 	Password string
+	Prefix   string
 }
 
 // Servercfg 服务信息配置
@@ -157,6 +158,7 @@ func init() {
 	MySQL.Database, _ = getConfigStringValue(cfg, "Mysql", "database", "MYSQL_DB")
 	MySQL.User, _ = getConfigStringValue(cfg, "Mysql", "user", "MYSQL_USR")
 	MySQL.Password, _ = getConfigStringValue(cfg, "Mysql", "password", "MYSQL_PASSWD")
+	MySQL.Prefix, _ = getConfigStringValue(cfg, "Mysql", "prefix", "MYSQL_PREFIX")
 	Qiniu.AccessKey, _ = getConfigStringValue(cfg, "Qiniu", "accessKey", "QINIU_ACCESSKEY")
 	Qiniu.SecretKey, _ = getConfigStringValue(cfg, "Qiniu", "secretKey", "QINIU_SECRETKEY")
 	Qiniu.Bucket, _ = getConfigStringValue(cfg, "Qiniu", "bucket", "QINIU_BUCKET")
