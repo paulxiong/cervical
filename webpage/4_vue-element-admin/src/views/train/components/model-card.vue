@@ -76,8 +76,7 @@ export default {
   },
   props: {
     trainInfo: {
-      type: Object,
-      default: {}
+      type: Object
     }
   },
   filters: {
@@ -89,7 +88,7 @@ export default {
     emitDesc() {
       this.$emit('changeDesc', this.trainInfo.desc)
     }
-  },
+  }
 }
 </script>
 

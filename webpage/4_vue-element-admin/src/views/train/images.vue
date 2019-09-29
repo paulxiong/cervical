@@ -168,7 +168,7 @@ export default {
           clearInterval(timer)
         }
         this.getPercent()
-      }, 1e3)
+      }, 1e4)
     }
   },
   mounted() {

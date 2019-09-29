@@ -105,7 +105,7 @@ export default {
       // 去重
       postBatchs = Array.from(new Set(postBatchs))
       postMedicalIds = Array.from(new Set(postMedicalIds))
-      console.log(postBatchs, postMedicalIds)
+      console.log(postBatchs, postMedicalIds,this.trainType)
       this.getimgnptypebymids(postBatchs, postMedicalIds)
     },
     getimgnptypebymids(postBatchs, postMedicalIds) {
