@@ -63,7 +63,7 @@ func ListImageCntByLabelType(t int) (totalNum int64, e error) {
 		Total int64
 	}
 
-	selector1 := "SELECT count(*) as total from (SELECT label.IMGID FROM label,image  where label.TYPE=? AND image.ID=label.IMGID GROUP BY label.IMGID) xxx;"
+	selector1 := "SELECT count(*) as total from (SELECT c_label.IMGID FROM c_label,c_image  where c_label.TYPE=? AND c_image.ID=c_label.IMGID GROUP BY c_label.IMGID) xxx;"
 	selector := fmt.Sprintf("%d", t)
 
 	ress := res{}
@@ -86,7 +86,7 @@ func ListBatch(limit int, skip int) (totalNum int64, c []string, e error) {
 	}
 	_b = make([]string, 0)
 
-	selector1 := "SELECT count(*) as total from (select BATCHID  from image group by BATCHID) xxx;"
+	selector1 := "SELECT count(*) as total from (select BATCHID  from c_image group by BATCHID) xxx;"
 	ress := res{}
 	ret := db.Raw(selector1).Scan(&ress)
 	if ret.Error != nil {
@@ -94,7 +94,7 @@ func ListBatch(limit int, skip int) (totalNum int64, c []string, e error) {
 		return 0, _b, ret.Error
 	}
 
-	selector1 = "select BATCHID as batchid from image group by BATCHID;"
+	selector1 = "select BATCHID as batchid from c_image group by BATCHID;"
 	ress2 := make([]res2, 0)
 	ret2 := db.Raw(selector1).Scan(&ress2)
 	if ret2.Error != nil {
@@ -118,7 +118,7 @@ func ListMedicalIDByBatchID(limit int, skip int, batchid string) (totalNum int64
 	}
 	_b = make([]string, 0)
 
-	selector1 := "SELECT count(*) as total from (select MEDICALID  from image where BATCHID=? group by MEDICALID) xxx;"
+	selector1 := "SELECT count(*) as total from (select MEDICALID  from c_image where BATCHID=? group by MEDICALID) xxx;"
 	ress := res{}
 	ret := db.Raw(selector1, batchid).Scan(&ress)
 	if ret.Error != nil {
@@ -126,7 +126,7 @@ func ListMedicalIDByBatchID(limit int, skip int, batchid string) (totalNum int64
 		return 0, _b, ret.Error
 	}
 
-	selector1 = "select MEDICALID as medicalid from image where BATCHID=? group by MEDICALID;"
+	selector1 = "select MEDICALID as medicalid from c_image where BATCHID=? group by MEDICALID;"
 	ress2 := make([]res2, 0)
 	ret2 := db.Raw(selector1, batchid).Scan(&ress2)
 	if ret2.Error != nil {
@@ -149,7 +149,7 @@ func ListWantedImages(limit int, skip int, batchids []string, medicalids []strin
 	}
 	_b = make([]string, 0)
 
-	selector1 := "select IMGPATH as imgpath, BATCHID as batchid, MEDICALID as medicalid from image,label where BATCHID in (?) AND MEDICALID in (?) AND label.IMGID=image.ID AND label.TYPE=? LIMIT ? OFFSET ?;"
+	selector1 := "select IMGPATH as imgpath, BATCHID as batchid, MEDICALID as medicalid from c_image,c_label where BATCHID in (?) AND MEDICALID in (?) AND c_label.IMGID=image.ID AND c_label.TYPE=? LIMIT ? OFFSET ?;"
 	ress := []res{}
 	ret := db.Raw(selector1, batchids, medicalids, categoryid, limit, skip).Scan(&ress)
 	if ret.Error != nil {
@@ -170,7 +170,7 @@ func ListImagesNPTypeByMedicalID(medicalids []string) (countN int, countP int, e
 		Total int
 	}
 
-	selector1 := "SELECT count(*) as total from (SELECT image.CSVPATH from label,image,category where image.MEDICALID in (?) AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH) xx;"
+	selector1 := "SELECT count(*) as total from (SELECT c_image.CSVPATH from c_label,c_image,c_category where c_image.MEDICALID in (?) AND c_label.IMGID=c_image.ID AND c_label.TYPE=c_category.ID AND c_category.P1N0=? GROUP BY c_image.CSVPATH) xx;"
 	ressN := res{}
 	ressP := res{}
 	ret := db.Raw(selector1, medicalids, 0).Scan(&ressN)
@@ -196,7 +196,7 @@ type ImagesByMedicalID struct {
 
 // ListImagesByMedicalID 查找出MedicalId下图片所有图片，按照n/p分开
 func ListImagesByMedicalID(medicalid string) (imgs []ImagesByMedicalID, e error) {
-	selector1 := "SELECT image.CSVPATH as csvpath, image.MEDICALID as medicalid, image.BATCHID as batchid, image.IMGPATH as imgpath from label,image,category where image.MEDICALID=? AND label.IMGID=image.ID AND label.TYPE=category.ID AND category.P1N0=? GROUP BY image.CSVPATH;"
+	selector1 := "SELECT c_image.CSVPATH as csvpath, c_image.MEDICALID as medicalid, c_image.BATCHID as batchid, c_image.IMGPATH as imgpath from c_label,c_image,c_category where c_image.MEDICALID=? AND c_label.IMGID=c_image.ID AND c_label.TYPE=c_category.ID AND c_category.P1N0=? GROUP BY c_image.CSVPATH;"
 	ressN := []ImagesByMedicalID{}
 	ressP := []ImagesByMedicalID{}
 	ressAll := make([]ImagesByMedicalID, 0)
@@ -288,7 +288,7 @@ func ListLabelCountByPN(pn int) (totalNum int64, e error) {
 	type res struct {
 		Total int64
 	}
-	selector1 := "SELECT COUNT(label.IMGID) as total FROM label,category  where label.TYPE=category.ID AND category.P1N0=?;"
+	selector1 := "SELECT COUNT(c_label.IMGID) as total FROM c_label,c_category  where c_label.TYPE=c_category.ID AND c_category.P1N0=?;"
 	ress := res{}
 	ret := db.Raw(selector1, pn).Scan(&ress)
 	if ret.Error != nil {
