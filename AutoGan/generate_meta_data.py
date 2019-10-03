@@ -7,7 +7,7 @@ def make_baches_meta():
     dic['label_names'] = ['1', '7']
     dic['num_vis'] = 3072
     print(dic)
-    with open('./data/cifar-10-batches-py/batches.meta_1', 'wb') as f:
+    with open('./data/cifar-10-batches-py/batches.meta', 'wb') as f:
         pickle.dump(dic, f)
 
 def unpickle(file):
@@ -17,7 +17,7 @@ def unpickle(file):
     return dict
 
 make_baches_meta()    
-file1 = 'data/cifar-10-batches-py/batches.meta_1'
+file1 = 'data/cifar-10-batches-py/batches.meta'
 dict_train_batch1 = unpickle(file1)
 #print(dict_train_batch1)
 for key in dict_train_batch1.keys():
