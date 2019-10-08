@@ -5,8 +5,8 @@
       <el-switch
         v-model="switchVal"
         class="switch-btn"
-        active-text="只看训练"
-        inactive-text="只看预测"
+        active-text="训练"
+        inactive-text="预测"
         @change="switchChange"
       ></el-switch>
       <el-button type="primary" @click="goNewTrain">新建数据集</el-button>
