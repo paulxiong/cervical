@@ -660,7 +660,7 @@ type listMods struct {
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listmodel [get]
 func GetModelLists(c *gin.Context) {
-	limitStr := c.DefaultQuery("limit", "1")
+	limitStr := c.DefaultQuery("limit", "10")
 	skipStr := c.DefaultQuery("skip", "0")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)

@@ -1,24 +1,20 @@
 <template>
   <div class="train">
-    <section class="header">
+    <section class="header flex">
+      <el-badge is-dot class="badge">训练进度</el-badge>
+      <el-progress
+        :text-inside="true"
+        :stroke-width="26"
+        :percentage="percentage"
+        class="progress"
+        status="success"
+      ></el-progress>
       <el-button
         type="danger"
-        size="small"
         class="train-btn"
         @click="handleTrain"
         :disabled="checkboxCell.length<2 || startedTrain === 'ok' || jobResult.status >= 6"
       >开始训练</el-button>
-      <div class="cellTypes">
-        <div class="progress-info">
-          <el-badge is-dot class="badge">状态进度</el-badge>
-          <el-progress
-            :text-inside="true"
-            :stroke-width="16"
-            :percentage="percentage"
-            status="success"
-          ></el-progress>
-        </div>
-      </div>
     </section>
     <section class="model-info">
       <el-badge is-dot class="badge">选择细胞类型</el-badge>
@@ -95,31 +91,35 @@ export default {
 
 <style lang="scss" scoped>
 .train {
-  padding: 0 30px;
+  margin-bottom: 100px;
   .badge {
     font-weight: bold;
-    margin-bottom: 5px;
   }
   .header {
     border: 1px solid #ccc;
-    width: 100%;
+    background: #fff;
+    width: 86%;
+    justify-content: space-between;
     position: fixed;
     bottom: 0;
-    .progress-info {
-      margin-bottom: 20px;
+    right: 0;
+    padding: 20px 30px;
+    .progress {
+      width: 80%;
     }
     .train-btn {
-      margin: 20px 0;
-    }
-    .cellTypes {
-      margin-bottom: 20px;
+      width: 10%;
     }
   }
   .model-info {
+    padding: 0 30px;
     margin-top: 20px;
     .cell-checkbox {
       margin-top: 5px;
       margin-bottom: 20px;
+    }
+    .badge {
+      margin-bottom: 5px;
     }
   }
   .save-btn {

@@ -1,51 +1,51 @@
 <template>
   <div class="predict">
-    <section class="header">
+    <section class="header flex">
+      <el-badge is-dot class="badge">状态进度</el-badge>
+      <el-progress
+        :text-inside="true"
+        :stroke-width="26"
+        :percentage="percentage"
+        class="progress"
+        status="success"
+      ></el-progress>
       <el-button
         type="danger"
-        size="small"
         class="predict-btn"
         @click="createPredict"
       >开始预测</el-button>
-      <div class="progress-info">
-        <el-badge is-dot class="badge">状态进度</el-badge>
-        <el-progress
-          :text-inside="true"
-          :stroke-width="26"
-          :percentage="percentage"
-          status="success"
-        ></el-progress>
-      </div>
     </section>
-    <section class="model-select">
-      <el-badge is-dot class="badge">模型选择</el-badge>
-      <el-select class="model-option" v-model="model" clearable placeholder="请选择" @change="modelChange">
-        <el-option
-          v-for="(item, idx) in options"
-          :key="item.id"
-          :label="item.desc"
-          :value="idx"
-        ></el-option>
-      </el-select>
-    </section>
-    <section class="datasets-select">
-      <el-badge is-dot class="badge">数据选择</el-badge>
-      <el-select class="model-option" v-model="datasets" clearable placeholder="请选择" @change="datasetsChange">
-        <el-option
-          v-for="(item, idx) in dataList"
-          :key="item.id"
-          :label="item.desc"
-          :value="idx"
-        ></el-option>
-      </el-select>
-    </section>
-    <section class="model-info">
-      <el-badge is-dot class="badge">模型信息</el-badge>
-      <modelCard :trainInfo="trainInfo" :predict="predict" />
-    </section>
-    <section class="datasets-info">
-      <el-badge is-dot class="badge">数据信息</el-badge>
-      <datasetsCard :datasets="datasetsInfo"/>
+    <section class="content">
+      <section class="model-select">
+        <el-badge is-dot class="badge">模型选择</el-badge>
+        <el-select class="model-option" v-model="model" clearable placeholder="请选择" @change="modelChange">
+          <el-option
+            v-for="(item, idx) in options"
+            :key="item.id"
+            :label="item.desc"
+            :value="idx"
+          ></el-option>
+        </el-select>
+      </section>
+      <section class="model-info">
+        <el-badge is-dot class="badge">模型信息</el-badge>
+        <modelCard :trainInfo="trainInfo" :predict="predict" />
+      </section>
+      <section class="datasets-select">
+        <el-badge is-dot class="badge">数据选择</el-badge>
+        <el-select class="model-option" v-model="datasets" clearable placeholder="请选择" @change="datasetsChange">
+          <el-option
+            v-for="(item, idx) in dataList"
+            :key="item.id"
+            :label="item.desc"
+            :value="idx"
+          ></el-option>
+        </el-select>
+      </section>
+      <section class="datasets-info">
+        <el-badge is-dot class="badge">数据信息</el-badge>
+        <datasetsCard :datasets="datasetsInfo"/>
+      </section>
     </section>
   </div>
 </template>
@@ -78,8 +78,8 @@ export default {
     datasetsChange() {
       this.datasetsInfo = this.dataList[this.datasets]
     },
-    getListmodel() {
-      getListmodel().then(res => {
+    getListmodel(limit, skip) {
+      getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
         this.options = res.data.data.models
         this.modelInfo = this.options[0]
         this.getTrainresult()
@@ -106,7 +106,7 @@ export default {
     }
   },
   mounted() {
-    this.getListmodel()
+    this.getListmodel(10, 0)
     this.getListdatasets(100, 0, 2)
   }
 }
@@ -114,13 +114,31 @@ export default {
 
 <style lang="scss" scoped>
 .predict {
-  padding: 0 30px;
+  margin-bottom: 100px;
   .badge {
     font-weight: bold;
-    margin-bottom: 5px;
   }
-  .predict-btn {
-    margin-top: 20px;
+  .content {
+    padding: 0 30px;
+    .badge {
+      margin-bottom: 5px;
+    }
+  }
+  .header {
+    border: 1px solid #ccc;
+    background: #fff;
+    width: 86%;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 20px 30px;
+    .progress {
+      width: 80%;
+    }
+    .predict-btn {
+      width: 10%;
+    }
   }
   .model-option {
     display: block;
