@@ -47,5 +47,24 @@ export const modelType = {
   5: 'AUTOKERAS'
 }
 
+// 细胞分类
+export const cellsType = {
+  1: 'Norm 正常细胞',
+  2: 'LSIL 鳞状上皮细胞低度病变',
+  3: 'HSIL 鳞状上皮细胞高度病变',
+  4: 'HPV HPV感染',
+  5: 'NILM 未见上皮内病变',
+  6: 'SCC 鳞状上皮细胞癌',
+  7: 'ASCUS 不典型鳞状细胞低',
+  8: 'ASCH 不典型鳞状细胞高',
+  9: 'AGC 不典型腺细胞',
+  10: 'AIS 颈管原位腺癌',
+  11: 'ADC 腺癌',
+  12: 'T 滴虫',
+  13: 'M 霉菌',
+  14: 'HSV 疱疹',
+  15: 'X1 线索细胞'
+}
+
 // 标注页面把原图的宽缩放到几个像素点（原图太大了一个屏幕显示不过来）
 export const page3ImgWidth = 645

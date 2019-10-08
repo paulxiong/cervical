@@ -85,7 +85,7 @@ export default {
   },
   props: {
     trainInfo: {
-      type: Object
+      type: Object || String
     },
     predict: {
       type: String

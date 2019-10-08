@@ -19,7 +19,7 @@
     <section class="model-info">
       <el-badge is-dot class="badge">选择细胞类型</el-badge>
       <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
-        <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
+        <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
       </el-checkbox-group>
       <el-badge is-dot class="badge">模型信息</el-badge>
       <el-button
@@ -37,6 +37,7 @@
 <script>
 import modelCard from './components/model-card'
 import { createTrain, getTrainresult, savemodel } from '@/api/cervical'
+import { cellsType } from '@/const/const'
 
 export default {
   name: 'Train',
@@ -48,6 +49,11 @@ export default {
       checkboxCell: [],
       trainInfo: {},
       startedTrain: ''
+    }
+  },
+  filters: {
+    filtersCheckbox(val) {
+      return `${cellsType[val.celltype]}: ${val.labelcnt}`
     }
   },
   methods: {
