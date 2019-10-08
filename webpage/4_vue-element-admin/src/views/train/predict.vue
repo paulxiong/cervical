@@ -19,7 +19,7 @@
     </section>
     <section class="model-select">
       <el-badge is-dot class="badge">模型选择</el-badge>
-      <el-select class="model-option" @change="modelChange" v-model="model" clearable placeholder="请选择">
+      <el-select class="model-option" v-model="model" clearable placeholder="请选择" @change="modelChange">
         <el-option
           v-for="(item, idx) in options"
           :key="item.id"
@@ -30,7 +30,7 @@
     </section>
     <section class="datasets-select">
       <el-badge is-dot class="badge">数据选择</el-badge>
-      <el-select class="model-option" @change="datasetsChange" v-model="datasets" clearable placeholder="请选择">
+      <el-select class="model-option" v-model="datasets" clearable placeholder="请选择" @change="datasetsChange">
         <el-option
           v-for="(item, idx) in dataList"
           :key="item.id"
@@ -41,11 +41,11 @@
     </section>
     <section class="model-info">
       <el-badge is-dot class="badge">模型信息</el-badge>
-      <modelCard :trainInfo="trainInfo" :predict="predict"></modelCard>
+      <modelCard :trainInfo="trainInfo" :predict="predict" />
     </section>
     <section class="datasets-info">
       <el-badge is-dot class="badge">数据信息</el-badge>
-      <datasetsCard :datasets="datasetsInfo"></datasetsCard>
+      <datasetsCard :datasets="datasetsInfo"/>
     </section>
   </div>
 </template>

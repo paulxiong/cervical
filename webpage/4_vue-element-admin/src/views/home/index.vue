@@ -5,7 +5,7 @@
       <el-button type="primary" @click="goNewTrain">新建数据集</el-button>
     </h3>
     <section class="project-list flex">
-      <el-card v-for="(v,i) in dataList" :key="i" class="box-card" shadow="hover">
+      <el-card v-for="(v,i) in dataList" :key="i" class="box-card" :style="v.status === 3 || v.status === 5 || v.status === 8 ?'border:1px dashed #fc4b4e;box-shadow: 3px 3px 10px #fc4b4e;':''" :shadow="v.status === 3 || v.status === 5 || v.status === 8 ?'always':'hover'">
         <div slot="header" class="clearfix">
           <span>{{v.desc}}</span>
           <el-button

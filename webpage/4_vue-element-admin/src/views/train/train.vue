@@ -13,18 +13,18 @@
           <el-badge is-dot class="badge">状态进度</el-badge>
           <el-progress
             :text-inside="true"
-            :stroke-width="26"
+            :stroke-width="16"
             :percentage="percentage"
             status="success"
           ></el-progress>
         </div>
-        <el-badge is-dot class="badge">选择细胞类型</el-badge>
-        <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
-          <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
-        </el-checkbox-group>
       </div>
     </section>
     <section class="model-info">
+      <el-badge is-dot class="badge">选择细胞类型</el-badge>
+      <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
+        <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v" :checked="i<=1" border></el-checkbox>
+      </el-checkbox-group>
       <el-badge is-dot class="badge">模型信息</el-badge>
       <el-button
         type="danger"
@@ -101,16 +101,24 @@ export default {
     margin-bottom: 5px;
   }
   .header {
+    border: 1px solid #ccc;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
     .progress-info {
       margin-bottom: 20px;
     }
     .train-btn {
       margin: 20px 0;
     }
-    .cell-checkbox {
-      margin-top: 10px;
-    }
     .cellTypes {
+      margin-bottom: 20px;
+    }
+  }
+  .model-info {
+    margin-top: 20px;
+    .cell-checkbox {
+      margin-top: 5px;
       margin-bottom: 20px;
     }
   }
