@@ -1,6 +1,6 @@
 <template>
   <section class="trainDetails">
-    <section class="step flex">
+    <section class="step flex" v-if="showStep===1?true:false">
       <el-button size="mini" :type="active===0?'success':'info'" @click="active=0"><i :class="percentage!==100?'el-icon-loading':'el-icon-finished'"></i>图片</el-button>
       <i class="el-icon-arrow-right icon-right"></i>
       <el-button size="mini" :type="active===1?'success':'info'" @click="active=1" :disabled="percentage!==100"><i class="el-icon-finished"></i>训练&评估</el-button>
@@ -28,6 +28,7 @@ export default {
   },
   data() {
     return {
+      showStep: parseInt(localStorage.getItem('isPredict')) || 1,
       activeName: 'images',
       percentage: 0,
       active: 0
