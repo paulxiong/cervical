@@ -1,7 +1,7 @@
 <template>
   <div class="page3-dashboard-container">
     <div id="left" class="page3-column">
-      <el-image id="hallstatt" :src="imgurl" class="annotatable" lazy></el-image>
+      <img id="hallstatt" :src="imgurl" class="annotatable">
     </div>
 
     <div id="right" class="page3-column">
@@ -101,17 +101,13 @@ export default {
         }
         // 添加头像框到画布里
         window.anno.addAnnotation(annotation)
-        console.log('annotation: ', annotation)
-        console.log('get: ', window.anno.getAnnotations())
-        window.anno.highlightAnnotation(annotation)
+        // window.anno.highlightAnnotation(annotation)
       }
     },
     setCurrent(row) {
       this.$refs.singleTable.setCurrentRow(row)
     },
     handleCurrentChange(val) {
-      console.log('handleCurrentChange被触发了')
-      console.log('tableData: ', this.tableData)
       this.imgurl =
         ImgServerUrl +
         '/unsafe/' +
@@ -122,11 +118,7 @@ export default {
         val.medicalid +
         '/Images/' +
         val.imgpath
-      console.log('this.imgurl: ', this.imgurl)
       this.getLabelByImageId(100, 0, val.id)
-      console.log('ImgServerUrl: ', ImgServerUrl)
-      console.log('page3ImgWidth: ', page3ImgWidth)
-      console.log('val: ', val)
     },
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
@@ -146,7 +138,6 @@ export default {
           return
         }
         const { data } = response.data
-        console.log('response.data: ', response.data)
         this.totalimg = response.data.total
         this.tableData = data.images ? data.images.concat([]) : []
 
@@ -167,7 +158,6 @@ export default {
             return
           }
           const { data } = response.data
-          console.log('getLabelByImageId~~', data)
           this.totallabel = response.data.total
           this.labels = data.labels ? data.labels.concat([]) : []
           this.imgw = data.imgw
@@ -179,7 +169,6 @@ export default {
           }
           var that = this
           setTimeout(function() {
-            console.log('that.imgurl~~', that.imgurl)
             that.setaddAnnotation(that.imgurl, that.labels, that.scale)
           }, 200)
         }
