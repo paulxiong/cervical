@@ -1060,8 +1060,8 @@
             {
               "name": "DID",
               "type": "BigInt",
-              "remark": "",
-              "chnname": "dataset Id，被哪次dataset训练的",
+              "remark": "被哪次dataset训练的",
+              "chnname": "dataset Id",
               "notNull": true
             },
             {
@@ -1102,6 +1102,12 @@
               "chnname": "训练有几个分类"
             },
             {
+              "name": "types",
+              "type": "MiddleString",
+              "remark": "数组，被转成字符串存储",
+              "chnname": "训练的标签"
+            },
+            {
               "name": "input_shape",
               "type": "ShortString",
               "remark": "",
@@ -1116,8 +1122,8 @@
             {
               "name": "best_model",
               "type": "Integer",
-              "remark": "",
-              "chnname": "本次训练出的所有模型里面最优模型是第几个"
+              "remark": "本次训练出的所有模型里面最优模型是第几个",
+              "chnname": "best_modelID"
             },
             {
               "name": "loss",

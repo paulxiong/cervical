@@ -38,6 +38,7 @@ def update_model_info_json(job):
     mod = job.traininfo
     mod['id'] = 0
     mod['type'] = 5
+    mod['types'] = job.types
     mod['did'] = job.jid
     mod['path'] = job.MODEL_DIR
     mod['desc'] = ''
