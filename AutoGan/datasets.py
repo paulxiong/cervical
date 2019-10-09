@@ -43,7 +43,7 @@ class ImageDataset(object):
             print("Dt_type:",type(Dt2))
             print("Dt:",Dt2)
             print("Dt1_type:",type(Dt1))
-            print("Dt1:",Dt1)      
+            print("Dt1:",Dt1)
             self.train = torch.utils.data.DataLoader(
                 Dt2,
                 batch_size=args.dis_batch_size, shuffle=True,
@@ -95,7 +95,7 @@ class ImageDataset1(object):
             print("data_path:",args.data_path)
             Dt2 = Dt(root=args.data_path, train=True, transform=transform, download=True)
             Dt1 = Dt(root=args.data_path, train=False, transform=transform)
- 
+
             print("Dt_type:",type(Dt2))
             print("Dt:",Dt2)
 
