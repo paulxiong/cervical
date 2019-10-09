@@ -19,18 +19,24 @@
     <section class="model-info">
       <el-badge is-dot class="badge">选择细胞类型</el-badge>
       <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
-        <el-checkbox v-for="(v, i) in jobResult.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
+        <el-checkbox
+          v-for="(v, i) in jobResult.types"
+          :key="i"
+          :label="v | filtersCheckbox"
+          :checked="i<=1"
+          border
+        ></el-checkbox>
       </el-checkbox-group>
       <el-badge is-dot class="badge">模型信息</el-badge>
       <el-button
         type="danger"
         size="small"
         class="save-btn"
-        :disabled="!trainInfo.desc"
+        :disabled="!modelInfo.desc"
         @click="saveModel"
         v-if="showSaveBtn"
       >保存模型</el-button>
-      <modelCard :trainInfo="trainInfo" @changeDesc="changeDesc"></modelCard>
+      <modelCard :modelInfo="modelInfo" @changeDesc="changeDesc"></modelCard>
     </section>
   </div>
 </template>
@@ -49,21 +55,23 @@ export default {
       showSaveBtn: true,
       jobResult: JSON.parse(localStorage.getItem('jobResult')) || [],
       checkboxCell: [],
-      trainInfo: {},
+      modelInfo: {},
       startedTrain: ''
     }
   },
   filters: {
     filtersCheckbox(val) {
-      return `${cellsType[val.celltype]}: ${val.labelcnt}`
+      return `${val.celltype} ${cellsType[val.celltype]}: ${val.labelcnt}`
     }
   },
   methods: {
     handleTrain() {
       const postCelltypes = []
       this.checkboxCell.map(v => {
-        postCelltypes.push(v.celltype)
+        v = parseInt(v.slice(0, 1))
+        postCelltypes.push(v)
       })
+      console.log(postCelltypes)
       createTrain({
         id: parseInt(this.$route.query.id),
         celltypes: postCelltypes
@@ -73,16 +81,16 @@ export default {
     },
     getTrainresult() {
       getTrainresult({ 'id': this.$route.query.id }).then(res => {
-        this.trainInfo = res.data.data
+        this.modelInfo = res.data.data
       })
     },
     changeDesc(val) {
-      this.trainInfo.desc = val
+      this.modelInfo.desc = val
     },
     saveModel() {
       savemodel({
-        'id': this.trainInfo.did,
-        'desc': this.trainInfo.desc
+        'id': this.modelInfo.did,
+        'desc': this.modelInfo.desc
       }).then(res => {
         this.$message({
           message: res.data.data,
@@ -112,7 +120,8 @@ export default {
     position: fixed;
     bottom: -1px;
     right: -1px;
-    padding: 10px 30px;
+    padding: 10px 0;
+    z-index: 999;
     .badge {
       color: #fff;
     }
@@ -122,6 +131,7 @@ export default {
     }
     .train-btn {
       width: 100px;
+      margin-right: 30px;
     }
   }
   .model-info {

@@ -1,7 +1,7 @@
 <template>
   <div class="predict">
     <section class="header flex">
-      <el-badge is-dot class="badge">状态进度</el-badge>
+      <el-badge is-dot class="badge">预测进度</el-badge>
       <el-progress
         :text-inside="true"
         :stroke-width="26"
@@ -26,7 +26,7 @@
       </section>
       <section class="model-info">
         <el-badge is-dot class="badge">模型信息</el-badge>
-        <modelCard :trainInfo="trainInfo" :predict="predict" />
+        <modelCard :modelInfo="modelInfo" :predict="predict" :options="options" />
       </section>
       <section class="datasets-select">
         <el-badge is-dot class="badge">数据选择</el-badge>
@@ -61,9 +61,8 @@ export default {
       percentage: 50,
       predict: 'predict',
       options: [],
-      model: 0,
+      modelInfo: {},
       datasets: 0,
-      trainInfo: {},
       datasetsInfo: {},
       dataList: []
     }
@@ -71,23 +70,16 @@ export default {
   methods: {
     modelChange() {
       this.modelInfo = this.options[this.model]
-      this.getTrainresult()
     },
     datasetsChange() {
       this.datasetsInfo = this.dataList[this.datasets]
     },
     getListmodel(limit, skip) {
       getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
-        this.options = res.data.data.models
-        this.modelInfo = this.options[0]
         if (res.data.data.total > 0) {
-          this.getTrainresult()
+          this.options = res.data.data.models
+          this.modelInfo = this.options[0]
         }
-      })
-    },
-    getTrainresult() {
-      getTrainresult({ 'id': this.modelInfo.did }).then(res => {
-        this.trainInfo = res.data.data
       })
     },
     getListdatasets(limit, skip, type) {
@@ -133,6 +125,7 @@ export default {
     bottom: -1px;
     right: -1px;
     padding: 10px 0;
+    z-index: 999;
     .badge {
       color: #fff;
     }
