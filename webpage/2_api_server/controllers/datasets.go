@@ -828,8 +828,9 @@ func GetTrainResult(c *gin.Context) {
 }
 
 type predictpostdata struct {
-	MID int64 `json:"mid" example:"1"` //模型的ID
-	DID int64 `json:"did" example:"1"` //用来做预测的数据集的ID
+	MID       int   `json:"mid" example:"1"`       //模型的ID
+	DID       int   `json:"did" example:"1"`       //用来做预测的数据集的ID
+	Celltypes []int `json:"celltypes" example:"7"` //选择哪几个类型做训练
 }
 
 // Predict 根据传递来的模型ID，数据集ID做预测
@@ -854,6 +855,38 @@ func Predict(c *gin.Context) {
 		})
 		return
 	}
+
+	minfo, err2 := m.FindModelInfoByID(postdata.MID)
+	if err2 != nil || minfo.Path == "" {
+		logger.Info.Println(err2)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "model info not found",
+		})
+		return
+	}
+
+	dinfo, err3 := m.GetOneDatasetByID(postdata.DID)
+	if err3 != nil {
+		logger.Info.Println(err3)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets info not found",
+		})
+		return
+	}
+
+	logger.Info.Println(minfo.Path)
+	logger.Info.Println(dinfo)
+	p := f.PredictInfo{
+		ID:    0,
+		DID:   1,
+		MID:   2,
+		Types: postdata.Celltypes,
+		DDir:  "1",
+		MDir:  "2",
+	}
+	p.NewPredictJSONFile()
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,

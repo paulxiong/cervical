@@ -6,6 +6,7 @@ import (
 	"time"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/jinzhu/gorm"
 )
@@ -503,6 +504,8 @@ type Model struct {
 	Precision     float32   `json:"precision"      gorm:"column:PRECISION1"`     //训练评估得到的准确率,整数0.66表示66%
 	Ntrain        int       `json:"n_train"        gorm:"column:n_train"`        //训练用了多少张图片
 	Nclasses      int       `json:"n_classes"      gorm:"column:n_classes"`      //训练有几个分类
+	Types1        []int     `json:"celltypes"      gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
+	Types2        string    `json:"-"              gorm:"column:types"`          //训练的标签, 字符串存储(存数据库，前端没有这个字段)
 	InputShape    string    `json:"input_shape"    gorm:"column:input_shape"`    //训练输入的尺寸
 	ModelCount    int       `json:"model_count"    gorm:"column:model_count"`    //产生的模型个数
 	BestModel     int       `json:"best_model"     gorm:"column:best_model"`     //本次训练出的所有模型里面最优模型是第几个
@@ -521,6 +524,22 @@ func (d *Model) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if d.UpdatedAt.IsZero() {
 		d.UpdatedAt = time.Now()
+	}
+
+	str, err2 := u.Array2String(&d.Types1)
+	if err2 == nil {
+		d.Types2 = str
+	}
+	return nil
+}
+
+// AfterFind 把数据库里面存的字符串转成数组返回
+func (d *Model) AfterFind(scope *gorm.Scope) error {
+	if d.Types2 != "" {
+		arr, err := u.String2Array(d.Types2)
+		if err == nil {
+			d.Types1 = arr
+		}
 	}
 	return nil
 }
@@ -564,6 +583,17 @@ func FindModelInfoByPath(modpath string) (m *Model, e error) {
 	_d := Model{}
 
 	ret2 := db.Model(&_d).Where("PATH=?", modpath).First(&_d)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+	return &_d, ret2.Error
+}
+
+// FindModelInfoByID 通过模型的ID查找模型信息
+func FindModelInfoByID(mid int) (m *Model, e error) {
+	_d := Model{}
+
+	ret2 := db.Model(&_d).Where("ID=?", mid).First(&_d)
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}

@@ -281,3 +281,26 @@ func LoadModJSONFile(dirname string) m.Model {
 	}
 	return j
 }
+
+// PredictInfo 存在硬盘的JSON文件，描述预测数据集和模型
+type PredictInfo struct {
+	ID    int64  `json:"id"    example:"1"`    //预测任务ID
+	DID   int64  `json:"did"   example:"1"`    //用来做预测的数据集的ID
+	MID   int64  `json:"mid"   example:"1"`    //用来做预测的模型ID
+	Types []int  `json:"types" example:"7"`    //预测哪几个类型的细胞
+	DDir  string `json:"ddir"  example:"任务目录"` //用来做预测的数据集的目录
+	MDir  string `json:"mdir"  example:"任务目录"` //用来做预测的模型的目录
+}
+
+// NewPredictJSONFile 创建预测任务的时候把任务的部分信息存到JSON文件
+func (p *PredictInfo) NewPredictJSONFile() {
+	dirname := p.DDir
+
+	data, err := json.MarshalIndent(p, "", " ") //这里返回的data值，类型是[]byte
+	if err != nil {
+		log.Println("ERROR:", err)
+	}
+	info := scratchRoot + "/" + dirname + "/train.json"
+	logger.Info.Println(info)
+	writeJSON(info, data)
+}
