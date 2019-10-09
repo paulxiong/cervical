@@ -95,6 +95,7 @@ export default {
   components: {},
   data() {
     return {
+      checkboxCell: [],
       model: 0
     }
   },
@@ -114,7 +115,7 @@ export default {
       return modelType[value]
     },
     filtersCheckbox(val) {
-      return `${cellsType[val]}`
+      return `${val} ${cellsType[val]}`
     }
   },
   methods: {
