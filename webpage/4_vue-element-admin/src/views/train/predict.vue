@@ -9,22 +9,19 @@
         class="progress"
         status="success"
       ></el-progress>
-      <el-button
-        type="danger"
-        class="predict-btn"
-        @click="createPredict"
-      >开始预测</el-button>
+      <el-button type="danger" class="predict-btn" @click="createPredict">开始预测</el-button>
     </section>
     <section class="content">
       <section class="model-select">
         <el-badge is-dot class="badge">模型选择</el-badge>
-        <el-select class="model-option" v-model="model" clearable placeholder="请选择" @change="modelChange">
-          <el-option
-            v-for="(item, idx) in options"
-            :key="item.id"
-            :label="item.desc"
-            :value="idx"
-          ></el-option>
+        <el-select
+          class="model-option"
+          v-model="model"
+          clearable
+          placeholder="请选择"
+          @change="modelChange"
+        >
+          <el-option v-for="(item, idx) in options" :key="item.id" :label="item.desc" :value="idx"></el-option>
         </el-select>
       </section>
       <section class="model-info">
@@ -33,18 +30,19 @@
       </section>
       <section class="datasets-select">
         <el-badge is-dot class="badge">数据选择</el-badge>
-        <el-select class="model-option" v-model="datasets" clearable placeholder="请选择" @change="datasetsChange">
-          <el-option
-            v-for="(item, idx) in dataList"
-            :key="item.id"
-            :label="item.desc"
-            :value="idx"
-          ></el-option>
+        <el-select
+          class="model-option"
+          v-model="datasets"
+          clearable
+          placeholder="请选择"
+          @change="datasetsChange"
+        >
+          <el-option v-for="(item, idx) in dataList" :key="item.id" :label="item.desc" :value="idx"></el-option>
         </el-select>
       </section>
       <section class="datasets-info">
         <el-badge is-dot class="badge">数据信息</el-badge>
-        <datasetsCard :datasets="datasetsInfo"/>
+        <datasetsCard :datasets="datasetsInfo" />
       </section>
     </section>
   </div>
@@ -82,7 +80,9 @@ export default {
       getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
         this.options = res.data.data.models
         this.modelInfo = this.options[0]
-        this.getTrainresult()
+        if (res.data.data.total > 0) {
+          this.getTrainresult()
+        }
       })
     },
     getTrainresult() {
@@ -132,7 +132,7 @@ export default {
     position: fixed;
     bottom: -1px;
     right: -1px;
-    padding: 20px 30px;
+    padding: 10px 0;
     .badge {
       color: #fff;
     }
@@ -141,13 +141,18 @@ export default {
       margin: 0 10px;
     }
     .predict-btn {
-      width: 10%;
+      width: 100px;
+      margin-right: 30px;
     }
   }
   .model-option {
     display: block;
   }
-  .model-select, .datasets-select, .progress-info, .model-info, .datasets-info {
+  .model-select,
+  .datasets-select,
+  .progress-info,
+  .model-info,
+  .datasets-info {
     margin: 20px 0;
   }
 }

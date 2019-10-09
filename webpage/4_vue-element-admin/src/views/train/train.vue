@@ -112,7 +112,7 @@ export default {
     position: fixed;
     bottom: -1px;
     right: -1px;
-    padding: 20px 30px;
+    padding: 10px 30px;
     .badge {
       color: #fff;
     }
@@ -121,7 +121,7 @@ export default {
       margin: 0 10px;
     }
     .train-btn {
-      width: 10%;
+      width: 100px;
     }
   }
   .model-info {
