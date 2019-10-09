@@ -429,7 +429,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 	return ret2.Error
 }
 
-// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
+// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
 func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
@@ -447,6 +447,8 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 		d.ProcessTime = time.Now()
 	} else if status == 6 {
 		d.TrainTime = time.Now()
+	} else if status == 10 {
+		d.PredictTime = time.Now()
 	}
 
 	ret := db.Model(&d).Where("ID=?", did).Updates(d)

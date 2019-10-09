@@ -464,10 +464,14 @@ func GetOneJob(c *gin.Context) {
 		})
 		return
 	}
+	//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
+	//7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
 	if w.Status == 1 {
 		m.UpdateDatasetsStatus(dt.ID, 2)
 	} else if w.Status == 4 {
 		m.UpdateDatasetsStatus(dt.ID, 6)
+	} else if w.Status == 10 {
+		m.UpdateDatasetsStatus(dt.ID, 11)
 	}
 
 	c.JSON(e.StatusReqOK, gin.H{
@@ -881,8 +885,12 @@ func Predict(c *gin.Context) {
 		MID:   int64(minfo.ID),
 		Types: postdata.Celltypes,
 		DDir:  dinfo.Dir,
+		MPath: minfo.Path,
 	}
 	p.NewPredictJSONFile()
+
+	dinfo.Status = 10 // 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
+	m.UpdateDatasetsStatus(dinfo.ID, dinfo.Status)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
