@@ -29,9 +29,15 @@ $ git commit -m '本次修改说明'
 $ git push
 ```
 
-- 回退
+- 撤销
 ```bash
 $ git reset --hard
+```
+
+- 回退
+```bash
+$ git log
+$ git reset 版本
 ```
 
 ## 补充
