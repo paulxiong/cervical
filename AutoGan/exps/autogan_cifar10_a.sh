@@ -7,7 +7,7 @@ python train.py \
 --dataset cifar10 \
 --bottom_width 4 \
 --img_size 32 \
---max_iter 50000 \
+--max_iter 10000 \
 --model autogan_cifar10_a \
 --latent_dim 128 \
 --gf_dim 256 \
@@ -20,5 +20,5 @@ python train.py \
 --beta2 0.9 \
 --init_type xavier_uniform \
 --n_critic 5 \
---val_freq 20 \
+--val_freq 200 \
 --exp_name autogan_cifar10_a
