@@ -7,7 +7,7 @@ from keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 from shutil import copyfile, rmtree
 import pandas as pd
-from utilslib.jsonfile import load_json_file, update_model_info_json
+from utilslib.jsonfile import load_json_file, update_model_info_json, update_predict_info_json
 from utilslib.webserverapi import get_one_job, post_job_status
 
 localdebug = os.environ.get('DEBUG', 'False')
@@ -24,6 +24,10 @@ class ds(Enum):
     TRAINNING       = 7 #7开始训练
     TRAINNING_ERR   = 8 #8训练出错
     TRAINNING_DONE  = 9 #9训练完成
+    READY4PREDICT   = 10 #送去做预测
+    PREDICTING      = 11 #开始预测
+    PREDICTING_ERR  = 12 #预测出错
+    PREDICTING_DONE = 13 #预测完成
 
 # datasets type
 class dt(Enum):
@@ -112,9 +116,10 @@ def get_datasets_for_train(csvpath, cellsdir, celltypes=[1, 7]):
     return True, typetree
 
 class cervical_autokeras():
-    def __init__(self, jobid, jobdir):
+    def __init__(self, jobid, jobdir, jobtype):
         self.jid = jobid
         self.jobdir = jobdir
+        self.jobtype = jobtype
         self.scratchdir  = os.environ.get('SCRATCHDIR', 'scratch/')
         #训练、预测任务的顶层目录, 训练是按照时间随机生成的，预测是人为指定的
         self.ROOTPATH = os.path.join(self.scratchdir, self.jobdir) #每个任务的根目录
@@ -124,6 +129,8 @@ class cervical_autokeras():
         self.CELL_DIR = os.path.join(self.ROOTPATH, 'cells')
         self.TRAINJSON = os.path.join(self.ROOTPATH, 'train.json')
         self.MODJSON = os.path.join(self.ROOTPATH, 'mod.json')
+        self.PREDICTJSON = os.path.join(self.ROOTPATH, 'predict.json')
+        self.PREDICTJSON2 = os.path.join(self.ROOTPATH, 'predict2.json')
         self.STATISTICS_DIR = os.path.join(self.ROOTPATH, 'statistics')
         self.CELL_CROP_CSV = os.path.join(self.STATISTICS_DIR, str(self.jid) + '_crop_cells.csv')
         self.CELL_CROP_DIR = os.path.join(self.CELL_DIR, 'crop')
@@ -214,9 +221,12 @@ class cervical_autokeras():
 
     def predict_autokeras2(self):
         autokeras_model = pickle_from_file(self.MODEL_DIR)
+        result = []
 
         #Load images
         for label in os.listdir(self.RESIZE_PREDICT_IMG_DIR):
+            celltype = {'type': label, 'total': 0, 'count_false': 0, 'crop_cells': []}
+
             images = os.listdir(os.path.join(self.RESIZE_PREDICT_IMG_DIR, label))
             total = len(images)
             count_false = 0
@@ -230,6 +240,9 @@ class cervical_autokeras():
                 x = x.astype('float32') / 255
                 x = np.reshape(x, (1, self.RESIZE, self.RESIZE, 3))
                 y = autokeras_model.predict(x)
+                crop_cells = {'url': img_path[len(self.scratchdir) + 1:], 'type': label, 'predict': y[0]}
+                celltype['crop_cells'].append(crop_cells)
+
                 if str(label) != str(y[0]):
                     #print("%s %s result=%s" % (images[index], label, y[0]))
                     count_false = count_false + 1
@@ -237,73 +250,109 @@ class cervical_autokeras():
                     if not os.path.exists(error_image_dir):
                         os.makedirs(error_image_dir)
                     copyfile(img_path, os.path.join(error_image_dir, images[index]))
+
+            celltype['total'] = total
+            celltype['count_false'] = count_false
+            result.append(celltype)
             print("%s 的个数/准确率：%d %f 出错的个数%d" % (label, total, (total - count_false) / total, count_false))
+        return result
+
     def done(self, text):
         self.percent = 100
-        post_job_status(self.jid, ds.TRAINNING_DONE.value, self.percent)
+        if self.jobtype == dt.TRAIN.value:
+            post_job_status(self.jid, ds.TRAINNING_DONE.value, self.percent)
+        elif self.jobtype == dt.PREDICT.value:
+            post_job_status(self.jid, ds.PREDICTING_DONE.value, self.percent)
         print(text)
         return
     def processing(self, percent):
         self.percent = percent
-        post_job_status(self.jid, ds.TRAINNING.value, self.percent)
+        if self.jobtype == dt.TRAIN.value:
+            post_job_status(self.jid, ds.TRAINNING.value, self.percent)
+        elif self.jobtype == dt.PREDICT.value:
+            post_job_status(self.jid, ds.PREDICTING.value, self.percent)
         return
     def failed(self, text):
-        post_job_status(self.jid, ds.TRAINNING_ERR.value, self.percent)
+        if self.jobtype == dt.TRAIN.value:
+            post_job_status(self.jid, ds.TRAINNING_ERR.value, self.percent)
+        elif self.jobtype == dt.PREDICT.value:
+            post_job_status(self.jid, ds.PREDICTING_ERR.value, self.percent)
         print(text)
         return
 
+def get_job(jobstatus, jobtype):
+    status, jobid, dirname = jobstatus, 0, None
+    #向服务器请求任务，任务的状态必须是 READY4PROCESS, 训练用的数据集
+    if localdebug is not True and localdebug != "True":
+        # datatype:  0未知1训练2预测
+        jobid, status, dirname, jobtype2 = get_one_job(jobstatus, jobtype)
+    else:
+        jobid = 31
+        status = jobstatus
+        dirname = 'BVv1p1U6'
+
+    #检查得到的任务是不是想要的
+    if status != jobstatus or dirname is None:
+        jobid, dirname = 0, None
+    print(jobid, dirname)
+    return jobid, dirname
+
+def get_train_predict_job():
+    #先请求训练任务，没有训练任务再请求预测任务
+    jobtype = dt.TRAIN.value
+    jobid, dirname = get_job(ds.READY4TRAIN.value, dt.TRAIN.value)
+    if dirname is None:
+        jobtype = dt.PREDICT.value
+        jobid, dirname = get_job(ds.READY4PREDICT.value, dt.PREDICT.value)
+    return jobtype, jobid, dirname
+
 if __name__ == "__main__":
     while 1:
-        #向服务器请求任务，任务的状态必须是 READY4TRAIN
-        if localdebug is not True and localdebug != "True":
-            # datatype:  0未知1训练2预测
-            jobid, status, dirname, jobtype = get_one_job(ds.READY4TRAIN.value, dt.TRAIN.value)
-        else:
-            jobid = 31
-            status = ds.READY4TRAIN.value
-            dirname = 'BVv1p1U6'
-
-        print(jobid, status, dirname, jobtype)
-        #检查得到的任务是不是想要的
-        if status != ds.READY4TRAIN.value or dirname is None:
+        jobtype, jobid, dirname = get_train_predict_job()
+        if dirname is None:
             time.sleep(5)
             continue
 
-        ca = cervical_autokeras(jobid, dirname)
-        #取出要训练的细胞类型
-        jsonfile=load_json_file(ca.TRAINJSON)
-        celltypes = jsonfile['types']
-        ret, typetree = get_datasets_for_train(ca.CELL_CROP_CSV, ca.CELL_CROP_DIR, celltypes=celltypes)
-        ca.processing(10)
+        ca = cervical_autokeras(jobid, dirname, jobtype)
+        if jobtype == dt.TRAIN.value:
+            #取出要训练的细胞类型
+            jsonfile=load_json_file(ca.TRAINJSON)
+            celltypes = jsonfile['types']
+            ret, typetree = get_datasets_for_train(ca.CELL_CROP_CSV, ca.CELL_CROP_DIR, celltypes=celltypes)
+            ca.processing(10)
 
-        print ("Resize images...")
-        resize_img2(typetree, ca.RESIZE_TRAIN_IMG_DIR, ca.RESIZE)
-        resize_img2(typetree, ca.RESIZE_TEST_IMG_DIR, ca.RESIZE)
-        print ("write csv...")
-        write_csv(ca.RESIZE_TRAIN_IMG_DIR, ca.TRAIN_CSV_DIR)
-        write_csv(ca.RESIZE_TEST_IMG_DIR, ca.TEST_CSV_DIR)
-        print ("============Load...=================")
-        ca.processing(20)
-        ca.train_autokeras()
+            print ("Resize images...")
+            resize_img2(typetree, ca.RESIZE_TRAIN_IMG_DIR, ca.RESIZE)
+            resize_img2(typetree, ca.RESIZE_TEST_IMG_DIR, ca.RESIZE)
+            print ("write csv...")
+            write_csv(ca.RESIZE_TRAIN_IMG_DIR, ca.TRAIN_CSV_DIR)
+            write_csv(ca.RESIZE_TEST_IMG_DIR, ca.TEST_CSV_DIR)
+            print ("============Load...=================")
+            ca.processing(20)
+            ca.train_autokeras()
 
-        #更新模型信息
-        update_model_info_json(ca)
-        ca.done("done!")
-        #elif opt.task == 'predict':
-        #    print ("Resize images...")
-        #    resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
-        #    print ("write csv...")
-        #    write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
-        #    print ("============Load...=================")
-        #    ca.predict_autokeras()
+            #更新模型信息
+            update_model_info_json(ca)
+            ca.done("done!")
+        elif jobtype == dt.PREDICT.value:
+            jsonfile = load_json_file(ca.PREDICTJSON)
+            #取出要预测的细胞类型
+            celltypes = jsonfile['types']
+            ret, typetree = get_datasets_for_train(ca.CELL_CROP_CSV, ca.CELL_CROP_DIR, celltypes=celltypes)
+            ca.processing(10)
+            print ("Resize images...")
+            resize_img2(typetree, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
+            print ("write csv...")
+            write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
+            print ("============Load...=================")
 
-        #elif opt.task == 'predict2':
-        #    print ("Resize images...")
-        #    resize_img(ca.PREDICT_IMG_DIR, ca.RESIZE_PREDICT_IMG_DIR, ca.RESIZE)
-        #    print ("write csv...")
-        #    write_csv(ca.RESIZE_PREDICT_IMG_DIR, ca.PREDICT_CSV_DIR)
-        #    print ("============Load...=================")
-        #    ca.predict_autokeras2()
+            #使用指定的模型文件
+            ca.MODEL_DIR = jsonfile['mpath']
+            ca.processing(20)
+            result = ca.predict_autokeras2()
+            #更新预测结果
+            update_predict_info_json(ca, result)
+            ca.done("done!")
 
         del ca
         gc.collect()

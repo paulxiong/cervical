@@ -48,3 +48,15 @@ def update_model_info_json(job):
     with open(job.MODJSON, 'w', encoding='utf-8') as file:
         file.write(json.dumps(mod, indent=2, ensure_ascii=False))
     return True
+
+def update_predict_info_json(job, result):
+    if os.path.exists(job.PREDICTJSON) is False:
+        return False
+    job_info = load_json_file(job.PREDICTJSON)
+
+    predict = job_info
+    predict['result'] = result
+
+    with open(job.PREDICTJSON2, 'w', encoding='utf-8') as file:
+        file.write(json.dumps(predict, indent=2, ensure_ascii=False))
+    return True
