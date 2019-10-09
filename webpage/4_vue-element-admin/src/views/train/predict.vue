@@ -126,15 +126,19 @@ export default {
   }
   .header {
     border: 1px solid #ccc;
-    background: #fff;
-    width: 86%;
-    justify-content: space-between;
+    background: #304155;
+    min-width: 100%;
+    justify-content: flex-end;
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: -1px;
+    right: -1px;
     padding: 20px 30px;
+    .badge {
+      color: #fff;
+    }
     .progress {
-      width: 80%;
+      width: 70%;
+      margin: 0 10px;
     }
     .predict-btn {
       width: 10%;

@@ -98,8 +98,13 @@ export default {
     justify-content: space-around;
     flex-wrap: wrap;
     .info {
-      width: 50%;
+      width: 60%;
+      overflow: hidden;
+      text-overflow: ellipsis;
       margin: 10px 0;
+    }
+    .info:nth-child(even) {
+      width: 40%;
     }
     .percent {
       position: relative;

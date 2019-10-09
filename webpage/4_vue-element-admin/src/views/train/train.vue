@@ -28,6 +28,7 @@
         class="save-btn"
         :disabled="!trainInfo.desc"
         @click="saveModel"
+        v-if="showSaveBtn"
       >保存模型</el-button>
       <modelCard :trainInfo="trainInfo" @changeDesc="changeDesc"></modelCard>
     </section>
@@ -45,6 +46,7 @@ export default {
   data() {
     return {
       percentage: 50,
+      showSaveBtn: true,
       jobResult: JSON.parse(localStorage.getItem('jobResult')) || [],
       checkboxCell: [],
       trainInfo: {},
@@ -86,6 +88,7 @@ export default {
           message: res.data.data,
           type: 'success'
         })
+        this.showSaveBtn = false
       })
     }
   },
@@ -103,15 +106,19 @@ export default {
   }
   .header {
     border: 1px solid #ccc;
-    background: #fff;
-    width: 86%;
-    justify-content: space-between;
+    background: #304155;
+    width: 100%;
+    justify-content: flex-end;
     position: fixed;
-    bottom: 0;
-    right: 0;
+    bottom: -1px;
+    right: -1px;
     padding: 20px 30px;
+    .badge {
+      color: #fff;
+    }
     .progress {
-      width: 80%;
+      width: 70%;
+      margin: 0 10px;
     }
     .train-btn {
       width: 10%;

@@ -44,19 +44,19 @@
           <b>{{trainInfo.loss}}</b>
         </section>
         <section class="info">
-          <i>训练有几个分类</i>
+          <i>训练有几个分类:</i>
           <b>{{trainInfo.n_classes}}</b>
         </section>
         <section class="info">
-          <i>训练用了多少张图片</i>
+          <i>训练用了多少张图片:</i>
           <b>{{trainInfo.n_train}}</b>
         </section>
         <section class="info">
-          <i>训练准确度</i>
+          <i>训练准确度:</i>
           <b>{{trainInfo.metric_value}}</b>
         </section>
         <section class="info">
-          <i>评估准确度</i>
+          <i>评估准确度:</i>
           <b>{{trainInfo.evaluate_value}}</b>
         </section>
         <!-- <section class="info">
@@ -125,11 +125,16 @@ export default {
     }
   }
   .model-info {
-    justify-content: space-around;
+    justify-content: space-between;
     flex-wrap: wrap;
     .info {
-      width: 50%;
+      width: 60%;
+      overflow: hidden;
+      text-overflow: ellipsis;
       margin: 10px 0;
+    }
+    .info:nth-child(even) {
+      width: 40%;
     }
     .percent {
       position: relative;
