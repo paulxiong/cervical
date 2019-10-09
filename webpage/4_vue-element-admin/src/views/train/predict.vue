@@ -14,7 +14,7 @@
     <section class="content">
       <section class="model-info" v-if="modelList.length">
         <el-badge is-dot class="badge">模型信息</el-badge>
-        <modelCard :modelInfo="modelInfo" :predict="predict" :modelList="modelList" />
+        <modelCard :modelInfo="modelInfo" :predict="predict" :modelList="modelList" @changeCellTypes="changeCellTypes" />
       </section>
       <section class="datasets-info" v-if="datasetsList.length">
         <el-badge is-dot class="badge">数据信息</el-badge>
@@ -39,7 +39,8 @@ export default {
       modelList: [],
       modelInfo: {},
       datasetsInfo: {},
-      datasetsList: []
+      datasetsList: [],
+      postCelltypes: []
     }
   },
   methods: {  
@@ -52,18 +53,22 @@ export default {
       })
     },
     getListdatasets(limit, skip, type) {
-      listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
+      listdatasets({ 'limit': limit, 'skip' : skip, 'type': type }).then(res => {
         this.datasetsList = res.data.data.datasets
         this.datasetsInfo = this.datasetsList[0]
       })
     },
     createPredict() {
-      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id }).then(res => {
+      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id, 'celltypes': this.postCelltypes }).then(res => {
         this.$message({
           message: res.data.data,
           type: 'success'
         })
       })
+    },
+    changeCellTypes(val) {
+      console.log(val)
+      this.postCelltypes = val
     }
   },
   mounted() {

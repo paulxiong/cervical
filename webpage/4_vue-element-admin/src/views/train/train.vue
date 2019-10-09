@@ -71,7 +71,6 @@ export default {
         v = parseInt(v.slice(0, 1))
         postCelltypes.push(v)
       })
-      console.log(postCelltypes)
       createTrain({
         id: parseInt(this.$route.query.id),
         celltypes: postCelltypes

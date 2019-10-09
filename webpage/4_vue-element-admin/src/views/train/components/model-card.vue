@@ -68,10 +68,10 @@
           <i>评估准确度:</i>
           <b>{{modelInfo.evaluate_value}}</b>
         </section>
-        <section class="info" v-if="modelInfo.celltypes">
+        <section class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;" v-if="modelInfo.types">
           <i>细胞类型选择:</i>
-          <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox">
-            <el-checkbox v-for="(v, i) in modelInfo.celltypes" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
+          <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox" @change="changeCellTypes">
+            <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
           </el-checkbox-group>
         </section>
         <!-- <section class="info">
@@ -122,9 +122,20 @@ export default {
     modelChange() {
       this.modelInfo = this.modelList[this.model]
     },
+    changeCellTypes() {
+      const postCelltypes = []
+      this.checkboxCell.map(v => {
+        v = parseInt(v.slice(0, 1))
+        postCelltypes.push(v)
+      })
+      this.$emit('changeCellTypes', postCelltypes)
+    },
     emitDesc() {
       this.$emit('changeDesc', this.trainInfo.desc)
     }
+  },
+  mounted() {
+    this.changeCellTypes()
   }
 }
 </script>
@@ -145,6 +156,7 @@ export default {
   }
   .card-header {
     justify-content: space-between;
+    
     .precision-info {
       margin-right: 20px;
     }
