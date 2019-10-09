@@ -12,37 +12,13 @@
       <el-button type="danger" class="predict-btn" @click="createPredict">开始预测</el-button>
     </section>
     <section class="content">
-      <section class="model-select">
-        <el-badge is-dot class="badge">模型选择</el-badge>
-        <el-select
-          class="model-option"
-          v-model="model"
-          clearable
-          placeholder="请选择"
-          @change="modelChange"
-        >
-          <el-option v-for="(item, idx) in options" :key="item.id" :label="item.desc" :value="idx"></el-option>
-        </el-select>
-      </section>
-      <section class="model-info">
+      <section class="model-info" v-if="modelList.length">
         <el-badge is-dot class="badge">模型信息</el-badge>
-        <modelCard :modelInfo="modelInfo" :predict="predict" :options="options" />
+        <modelCard :modelInfo="modelInfo" :predict="predict" :modelList="modelList" />
       </section>
-      <section class="datasets-select">
-        <el-badge is-dot class="badge">数据选择</el-badge>
-        <el-select
-          class="model-option"
-          v-model="datasets"
-          clearable
-          placeholder="请选择"
-          @change="datasetsChange"
-        >
-          <el-option v-for="(item, idx) in dataList" :key="item.id" :label="item.desc" :value="idx"></el-option>
-        </el-select>
-      </section>
-      <section class="datasets-info">
+      <section class="datasets-info" v-if="datasetsList.length">
         <el-badge is-dot class="badge">数据信息</el-badge>
-        <datasetsCard :datasets="datasetsInfo" />
+        <datasetsCard :datasetsInfo="datasetsInfo" :predict="predict" :datasetsList="datasetsList" />
       </section>
     </section>
   </div>
@@ -60,32 +36,25 @@ export default {
     return {
       percentage: 50,
       predict: 'predict',
-      options: [],
+      modelList: [],
       modelInfo: {},
-      datasets: 0,
       datasetsInfo: {},
-      dataList: []
+      datasetsList: []
     }
   },
-  methods: {
-    modelChange() {
-      this.modelInfo = this.options[this.model]
-    },
-    datasetsChange() {
-      this.datasetsInfo = this.dataList[this.datasets]
-    },
+  methods: {  
     getListmodel(limit, skip) {
       getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
         if (res.data.data.total > 0) {
-          this.options = res.data.data.models
-          this.modelInfo = this.options[0]
+          this.modelList = res.data.data.models
+          this.modelInfo = this.modelList[0]
         }
       })
     },
     getListdatasets(limit, skip, type) {
       listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
-        this.dataList = res.data.data.datasets
-        this.datasetsInfo = this.dataList[0]
+        this.datasetsList = res.data.data.datasets
+        this.datasetsInfo = this.datasetsList[0]
       })
     },
     createPredict() {

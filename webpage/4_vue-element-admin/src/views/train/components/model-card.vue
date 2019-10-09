@@ -10,7 +10,7 @@
           placeholder="请选择"
           @change="modelChange"
         >
-          <el-option v-for="(item, idx) in options" :key="item.id" :label="item.desc" :value="idx"></el-option>
+          <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx"></el-option>
         </el-select>
         <el-input
           class="model-input"
@@ -95,15 +95,14 @@ export default {
   components: {},
   data() {
     return {
-      model: 0,
-      modelDesc: ''
+      model: 0
     }
   },
   props: {
     modelInfo: {
       type: Object || String
     },
-    options: {
+    modelList: {
       type: Array
     },
     predict: {
@@ -119,6 +118,9 @@ export default {
     }
   },
   methods: {
+    modelChange() {
+      this.modelInfo = this.modelList[this.model]
+    },
     emitDesc() {
       this.$emit('changeDesc', this.trainInfo.desc)
     }
