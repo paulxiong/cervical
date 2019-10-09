@@ -848,7 +848,6 @@ type predictpostdata struct {
 func Predict(c *gin.Context) {
 	var postdata predictpostdata
 	if err := c.ShouldBind(&postdata); err != nil || postdata.MID < 1 || postdata.DID < 1 {
-		logger.Info.Println(err)
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
 			"data":   "invalied postdata",
@@ -876,15 +875,12 @@ func Predict(c *gin.Context) {
 		return
 	}
 
-	logger.Info.Println(minfo.Path)
-	logger.Info.Println(dinfo)
 	p := f.PredictInfo{
 		ID:    0,
-		DID:   1,
-		MID:   2,
+		DID:   dinfo.ID,
+		MID:   int64(minfo.ID),
 		Types: postdata.Celltypes,
-		DDir:  "1",
-		MDir:  "2",
+		DDir:  dinfo.Dir,
 	}
 	p.NewPredictJSONFile()
 
