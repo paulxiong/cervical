@@ -504,7 +504,7 @@ type Model struct {
 	Precision     float32   `json:"precision"      gorm:"column:PRECISION1"`     //训练评估得到的准确率,整数0.66表示66%
 	Ntrain        int       `json:"n_train"        gorm:"column:n_train"`        //训练用了多少张图片
 	Nclasses      int       `json:"n_classes"      gorm:"column:n_classes"`      //训练有几个分类
-	Types1        []int     `json:"celltypes"      gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
+	Types1        []int     `json:"types"          gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
 	Types2        string    `json:"-"              gorm:"column:types"`          //训练的标签, 字符串存储(存数据库，前端没有这个字段)
 	InputShape    string    `json:"input_shape"    gorm:"column:input_shape"`    //训练输入的尺寸
 	ModelCount    int       `json:"model_count"    gorm:"column:model_count"`    //产生的模型个数
