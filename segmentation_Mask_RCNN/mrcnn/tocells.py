@@ -47,7 +47,7 @@ class cropper():
             cropped = img[y1:y2,x1:x2,:]
             cv2.imwrite(cells_crop_file_path, cropped)
         color = []
-        if sign ! = 1:
+        if sign != 1:
             if side == 50: # 选择标记细胞边框颜色
                 color = [0,255,0]
             elif side == 55:
@@ -200,7 +200,7 @@ class cropper():
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_masked.png'.format(filename,
                                                fov_type, cell_type, x1, y1, x2, y2))
-                    self.processing_img(crop_img, npy_path, masked_path, expand_side ! = 1)
+                    self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
         return True
 
 if __name__ == '__main__':
