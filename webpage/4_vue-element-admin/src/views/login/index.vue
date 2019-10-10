@@ -26,6 +26,7 @@
             name="username"
             type="email"
             tabindex="1"
+            autofocus
             autocomplete="on"
           />
         </el-form-item>

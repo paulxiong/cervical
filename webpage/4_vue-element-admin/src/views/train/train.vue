@@ -27,16 +27,18 @@
           border
         ></el-checkbox>
       </el-checkbox-group>
-      <el-badge is-dot class="badge">模型信息</el-badge>
-      <el-button
-        type="danger"
-        size="small"
-        class="save-btn"
-        :disabled="!modelInfo.desc"
-        @click="saveModel"
-        v-if="showSaveBtn"
-      >保存模型</el-button>
-      <modelCard :modelInfo="modelInfo" @changeDesc="changeDesc"></modelCard>
+      <div class="model-box" v-if="typeof modelInfo === Object">
+        <el-badge is-dot class="badge">模型信息</el-badge>
+        <el-button
+          type="danger"
+          size="small"
+          class="save-btn"
+          :disabled="!modelInfo.desc"
+          @click="saveModel"
+          v-if="showSaveBtn"
+        >保存模型</el-button>
+        <modelCard :modelInfo="modelInfo" @changeDesc="changeDesc"></modelCard>
+      </div>
     </section>
   </div>
 </template>
@@ -51,7 +53,7 @@ export default {
   components: { modelCard },
   data() {
     return {
-      percentage: 50,
+      percentage: 0,
       showSaveBtn: true,
       jobResult: JSON.parse(localStorage.getItem('jobResult')) || [],
       checkboxCell: [],
@@ -71,7 +73,6 @@ export default {
         v = parseInt(v.slice(0, 1))
         postCelltypes.push(v)
       })
-      console.log(postCelltypes)
       createTrain({
         id: parseInt(this.$route.query.id),
         celltypes: postCelltypes

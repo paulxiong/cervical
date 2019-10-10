@@ -119,7 +119,7 @@ export default {
       })
       setTimeout(() => {
         this.tableData.push(this.objData, this.objData2)
-      }, 1e3)
+      }, 500)
     },
     getPercent() {
       getPercent({ id: this.$route.query.id }).then(res => {

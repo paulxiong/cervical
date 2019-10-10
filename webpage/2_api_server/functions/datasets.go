@@ -289,7 +289,8 @@ type PredictInfo struct {
 	MID   int64  `json:"mid"   example:"1"`    //用来做预测的模型ID
 	Types []int  `json:"types" example:"7"`    //预测哪几个类型的细胞
 	DDir  string `json:"ddir"  example:"任务目录"` //用来做预测的数据集的目录
-	MDir  string `json:"mdir"  example:"任务目录"` //用来做预测的模型的目录
+	// MDir  string `json:"mdir"  example:"任务目录"` //用来做预测的模型的目录
+	MPath string `json:"mpath"  example:"模型文件的路径"` //模型文件的路径
 }
 
 // NewPredictJSONFile 创建预测任务的时候把任务的部分信息存到JSON文件
@@ -300,7 +301,7 @@ func (p *PredictInfo) NewPredictJSONFile() {
 	if err != nil {
 		log.Println("ERROR:", err)
 	}
-	info := scratchRoot + "/" + dirname + "/train.json"
+	info := scratchRoot + "/" + dirname + "/predict.json"
 	logger.Info.Println(info)
 	writeJSON(info, data)
 }

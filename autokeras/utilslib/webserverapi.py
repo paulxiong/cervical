@@ -93,6 +93,10 @@ def get_one_job(status, _type):
             if debug_on:
                 print('got a train job')
             return jobid, status, dirname, datatype
+        elif status == 10 and dirname is not None:
+            if debug_on:
+                print('got a predict job')
+            return jobid, status, dirname, datatype
         else:
             return None, None, None, None
 

@@ -9,7 +9,11 @@ export const taskStatus = {
   6: '送去训练',
   7: '开始训练',
   8: '训练出错',
-  9: '训练完成'
+  9: '训练完成',
+  10: '送去预测',
+  11: '开始预测',
+  12: '预测出错',
+  13: '预测完成'
 }
 
 export const taskType = {
@@ -22,7 +26,11 @@ export const taskType = {
   6: 'warning',
   7: 'warning',
   8: 'danger',
-  9: 'success'
+  9: 'success',
+  10: 'warning',
+  11: 'warning',
+  12: 'danger',
+  13: 'success'
 }
 
 // 训练类型
