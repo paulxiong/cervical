@@ -135,7 +135,7 @@ export default {
     }
   },
   mounted() {
-    this.listdatasets(100, 0, 0)
+    this.listdatasets(100, 0, 1)
   }
 }
 </script>

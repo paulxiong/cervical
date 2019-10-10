@@ -28,19 +28,17 @@
     </section>
     <section class="results flex" v-else>
       <div class="img-item" v-for="(item,idx) in predictResult" :key="idx">
-        <el-image
-          :class="item.type===item.predict?'img-right':'img-wrong'"
-          :src="item.url"
-          lazy
-        >
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline"></i>
-          </div>
-        </el-image>
-        <div class="info flex">
-          <b>实际：{{item.type}}</b>
-          <b>预测：{{item.predict}}</b>
-        </div>
+        <el-tooltip class="item" effect="dark" :content="`实际${item.type}:预测${item.predict}`" placement="bottom">
+          <el-image
+            :class="item.type===item.predict?'img-right':'img-wrong'"
+            :src="item.url"
+            lazy
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+        </el-tooltip>
       </div>
     </section>
   </div>
@@ -57,7 +55,7 @@ export default {
   components: { modelCard, datasetsCard },
   data() {
     return {
-      percentage: 50,
+      percentage: 0,
       predict: 'predict',
       startPredict: false,
       modelList: [],
@@ -67,6 +65,46 @@ export default {
       postCelltypes: [],
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
       predictResult: [
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
         {
           url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
           type: 1,
@@ -102,13 +140,11 @@ export default {
           type: 'success'
         })
         this.startPredict = true
+        this.percentage = 100
       })
     },
     changeCellTypes(val) {
       this.postCelltypes = val
-    },
-    changeTop() {
-      console.log(this.predictResult)
     }
   },
   mounted() {
@@ -157,12 +193,12 @@ export default {
   }
   .results {
     justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 30px;
     .img-item {
       flex-direction: column;
       margin-right: 30px;
-      .info {
-        justify-content: space-between;
-      }
+      margin-bottom: 30px;
       .img-right {
         border: 5px solid #27cc6a;
         border-radius: 5px;
