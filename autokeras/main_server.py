@@ -294,7 +294,6 @@ def get_job(jobstatus, jobtype):
     #检查得到的任务是不是想要的
     if status != jobstatus or dirname is None:
         jobid, dirname = 0, None
-    print(jobid, dirname)
     return jobid, dirname
 
 def get_train_predict_job():
