@@ -1,7 +1,7 @@
 <template>
   <div class="page3-dashboard-container">
     <div id="left" class="page3-column">
-      <img id="hallstatt" :src="imgurl" class="annotatable">
+      <img id="hallstatt" :src="imgurl" class="annotatable" />
     </div>
 
     <div id="right" class="page3-column">
@@ -30,25 +30,40 @@
     </div>
 
     <div id="bottom">
-      <div v-for="item in items" :key="item" class="item imgWrap">
+      <!-- <div v-for="item in items" :key="item" class="item imgWrap">
         <p>{{ item }}</p>
-      </div>
+      </div> -->
+      <el-image
+        class="img item imgWrap"
+        v-for="(img,idx) in cells_crop"
+        :key="idx"
+        :src="hosturlpath200 + img"
+        lazy
+      >
+        <div slot="error" class="image-slot">
+          <i class="el-icon-picture-outline"></i>
+        </div>
+      </el-image>
     </div>
   </div>
 </template>
 
 <script>
-import { getImgListOneByOne, getLabelByImageId } from '@/api/cervical'
-import { ImgServerUrl } from '@/const/config'
-import { page3ImgWidth } from '@/const/const'
+import {
+  getImgListOneByOne,
+  getLabelByImageId,
+  getjobresult
+} from "@/api/cervical";
+import { ImgServerUrl } from "@/const/config";
+import { page3ImgWidth } from "@/const/const";
 
 export default {
-  name: 'Info',
+  name: "Info",
   components: {},
   data() {
     return {
       items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-      imgurl: '',
+      imgurl: "",
       imgw: 0, // 当前图片宽度
       imgh: 0, // 当前图片高度
       scale: 1, // 当前缩放比， 显示的图片宽度=原图宽度/scale
@@ -56,38 +71,56 @@ export default {
       tableData: [],
       totallabel: 0,
       labels: [],
-      currentRow: null
-    }
+      currentRow: null,
+      hosturlpath16: ImgServerUrl + "/unsafe/32x0/scratch/",
+      hosturlpath64: ImgServerUrl + "/unsafe/640x0/scratch/",
+      hosturlpath200: ImgServerUrl + "/unsafe/200x0/scratch/",
+      hosturlpath645: ImgServerUrl + "/unsafe/800x0/scratch/",
+      objData: { name: "输入信息" },
+      objData2: { name: "输出信息" },
+      origin_imgs: [],
+      cells_crop: [],
+      cells_crop_masked: []
+    };
   },
   computed: {},
   created() {},
   mounted() {
-    this.getImgListOneByOne(10, 0)
+    this.getImgListOneByOne(10, 0);
+    this.getjobresult();
   },
   methods: {
+    getjobresult() {
+      getjobresult({ id: 71, done: "0" }).then(res => {
+        this.objData = Object.assign(this.objData, res.data.data);
+        this.origin_imgs = this.objData.origin_imgs;
+        this.cells_crop = this.objData.cells_crop;
+        this.cells_crop_masked = this.objData.cells_crop_masked;
+      });
+    },
     setaddAnnotation(url, labels, divide) {
-      window.anno.removeAll()
-      window.anno.destroy()
+      window.anno.removeAll();
+      window.anno.destroy();
       window.anno.setProperties({
-        outline: 'yellow',
+        outline: "yellow",
         outline_width: 4,
-        hi_outline: 'green',
+        hi_outline: "green",
         hi_outline_width: 2,
-        stroke: 'blue'
-      })
-      window.anno.makeAnnotatable(document.getElementById('hallstatt'))
+        stroke: "blue"
+      });
+      window.anno.makeAnnotatable(document.getElementById("hallstatt"));
       // 遍历获取snapshot表里图片头像框坐标信息并等比换算处理到页面上展示
       // console.log('url: ', url);
       for (let i = 0; i < labels.length; i++) {
         var annotation = {
           src: url,
-          text: '' + labels[i].typeout,
-          units: 'pixel',
+          text: "" + labels[i].typeout,
+          units: "pixel",
           editable: true,
           shapes: [
             {
-              type: 'rect',
-              units: 'pixel',
+              type: "rect",
+              units: "pixel",
               geometry: {
                 x: parseInt(labels[i].x / divide),
                 y: parseInt(labels[i].y / divide),
@@ -98,34 +131,34 @@ export default {
               }
             }
           ]
-        }
+        };
         // 添加头像框到画布里
-        window.anno.addAnnotation(annotation)
+        window.anno.addAnnotation(annotation);
         // window.anno.highlightAnnotation(annotation)
       }
     },
     setCurrent(row) {
-      this.$refs.singleTable.setCurrentRow(row)
+      this.$refs.singleTable.setCurrentRow(row);
     },
     handleCurrentChange(val) {
       this.imgurl =
         ImgServerUrl +
-        '/unsafe/' +
+        "/unsafe/" +
         page3ImgWidth +
-        'x0/img/' +
+        "x0/img/" +
         val.batchid +
-        '/' +
+        "/" +
         val.medicalid +
-        '/Images/' +
-        val.imgpath
-      this.getLabelByImageId(100, 0, val.id)
+        "/Images/" +
+        val.imgpath;
+      this.getLabelByImageId(100, 0, val.id);
     },
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
       // this.getImgListOneByOne(Number(val), 0);
     },
     handleCurrentChange2(val) {
-      this.getImgListOneByOne(10, (Number(val) - 1) * 10)
+      this.getImgListOneByOne(10, (Number(val) - 1) * 10);
     },
     getImgListOneByOne(limit, skip) {
       getImgListOneByOne({ limit: limit, skip: skip }).then(response => {
@@ -133,18 +166,18 @@ export default {
           !response ||
           !response.data ||
           !response.data.data ||
-          typeof response.data.data !== 'object'
+          typeof response.data.data !== "object"
         ) {
-          return
+          return;
         }
-        const { data } = response.data
-        this.totalimg = response.data.total
-        this.tableData = data.images ? data.images.concat([]) : []
+        const { data } = response.data;
+        this.totalimg = response.data.total;
+        this.tableData = data.images ? data.images.concat([]) : [];
 
         if (this.setCurrent && this.setCurrent.length > 0) {
-          this.setCurrent(this.tableData[0])
+          this.setCurrent(this.tableData[0]);
         }
-      })
+      });
     },
     getLabelByImageId(limit, skip, imgid) {
       getLabelByImageId({ limit: limit, skip: skip, imgid: imgid }).then(
@@ -153,29 +186,29 @@ export default {
             !response ||
             !response.data ||
             !response.data.data ||
-            typeof response.data.data !== 'object'
+            typeof response.data.data !== "object"
           ) {
-            return
+            return;
           }
-          const { data } = response.data
-          this.totallabel = response.data.total
-          this.labels = data.labels ? data.labels.concat([]) : []
-          this.imgw = data.imgw
-          this.imgh = data.imgh
+          const { data } = response.data;
+          this.totallabel = response.data.total;
+          this.labels = data.labels ? data.labels.concat([]) : [];
+          this.imgw = data.imgw;
+          this.imgh = data.imgh;
           if (!this.imgw) {
-            this.scale = 3
+            this.scale = 3;
           } else {
-            this.scale = this.imgw / page3ImgWidth
+            this.scale = this.imgw / page3ImgWidth;
           }
-          var that = this
+          var that = this;
           setTimeout(function() {
-            that.setaddAnnotation(that.imgurl, that.labels, that.scale)
-          }, 200)
+            that.setaddAnnotation(that.imgurl, that.labels, that.scale);
+          }, 200);
         }
-      )
+      );
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -224,7 +257,7 @@ export default {
   // align-items: flex-start;
   align-content: space-between;
   min-width: 100%;
-  height: 34vh;
+  // height: 34vh;
   padding-top: 15px;
   // background-color: lightgray;
 }
@@ -243,14 +276,14 @@ export default {
   width: 100%;
   height: 100%;
   background-color: lightseagreen;
-  transition: visibility 1.5s, opacity .6s;
+  transition: visibility 1.5s, opacity 0.6s;
   visibility: hidden;
-  opacity: .3;
+  opacity: 0.3;
 }
 
 .imgWrap:hover::before {
   visibility: visible;
-  opacity: .9;
+  opacity: 0.9;
 }
 </style>
 
