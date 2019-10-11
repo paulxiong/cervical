@@ -178,11 +178,9 @@ export default {
 }
 </script>
 
-<style scoped>
-/* @import "./annotorious/css/theme-dark/annotorious-dark.css"; */
-@import "../../styles/annotorious-dark.css";
-</style>
 <style scoped lang="scss">
+@import "../../styles/annotorious-dark.css";
+
 .page3-dashboard-container {
   max-width: 100%;
   padding: 15px;

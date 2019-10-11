@@ -72,7 +72,6 @@ export default {
         data1.batchs.map(v => {
           const obj = {}
           obj['label'] = v
-          console.log(v)
           getMedicalIdInfo({ 'batchid': v }).then(res2 => {
             const data2 = res2.data.data
             const medicalids = []
@@ -105,7 +104,6 @@ export default {
       // 去重
       postBatchs = Array.from(new Set(postBatchs))
       postMedicalIds = Array.from(new Set(postMedicalIds))
-      console.log(postBatchs, postMedicalIds,this.trainType)
       this.getimgnptypebymids(postBatchs, postMedicalIds)
     },
     getimgnptypebymids(postBatchs, postMedicalIds) {

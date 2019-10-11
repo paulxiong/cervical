@@ -1,16 +1,15 @@
 <template>
   <div class="start-train">
     <h2 class="title flex">
-      请
       <el-input
         v-model="inputName"
         autofocus
-        placeholder="为数据集取个名字吧"
+        placeholder="输入描述"
         show-word-limit
         maxlength="30"
         @keyup.enter.native="goTrain"
         class="input-name"
-      ></el-input>，然后
+      ></el-input>
       <el-button
         class="start-btn"
         type="danger"
@@ -18,10 +17,7 @@
         :loading="loading"
         @click="goTrain"
       >开始处理</el-button>
-      <i class="errInfo-btn">
-        若信息有误，需要
-        <el-button type="info" size="mini" @click="goBack">重新编辑</el-button>
-      </i>
+      <el-button class="errInfo-btn" type="info" size="mini" @click="goBack">重新编辑</el-button>
     </h2>
     <section class="train-box-info">
       <el-card shadow="hover">
@@ -112,7 +108,7 @@ export default {
   },
   filters: {
     filterModelType(value) {
-      return modelType[value].name
+      return modelType[value]
     }
   },
   methods: {
@@ -140,7 +136,6 @@ export default {
   }
   .input-name {
     width: 500px;
-    margin: 0 7px;
   }
   .badge {
     font-size: 20px;
@@ -163,7 +158,7 @@ export default {
   }
   .errInfo-btn {
     font-size: 12px;
-    margin-left: 30px;
+    margin-left: 10px;
   }
   .start-btn {
     margin-left: 10px;
@@ -176,8 +171,13 @@ export default {
     justify-content: space-around;
     flex-wrap: wrap;
     .info {
-      width: 50%;
+      width: 40%;
+      overflow: hidden;
+      text-overflow: ellipsis;
       margin: 10px 0;
+    }
+    .info:nth-child(even) {
+      width: 60%;
     }
   }
 }

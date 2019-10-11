@@ -26,7 +26,6 @@
             name="username"
             type="email"
             tabindex="1"
-            autofocus
             autocomplete="on"
           />
         </el-form-item>
@@ -51,17 +50,17 @@
           </span>
         </el-form-item>
 
-        <el-form-item prop="password" v-if="register">
+        <el-form-item prop="confirmPassword" v-if="register">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
           <el-input
             :key="passwordType"
-            ref="password"
+            ref="confirmPassword"
             v-model="loginForm.confirmPassword"
             :type="passwordType"
             placeholder="确认密码"
-            name="password"
+            name="confirmPassword"
             tabindex="2"
             autocomplete="on"
             @keyup.enter.native="handleLogin"
@@ -142,8 +141,15 @@ export default {
       }
     }
     const validateConfirmPassword = (rule, value, callback) => {
-      if (this.loginForm.password === this.loginForm.confirmPassword) {
+      if (this.loginForm.password !== this.loginForm.confirmPassword) {
         callback(new Error('两次输入的密码不同'))
+      } else {
+        callback()
+      }
+    }
+    const validateCode = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('请输入6位的邮箱验证码'))
       } else {
         callback()
       }
@@ -167,6 +173,9 @@ export default {
         ],
         confirmPassword: [
           { required: true, trigger: 'blur', validator: validateConfirmPassword }
+        ],
+        code: [
+          { required: true, trigger: 'blur', validator: validateCode }
         ]
       },
       passwordType: 'password',
@@ -192,13 +201,6 @@ export default {
   created() {
     // window.addEventListener('storage', this.afterQRScan)
   },
-  mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
-    }
-  },
   destroyed() {
     clearInterval(timer)
     // window.removeEventListener('storage', this.afterQRScan)
@@ -206,6 +208,7 @@ export default {
   methods: {
     handleRegisterLogin() {
       this.register = !this.register
+      this.passwordType = 'password'
       this.loginForm.username = ''
       this.loginForm.password = ''
     },

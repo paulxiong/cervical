@@ -68,7 +68,7 @@
           <i>评估准确度:</i>
           <b>{{modelInfo.evaluate_value}}</b>
         </section>
-        <section class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;" v-if="modelInfo.types">
+        <section class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;" v-if="predict === 'predict'">
           <i>细胞类型选择:</i>
           <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox" @change="changeCellTypes">
             <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
