@@ -32,13 +32,15 @@
     <div id="bottom">
       <!-- <div v-for="item in items" :key="item" class="item imgWrap">
         <p>{{ item }}</p>
-      </div> -->
+      </div>-->
       <el-image
         class="img item imgWrap"
-        v-for="(img,idx) in cells_crop"
+        v-for="(img,idx) in objImgs"
         :key="idx"
-        :src="hosturlpath200 + img"
+        :src="hosturlpath200 + img.cells_crop"
         lazy
+        :data-cellsCropMasked="hosturlpath200 + img.cells_crop_masked"
+        data-aaa="aaa"
       >
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline"></i>
@@ -80,7 +82,12 @@ export default {
       objData2: { name: "输出信息" },
       origin_imgs: [],
       cells_crop: [],
-      cells_crop_masked: []
+      cells_crop_masked: [],
+      // objImgs: [{
+      //   cells_crop: "",
+      //   cells_crop_masked: ""
+      // }],
+      objImgs: []
     };
   },
   computed: {},
@@ -96,6 +103,23 @@ export default {
         this.origin_imgs = this.objData.origin_imgs;
         this.cells_crop = this.objData.cells_crop;
         this.cells_crop_masked = this.objData.cells_crop_masked;
+        let objImgs = [];
+        for (let index = 0; index < this.cells_crop.length; index++) {
+          const element = this.cells_crop[index];
+          // console.log(element)
+          let objImg = {
+            cells_crop: element
+          }
+          objImgs.push(objImg)
+        }
+        console.log("objImgs1", objImgs)
+        for (let index = 0; index < this.cells_crop_masked.length; index++) {
+          const element = this.cells_crop_masked[index];
+          objImgs[index].cells_crop_masked = element;
+        }
+        console.log("objImgs2", objImgs)
+        this.objImgs = objImgs;
+        console.log(this.objData);
       });
     },
     setaddAnnotation(url, labels, divide) {
@@ -272,7 +296,8 @@ export default {
 
 .imgWrap::before {
   position: absolute;
-  content: " ";
+  content: url();
+  // content: url(attr(data-cells_crop_masked));
   width: 100%;
   height: 100%;
   background-color: lightseagreen;
