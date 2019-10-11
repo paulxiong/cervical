@@ -85,8 +85,8 @@
             tabindex="2"
             autocomplete="on"
           />
-          <span class="show-pwd">
-            <svg-icon icon-class="guide" @click="sendCode" v-if="time === 60" />
+          <span class="send-code" @click="sendCode">
+            <b v-if="time === 60">发送验证码</b>
             <i v-else>{{time}}</i>
           </span>
         </el-form-item>
@@ -431,14 +431,31 @@ $light_gray: #eee;
     cursor: pointer;
     user-select: none;
   }
-
+  .send-code {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 16px;
+    padding: 0 5px;
+    color: #fff;
+    cursor: pointer;
+    background: #5b646e;
+    height: 100%;
+    line-height: 50px;
+  }
   .thirdparty-button {
     position: absolute;
     right: 0;
     bottom: 6px;
   }
 
-  @media only screen and (max-width: 470px) {
+  @media only screen and (max-width: 500px) {
+    .img {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 500px) {
     .thirdparty-button {
       display: none;
     }
