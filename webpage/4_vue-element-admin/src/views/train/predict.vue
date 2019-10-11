@@ -26,20 +26,46 @@
         <datasetsCard :datasetsInfo="datasetsInfo" :predict="predict" :datasetsList="datasetsList" />
       </section>
     </section>
-    <section class="results flex" v-else>
-      <div class="img-item" v-for="(item,idx) in predictResult" :key="idx">
-        <el-tooltip class="item" effect="dark" :content="`实际${item.type}:预测${item.predict}`" placement="bottom">
-          <el-image
-            :class="item.type===item.predict?'img-right':'img-wrong'"
-            :src="item.url"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image>
-        </el-tooltip>
-      </div>
+    <section class="results" v-else>
+      <section class="info-box">
+        <el-table :data="predictResult.result" stripe border style="width: 100%">
+          <el-table-column prop="type" width="400" label="类型"></el-table-column>
+          <el-table-column prop="total_org" label="输入个数"></el-table-column>
+          <el-table-column prop="total" label="实际预测个数"></el-table-column>
+          <el-table-column prop="count_false" label="错误个数"></el-table-column>
+          <el-table-column prop="count_right" label="正确个数"></el-table-column>
+        </el-table>
+      </section>
+      <section class="img-list">
+        <el-tabs tab-position="left" v-loading="loading" class="img-tabs">
+          <el-tab-pane :label="`错误细胞 ${falseCellsList.length}`">
+            <el-image
+              class="img-item img-false"
+              v-for="(img,idx) in falseCellsList"
+              :key="idx"
+              :src="hosturlpath64 + img.url"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-tab-pane>
+          <el-tab-pane :label="`正确细胞 ${rightCellsList.length}`">
+            <el-image
+              class="img-item img-false"
+              v-for="(img,idx) in rightCellsList"
+              :key="idx"
+              :src="hosturlpath64 + img.url"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </el-tab-pane>
+        </el-tabs>
+      </section>
     </section>
   </div>
 </template>
@@ -48,7 +74,8 @@
 import modelCard from './components/model-card'
 import datasetsCard from './components/datasets-card'
 import { ImgServerUrl } from '@/const/config'
-import { listdatasets, getListmodel, createPredict } from '@/api/cervical'
+import { cellsType } from '@/const/const'
+import { listdatasets, getListmodel, createPredict, getPredictResult } from '@/api/cervical'
 
 export default {
   name: 'Predict',
@@ -58,64 +85,16 @@ export default {
       percentage: 0,
       predict: 'predict',
       startPredict: false,
+      loading: true,
       modelList: [],
       modelInfo: {},
       datasetsInfo: {},
       datasetsList: [],
       postCelltypes: [],
-      hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
-      predictResult: [
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
-          type: 1,
-          predict: 7
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
-          type: 1,
-          predict: 1
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
-          type: 1,
-          predict: 7
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
-          type: 1,
-          predict: 1
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
-          type: 1,
-          predict: 7
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
-          type: 1,
-          predict: 1
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
-          type: 1,
-          predict: 7
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
-          type: 1,
-          predict: 1
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
-          type: 1,
-          predict: 7
-        },
-        {
-          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
-          type: 1,
-          predict: 1
-        }
-      ]
+      hosturlpath64: ImgServerUrl + '/unsafe/64x0/scratch/',
+      predictResult: {},
+      rightCellsList: [],
+      falseCellsList: []
     }
   },
   methods: {
@@ -139,7 +118,22 @@ export default {
           message: res.data.data,
           type: 'success'
         })
+        getPredictResult({ 'id': this.datasetsInfo.id }).then(res => {
+          this.predictResult = res.data.data
+          this.predictResult.result.map(v => {
+            v.type = cellsType[v.type]
+            v.count_right = v.total - v.count_false
+          })
+          this.predictResult.crop_cells.map(v => {
+            if(v.type === v.predict) {
+              this.rightCellsList.push(v)
+            } else {
+              this.falseCellsList.push(v)
+            }
+          })
+        })
         this.startPredict = true
+        this.loading = false
         this.percentage = 100
       })
     },
@@ -191,22 +185,22 @@ export default {
   .model-option {
     display: block;
   }
+  .info-box {
+    margin-bottom: 20px;
+  }
   .results {
-    justify-content: flex-start;
-    flex-wrap: wrap;
     padding: 30px;
     .img-item {
-      flex-direction: column;
-      margin-right: 30px;
-      margin-bottom: 30px;
-      .img-right {
-        border: 5px solid #27cc6a;
-        border-radius: 5px;
-      }
-      .img-wrong {
-        border: 5px solid #fd6e70;
-        border-radius: 5px;
-      }
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .img-right {
+      border: 5px solid #27cc6a;
+      border-radius: 5px;
+    }
+    .img-false {
+      border: 5px solid #fd6e70;
+      border-radius: 5px;
     }
   }
   .model-select,

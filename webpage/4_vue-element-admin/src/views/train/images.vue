@@ -12,7 +12,6 @@
     </section>
     <section class="main">
       <section class="info-box">
-        <el-badge is-dot class="badge">信息展示</el-badge>
         <el-table :data="tableData" stripe border style="width: 100%">
           <el-table-column prop="name" label="类型"></el-table-column>
           <el-table-column prop="dir" label="目录"></el-table-column>
@@ -198,7 +197,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin: 20px 0;
   .info-list {
     justify-content: flex-start;
     flex-wrap: wrap;

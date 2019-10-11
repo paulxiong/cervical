@@ -159,3 +159,11 @@ export function createPredict(data) {
     data
   })
 }
+
+export function getPredictResult(query) {
+  return request({
+    url: '/api1/predictresult',
+    method: 'get',
+    params: query
+  })
+}
