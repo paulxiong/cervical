@@ -449,13 +449,13 @@ $light_gray: #eee;
     bottom: 6px;
   }
 
-  @media only screen and (max-width: 500px) {
+  @media only screen and (max-width: 650px) {
     .img {
       display: none;
     }
   }
 
-  @media only screen and (max-width: 500px) {
+  @media only screen and (max-width: 650px) {
     .thirdparty-button {
       display: none;
     }
