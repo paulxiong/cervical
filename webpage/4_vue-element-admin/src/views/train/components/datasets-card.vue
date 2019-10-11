@@ -2,36 +2,46 @@
   <div class="card">
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
-        <b>{{datasets.desc}}</b>
-        <b style="display:block;">{{datasets.type | filtersStatus}}</b>
+        <el-select
+          v-if="predict === 'predict'"
+          class="model-option"
+          v-model="datasets"
+          clearable
+          placeholder="请选择"
+          @change="datasetsChange"
+        >
+          <el-option v-for="(item, idx) in datasetsList" :key="item.id" :label="item.desc" :value="idx"></el-option>
+        </el-select>
+        <b v-else>{{datasetsInfo.desc}}</b>
+        <b style="display:block;">{{datasetsInfo.type | filtersStatus}}</b>
         <div class="score">
-          {{datasets.created_by | filterCreated}}
+          {{datasetsInfo.created_by | filterCreated}}
         </div>
       </div>
       <div class="flex model-info">
         <section class="info">
           <i>ID:</i>
-          <b>{{datasets.id}}</b>
+          <b>{{datasetsInfo.id}}</b>
         </section>
         <section class="info">
           <i>路径</i>
-          <b>{{datasets.dir}}</b>
+          <b>{{datasetsInfo.dir}}</b>
         </section>
         <section class="info">
           <i>状态</i>
-          <b>{{datasets.status | filtersTaskStatus}}</b>
+          <b>{{datasetsInfo.status | filtersTaskStatus}}</b>
         </section>
         <section class="info">
           <i>进度</i>
-          <b>{{datasets.percent}}%</b>
+          <b>{{datasetsInfo.percent}}%</b>
         </section>
         <section class="info">
           <i>创建时间</i>
-          <b>{{datasets.created_at | filtersTime}}</b>
+          <b>{{datasetsInfo.created_at | filtersTime}}</b>
         </section>
         <section class="info">
           <i>训练时间</i>
-          <b>{{datasets.traintime | filtersTime}}</b>
+          <b>{{datasetsInfo.traintime | filtersTime}}</b>
         </section>
       </div>
     </el-card>
@@ -47,11 +57,18 @@ export default {
   components: {},
   data() {
     return {
+      datasets: 0
     }
   },
   props: {
-    datasets: {
-      type: Object
+    datasetsInfo: {
+      type: Object || String
+    },
+    datasetsList: {
+      type: Array
+    },
+    predict: {
+      type: String
     }
   },
   filters: {
@@ -69,6 +86,11 @@ export default {
     },
     filtersTime(value) {
       return dateformat3(value)
+    }
+  },
+  methods: {
+    datasetsChange() {
+      this.datasetsInfo = this.datasetsList[this.datasets]
     }
   }
 }

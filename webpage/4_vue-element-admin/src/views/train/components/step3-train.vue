@@ -53,7 +53,7 @@
           </section>
         </div>
       </el-card>
-      <el-card style="margin-top:20px;" shadow="hover">
+      <el-card v-if="modelInfo.model.id" style="margin-top:20px;" shadow="hover">
         <div class="info-header flex">
           <el-badge is-dot class="badge">模型及参数</el-badge>
           <el-tag

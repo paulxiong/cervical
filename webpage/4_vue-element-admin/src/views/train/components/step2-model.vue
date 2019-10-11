@@ -1,7 +1,7 @@
 <template>
   <div class="checkModel">
     <section class="btn flex">
-      <el-button type="primary" @click="nextStep" class="next-btn">
+      <el-button type="primary" :disabled="!options.length" @click="nextStep" class="next-btn">
         下一步
         <i class="el-icon-arrow-right el-icon--right"></i>
       </el-button>

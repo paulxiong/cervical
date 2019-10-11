@@ -1,7 +1,7 @@
 <template>
   <div class="predict">
     <section class="header flex">
-      <el-badge is-dot class="badge">状态进度</el-badge>
+      <el-badge is-dot class="badge">预测进度</el-badge>
       <el-progress
         :text-inside="true"
         :stroke-width="26"
@@ -11,39 +11,35 @@
       ></el-progress>
       <el-button type="danger" class="predict-btn" @click="createPredict">开始预测</el-button>
     </section>
-    <section class="content">
-      <section class="model-select">
-        <el-badge is-dot class="badge">模型选择</el-badge>
-        <el-select
-          class="model-option"
-          v-model="model"
-          clearable
-          placeholder="请选择"
-          @change="modelChange"
-        >
-          <el-option v-for="(item, idx) in options" :key="item.id" :label="item.desc" :value="idx"></el-option>
-        </el-select>
-      </section>
-      <section class="model-info">
+    <section class="content" v-if="!startPredict">
+      <section class="model-info" v-if="modelList.length">
         <el-badge is-dot class="badge">模型信息</el-badge>
-        <modelCard :trainInfo="trainInfo" :predict="predict" />
+        <modelCard
+          :modelInfo="modelInfo"
+          :predict="predict"
+          :modelList="modelList"
+          @changeCellTypes="changeCellTypes"
+        />
       </section>
-      <section class="datasets-select">
-        <el-badge is-dot class="badge">数据选择</el-badge>
-        <el-select
-          class="model-option"
-          v-model="datasets"
-          clearable
-          placeholder="请选择"
-          @change="datasetsChange"
-        >
-          <el-option v-for="(item, idx) in dataList" :key="item.id" :label="item.desc" :value="idx"></el-option>
-        </el-select>
-      </section>
-      <section class="datasets-info">
+      <section class="datasets-info" v-if="datasetsList.length">
         <el-badge is-dot class="badge">数据信息</el-badge>
-        <datasetsCard :datasets="datasetsInfo" />
+        <datasetsCard :datasetsInfo="datasetsInfo" :predict="predict" :datasetsList="datasetsList" />
       </section>
+    </section>
+    <section class="results flex" v-else>
+      <div class="img-item" v-for="(item,idx) in predictResult" :key="idx">
+        <el-tooltip class="item" effect="dark" :content="`实际${item.type}:预测${item.predict}`" placement="bottom">
+          <el-image
+            :class="item.type===item.predict?'img-right':'img-wrong'"
+            :src="item.url"
+            lazy
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image>
+        </el-tooltip>
+      </div>
     </section>
   </div>
 </template>
@@ -51,58 +47,104 @@
 <script>
 import modelCard from './components/model-card'
 import datasetsCard from './components/datasets-card'
-import { listdatasets, getListmodel, getTrainresult, createPredict } from '@/api/cervical'
+import { ImgServerUrl } from '@/const/config'
+import { listdatasets, getListmodel, createPredict } from '@/api/cervical'
 
 export default {
   name: 'Predict',
   components: { modelCard, datasetsCard },
   data() {
     return {
-      percentage: 50,
+      percentage: 0,
       predict: 'predict',
-      options: [],
-      model: 0,
-      datasets: 0,
-      trainInfo: {},
+      startPredict: false,
+      modelList: [],
+      modelInfo: {},
       datasetsInfo: {},
-      dataList: []
+      datasetsList: [],
+      postCelltypes: [],
+      hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
+      predictResult: [
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.P.IMG011x029.JPG_p_7_1529_817_1629_917.png',
+          type: 1,
+          predict: 7
+        },
+        {
+          url: 'http://dev.medical.raidcdn.cn:3001/unsafe/200x0/scratch/CHwwYmVD/cells/crop/redhouse.1816740.N.IMG023x017.JPG_n_1_1394_589_1494_689.png',
+          type: 1,
+          predict: 1
+        }
+      ]
     }
   },
   methods: {
-    modelChange() {
-      this.modelInfo = this.options[this.model]
-      this.getTrainresult()
-    },
-    datasetsChange() {
-      this.datasetsInfo = this.dataList[this.datasets]
-    },
     getListmodel(limit, skip) {
       getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
-        this.options = res.data.data.models
-        this.modelInfo = this.options[0]
         if (res.data.data.total > 0) {
-          this.getTrainresult()
+          this.modelList = res.data.data.models
+          this.modelInfo = this.modelList[0]
         }
-      })
-    },
-    getTrainresult() {
-      getTrainresult({ 'id': this.modelInfo.did }).then(res => {
-        this.trainInfo = res.data.data
       })
     },
     getListdatasets(limit, skip, type) {
       listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
-        this.dataList = res.data.data.datasets
-        this.datasetsInfo = this.dataList[0]
+        this.datasetsList = res.data.data.datasets
+        this.datasetsInfo = this.datasetsList[0]
       })
     },
     createPredict() {
-      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id }).then(res => {
+      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id, 'celltypes': this.postCelltypes }).then(res => {
         this.$message({
           message: res.data.data,
           type: 'success'
         })
+        this.startPredict = true
+        this.percentage = 100
       })
+    },
+    changeCellTypes(val) {
+      this.postCelltypes = val
     }
   },
   mounted() {
@@ -133,6 +175,7 @@ export default {
     bottom: -1px;
     right: -1px;
     padding: 10px 0;
+    z-index: 999;
     .badge {
       color: #fff;
     }
@@ -147,6 +190,24 @@ export default {
   }
   .model-option {
     display: block;
+  }
+  .results {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 30px;
+    .img-item {
+      flex-direction: column;
+      margin-right: 30px;
+      margin-bottom: 30px;
+      .img-right {
+        border: 5px solid #27cc6a;
+        border-radius: 5px;
+      }
+      .img-wrong {
+        border: 5px solid #fd6e70;
+        border-radius: 5px;
+      }
+    }
   }
   .model-select,
   .datasets-select,

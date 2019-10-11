@@ -1,17 +1,17 @@
 <template>
   <div class="images">
-    <section class="header">
+    <section class="header flex">
+      <el-badge is-dot class="badge">裁剪进度</el-badge>
+      <el-progress
+        class="progress"
+        :text-inside="true"
+        :stroke-width="26"
+        :percentage="percentage"
+        status="success"
+      ></el-progress>
+    </section>
+    <section class="main">
       <section class="info-box">
-        <div class="progress-info">
-          <el-badge is-dot class="badge">状态进度</el-badge>
-          <el-progress
-            class="progress"
-            :text-inside="true"
-            :stroke-width="26"
-            :percentage="percentage"
-            status="success"
-          ></el-progress>
-        </div>
         <el-badge is-dot class="badge">信息展示</el-badge>
         <el-table :data="tableData" stripe border style="width: 100%">
           <el-table-column prop="name" label="类型"></el-table-column>
@@ -27,18 +27,13 @@
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
-    </section>
-    <el-divider>
-      <i class="el-icon-picture"></i> 所有图片
-    </el-divider>
-    <section class="main">
-      <el-tabs tab-position="left" @tab-click="tabClick">
+      <el-tabs tab-position="left" @tab-click="tabClick" class="img-tabs">
         <el-tab-pane label="原图">
           <el-image
             class="img"
             v-for="(img,idx) in origin_imgs"
             :key="idx"
-            :src="hosturlpath200 + img"
+            :src="hosturlpath500 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -51,7 +46,7 @@
             class="img"
             v-for="(img,idx) in cells_crop"
             :key="idx"
-            :src="hosturlpath200 + img"
+            :src="hosturlpath32 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -64,7 +59,7 @@
             class="img"
             v-for="(img,idx) in cells_crop_masked"
             :key="idx"
-            :src="hosturlpath200 + img"
+            :src="hosturlpath32 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -99,10 +94,10 @@ export default {
     return {
       percentage: 0,
       dir: 'dsEoM8RR/',
-      hosturlpath16: ImgServerUrl + '/unsafe/32x0/scratch/',
+      hosturlpath32: ImgServerUrl + '/unsafe/32x0/scratch/',
       hosturlpath64: ImgServerUrl + '/unsafe/640x0/scratch/',
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
-      hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
+      hosturlpath500: ImgServerUrl + '/unsafe/500x0/scratch/',
       tableData: [],
       objData: { 'name': '输入信息' },
       objData2: { 'name': '输出信息' },
@@ -124,7 +119,7 @@ export default {
       })
       setTimeout(() => {
         this.tableData.push(this.objData, this.objData2)
-      }, 1e3)
+      }, 500)
     },
     getPercent() {
       getPercent({ id: this.$route.query.id }).then(res => {
@@ -185,8 +180,7 @@ export default {
 
 <style lang="scss" scoped>
 .images {
-  padding: 0 30px;
-  justify-content: space-between;
+  margin-bottom: 100px;
 }
 .time-info {
   margin-left: 30px;
@@ -216,9 +210,31 @@ export default {
   }
 }
 .header {
-  margin: 30px 0;
-}
+    border: 1px solid #ccc;
+    background: #304155;
+    width: 100%;
+    justify-content: flex-end;
+    position: fixed;
+    bottom: -1px;
+    right: -1px;
+    padding: 10px 0;
+    z-index: 999;
+    .badge {
+      color: #fff;
+    }
+    .progress {
+      width: 75%;
+      margin: 0 30px 0 10px;
+    }
+  }
 .main {
+  padding: 0 30px;
+  position: relative;
+  .img-tabs {
+    position: sticky;
+    top: 200px;
+    left: 0px;
+  }
   .img {
     border: 1px solid #ccc;
     margin-right: 2px;

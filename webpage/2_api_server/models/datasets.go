@@ -429,7 +429,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 	return ret2.Error
 }
 
-// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
+// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
 func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
@@ -447,6 +447,8 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 		d.ProcessTime = time.Now()
 	} else if status == 6 {
 		d.TrainTime = time.Now()
+	} else if status == 10 {
+		d.PredictTime = time.Now()
 	}
 
 	ret := db.Model(&d).Where("ID=?", did).Updates(d)
@@ -504,7 +506,7 @@ type Model struct {
 	Precision     float32   `json:"precision"      gorm:"column:PRECISION1"`     //训练评估得到的准确率,整数0.66表示66%
 	Ntrain        int       `json:"n_train"        gorm:"column:n_train"`        //训练用了多少张图片
 	Nclasses      int       `json:"n_classes"      gorm:"column:n_classes"`      //训练有几个分类
-	Types1        []int     `json:"celltypes"      gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
+	Types1        []int     `json:"types"          gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
 	Types2        string    `json:"-"              gorm:"column:types"`          //训练的标签, 字符串存储(存数据库，前端没有这个字段)
 	InputShape    string    `json:"input_shape"    gorm:"column:input_shape"`    //训练输入的尺寸
 	ModelCount    int       `json:"model_count"    gorm:"column:model_count"`    //产生的模型个数

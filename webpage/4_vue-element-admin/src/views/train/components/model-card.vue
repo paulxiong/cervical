@@ -2,12 +2,21 @@
   <div class="card">
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
-        <b v-if="predict === 'predict'">{{trainInfo.desc || `第${trainInfo.did}个模型`}}</b>
+        <el-select
+          v-if="predict === 'predict'"
+          class="model-option"
+          v-model="model"
+          clearable
+          placeholder="请选择"
+          @change="modelChange"
+        >
+          <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx"></el-option>
+        </el-select>
         <el-input
           class="model-input"
           type="text"
           placeholder="请输入模型名称"
-          v-model="trainInfo.desc"
+          v-model="modelInfo.desc"
           maxlength="30"
           @blur="emitDesc"
           @keyup.enter.native="emitDesc"
@@ -15,57 +24,63 @@
           v-else
         >
         </el-input>
-        <b style="display:block;">{{trainInfo.type | filterModelType}}</b>
+        <b style="display:block;">{{modelInfo.type | filterModelType}}</b>
         <div class="score flex">
           <section class="precision-info">
             <i>Precision</i>
-            <b>{{trainInfo.precision}}</b>
+            <b>{{modelInfo.precision}}</b>
           </section>
           <section class="recall-info">
             <i>Recall</i>
-            <b>{{trainInfo.recall}}</b>
+            <b>{{modelInfo.recall}}</b>
           </section>
         </div>
       </div>
       <div class="flex model-info">
         <section class="info">
           <i>ID:</i>
-          <b>{{trainInfo.id}}</b>
+          <b>{{modelInfo.id}}</b>
         </section><section class="info">
           <i>Datasets ID:</i>
-          <b>{{trainInfo.did}}</b>
+          <b>{{modelInfo.did}}</b>
         </section>
         <section class="info">
           <i>路径</i>
-          <b>{{trainInfo.path}}</b>
+          <b>{{modelInfo.path}}</b>
         </section>
         <section class="info">
           <i>损失:</i>
-          <b>{{trainInfo.loss}}</b>
+          <b>{{modelInfo.loss}}</b>
         </section>
         <section class="info">
           <i>训练有几个分类:</i>
-          <b>{{trainInfo.n_classes}}</b>
+          <b>{{modelInfo.n_classes}}</b>
         </section>
         <section class="info">
           <i>训练用了多少张图片:</i>
-          <b>{{trainInfo.n_train}}</b>
+          <b>{{modelInfo.n_train}}</b>
         </section>
         <section class="info">
           <i>训练准确度:</i>
-          <b>{{trainInfo.metric_value}}</b>
+          <b>{{modelInfo.metric_value}}</b>
         </section>
         <section class="info">
           <i>评估准确度:</i>
-          <b>{{trainInfo.evaluate_value}}</b>
+          <b>{{modelInfo.evaluate_value}}</b>
+        </section>
+        <section class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;" v-if="modelInfo.types">
+          <i>细胞类型选择:</i>
+          <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox" @change="changeCellTypes">
+            <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
+          </el-checkbox-group>
         </section>
         <!-- <section class="info">
           <i>创建时间</i>
-          <b>{{trainInfo.created_at}}</b>
+          <b>{{modelInfo.created_at}}</b>
         </section>
         <section class="info">
           <i>更新时间</i>
-          <b>{{trainInfo.updated_at}}</b>
+          <b>{{modelInfo.updated_at}}</b>
         </section> -->
       </div>
     </el-card>
@@ -73,19 +88,23 @@
 </template>
 
 <script>
-import { modelType } from '@/const/const'
+import { modelType, cellsType } from '@/const/const'
 
 export default {
   name: 'Card',
   components: {},
   data() {
     return {
-      modelDesc: ''
+      checkboxCell: [],
+      model: 0
     }
   },
   props: {
-    trainInfo: {
+    modelInfo: {
       type: Object || String
+    },
+    modelList: {
+      type: Array
     },
     predict: {
       type: String
@@ -94,12 +113,29 @@ export default {
   filters: {
     filterModelType(value) {
       return modelType[value]
+    },
+    filtersCheckbox(val) {
+      return `${val} ${cellsType[val]}`
     }
   },
   methods: {
+    modelChange() {
+      this.modelInfo = this.modelList[this.model]
+    },
+    changeCellTypes() {
+      const postCelltypes = []
+      this.checkboxCell.map(v => {
+        v = parseInt(v.slice(0, 1))
+        postCelltypes.push(v)
+      })
+      this.$emit('changeCellTypes', postCelltypes)
+    },
     emitDesc() {
       this.$emit('changeDesc', this.trainInfo.desc)
     }
+  },
+  mounted() {
+    this.changeCellTypes()
   }
 }
 </script>
@@ -120,6 +156,7 @@ export default {
   }
   .card-header {
     justify-content: space-between;
+    
     .precision-info {
       margin-right: 20px;
     }
