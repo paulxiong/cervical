@@ -82,7 +82,7 @@ def get_trusted_labels(original_csv_path, cells_rois_path):
 
         if csv_path is None or not os.path.exists(csv_path):
             print('not found %s ' % csv_path)
-            continue
+        #    continue
         rois = []
         df1 = pd.read_csv(csv_path)
         rois_label_num = df1.shape[0]
