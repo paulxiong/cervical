@@ -222,10 +222,11 @@ class cervical_autokeras():
     def predict_autokeras2(self):
         autokeras_model = pickle_from_file(self.MODEL_DIR)
         result = []
+        crop_cells = []
 
         #Load images
         for label in os.listdir(self.RESIZE_PREDICT_IMG_DIR):
-            celltype = {'type': label, 'total': 0, 'count_false': 0, 'crop_cells': []}
+            celltype = {'type': label, 'total': 0, 'count_false': 0}
 
             images = os.listdir(os.path.join(self.RESIZE_PREDICT_IMG_DIR, label))
             total = len(images)
@@ -240,8 +241,7 @@ class cervical_autokeras():
                 x = x.astype('float32') / 255
                 x = np.reshape(x, (1, self.RESIZE, self.RESIZE, 3))
                 y = autokeras_model.predict(x)
-                crop_cells = {'url': img_path[len(self.scratchdir) + 1:], 'type': label, 'predict': y[0]}
-                celltype['crop_cells'].append(crop_cells)
+                crop_cells.append({'url': img_path[len(self.scratchdir) + 1:], 'type': label, 'predict': y[0]})
 
                 if str(label) != str(y[0]):
                     #print("%s %s result=%s" % (images[index], label, y[0]))
@@ -251,11 +251,11 @@ class cervical_autokeras():
                         os.makedirs(error_image_dir)
                     copyfile(img_path, os.path.join(error_image_dir, images[index]))
 
-            celltype['total'] = total
-            celltype['count_false'] = count_false
+            celltype['total'] = int(total)
+            celltype['count_false'] = int(count_false)
             result.append(celltype)
             print("%s 的个数/准确率：%d %f 出错的个数%d" % (label, total, (total - count_false) / total, count_false))
-        return result
+        return result, crop_cells
 
     def done(self, text):
         self.percent = 100
@@ -348,9 +348,14 @@ if __name__ == "__main__":
             #使用指定的模型文件
             ca.MODEL_DIR = jsonfile['mpath']
             ca.processing(20)
-            result = ca.predict_autokeras2()
+            result, crop_cells = ca.predict_autokeras2()
+            #把输入原图的个数统计到结果里面
+            for i in range(len(result)):
+                item = result[i]
+                if item['type'] in typetree.keys():
+                    result[i]['total_org'] = len(typetree[item['type']])
             #更新预测结果
-            update_predict_info_json(ca, result)
+            update_predict_info_json(ca, result, crop_cells)
             ca.done("done!")
 
         del ca
