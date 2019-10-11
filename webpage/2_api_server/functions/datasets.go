@@ -344,7 +344,6 @@ func LoadPredictJSONFile(dirname string) PredictInfo2 {
 		logger.Info.Println(err)
 		return j
 	}
-	logger.Info.Println(string(data))
 	err = json.Unmarshal(data, &j)
 	if err != nil {
 		return j
