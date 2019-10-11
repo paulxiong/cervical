@@ -33,7 +33,7 @@
             class="img"
             v-for="(img,idx) in origin_imgs"
             :key="idx"
-            :src="hosturlpath200 + img"
+            :src="hosturlpath500 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -46,7 +46,7 @@
             class="img"
             v-for="(img,idx) in cells_crop"
             :key="idx"
-            :src="hosturlpath200 + img"
+            :src="hosturlpath32 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -59,7 +59,7 @@
             class="img"
             v-for="(img,idx) in cells_crop_masked"
             :key="idx"
-            :src="hosturlpath200 + img"
+            :src="hosturlpath32 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -94,10 +94,10 @@ export default {
     return {
       percentage: 0,
       dir: 'dsEoM8RR/',
-      hosturlpath16: ImgServerUrl + '/unsafe/32x0/scratch/',
+      hosturlpath32: ImgServerUrl + '/unsafe/32x0/scratch/',
       hosturlpath64: ImgServerUrl + '/unsafe/640x0/scratch/',
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
-      hosturlpath645: ImgServerUrl + '/unsafe/800x0/scratch/',
+      hosturlpath500: ImgServerUrl + '/unsafe/500x0/scratch/',
       tableData: [],
       objData: { 'name': '输入信息' },
       objData2: { 'name': '输出信息' },
