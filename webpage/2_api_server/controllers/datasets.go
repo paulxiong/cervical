@@ -898,3 +898,37 @@ func Predict(c *gin.Context) {
 	})
 	return
 }
+
+// GetPredictResult 根据传递来的数据集ID，返回预测的结果
+// @Summary 根据传递来的数据集ID，返回预测的结果
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "id, default 0, 被预测的数据集ID"
+// @Success 200 {object} function.PredictInfo2
+// @Router /api1/predictresult [get]
+func GetPredictResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "0")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	dinfo, err := m.GetOneDatasetByID(int(id))
+	if err != nil {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets info not found",
+		})
+		return
+	}
+
+	str := f.LoadPredictJSONFile(dinfo.Dir)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   str,
+	})
+	return
+}

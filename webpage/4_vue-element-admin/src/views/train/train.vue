@@ -5,7 +5,7 @@
       <el-progress
         :text-inside="true"
         :stroke-width="26"
-        :percentage="percentage"
+        :percentage="jobResult.status >= 6?100:percentage"
         class="progress"
         status="success"
       ></el-progress>
@@ -27,7 +27,7 @@
           border
         ></el-checkbox>
       </el-checkbox-group>
-      <div class="model-box" v-if="typeof modelInfo === Object">
+      <div class="model-box" v-if="modelInfo.path">
         <el-badge is-dot class="badge">模型信息</el-badge>
         <el-button
           type="danger"
@@ -97,6 +97,7 @@ export default {
           message: res.data.data,
           type: 'success'
         })
+        this.percentage = 100
         this.showSaveBtn = false
       })
     }

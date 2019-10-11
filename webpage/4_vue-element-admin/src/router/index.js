@@ -100,6 +100,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/doctor',
+    component: Layout,
+    redirect: '/doctor',
+    children: [
+      {
+        path: 'doctor',
+        component: () => import('@/views/doctor/index'),
+        name: '医生',
+        meta: { title: '医生', icon: 'tree', affix: true }
+      }
+    ]
+  },
+  {
     path: '/page1',
     component: Layout,
     redirect: '/page1',

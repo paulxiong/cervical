@@ -27,13 +27,13 @@
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
-      <el-tabs tab-position="left" @tab-click="tabClick" class="img-tabs">
+      <el-tabs tab-position="left" @tab-click="tabClick" v-loading="loading" class="img-tabs">
         <el-tab-pane label="原图">
           <el-image
             class="img"
             v-for="(img,idx) in origin_imgs"
             :key="idx"
-            :src="hosturlpath500 + img"
+            :src="hosturlpath100 + img"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -93,11 +93,12 @@ export default {
   data() {
     return {
       percentage: 0,
+      loading: true,
       dir: 'dsEoM8RR/',
       hosturlpath32: ImgServerUrl + '/unsafe/32x0/scratch/',
-      hosturlpath64: ImgServerUrl + '/unsafe/640x0/scratch/',
+      hosturlpath100: ImgServerUrl + '/unsafe/100x0/scratch/',
       hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
-      hosturlpath500: ImgServerUrl + '/unsafe/500x0/scratch/',
+      hosturlpath645: ImgServerUrl + '/unsafe/645x0/scratch/',
       tableData: [],
       objData: { 'name': '输入信息' },
       objData2: { 'name': '输出信息' },
@@ -109,21 +110,24 @@ export default {
   },
   methods: {
     getjobresult() {
+      // 异步任务改为同步
       getjobresult({ id: this.$route.query.id, done: '0' }).then(res => {
         this.objData = Object.assign(this.objData, res.data.data)
-        this.origin_imgs = this.objData.origin_imgs
+        getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
+          this.objData2 = Object.assign(this.objData2, res.data.data)
+          this.tableData.push(this.objData, this.objData2)
+          this.origin_imgs = this.objData.origin_imgs
+          localStorage.setItem('jobResult', JSON.stringify(this.objData2))
+        })
       })
-      getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
-        this.objData2 = Object.assign(this.objData2, res.data.data)
-        localStorage.setItem('jobResult', JSON.stringify(this.objData2))
-      })
-      setTimeout(() => {
-        this.tableData.push(this.objData, this.objData2)
-      }, 500)
     },
     getPercent() {
       getPercent({ id: this.$route.query.id }).then(res => {
         this.percentage = res.data.data
+        if (this.percentage === 100) {
+          this.loading = false
+          clearInterval(timer)
+        }
         this.finishedImages()
       })
     },
@@ -161,8 +165,10 @@ export default {
       timer = setInterval(() => {
         if (this.percentage === 100) {
           clearInterval(timer)
+          this.getjobresult()
+          this.getPercent()
+          this.getjoblog()
         }
-        this.getPercent()
       }, 1e4)
     }
   },
@@ -230,11 +236,6 @@ export default {
 .main {
   padding: 0 30px;
   position: relative;
-  .img-tabs {
-    position: sticky;
-    top: 200px;
-    left: 0px;
-  }
   .img {
     border: 1px solid #ccc;
     margin-right: 2px;

@@ -305,3 +305,48 @@ func (p *PredictInfo) NewPredictJSONFile() {
 	logger.Info.Println(info)
 	writeJSON(info, data)
 }
+
+// PredictRsult 预测的细胞的个数统计
+type PredictRsult struct {
+	Type       string `json:"type"        example:"1"`  //细胞类型
+	Total      int    `json:"total"       example:"35"` //总共送去预测的细胞个数
+	TotalOrg   int    `json:"total_org"   example:"37"` //总共送去预测的细胞原始个数，部分细胞图片不是正方形会被丢弃
+	CountFalse int    `json:"count_false" example:"18"` //预测出错的个数
+}
+
+// PredictCell 预测的细胞的信息
+type PredictCell struct {
+	URL     string `json:"url"     example:"任务目录"` //细胞路径用来拼接出URL
+	Type    string `json:"type"    example:"1"`    //细胞类型
+	Predict string `json:"predict" example:"1"`    //细胞预测为什么类型
+}
+
+// PredictInfo2 存在硬盘的JSON文件，描述预测数据集和模型以及预测结果
+type PredictInfo2 struct {
+	ID    int64  `json:"id"    example:"1"`    //预测任务ID
+	DID   int64  `json:"did"   example:"1"`    //用来做预测的数据集的ID
+	MID   int64  `json:"mid"   example:"1"`    //用来做预测的模型ID
+	Types []int  `json:"types" example:"7"`    //预测哪几个类型的细胞
+	DDir  string `json:"ddir"  example:"任务目录"` //用来做预测的数据集的目录
+	// MDir  string `json:"mdir"  example:"任务目录"` //用来做预测的模型的目录
+	MPath string `json:"mpath"  example:"模型文件的路径"` //模型文件的路径
+
+	PRsult []PredictRsult `json:"result"`     //预测的细胞的个数统计
+	Cells  []PredictCell  `json:"crop_cells"` //预测的细胞的信息
+}
+
+// LoadPredictJSONFile 加载json文件内容成struct
+func LoadPredictJSONFile(dirname string) PredictInfo2 {
+	filename := scratchRoot + "/" + dirname + "/predict2.json"
+	j := PredictInfo2{}
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		logger.Info.Println(err)
+		return j
+	}
+	err = json.Unmarshal(data, &j)
+	if err != nil {
+		return j
+	}
+	return j
+}

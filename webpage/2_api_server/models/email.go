@@ -86,7 +86,7 @@ func CheckEmailCodeValied(toaddr string, code string) (bool, *Email, error) {
 		return false, em, err
 	}
 	//过期了,失效了，没发送成功, 没找到邮件记录
-	if time.Now().Before(em.Exire) || em.Valid == 0 || em.Status != 1 || em.ID < 1 || em.Code != code {
+	if time.Now().After(em.Exire) || em.Valid == 0 || em.Status != 1 || em.Code != code {
 		return false, em, err
 	}
 	return true, em, err

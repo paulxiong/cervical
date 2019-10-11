@@ -76,6 +76,7 @@ func Router() *gin.Engine {
 		api1.POST("/train", ctr.Train)
 		api1.GET("/trainresult", ctr.GetTrainResult)
 		api1.POST("/predict", ctr.Predict)
+		api1.GET("/predictresult", ctr.GetPredictResult)
 		// 模型
 		api1.GET("/listmodel", ctr.GetModelLists)
 		api1.POST("/savemodel", ctr.SaveModelInfo)

@@ -90,7 +90,7 @@ func RegisterUser(c *gin.Context) {
 	//检查如果是邮箱注册，必须检查验证码的合法
 	if user.Email != "" {
 		valid, em, codeerr := m.CheckEmailCodeValied(user.Email, reg.EmailCode)
-		if codeerr != nil {
+		if codeerr != nil || valid == false {
 			c.JSON(e.StatusNotAcceptable, gin.H{
 				"status": e.StatusRegisterMailInvalid78,
 				"data":   "register faild",
@@ -98,9 +98,7 @@ func RegisterUser(c *gin.Context) {
 			return
 		}
 		//校验完之后丢弃这个校验码
-		if valid {
-			em.UpdateEmailInvalid()
-		}
+		em.UpdateEmailInvalid()
 	}
 
 	err = user.Newuser()
