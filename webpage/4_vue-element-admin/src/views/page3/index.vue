@@ -33,19 +33,30 @@
       <!-- <div v-for="item in items" :key="item" class="item imgWrap">
         <p>{{ item }}</p>
       </div>-->
-      <el-image
-        class="img item imgWrap"
-        v-for="(img,idx) in objImgs"
-        :key="idx"
-        :src="hosturlpath200 + img.cells_crop"
-        lazy
-        :data-cellsCropMasked="hosturlpath200 + img.cells_crop_masked"
-        data-aaa="aaa"
-      >
-        <div slot="error" class="image-slot">
-          <i class="el-icon-picture-outline"></i>
-        </div>
-      </el-image>
+      <div class="item imgWrap" v-for="(img,idx) in objImgs" :key="idx">
+        <el-image
+          class="imgg img1"
+          :src="hosturlpath200 + img.cells_crop"
+          lazy
+          :data-cellsCropMasked="hosturlpath200 + img.cells_crop_masked"
+          data-aaa="aaa"
+        >
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline"></i>
+          </div>
+        </el-image>
+        <el-image
+          class="imgg img2"
+          :src="hosturlpath200 + img.cells_crop_masked"
+          lazy
+          :data-cellsCropMasked="hosturlpath200 + img.cells_crop_masked"
+          data-aaa="aaa"
+        >
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline"></i>
+          </div>
+        </el-image>
+      </div>
     </div>
   </div>
 </template>
@@ -109,15 +120,15 @@ export default {
           // console.log(element)
           let objImg = {
             cells_crop: element
-          }
-          objImgs.push(objImg)
+          };
+          objImgs.push(objImg);
         }
-        console.log("objImgs1", objImgs)
+        console.log("objImgs1", objImgs);
         for (let index = 0; index < this.cells_crop_masked.length; index++) {
           const element = this.cells_crop_masked[index];
           objImgs[index].cells_crop_masked = element;
         }
-        console.log("objImgs2", objImgs)
+        console.log("objImgs2", objImgs);
         this.objImgs = objImgs;
         console.log(this.objData);
       });
@@ -289,24 +300,74 @@ export default {
   width: 150px;
   height: 150px;
   margin: 0px 10px 10px 0px;
-  background-color: lightsalmon;
+  // background-color: lightsalmon;
 }
 
-.imgWrap::before {
+// .imgWrap::before {
+//   position: absolute;
+//   content: url();
+//   // content: url(attr(data-cells_crop_masked));
+//   width: 100%;
+//   height: 100%;
+//   background-color: lightseagreen;
+//   transition: visibility 1.5s, opacity 0.6s;
+//   visibility: hidden;
+//   opacity: 0.3;
+// }
+
+// .imgWrap:hover::before {
+//   visibility: visible;
+//   opacity: 0.9;
+// }
+
+.imgg {
   position: absolute;
-  content: url();
-  // content: url(attr(data-cells_crop_masked));
-  width: 100%;
-  height: 100%;
-  background-color: lightseagreen;
-  transition: visibility 1.5s, opacity 0.6s;
-  visibility: hidden;
-  opacity: 0.3;
 }
 
-.imgWrap:hover::before {
-  visibility: visible;
+.img1 {
+  z-index: 1;
+}
+
+.img2 {
+  z-index: 2;
+  transition: opacity .6s;
+  // transition-delay: 1.5s;
+  // visibility: hidden;
+  opacity: 0;
+}
+
+.img2:hover {
+  // visibility: visible;
   opacity: 0.9;
+  border: 1px solid #000;
+  // transform: translateX(20px);
+}
+
+.img2::before {
+  position: absolute;
+	top: 0;
+	left: -75%;
+	z-index: 3;
+	display: block;
+	content: '';
+	width: 50%;
+	height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 100%);
+  transform: skewX(-25deg);
+}
+
+.img2:hover::before {
+  animation: shine 1.75s;
+}
+
+// .img2:hover +.imgg::before {
+//   animation: shine 1.75s;
+// }
+
+@keyframes shine {
+	100% {
+		left: 125%;
+	}
 }
 </style>
 
