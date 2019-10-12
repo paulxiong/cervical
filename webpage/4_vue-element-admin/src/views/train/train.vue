@@ -5,7 +5,7 @@
       <el-progress
         :text-inside="true"
         :stroke-width="26"
-        :percentage="jobResult.status >= 6?100:percentage"
+        :percentage="percentage"
         class="progress"
         status="success"
       ></el-progress>
@@ -45,8 +45,9 @@
 
 <script>
 import modelCard from './components/model-card'
-import { createTrain, getTrainresult, savemodel } from '@/api/cervical'
+import { createTrain, getTrainresult, getPercent, savemodel } from '@/api/cervical'
 import { cellsType } from '@/const/const'
+let timer
 
 export default {
   name: 'Train',
@@ -89,6 +90,27 @@ export default {
         this.modelInfo = res.data.data
       })
     },
+    getPercent() {
+      getPercent({ id: this.$route.query.id, job: 1 }).then(res => {
+        this.percentage = res.data.data
+        if (this.percentage === 100) {
+          clearInterval(timer)
+        }
+      })
+    },
+    /**
+     * 定时器轮训百分比
+     */
+    loopGetPercent() {
+      timer = setInterval(() => {
+        this.getPercent()
+        if (this.percentage === 100) {
+          this.getTrainresult()
+          this.getPercent()
+          clearInterval(timer)
+        }
+      }, 1e4)
+    },
     changeDesc(val) {
       this.modelInfo.desc = val
     },
@@ -101,13 +123,17 @@ export default {
           message: res.data.data,
           type: 'success'
         })
-        this.percentage = 100
         this.showSaveBtn = false
       })
     }
   },
+  beforedestroy() {
+    clearInterval(timer)
+  },
   mounted() {
     this.getTrainresult()
+    this.getPercent()
+    this.loopGetPercent()
   }
 }
 </script>

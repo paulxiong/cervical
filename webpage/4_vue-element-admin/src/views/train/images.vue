@@ -121,7 +121,7 @@ export default {
       })
     },
     getPercent() {
-      getPercent({ id: this.$route.query.id }).then(res => {
+      getPercent({ id: this.$route.query.id, job: 0 }).then(res => {
         this.percentage = res.data.data
         if (this.percentage === 100) {
           this.loading = false
@@ -162,11 +162,12 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
+        this.getPercent()
         if (this.percentage === 100) {
-          clearInterval(timer)
           this.getjobresult()
           this.getPercent()
           this.getjoblog()
+          clearInterval(timer)
         }
       }, 1e4)
     }

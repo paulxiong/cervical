@@ -1,10 +1,10 @@
 <template>
-  <el-footer class="login-footer flex">{{value}}<el-link class="link"  type="info" :underline="false" v-if="env === 'development'" href="http://9200.gpu.raidcdn.cn:9700/swagger/index.html" target="_blank">Swagger</el-link></el-footer>
+  <el-footer class="login-footer flex">{{value}}<el-link class="link"  type="info" :underline="false" v-if="env === 'development'" href="http://dev.medical.raidcdn.cn:3000/swagger/index.html" target="_blank">Swagger</el-link></el-footer>
 </template>
 
 <script>
 export default {
-  name: 'loginFooter',
+  name: 'LoginFooter',
   components: {},
   data() {
     return {

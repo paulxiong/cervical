@@ -81,7 +81,8 @@ import modelCard from './components/model-card'
 import datasetsCard from './components/datasets-card'
 import { ImgServerUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { listdatasets, getListmodel, createPredict, getPredictResult } from '@/api/cervical'
+import { listdatasets, getListmodel, createPredict, getPercent, getPredictResult } from '@/api/cervical'
+let timer
 
 export default {
   name: 'Predict',
@@ -140,12 +141,35 @@ export default {
           })
         })
         this.startPredict = true
-        this.percentage = 100
+        this.loopGetPercent()
       })
+    },
+    getPercent() {
+      getPercent({ id: this.$route.query.id, job: 2 }).then(res => {
+        this.percentage = res.data.data
+        if (this.percentage === 100) {
+          clearInterval(timer)
+        }
+      })
+    },
+    /**
+     * 定时器轮训百分比
+     */
+    loopGetPercent() {
+      timer = setInterval(() => {
+        this.getPercent()
+        if (this.percentage === 100) {
+          this.getPercent()
+          clearInterval(timer)
+        }
+      }, 1e4)
     },
     changeCellTypes(val) {
       this.postCelltypes = val
     }
+  },
+  beforedestroy() {
+    clearInterval(timer)
   },
   mounted() {
     this.getListmodel(10, 0)
