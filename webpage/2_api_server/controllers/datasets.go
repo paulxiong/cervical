@@ -602,6 +602,8 @@ func GetJobResult(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param id query string false "id, default 0, 数据集的ID"
+// @Param job query string false "job, default 0, 任务进度的类型，1-训练 2-预测 其他是数据处理进度"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobpercent [get]
