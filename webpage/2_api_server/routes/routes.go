@@ -34,6 +34,8 @@ func Router() *gin.Engine {
 	})
 	r.Use(corsObject)
 
+	r.Use(ctr.History)
+
 	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
 
 	/* 用户相关的API */
@@ -46,6 +48,7 @@ func Router() *gin.Engine {
 		user.GET("/info", ctr.GetUser)
 		user.GET("/logout", ctr.LogoutUser)
 		user.GET("/userinfo", ctr.GetUser)
+		user.GET("/accesslog", ctr.GetAccessLog)
 	}
 
 	api1 := r.Group("/api1")

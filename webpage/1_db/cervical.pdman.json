@@ -645,6 +645,10 @@
             {
               "fieldName": "relationNoShow",
               "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
             }
           ],
           "chnname": "user_history",
@@ -964,19 +968,22 @@
               "name": "PROCESS_PERCENT",
               "type": "Integer",
               "remark": "100表示完成",
-              "chnname": "处理数据的进度"
+              "chnname": "处理数据的进度",
+              "defaultValue": "0"
             },
             {
               "name": "TRAIN_PERCENT",
               "type": "Integer",
               "remark": "100表示完成",
-              "chnname": "训练的进度"
+              "chnname": "训练的进度",
+              "defaultValue": "0"
             },
             {
               "name": "PREDICT_PERCENT",
               "type": "Integer",
               "remark": "100表示完成",
-              "chnname": "预测的进度"
+              "chnname": "预测的进度",
+              "defaultValue": "0"
             },
             {
               "name": "CREATED_BY",
@@ -1378,6 +1385,298 @@
       "graphCanvas": {
         "nodes": [],
         "edges": []
+      },
+      "associations": []
+    },
+    {
+      "name": "history",
+      "chnname": "用户访问记录",
+      "entities": [
+        {
+          "title": "operationlog",
+          "fields": [
+            {
+              "name": "id",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "id",
+              "pk": true,
+              "notNull": true,
+              "autoIncrement": true,
+              "defaultValue": "",
+              "uiHint": ""
+            },
+            {
+              "name": "user_id",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "用户id",
+              "notNull": true,
+              "defaultValue": "0",
+              "uiHint": ""
+            },
+            {
+              "name": "path",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "访问的路径",
+              "notNull": true,
+              "defaultValue": "\"\"",
+              "uiHint": ""
+            },
+            {
+              "name": "query",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "query",
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "method",
+              "type": "IdOrKey",
+              "remark": "",
+              "chnname": "请求方式",
+              "notNull": true,
+              "defaultValue": "\"\"",
+              "uiHint": ""
+            },
+            {
+              "name": "ip",
+              "type": "ip",
+              "remark": "",
+              "chnname": "客户端ip地址",
+              "notNull": true,
+              "defaultValue": "\"\"",
+              "uiHint": ""
+            },
+            {
+              "name": "region_id",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "ip所在的地区的编号",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "input",
+              "type": "LongText",
+              "remark": "",
+              "chnname": "输入的参数",
+              "notNull": false,
+              "defaultValue": "",
+              "uiHint": ""
+            },
+            {
+              "name": "ua",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "UserAgent",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "code",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "返回码",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "bodysize",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "bodySize",
+              "defaultValue": "0",
+              "notNull": true
+            },
+            {
+              "name": "cost",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "当前请求耗时多少微秒",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "referer",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "Referer",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "created_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "创建时间",
+              "notNull": true
+            }
+          ],
+          "indexs": [],
+          "headers": [
+            {
+              "fieldName": "chnname",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "name",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "type",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "dataType",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "remark",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "pk",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "notNull",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "autoIncrement",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "defaultValue",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "relationNoShow",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
+            }
+          ],
+          "chnname": "operationlog",
+          "remark": "API访问记录"
+        },
+        {
+          "title": "region",
+          "fields": [
+            {
+              "name": "id",
+              "type": "BigInt",
+              "remark": "0表示局域网",
+              "chnname": "城市的id",
+              "pk": true,
+              "notNull": true,
+              "defaultValue": ""
+            },
+            {
+              "name": "country",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "国家",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "region",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "地区",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "province",
+              "type": "ShortString",
+              "remark": "美国是州",
+              "chnname": "省份",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "city",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "城市名字",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "isp",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "运营商",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "created_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "创建时间"
+            }
+          ],
+          "indexs": [],
+          "headers": [
+            {
+              "fieldName": "chnname",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "name",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "type",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "dataType",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "remark",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "pk",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "notNull",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "autoIncrement",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "defaultValue",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "relationNoShow",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
+            }
+          ],
+          "chnname": "城市",
+          "remark": "城市编号，方便归属地查询"
+        }
+      ],
+      "graphCanvas": {
+        "edges": [],
+        "nodes": []
       },
       "associations": []
     }
@@ -1791,6 +2090,15 @@
             "type": "VARCHAR(254)"
           }
         }
+      },
+      {
+        "name": "ip",
+        "code": "ip",
+        "apply": {
+          "MYSQL": {
+            "type": "VARCHAR(15)"
+          }
+        }
       }
     ],
     "database": [
@@ -1861,5 +2169,44 @@
         "updateTableComment": ""
       }
     ]
+  },
+  "profile": {
+    "defaultFields": [
+      {
+        "name": "revision",
+        "type": "Integer",
+        "remark": "",
+        "chnname": "乐观锁"
+      },
+      {
+        "name": "created_by",
+        "type": "IdOrKey",
+        "remark": "",
+        "chnname": "创建人"
+      },
+      {
+        "name": "created_time",
+        "type": "DateTime",
+        "remark": "",
+        "chnname": "创建时间"
+      },
+      {
+        "name": "updated_by",
+        "type": "IdOrKey",
+        "remark": "",
+        "chnname": "更新人"
+      },
+      {
+        "name": "updated_time",
+        "type": "DateTime",
+        "remark": "",
+        "chnname": "更新时间"
+      }
+    ],
+    "defaultFieldsType": "2",
+    "javaConfig": {},
+    "sqlConfig": ";",
+    "dbs": [],
+    "wordTemplateConfig": ""
   }
 }

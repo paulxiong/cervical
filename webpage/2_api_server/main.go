@@ -2,6 +2,7 @@ package main
 
 import (
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	"github.com/paulxiong/cervical/webpage/2_api_server/routes"
 
@@ -37,6 +38,7 @@ import (
 // @name Authorization
 
 func atexit() {
+	f.Region.Close()
 }
 
 func printlistenaddr(port string) {

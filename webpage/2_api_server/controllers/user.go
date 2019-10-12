@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	jwt "github.com/appleboy/gin-jwt/v2"
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
@@ -248,6 +250,60 @@ func GetEmailCode(c *gin.Context) {
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
 		"data":   "ok",
+	})
+	return
+}
+
+// History 用户信息
+func History(c *gin.Context) {
+	mid.History()(c)
+	return
+}
+
+type listOperationlog struct {
+	Operationlog []m.Operationlog `json:"accesslog"`
+	Total        int64            `json:"total"`
+}
+
+// GetAccessLog 按数据库存储顺序依次获得用户访问记录
+// @Summary 按数据库存储顺序依次获得用户访问记录
+// @Description 按数据库存储顺序依次获得用户访问记录
+// @tags API1 数据/项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
+// @Success 200 {object} models.Operationlog
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /user/accesslog [get]
+func GetAccessLog(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	orderStr := c.DefaultQuery("order", "1")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	_order, _ := strconv.ParseInt(orderStr, 10, 64)
+
+	total, ds, err := m.ListOperationlog(int(limit), int(skip), int(_order))
+	if err != nil {
+		logger.Info.Println(err)
+	}
+	/*
+		for idx, v := range ds {
+			ds[idx].CreatedAtTs = v.CreatedAt.Unix() * 1000
+			ds[idx].StartTimeTs = v.StartTime.Unix() * 1000
+		}
+	*/
+
+	dts := listOperationlog{}
+	dts.Operationlog = ds
+	dts.Total = total
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   dts,
 	})
 	return
 }
