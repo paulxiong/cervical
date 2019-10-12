@@ -78,6 +78,10 @@ export default {
         celltypes: postCelltypes
       }).then(res => {
         this.startedTrain = res.data.data
+        this.$message({
+          message: res.data.data,
+          type: 'success'
+        })
       })
     },
     getTrainresult() {

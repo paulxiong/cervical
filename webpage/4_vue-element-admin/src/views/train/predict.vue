@@ -37,11 +37,14 @@
         </el-table>
       </section>
       <section class="img-list">
-        <el-tabs tab-position="left" v-loading="loading" class="img-tabs">
+        <el-tabs tab-position="left" class="img-tabs">
           <el-tab-pane :label="`错误细胞 ${falseCellsList.length}`">
-            <el-image
+            <el-tooltip class="item" effect="dark" v-for="v in falseCellsList" :key="v.url" :content="`实际${v.type} - 预测${v.predict}`" placement="bottom">
+              <img class="img-item img-false" :src="hosturlpath64+v.url" />
+            </el-tooltip>
+            <!-- <el-image
               class="img-item img-false"
-              v-for="(img,idx) in falseCellsList"
+              v-for="(img,idx) of falseCellsList"
               :key="idx"
               :src="hosturlpath64 + img.url"
               lazy
@@ -49,12 +52,15 @@
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline"></i>
               </div>
-            </el-image>
+            </el-image> -->
           </el-tab-pane>
           <el-tab-pane :label="`正确细胞 ${rightCellsList.length}`">
-            <el-image
-              class="img-item img-false"
-              v-for="(img,idx) in rightCellsList"
+            <el-tooltip class="item" effect="dark" v-for="v in rightCellsList" :key="v.url" :content="v.type" placement="bottom">
+              <img class="img-item img-right" :src="hosturlpath64+v.url" />
+            </el-tooltip>
+            <!-- <el-image
+              class="img-item img-right"
+              v-for="(img,idx) of rightCellsList"
               :key="idx"
               :src="hosturlpath64 + img.url"
               lazy
@@ -62,7 +68,7 @@
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline"></i>
               </div>
-            </el-image>
+            </el-image> -->
           </el-tab-pane>
         </el-tabs>
       </section>
@@ -85,7 +91,6 @@ export default {
       percentage: 0,
       predict: 'predict',
       startPredict: false,
-      loading: true,
       modelList: [],
       modelInfo: {},
       datasetsInfo: {},
@@ -125,7 +130,9 @@ export default {
             v.count_right = v.total - v.count_false
           })
           this.predictResult.crop_cells.map(v => {
-            if(v.type === v.predict) {
+            v.type = cellsType[v.type]
+            v.predict = cellsType[v.predict]
+            if (v.type === v.predict) {
               this.rightCellsList.push(v)
             } else {
               this.falseCellsList.push(v)
@@ -133,7 +140,6 @@ export default {
           })
         })
         this.startPredict = true
-        this.loading = false
         this.percentage = 100
       })
     },
@@ -195,11 +201,11 @@ export default {
       margin-bottom: 10px;
     }
     .img-right {
-      border: 5px solid #27cc6a;
+      border: 2px solid #27cc6a;
       border-radius: 5px;
     }
     .img-false {
-      border: 5px solid #fd6e70;
+      border: 2px solid #fd6e70;
       border-radius: 5px;
     }
   }
