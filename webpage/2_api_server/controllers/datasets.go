@@ -503,7 +503,7 @@ func SetJobResult(c *gin.Context) {
 	}
 
 	m.UpdateDatasetsStatus(w.ID, w.Status)
-	m.UpdateDatasetsPercent(w.ID, int64(w.Percent))
+	m.UpdateDatasetsPercent(w.ID, w.Percent)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -608,12 +608,21 @@ func GetJobResult(c *gin.Context) {
 func GetJobPercent(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
+	jobStr := c.DefaultQuery("job", "0")
+	jobtype, _ := strconv.ParseInt(jobStr, 10, 64)
 
 	d, _ := m.GetOneDatasetByID(int(id))
 
+	percent := d.ProcessPercent
+	if jobtype == 1 {
+		percent = d.TrainPercent
+	} else if jobtype == 2 {
+		percent = d.PredictPercent
+	}
+
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   d.Percent,
+		"data":   percent,
 	})
 
 	return
