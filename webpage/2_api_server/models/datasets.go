@@ -346,21 +346,23 @@ func GetCategoryByID(id int) (c Category, e error) {
 
 // Dataset 数据集的信息
 type Dataset struct {
-	ID          int64     `json:"id"             gorm:"column:ID"`           //ID
-	Type        int       `json:"type"           gorm:"column:TYPE"`         //分类
-	Desc        string    `json:"desc"           gorm:"column:DESCRIPTION"`  //描述
-	Status      int       `json:"status"         gorm:"column:STATUS"`       //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
-	Dir         string    `json:"dir"            gorm:"column:DIR"`          //文件夹名称(创建时间 + ID)
-	ProcessTime time.Time `json:"processtime"    gorm:"column:PROCESS_TIME"` //开始处理数据时间
-	ProcessEnd  time.Time `json:"processend"     gorm:"column:PROCESS_END"`  //处理数据结束时间
-	TrainTime   time.Time `json:"traintime"      gorm:"column:TRAIN_TIME"`   //开始训练的时间
-	TrainEnd    time.Time `json:"trainend"       gorm:"column:TRAIN_END"`    //训练结束的时间
-	PredictTime time.Time `json:"predicttime"    gorm:"column:PREDICT_TIME"` //开始预测的时间
-	PredictEnd  time.Time `json:"predictend"     gorm:"column:PREDICT_END"`  //预测结束的时间
-	Percent     int64     `json:"percent"        gorm:"column:PERCENT"`      //处理数据/训练/预测的进度
-	CreatedBy   int64     `json:"created_by"     gorm:"column:CREATED_BY"`   //创建者
-	CreatedAt   time.Time `json:"created_at"     gorm:"column:CREATED_TIME"` //创建时间
-	UpdatedAt   time.Time `json:"updated_at"     gorm:"column:UPDATED_TIME"` //更新时间
+	ID             int64     `json:"id"             gorm:"column:ID"`               //ID
+	Type           int       `json:"type"           gorm:"column:TYPE"`             //分类
+	Desc           string    `json:"desc"           gorm:"column:DESCRIPTION"`      //描述
+	Status         int       `json:"status"         gorm:"column:STATUS"`           //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
+	Dir            string    `json:"dir"            gorm:"column:DIR"`              //文件夹名称(创建时间 + ID)
+	ProcessTime    time.Time `json:"processtime"    gorm:"column:PROCESS_TIME"`     //开始处理数据时间
+	ProcessEnd     time.Time `json:"processend"     gorm:"column:PROCESS_END"`      //处理数据结束时间
+	TrainTime      time.Time `json:"traintime"      gorm:"column:TRAIN_TIME"`       //开始训练的时间
+	TrainEnd       time.Time `json:"trainend"       gorm:"column:TRAIN_END"`        //训练结束的时间
+	PredictTime    time.Time `json:"predicttime"    gorm:"column:PREDICT_TIME"`     //开始预测的时间
+	PredictEnd     time.Time `json:"predictend"     gorm:"column:PREDICT_END"`      //预测结束的时间
+	ProcessPercent int       `json:"process_percent" gorm:"column:PROCESS_PERCENT"` //处理数据的进度
+	TrainPercent   int       `json:"train_percent"   gorm:"column:TRAIN_PERCENT"`   //训练的进度
+	PredictPercent int       `json:"predict_percent" gorm:"column:PREDICT_PERCENT"` //预测的进度
+	CreatedBy      int64     `json:"created_by"      gorm:"column:CREATED_BY"`      //创建者
+	CreatedAt      time.Time `json:"created_at"      gorm:"column:CREATED_TIME"`    //创建时间
+	UpdatedAt      time.Time `json:"updated_at"      gorm:"column:UPDATED_TIME"`    //更新时间
 }
 
 // BeforeCreate insert 之前的hook
@@ -459,14 +461,20 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 }
 
 // UpdateDatasetsPercent 更新任务完成的百分比
-func UpdateDatasetsPercent(did int64, percent int64) (e error) {
+func UpdateDatasetsPercent(did int64, percent int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
 	if ret2.Error != nil {
 		return ret2.Error
 	}
 
-	d.Percent = percent
+	if d.Status < 6 { //处理数据集的进度, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在
+		d.ProcessPercent = percent
+	} else if d.Status < 10 && d.Type == 1 { //训练进度, 6送去训练 7开始训练 8训练出错 9训练完成
+		d.TrainPercent = percent
+	} else if d.Status < 13 && d.Type == 2 { //预测进度, 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
+		d.PredictPercent = percent
+	}
 
 	ret := db.Model(&d).Where("ID=?", did).Updates(d)
 	if ret.Error != nil {
