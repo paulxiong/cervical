@@ -45,14 +45,6 @@ func History() gin.HandlerFunc {
 			Referer:  c.Request.Referer(),
 		}
 
-		region, err := f.IP2Region(clientIP)
-		if err == nil {
-			err2 := region.NewRegion()
-			if err2 == nil {
-				operationlog.RegionID = region.ID
-			}
-		}
-
 		skippath := [...]string{
 			"/user/accesslog",
 			"/swagger/index.html",
@@ -71,6 +63,14 @@ func History() gin.HandlerFunc {
 		}
 		//判断哪些API访问不记录
 		if _, ok := skip[path]; !ok {
+			region, err := f.IP2Region(clientIP)
+			if err == nil {
+				err2 := region.NewRegion()
+				if err2 == nil {
+					operationlog.RegionID = region.ID
+				}
+			}
+
 			err3 := operationlog.NewOperationlog()
 			if err3 != nil {
 				logger.Info.Println(err3)
