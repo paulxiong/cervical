@@ -201,8 +201,54 @@ class detector():
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
                 cv2.imwrite(output_image_path, original_image)
         return True
-
-    def detect_image1(self, gray=False, print2=None):
+    
+    def compare_rois(self, x_, y_, seg_center): # x_, y_为原始csv中细胞中心坐标, seg_center为切割细胞中心坐标矩阵
+        index, x1, y1, x2, y2 = None, None, None, None, None
+        limit = 20
+        min_distance = 1000000
+        for n in range(len(seg_center)):
+            x1, y1, x2, y2 = seg_center[n, 1], seg_center[n, 0], seg_center[n, 3], seg_center[n, 2]
+            x = int((x1 + x2)/2)
+            y = int((y1 + y2)/2)
+            L_temp = np.sqrt((np.square(x_ - x)) + np.square(y_ - y))
+            if L_temp < min_distance:
+                min_distance = L_temp
+                index, x1_, y1_, x2_, y2_ = n, x1, y1, x2, y2
+        if min_distance < limit:
+            return True, index, x1_, y1_, x2_, y2_
+        return False, index, x1_, y1_, x2_, y2_
+    
+    def get_FOV_type(self, org_csv_path): # 获取FOV类型
+        sign_N = ['1','5','12','13','14','15']
+        if not os.path.exists(original_img_path):
+            return '-1' # 表示预测类型
+        df1 = pd.read_csv(org_csv_path)
+        for index, row in df1.iterrows(): # 遍历原始csv
+            _type = row['Type']
+            if _type in sign_N:
+                return 'N'
+            else:
+                return 'P'
+    
+    def crop_fov(self, img, cell_point, npy, cells_path, filename, fov_type, cell_type): # img为读取到的原图， cell_point为目标细胞切割坐标， npy为目标对应的掩码， cells_path为存放细胞外层文件夹， filename为原图名称， fov_type为原图标签， cell_type为细胞类型
+        x1, y1, x2, y2 = cell_point[1], cell_point[0], cell_point[3], cell_point[2]
+        cropped = img[y1:y2,x1:x2,:]
+        cells_crop_file_path = os.path.join(cells_path, 'crop', '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
+        cv2.imwrite(cells_crop_file_path, cropped)
+        segmentate = np.tile(np.expand_dims(npy, axis=2),(1,1,3))
+        img_masked = cropped*segmentate
+        size_x, size_y = img_masked.shape[0], img_masked.shape[1]
+        for n in range(size_x):
+            for m in range(size_y):
+                if img_masked[n,m,1] == 0:
+                    img_masked[n,m,0] = 255
+                    img_masked[n,m,1] = 255
+                    img_masked[n,m,2] = 255
+        cells_masked_crop_file_path = os.path.join(cells_path, 'crop_masked', '{}_{}_{}_{}_{}_{}_{}masked.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
+        cv2.imwrite(cells_masked_crop_file_path, img_masked)
+        return
+    
+    def detect_image1(self, gray=False, print2=None, sign = '1'): # sign == 1为训练， sign == 2为预测
         pathList = self.get_image_lists()
         if print2 is None:
             print2 = print
@@ -263,25 +309,28 @@ class detector():
 
             mask_cell = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
-            print('_mask_npy:', mask_cell.shape)
-            print("pd_data:", cell_points.shape)
+            cells_path = './cells'
+            if sign == '1': # 训练
+                org_csv_path = image_path[:-4] + '.csv' # 拼原始csv路径
+                df1 = pd.read_csv(org_csv_path)
+                for index, row in df1.iterrows(): # 遍历原始csv
+                    x_center = int(row['X'])
+                    y_center = int(row['Y'])
+                    cell_type = row['Type']
+                    ret, index_, x1, y1, x2, y2 = self.compare_rois(x_center, y_center, cell_points) # seg_center为切割y1, x1, y2, x2
+                    if ret == True:
+                        fov_type = self.get_FOV_type(org_csv_path)
+                        cell_point = [y1, x1, y2, x2]
+                        self.crop_fov(original_image, cell_points[index_, :], mask_cell[index_,], cells_path, filename, fov_type, cell_type)
+            elif sign == '2': # 预测
+                for n in range(len(cell_points)):
+                    cell_point = cell_points[n,:]
+                    cell_type = str(-1)
+                    fov_type = str(-1)
+                    self.crop_fov(original_image, cell_point, mask_cell[n], cells_path, filename, fov_type, cell_type)
 
-            if self.debug:
-                visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
-                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
-                for i in range(len(final_rois)):
-                    score = scores_masks[i]
-                    rois = final_rois[i,:]
-                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
-                    draw_color = (0, 0, 255)
-                    if (score >= 0.98):
-                        draw_color = (0, 0, 255)
-                    elif (0.94 < score < 0.98) :
-                        draw_color = (0, 255, 0)
-                    elif score <= 0.94 :
-                        draw_color = (255, 0, 0)
-                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
-                cv2.imwrite(output_image_path, original_image)
+            
+
         return cell_points, mask_cell
 
 if __name__ == "__main__":
