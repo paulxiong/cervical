@@ -67,6 +67,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/userLog',
+    component: () => import('@/views/userLog/index'),
+    hidden: true
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/home',
@@ -109,62 +114,6 @@ export const constantRoutes = [
         component: () => import('@/views/doctor/index'),
         name: '医生',
         meta: { title: '医生', icon: 'tree', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/page1',
-    component: Layout,
-    redirect: '/page1',
-    children: [
-      {
-        path: 'page1',
-        component: () => import('@/views/page1/index'),
-        name: '概览',
-        meta: { title: '概览', icon: 'chart', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/page2',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/page2/index'),
-        name: '导出数据',
-        meta: { title: '导出数据', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/page3',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/page3/index'),
-        name: '标注',
-        meta: { title: '标注', icon: 'tree-table', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/page4',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/page4/index'),
-        name: '我的数据集合',
-        meta: { title: '我的数据集合', icon: 'tree-table', affix: true }
-      },
-      {
-        path: 'details',
-        component: () => import('@/views/page4/details'),
-        name: '详细信息',
-        meta: { title: '详细信息', icon: 'tree-table', affix: true },
-        hidden: true
       }
     ]
   }

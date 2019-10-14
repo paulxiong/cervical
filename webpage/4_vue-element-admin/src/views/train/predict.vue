@@ -42,33 +42,11 @@
             <el-tooltip class="item" effect="dark" v-for="v in falseCellsList" :key="v.url" :content="`实际${v.type} - 预测${v.predict}`" placement="bottom">
               <img class="img-item img-false" :src="hosturlpath64+v.url" />
             </el-tooltip>
-            <!-- <el-image
-              class="img-item img-false"
-              v-for="(img,idx) of falseCellsList"
-              :key="idx"
-              :src="hosturlpath64 + img.url"
-              lazy
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline"></i>
-              </div>
-            </el-image> -->
           </el-tab-pane>
           <el-tab-pane :label="`正确细胞 ${rightCellsList.length}`">
             <el-tooltip class="item" effect="dark" v-for="v in rightCellsList" :key="v.url" :content="v.type" placement="bottom">
               <img class="img-item img-right" :src="hosturlpath64+v.url" />
             </el-tooltip>
-            <!-- <el-image
-              class="img-item img-right"
-              v-for="(img,idx) of rightCellsList"
-              :key="idx"
-              :src="hosturlpath64 + img.url"
-              lazy
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline"></i>
-              </div>
-            </el-image> -->
           </el-tab-pane>
         </el-tabs>
       </section>

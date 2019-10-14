@@ -16,6 +16,14 @@ export function getUserInfo(query) {
   })
 }
 
+export function getUserLog(query) {
+  return request({
+    url: '/user/accesslog',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getCode(data) {
   return request({
     url: '/user/emailcode',
