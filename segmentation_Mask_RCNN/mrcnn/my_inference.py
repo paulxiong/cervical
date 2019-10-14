@@ -201,7 +201,7 @@ class detector():
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
                 cv2.imwrite(output_image_path, original_image)
         return True
-    
+
     def detect_image1(self, gray=False, print2=None):
         pathList = self.get_image_lists()
         if print2 is None:
@@ -265,7 +265,7 @@ class detector():
             cell_points = np.array(_rois)
             print('_mask_npy:', mask_cell.shape)
             print("pd_data:", cell_points.shape)
-           
+
             if self.debug:
                 visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
                 output_image_path = os.path.join(self.output_image_path, filename + '_.png')
