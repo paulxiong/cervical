@@ -113,15 +113,26 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/userLog',
+    path: '/authManage',
     component: Layout,
-    redirect: '/userLog',
+    redirect: '/authManage',
+    name: '权限管理',
+    meta: {
+      title: '权限管理',
+      icon: 'component'
+    },
     children: [
+      {
+        path: 'userManage',
+        component: () => import('@/views/userMannage/index'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'peoples', affix: true }
+      },
       {
         path: 'userLog',
         component: () => import('@/views/userLog/index'),
-        name: '权限管理',
-        meta: { title: '权限管理', icon: 'tree', affix: true }
+        name: '用户日志',
+        meta: { title: '用户日志', icon: 'people', affix: true }
       }
     ]
   }

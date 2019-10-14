@@ -1,15 +1,25 @@
 <template>
   <div class="userLog">
+    <header class="tools flex">
+      <el-pagination
+        class="page"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-size="100"
+        layout="prev, pager, next, jumper"
+        :total="1000"
+      ></el-pagination>
+    </header>
     <el-table :data="userLog" style="width: 100%">
       <el-table-column prop="id" label="ID" width="100"></el-table-column>
       <el-table-column prop="user_id" label="用户ID" width="100"></el-table-column>
       <el-table-column prop="ip" label="IP" width="180"></el-table-column>
       <el-table-column prop="region.isp" width="100" label="运营商"></el-table-column>
       <el-table-column prop="region.city" label="城市" width="100"></el-table-column>
-      <el-table-column prop="path" label="路径"></el-table-column>
-      <el-table-column prop="ua.device.type" label="硬件" width="100"></el-table-column>
-      <el-table-column prop="ua.os.name" label="操作系统" width="100"></el-table-column>
-      <el-table-column prop="ua.browser.name" label="浏览器" width="100"></el-table-column>
+      <el-table-column prop="path" label="路径" width="180"></el-table-column>
+      <el-table-column prop="ua.device.type" label="硬件" width="150"></el-table-column>
+      <el-table-column prop="ua.os.name" label="操作系统" width="150"></el-table-column>
+      <el-table-column prop="ua.browser.name" label="浏览器" width="150"></el-table-column>
       <el-table-column prop="cost" label="耗时(ms)" width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
@@ -21,16 +31,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <footer class="tools flex">
-      <el-pagination
-        class="page"
-        @current-change="handleCurrentChange"
-        :current-page.sync="currentPage"
-        :page-size="100"
-        layout="prev, pager, next, jumper"
-        :total="1000"
-      ></el-pagination>
-    </footer>
   </div>
 </template>
 
@@ -90,7 +90,6 @@ export default {
 .userLog {
   padding-top: 10px;
   .tools {
-    margin-top: 10px;
     justify-content: space-around;
   }
 }
