@@ -67,11 +67,6 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/userLog',
-    component: () => import('@/views/userLog/index'),
-    hidden: true
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/home',
@@ -114,6 +109,19 @@ export const constantRoutes = [
         component: () => import('@/views/doctor/index'),
         name: '医生',
         meta: { title: '医生', icon: 'tree', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/userLog',
+    component: Layout,
+    redirect: '/userLog',
+    children: [
+      {
+        path: 'userLog',
+        component: () => import('@/views/userLog/index'),
+        name: '权限管理',
+        meta: { title: '权限管理', icon: 'tree', affix: true }
       }
     ]
   }
