@@ -201,6 +201,88 @@ class detector():
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
                 cv2.imwrite(output_image_path, original_image)
         return True
+    
+    def detect_image1(self, gray=False, print2=None):
+        pathList = self.get_image_lists()
+        if print2 is None:
+            print2 = print
+
+        step, total_steps = 0, len(pathList)
+        if total_steps < 1:
+            return False
+        for filename in pathList:
+            step = step + 1
+            image_path = os.path.join(self.original_img_path, filename)
+            print2("step %d/%d  %s" %(step, total_steps, image_path))
+            original_image = cv2.imread(image_path)
+            predict_img = original_image
+
+            if gray is True:
+                grayImage = cv2.cvtColor(original_image, cv2.COLOR_RGB2GRAY)
+                if len(grayImage.shape)<3:
+                    grayImage = img_as_ubyte(grayImage)
+                    grayImage = np.expand_dims(grayImage, 2)
+                    grayImage = grayImage[:,:,[0,0,0]] # flip r and b
+                grayImage = grayImage[:,:,:3]
+                predict_img = grayImage
+            else:
+                if len(original_image.shape)<3:
+                    original_image = img_as_ubyte(original_image)
+                    original_image = np.expand_dims(original_image,2)
+                    original_image = original_image[:,:,[0,0,0]] # flip r and b
+                original_image = original_image[:,:,:3]
+                predict_img = original_image
+
+            ## Make prediction for that image
+            results = self.model.detect([predict_img], verbose=0)
+            r = results[0]
+
+            scores_masks = r['scores']      #判别物得分
+            final_rois = r["rois"]         #交并比得到的回归框坐标
+            pred_masks = r['masks']
+
+            _rois = []
+            mask_cell_npy = []
+            threshold = float(0.90)
+            for i in range(0, len(scores_masks)):
+                score = scores_masks[i]
+                classid = r['class_ids'][i]
+                roi = final_rois[i]
+                if int(threshold*100) > int(score*100):
+                    print2("%s drop roi, score=%f" % (filename, score))
+                    continue
+
+                mask_npy = pred_masks[:,:,i]
+                y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
+                mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
+                _mask_npy = mask_npy[y1:y2, x1:x2]
+
+                mask_cell_npy.append(_mask_npy)
+                _rois.append([y1, x1, y2, x2])
+
+            mask_cell = np.array(mask_cell_npy)
+            cell_points = np.array(_rois)
+            print('_mask_npy:', mask_cell.shape)
+            print("pd_data:", cell_points.shape)
+           
+            if self.debug:
+                visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
+                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
+                for i in range(len(final_rois)):
+                    score = scores_masks[i]
+                    rois = final_rois[i,:]
+                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
+                    draw_color = (0, 0, 255)
+                    if (score >= 0.98):
+                        draw_color = (0, 0, 255)
+                    elif (0.94 < score < 0.98) :
+                        draw_color = (0, 255, 0)
+                    elif score <= 0.94 :
+                        draw_color = (255, 0, 0)
+                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
+                cv2.imwrite(output_image_path, original_image)
+        return cell_points, mask_cell
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
@@ -208,4 +290,4 @@ if __name__ == "__main__":
     cells_rois_path = 'cells/rois'
     cells_mask_npy_path = 'cells/mask_npy'
     d = detector(model_path, original_img_path, cells_rois_path, cells_mask_npy_path)
-    d.detect_image(gray = True)
+    d.detect_image1(gray = True)
