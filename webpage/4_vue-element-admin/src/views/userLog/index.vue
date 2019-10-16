@@ -10,7 +10,7 @@
       <el-table-column prop="ua.device.type" label="硬件" width="100"></el-table-column>
       <el-table-column prop="ua.os.name" label="操作系统" width="100"></el-table-column>
       <el-table-column prop="ua.browser.name" label="浏览器" width="100"></el-table-column>
-      <el-table-column prop="cost" label="耗时(ms)" width="100"></el-table-column>
+      <el-table-column prop="cost" label="耗时(us)" width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" width="400" trigger="click">
@@ -28,7 +28,7 @@
         :current-page.sync="currentPage"
         :page-size="100"
         layout="prev, pager, next, jumper"
-        :total="1000"
+        :total="userLog.total"
       ></el-pagination>
     </footer>
   </div>
@@ -43,23 +43,6 @@ export default {
   components: {},
   data() {
     return {
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
       currentPage: 1,
       userLog: []
     }
