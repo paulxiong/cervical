@@ -21,6 +21,7 @@
           @changeCellTypes="changeCellTypes"
         />
       </section>
+      <!-- v-if="datasetsList.length" -->
       <section class="datasets-info" v-if="datasetsList.length">
         <el-badge is-dot class="badge">数据信息</el-badge>
         <datasetsCard :datasetsInfo="datasetsInfo" :predict="predict" :datasetsList="datasetsList" />

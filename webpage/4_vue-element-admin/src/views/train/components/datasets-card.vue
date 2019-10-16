@@ -24,23 +24,23 @@
           <b>{{datasetsInfo.id}}</b>
         </section>
         <section class="info">
-          <i>路径</i>
+          <i>路径:</i>
           <b>{{datasetsInfo.dir}}</b>
         </section>
         <section class="info">
-          <i>状态</i>
+          <i>状态:</i>
           <b>{{datasetsInfo.status | filtersTaskStatus}}</b>
         </section>
         <section class="info">
-          <i>进度</i>
+          <i>进度:</i>
           <b>{{datasetsInfo.percent}}%</b>
         </section>
         <section class="info">
-          <i>创建时间</i>
+          <i>创建时间:</i>
           <b>{{datasetsInfo.created_at | filtersTime}}</b>
         </section>
         <section class="info">
-          <i>训练时间</i>
+          <i>训练时间:</i>
           <b>{{datasetsInfo.traintime | filtersTime}}</b>
         </section>
       </div>
@@ -99,10 +99,11 @@ export default {
 <style lang="scss" scoped>
 .card {
   margin-top: 10px;
+  opacity: 0.9;
   i {
     color: #666;
     font-style: normal;
-    margin-right: 10px;
+    margin-right: 15px;
   }
   b {
     font-size: 22px;

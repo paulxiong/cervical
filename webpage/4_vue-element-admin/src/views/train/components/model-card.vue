@@ -45,7 +45,7 @@
           <b>{{modelInfo.did}}</b>
         </section>
         <section class="info">
-          <i>路径</i>
+          <i>路径:</i>
           <b>{{modelInfo.path}}</b>
         </section>
         <section class="info">
@@ -143,20 +143,21 @@ export default {
 <style lang="scss" scoped>
 .card {
   margin-top: 10px;
+  opacity: 0.9;
   i {
     color: #666;
     font-style: normal;
-    margin-right: 10px;
+    margin-right: 15px;
   }
   b {
     font-size: 22px;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   }
   .model-input {
     width: 50%;
   }
   .card-header {
     justify-content: space-between;
-    
     .precision-info {
       margin-right: 20px;
     }
