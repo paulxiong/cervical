@@ -8,13 +8,14 @@ random.seed(seed)
 from skimage import img_as_ubyte
 import model as modellib
 import pandas as pd
-import os
+import os, sys
 import my_functions as f
 import time
 import cv2
 from config import Config
 import scipy
 import visualize
+import time
 
 class BowlConfig(Config):
     """Configuration for training on the toy shapes dataset.
@@ -56,11 +57,11 @@ class BowlConfig(Config):
     USE_MINI_MASK = True
 
 class detector():
-    def __init__(self, model_path, original_img_path, cells_rois_path, cells_mask_npy_path):
+    def __init__(self, model_path, original_img_path, cells_path, cells_mask_path):
         self.model_path = model_path
         self.original_img_path = original_img_path
-        self.cells_rois_path = cells_rois_path
-        self.cells_mask_npy_path = cells_mask_npy_path
+        self.cells_mask_path = cells_mask_path
+        self.cells_path = cells_path
         self.debug = False
         self.inference_config = None
         self.logs_dir = './logs'
@@ -121,87 +122,6 @@ class detector():
         y1 = int(max(0, min(y2-1, y1)))
         return x1, y1, x2, y2
 
-    def detect_image(self, gray=False, print2=None):
-        pathList = self.get_image_lists()
-        if print2 is None:
-            print2 = print
-
-        step, total_steps = 0, len(pathList)
-        if total_steps < 1:
-            return False
-        for filename in pathList:
-            step = step + 1
-            image_path = os.path.join(self.original_img_path, filename)
-            print2("step %d/%d  %s" %(step, total_steps, image_path))
-            original_image = cv2.imread(image_path)
-            predict_img = original_image
-
-            if gray is True:
-                grayImage = cv2.cvtColor(original_image, cv2.COLOR_RGB2GRAY)
-                if len(grayImage.shape)<3:
-                    grayImage = img_as_ubyte(grayImage)
-                    grayImage = np.expand_dims(grayImage, 2)
-                    grayImage = grayImage[:,:,[0,0,0]] # flip r and b
-                grayImage = grayImage[:,:,:3]
-                predict_img = grayImage
-            else:
-                if len(original_image.shape)<3:
-                    original_image = img_as_ubyte(original_image)
-                    original_image = np.expand_dims(original_image,2)
-                    original_image = original_image[:,:,[0,0,0]] # flip r and b
-                original_image = original_image[:,:,:3]
-                predict_img = original_image
-
-            ## Make prediction for that image
-            results = self.model.detect([predict_img], verbose=0)
-            r = results[0]
-
-            scores_masks = r['scores']      #判别物得分
-            final_rois = r["rois"]         #交并比得到的回归框坐标
-            pred_masks = r['masks']
-
-            _rois = []
-            threshold = float(0.90)
-            for i in range(0, len(scores_masks)):
-                score = scores_masks[i]
-                classid = r['class_ids'][i]
-                roi = final_rois[i]
-                if int(threshold*100) > int(score*100):
-                    print2("%s drop roi, score=%f" % (filename, score))
-                    continue
-
-                mask_npy = pred_masks[:,:,i]
-                y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
-                mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
-
-                _mask_npy = mask_npy[y1:y2, x1:x2]
-                np.save(self.cells_mask_npy_path + '/' + filename + '_{}_{}_{}_{}.npy'.format(x1, y1, x2, y2), _mask_npy)
-                _rois.append([y1, x1, y2, x2, float(int(score * 100) / 100)])
-
-            csv_path = os.path.join(self.cells_rois_path, filename + '_.csv')
-            pd_data = pd.DataFrame(_rois, columns=['y1', 'x1', 'y2', 'x2', 'score'])
-            save_file = pd_data.to_csv(csv_path, quoting = 1, mode = 'w',
-                        index = False, header = True)
-
-            if self.debug:
-                visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
-                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
-                for i in range(len(final_rois)):
-                    score = scores_masks[i]
-                    rois = final_rois[i,:]
-                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
-                    draw_color = (0, 0, 255)
-                    if (score >= 0.98):
-                        draw_color = (0, 0, 255)
-                    elif (0.94 < score < 0.98) :
-                        draw_color = (0, 255, 0)
-                    elif score <= 0.94 :
-                        draw_color = (255, 0, 0)
-                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
-                cv2.imwrite(output_image_path, original_image)
-        return True
-    
     def compare_rois(self, x_, y_, seg_center): # x_, y_为原始csv中细胞中心坐标, seg_center为切割细胞中心坐标矩阵
         index, x1, y1, x2, y2 = None, None, None, None, None
         limit = 20
@@ -217,7 +137,7 @@ class detector():
         if min_distance < limit:
             return True, index, x1_, y1_, x2_, y2_
         return False, index, x1_, y1_, x2_, y2_
-    
+
     def get_FOV_type(self, org_csv_path): # 获取FOV类型
         sign_N = ['1','5','12','13','14','15']
         if not os.path.exists(original_img_path):
@@ -229,11 +149,11 @@ class detector():
                 return 'N'
             else:
                 return 'P'
-    
-    def crop_fov(self, img, cell_point, npy, cells_path, filename, fov_type, cell_type): # img为读取到的原图， cell_point为目标细胞切割坐标， npy为目标对应的掩码， cells_path为存放细胞外层文件夹， filename为原图名称， fov_type为原图标签， cell_type为细胞类型
+
+    def crop_fov(self, img, cell_point, npy, cells_path, cells_mask_path, filename, fov_type, cell_type): # img为读取到的原图， cell_point为目标细胞切割坐标， npy为目标对应的掩码， cells_path为存放细胞外层文件夹， filename为原图名称， fov_type为原图标签， cell_type为细胞类型
         x1, y1, x2, y2 = cell_point[1], cell_point[0], cell_point[3], cell_point[2]
         cropped = img[y1:y2,x1:x2,:]
-        cells_crop_file_path = os.path.join(cells_path, 'crop', '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
+        cells_crop_file_path = os.path.join(cells_path, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
         cv2.imwrite(cells_crop_file_path, cropped)
         segmentate = np.tile(np.expand_dims(npy, axis=2),(1,1,3))
         img_masked = cropped*segmentate
@@ -244,11 +164,11 @@ class detector():
                     img_masked[n,m,0] = 255
                     img_masked[n,m,1] = 255
                     img_masked[n,m,2] = 255
-        cells_masked_crop_file_path = os.path.join(cells_path, 'crop_masked', '{}_{}_{}_{}_{}_{}_{}masked.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
+        cells_masked_crop_file_path = os.path.join(cells_mask_path, 'crop_masked', '{}_{}_{}_{}_{}_{}_{}masked.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
         cv2.imwrite(cells_masked_crop_file_path, img_masked)
         return
-    
-    def detect_image1(self, gray=False, print2=None, sign = '1'): # sign == 1为训练， sign == 2为预测
+
+    def detect_image(self, gray=False, print2=None, sign = '2'): # sign == 1为训练， sign == 2为预测
         pathList = self.get_image_lists()
         if print2 is None:
             print2 = print
@@ -282,7 +202,6 @@ class detector():
             ## Make prediction for that image
             results = self.model.detect([predict_img], verbose=0)
             r = results[0]
-
             scores_masks = r['scores']      #判别物得分
             final_rois = r["rois"]         #交并比得到的回归框坐标
             pred_masks = r['masks']
@@ -307,36 +226,56 @@ class detector():
                 mask_cell_npy.append(_mask_npy)
                 _rois.append([y1, x1, y2, x2])
 
-            mask_cell = np.array(mask_cell_npy)
+            #mask_cell = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
-            cells_path = './cells'
             if sign == '1': # 训练
                 org_csv_path = image_path[:-4] + '.csv' # 拼原始csv路径
                 df1 = pd.read_csv(org_csv_path)
                 for index, row in df1.iterrows(): # 遍历原始csv
                     x_center = int(row['X'])
                     y_center = int(row['Y'])
-                    cell_type = row['Type']
+                    cell_type = str(row['Type'])
+                    cell_type = cell_type[:-2]
                     ret, index_, x1, y1, x2, y2 = self.compare_rois(x_center, y_center, cell_points) # seg_center为切割y1, x1, y2, x2
                     if ret == True:
                         fov_type = self.get_FOV_type(org_csv_path)
                         cell_point = [y1, x1, y2, x2]
-                        self.crop_fov(original_image, cell_points[index_, :], mask_cell[index_,], cells_path, filename, fov_type, cell_type)
+                        self.crop_fov(original_image, cell_points[index_, :], mask_cell_npy[index_,], cells_path, 
+                                      cells_mask_path, filename, fov_type, cell_type)
+
             elif sign == '2': # 预测
                 for n in range(len(cell_points)):
                     cell_point = cell_points[n,:]
-                    cell_type = str(-1)
-                    fov_type = str(-1)
-                    self.crop_fov(original_image, cell_point, mask_cell[n], cells_path, filename, fov_type, cell_type)
+                    cell_type = str(100)
+                    fov_type = str(100)
+                    self.crop_fov(original_image, cell_point, mask_cell_npy[n], cells_path, cells_mask_path, filename, fov_type, cell_type)
 
-            
+            if self.debug:
+                visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
+                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
+                for i in range(len(final_rois)):
+                    score = scores_masks[i]
+                    rois = final_rois[i,:]
+                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
+                    draw_color = (0, 0, 255)
+                    if (score >= 0.98):
+                        draw_color = (0, 0, 255)
+                    elif (0.94 < score < 0.98) :
+                        draw_color = (0, 255, 0)
+                    elif score <= 0.94 :
+                        draw_color = (255, 0, 0)
+                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
+                cv2.imwrite(output_image_path, original_image)
 
-        return cell_points, mask_cell
+        return True
 
 if __name__ == "__main__":
+    time_start=time.time()
     model_path = "./model/deepretina_final.h5"
     original_img_path = './origin_imgs'
-    cells_rois_path = 'cells/rois'
-    cells_mask_npy_path = 'cells/mask_npy'
-    d = detector(model_path, original_img_path, cells_rois_path, cells_mask_npy_path)
-    d.detect_image1(gray = True)
+    cells_path = './cells/crop'
+    cells_mask_path = 'cells/crop_mask'
+    d = detector(model_path, original_img_path, cells_path, cells_mask_path)
+    d.detect_image(gray = True )
+    time_end=time.time()
+    print('totally cost:',time_end-time_start)

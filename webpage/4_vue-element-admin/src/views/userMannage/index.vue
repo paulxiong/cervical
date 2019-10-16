@@ -1,71 +1,72 @@
 <template>
-  <div class="userLog">
-    <el-table
-      :data="gridData"
-      style="width: 100%">
-      <el-table-column
-        prop="date"
-        label="状态"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        label="性别"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="address"
-        label="地址">
-      </el-table-column>
-      <el-table-column
-        prop="address"
-        label="身份证">
-      </el-table-column>
-      <el-table-column
-        prop="address"
-        label="id">
+  <div class="userList">
+    <el-table :data="userList" style="width: 100%">
+      <el-table-column prop="id" label="ID" width="100"></el-table-column>
+      <el-table-column prop="user_id" label="用户ID" width="100"></el-table-column>
+      <el-table-column prop="name" label="用户名" width="180"></el-table-column>
+      <el-table-column prop="type" label="类型" width="100"></el-table-column>
+      <el-table-column prop="city" label="城市"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="100">
+        <template slot-scope="scope">
+          <el-popover placement="right" width="400" trigger="click">
+            <div>{{scope.row}}</div>
+            <el-button slot="reference" @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+          </el-popover>
+          <el-button type="text" size="small">删除</el-button>
+        </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page.sync="currentPage3"
-      :page-size="100"
-      layout="prev, pager, next, jumper"
-      :total="1000">
-    </el-pagination>
+    <footer class="tools flex">
+      <el-pagination
+        class="page"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-size="100"
+        layout="prev, pager, next, jumper"
+        :total="1000"
+      ></el-pagination>
+    </footer>
   </div>
 </template>
 
 <script>
-import { getUserLog } from '@/api/user'
-import UA from 'ua-device'
 
 export default {
-  name: 'UserLog',
+  name: 'UserList',
   components: {},
   data() {
     return {
-      currentPage3: 5,
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
       currentPage: 1,
-      userLog: []
+      userList: [
+        {
+          'id': 0,
+          'user_id': 12,
+          'name': 'github_cy@163.com',
+          'type': '管理员',
+          'city': '昆明市'
+        },
+        {
+          'id': 1,
+          'user_id': 13,
+          'name': 'ggxxde@163.com',
+          'type': '管理员',
+          'city': '昆明市'
+        },
+        {
+          'id': 2,
+          'user_id': 14,
+          'name': '7171823@qq.com',
+          'type': '管理员',
+          'city': '昆明市'
+        },
+        {
+          'id': 3,
+          'user_id': 15,
+          'name': 'paulxiong_2007@gmail.com',
+          'type': '管理员',
+          'city': '加利福利亚'
+        }
+      ]
     }
   },
   methods: {
@@ -73,30 +74,20 @@ export default {
       console.log(row)
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
-      this.getUserLog(10, val * 10, 1)
-    },
-    getUserLog(limit, skip, order) {
-      getUserLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        res.data.data.accesslog.map(v => {
-          v.ua = new UA(v.ua)
-        })
-        this.userLog = res.data.data.accesslog
-      })
+      console.log(val)
     }
-  },
-  mounted() {
-    this.getUserLog(10, 0, 1)
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.userLog {
+.userList {
   padding-top: 10px;
   .tools {
+    margin-top: 10px;
     justify-content: space-around;
   }
 }
