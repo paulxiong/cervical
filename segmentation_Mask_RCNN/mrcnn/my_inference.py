@@ -201,7 +201,7 @@ class detector():
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
                 cv2.imwrite(output_image_path, original_image)
         return True
-    
+
     def compare_rois(self, x_, y_, seg_center): # x_, y_为原始csv中细胞中心坐标, seg_center为切割细胞中心坐标矩阵
         index, x1, y1, x2, y2 = None, None, None, None, None
         limit = 20
@@ -217,7 +217,7 @@ class detector():
         if min_distance < limit:
             return True, index, x1_, y1_, x2_, y2_
         return False, index, x1_, y1_, x2_, y2_
-    
+
     def get_FOV_type(self, org_csv_path): # 获取FOV类型
         sign_N = ['1','5','12','13','14','15']
         if not os.path.exists(original_img_path):
@@ -229,7 +229,7 @@ class detector():
                 return 'N'
             else:
                 return 'P'
-    
+
     def crop_fov(self, img, cell_point, npy, cells_path, filename, fov_type, cell_type): # img为读取到的原图， cell_point为目标细胞切割坐标， npy为目标对应的掩码， cells_path为存放细胞外层文件夹， filename为原图名称， fov_type为原图标签， cell_type为细胞类型
         x1, y1, x2, y2 = cell_point[1], cell_point[0], cell_point[3], cell_point[2]
         cropped = img[y1:y2,x1:x2,:]
@@ -244,10 +244,10 @@ class detector():
                     img_masked[n,m,0] = 255
                     img_masked[n,m,1] = 255
                     img_masked[n,m,2] = 255
-        cells_masked_crop_file_path = os.path.join(cells_path, 'crop_masked', '{}_{}_{}_{}_{}_{}_{}masked.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
+        cells_masked_crop_file_path = os.path.join(cells_path, 'crop_masked', '{}_{}_{}_{}_{}_{}_{}masked.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
         cv2.imwrite(cells_masked_crop_file_path, img_masked)
         return
-    
+
     def detect_image1(self, gray=False, print2=None, sign = '1'): # sign == 1为训练， sign == 2为预测
         pathList = self.get_image_lists()
         if print2 is None:
@@ -301,7 +301,7 @@ class detector():
                 mask_npy = pred_masks[:,:,i]
                 y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
                 mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 200)
                 _mask_npy = mask_npy[y1:y2, x1:x2]
 
                 mask_cell_npy.append(_mask_npy)
@@ -316,7 +316,8 @@ class detector():
                 for index, row in df1.iterrows(): # 遍历原始csv
                     x_center = int(row['X'])
                     y_center = int(row['Y'])
-                    cell_type = row['Type']
+                    cell_type = str(row['Type'])
+                    cell_type = cell_type[:-2]
                     ret, index_, x1, y1, x2, y2 = self.compare_rois(x_center, y_center, cell_points) # seg_center为切割y1, x1, y2, x2
                     if ret == True:
                         fov_type = self.get_FOV_type(org_csv_path)
@@ -325,13 +326,11 @@ class detector():
             elif sign == '2': # 预测
                 for n in range(len(cell_points)):
                     cell_point = cell_points[n,:]
-                    cell_type = str(-1)
-                    fov_type = str(-1)
+                    cell_type = str(100)
+                    fov_type = str(100)
                     self.crop_fov(original_image, cell_point, mask_cell[n], cells_path, filename, fov_type, cell_type)
 
-            
-
-        return cell_points, mask_cell
+        return True
 
 if __name__ == "__main__":
     model_path = "./model/deepretina_final.h5"
