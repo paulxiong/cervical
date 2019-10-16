@@ -265,7 +265,7 @@ class detector():
                     elif score <= 0.94 :
                         draw_color = (255, 0, 0)
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
-                cv2.imwrite(output_image_path, original_image)                    
+                cv2.imwrite(output_image_path, original_image)
 
         return True
 
