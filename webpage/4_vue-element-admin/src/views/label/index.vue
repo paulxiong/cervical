@@ -141,6 +141,7 @@ export default {
         margin: 0;
         padding: 0;
         height: 90%;
+        max-height: 360px;
         overflow: auto;
         li {
           overflow: hidden;
