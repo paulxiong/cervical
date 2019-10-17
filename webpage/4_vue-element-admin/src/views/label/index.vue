@@ -1,23 +1,28 @@
 <template>
-  <div class="doctor">
-    <section class="main flex">
-      <h2>选择需要预测的病例号</h2>
-      <el-checkbox-group class="checkbox" v-model="checkList">
-        <el-tooltip class="item" effect="dark" content="n:p=4:9" placement="bottom">
-          <el-checkbox label="1号病例-xxx"></el-checkbox>
-        </el-tooltip>
-        <el-checkbox label="2号病例-yyy"></el-checkbox>
-        <el-checkbox label="3号病例-zzz"></el-checkbox>
+  <div class="label flex">
+    <section class="img-block flex">
+      <div class="btn-box flex">
+        <el-button type="primary">选择/导入数据</el-button>
+        <el-button type="primary">选择标注细胞类型</el-button>
+        <el-button type="info">去训练</el-button>
+        <el-button type="info">去预测</el-button>
+      </div>
+      <el-checkbox-group class="cell-type" v-model="checkedCells">
+        <el-checkbox v-for="cell in cells" :label="cell" :key="cell"></el-checkbox>
       </el-checkbox-group>
-      <el-button type="primary" :disabled="started" round @click="startPredict">
-        开始预测
-        <i v-show="ptg!==100&&started" class="icon el-icon-loading"></i>
-      </el-button>
-    </section>
-    <el-divider>{{ptg===100?'预测结果':ptg+'%'}}</el-divider>
-    <section class="result flex">
       <img id="hallstatt" class="img-result" :src="imgResult" />
-      <div class="info">图片信息</div>
+    </section>
+    <section class="info-block flex">
+      <div class="label-info">
+        <b class="title">标记信息</b>
+        <el-image :src="img"></el-image>
+      </div>
+      <div class="data-list">
+        <b class="title">数据集</b>
+        <ul class="list">
+          <li v-for="item in dataList" :key="item">{{item}}</li>
+        </ul>
+      </div>
     </section>
   </div>
 </template>
@@ -27,45 +32,40 @@ import { getLabelByImageId } from '@/api/cervical'
 // import { setaddAnnotation } from '@/utils/setaddAnnotation'
 
 export default {
-  name: 'Doctor',
+  name: 'Label',
   components: {},
   data() {
     return {
+      cells: ['1 Norm 正常细胞', '2 LSIL 鳞状上皮细胞低度病变', '3 HSIL 鳞状上皮细胞高度病变'],
+      checkedCells: [],
+      dataList: [
+        '20190523.1807206.N.IMG001x019.JPG20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG'
+      ],
       ptg: 0,
       started: false,
-      checkList: ['1号病例-xxx'],
-      imgResult: 'http://dev.medical.raidcdn.cn:3001/unsafe/645x0/img/17P0603/1904852/Images/IMG016x028.JPG',
+      imgResult: 'http://dev.medical.raidcdn.cn:3001/unsafe/1000x0/scratch/DDzCz2KF/origin_imgs/20190523.1807206.P.IMG006x017.JPG',
+      img: 'http://dev.medical.raidcdn.cn:3001/unsafe/400x0/scratch/DDzCz2KF/cells/crop/20190523.1807206.N.IMG004x011.JPG_n_5_1837_616_1936_716.png',
       imgInfo: {}
     }
   },
   methods: {
-    startPredict() {
-      this.loopEvent()
-      this.setaddAnnotation(this.imgResult, this.imgInfo.labels, this.imgInfo.imgw ? this.imgInfo.imgw / 645 : 3)
-      this.started = true
-    },
     getLabelByImageId() {
       getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': 5 }).then(res => {
         this.imgInfo = res.data.data
+        this.setaddAnnotation(this.imgResult, this.imgInfo.labels, this.imgInfo.imgw ? this.imgInfo.imgw / 1000 : 3)
       })
-    },
-    loopEvent() {
-      setTimeout(() => {
-        this.ptg = 25
-      }, 1e3)
-      setTimeout(() => {
-        this.ptg = 66
-      }, 2 * 1e3)
-      setTimeout(() => {
-        this.ptg = 100
-        this.started = false
-      }, 3 * 1e3)
     },
     setaddAnnotation(url, labels, divide) {
       window.anno.makeAnnotatable(document.getElementById('hallstatt'))
       window.anno.setProperties({
         outline: 'yellow',
-        outline_width: 3,
+        outline_width: 2,
         hi_outline: 'yellow',
         hi_outline_width: 2,
         stroke: 'yellow'
@@ -98,7 +98,9 @@ export default {
     }
   },
   mounted() {
-    this.getLabelByImageId()
+    setTimeout(() => {
+      this.getLabelByImageId()
+    }, 1e3)
   }
 }
 </script>
@@ -106,24 +108,48 @@ export default {
 <style lang="scss" scoped>
 @import "../../styles/annotorious-dark.css";
 
-.doctor {
-  padding-bottom: 100px;
-  .main {
+.label {
+  padding: 0 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 20px;
+  .img-block {
     flex-direction: column;
-    h2 {
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
-    .checkbox {
-      margin-bottom: 10px;
-    }
-    .icon {
-      margin-left: 5px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    .btn-box {
+      justify-content: space-between;
     }
   }
-  .result {
+  .cell-type {
+    margin: 10px 0;
+  }
+  .info-block {
+    margin-left: 20px;
+    flex-direction: column;
     justify-content: flex-start;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    .label-info, .data-list {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    .data-list {
+      width: 350px;
+      height: 300px;
+      margin-top: 10px;
+      .list {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        height: 90%;
+        overflow: auto;
+        li {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          margin: 5px 0;
+        }
+      }
+    }
   }
 }
 </style>

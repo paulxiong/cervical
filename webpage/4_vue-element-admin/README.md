@@ -29,6 +29,13 @@ $ git commit -m '本次修改说明'
 $ git push
 ```
 
+- 冲突
+```bash
+$ git stash
+$ git pull
+$ git stash pop
+```
+
 - 撤销
 ```bash
 $ git reset --hard
