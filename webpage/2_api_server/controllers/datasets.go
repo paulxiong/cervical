@@ -36,6 +36,7 @@ type Statistics struct {
 }
 
 // AllInfo 获得所有图片及标注的统计信息
+// @Summary 获得所有图片及标注的统计信息
 // @Description 获得所有图片及标注的统计信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -61,14 +62,14 @@ func AllInfo(c *gin.Context) {
 	totalP, _ := m.ListLabelCountByPN(1)
 
 	for _, v := range cs {
-		_total, _, _ := m.ListLabelByType(1, 0, int(v.Id))
-		_total2, _ := m.ListImageCntByLabelType(int(v.Id))
+		_total, _, _ := m.ListLabelByType(1, 0, int(v.ID))
+		_total2, _ := m.ListImageCntByLabelType(int(v.ID))
 		st.CategoryLists = append(st.CategoryLists, Category2{
 			Name:   v.Name,
 			Other:  v.Other,
 			P1N0:   v.P1N0,
 			Cnt:    _total,
-			ID:     int(v.Id),
+			ID:     int(v.ID),
 			CntImg: _total2,
 		})
 	}
@@ -93,6 +94,7 @@ type BatchInfo struct {
 }
 
 // GetBatchInfo 获得所有批次信息
+// @Summary 获得所有批次信息
 // @Description 获得所有批次信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -128,6 +130,7 @@ type MedicalIDInfo struct {
 }
 
 // GetMedicalIDInfo 获得所有病例信息
+// @Summary 获得所有病例信息
 // @Description 获得所有病例信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -142,7 +145,7 @@ func GetMedicalIDInfo(c *gin.Context) {
 	batchid := c.DefaultQuery("batchid", "")
 	batchids := strings.Split(batchid, "|")
 	for _, v := range batchids {
-		totalms, _ms, _ := m.ListMedicalIdByBatchId(100, 0, v)
+		totalms, _ms, _ := m.ListMedicalIDByBatchID(100, 0, v)
 		total = total + int(totalms)
 		for _, mdicalid := range _ms {
 			allms = append(allms, mdicalid)
@@ -174,6 +177,7 @@ type CategorysInfo struct {
 }
 
 // GetCategoryInfo 获得细胞分类信息
+// @Summary 获得细胞分类信息
 // @Description 获得细胞分类信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -189,7 +193,7 @@ func GetCategoryInfo(c *gin.Context) {
 	ci.Total = int(total)
 	for _, v := range cs {
 		ci.Categorys = append(ci.Categorys, CategoryInfo{
-			ID:      int(v.Id),
+			ID:      int(v.ID),
 			Name:    v.Name,
 			Num:     0,
 			Checked: false,
@@ -218,6 +222,7 @@ type wanted2 struct {
 }
 
 // GetImgListOfWanted 获得所选批/次病/细胞类型的图片
+// @Summary 获得所选批/次病/细胞类型的图片
 // @Description 获得所选批/次病/细胞类型的图片
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -258,6 +263,7 @@ type imageslists struct {
 }
 
 // GetImgListOneByOne 按数据库存储的顺序依次得到图片的信息
+// @Summary 按数据库存储的顺序依次得到图片的信息
 // @Description 按数据库存储的顺序依次得到图片的信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -298,6 +304,7 @@ type Labelslists struct {
 }
 
 // GetLabelByImageID 通过图片的ID获得对应的所有标注信息
+// @Summary 通过图片的ID获得对应的所有标注信息
 // @Description 通过图片的ID获得对应的所有标注信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -317,15 +324,15 @@ func GetLabelByImageID(c *gin.Context) {
 	labels := Labelslists{}
 	labels.Labels = make([]m.Label, 0)
 
-	img, err := m.GetImageById(imgid)
+	img, err := m.GetImageByID(imgid)
 	if err == nil {
 		labels.W = img.W
 		labels.H = img.H
 	}
 
-	total, _labels, _ := m.ListLabelByImageId(int(limit), int(skip), int(imgid))
+	total, _labels, _ := m.ListLabelByImageID(int(limit), int(skip), int(imgid))
 	for _, v := range _labels {
-		_c, _ := m.GetCategoryById(v.Type)
+		_c, _ := m.GetCategoryByID(v.Type)
 		v.TypeOut = _c.Name
 		labels.Labels = append(labels.Labels, v)
 	}
@@ -341,10 +348,10 @@ func GetLabelByImageID(c *gin.Context) {
 
 // imagesNPTypeByMedicalID 选中的批次、病例的传入参数
 type imagesNPTypeByMedicalID struct {
-	Batchids   []string `json:"batchids"`
-	Medicalids []string `json:"medicalids"`
-	Desc       string   `json:"desc"`
-	Type       int      `json:"type"`
+	Batchids   []string `json:"batchids"`   //批次号数组
+	Medicalids []string `json:"medicalids"` //病历号数组
+	Desc       string   `json:"desc"`       //数据集的文字描述
+	Type       int      `json:"type"`       //数据集的类型，0未知1训练2预测
 }
 type imagesNPCount struct {
 	CountN int `json:"countn"`
@@ -352,6 +359,7 @@ type imagesNPCount struct {
 }
 
 // GetImagesNPTypeByMedicalID 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
+// @Summary 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
 // @Description 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -366,7 +374,7 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 	err := c.BindJSON(&w)
 	logger.Info.Println(err, w.Medicalids)
 
-	totaln, totalp, _ := m.ListImagesNPTypeByMedicalId(w.Medicalids)
+	totaln, totalp, _ := m.ListImagesNPTypeByMedicalID(w.Medicalids)
 	cnt.CountN = totaln
 	cnt.CountP = totalp
 	logger.Info.Println(totaln, totalp)
@@ -378,11 +386,13 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 }
 
 // CreateDataset 新建数据/项目
+// @Summary 新建数据/项目
 // @Description 新建数据/项目
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param createdataset body controllers.imagesNPTypeByMedicalID true "创建数据集"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/createdataset [post]
@@ -396,7 +406,7 @@ func CreateDataset(c *gin.Context) {
 	// usr, _ := m.GetUserFromContext(c)
 
 	dt := m.Dataset{}
-	dt.Id = 0
+	dt.ID = 0
 	dt.CreatedBy = 1
 	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
@@ -404,22 +414,22 @@ func CreateDataset(c *gin.Context) {
 	dt.Type = w.Type
 	dt.CreateDatasets()
 
-	imgs := make([]m.ImagesByMedicalId, 0)
+	imgs := make([]m.ImagesByMedicalID, 0)
 	for _, v := range w.Medicalids {
-		_imgs, _ := m.ListImagesByMedicalId(v)
+		_imgs, _ := m.ListImagesByMedicalID(v)
 		for _, v2 := range _imgs {
 			imgs = append(imgs, v2)
 		}
 	}
 	cntn, cntp := f.CreateDataset(imgs, dt.Dir)
 	dt.Status = 1
-	m.UpdateDatasetsStatus(dt.Id, dt.Status)
+	m.UpdateDatasetsStatus(dt.ID, dt.Status)
 
 	f.NewJSONFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   dt.Id,
+		"data":   dt.ID,
 	})
 
 	return
@@ -433,6 +443,7 @@ type jobResult struct {
 }
 
 // GetOneJob python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
+// @Summary python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -453,10 +464,14 @@ func GetOneJob(c *gin.Context) {
 		})
 		return
 	}
+	//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
+	//7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
 	if w.Status == 1 {
-		m.UpdateDatasetsStatus(dt.Id, 2)
+		m.UpdateDatasetsStatus(dt.ID, 2)
 	} else if w.Status == 4 {
-		m.UpdateDatasetsStatus(dt.Id, 6)
+		m.UpdateDatasetsStatus(dt.ID, 6)
+	} else if w.Status == 10 {
+		m.UpdateDatasetsStatus(dt.ID, 11)
 	}
 
 	c.JSON(e.StatusReqOK, gin.H{
@@ -467,6 +482,7 @@ func GetOneJob(c *gin.Context) {
 }
 
 // SetJobResult python端更新任务状态/进度（数据处理/训练/预测）
+// @Summary python端更新任务状态/进度（数据处理/训练/预测）
 // @Description python端更新任务状态/进度（数据处理/训练/预测）
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -487,7 +503,7 @@ func SetJobResult(c *gin.Context) {
 	}
 
 	m.UpdateDatasetsStatus(w.ID, w.Status)
-	m.UpdateDatasetsPercent(w.ID, int64(w.Percent))
+	m.UpdateDatasetsPercent(w.ID, w.Percent)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -502,6 +518,7 @@ type listDatasets struct {
 }
 
 // ListDatasets 按数据库存储顺序依次获得数据/项目信息
+// @Summary 按数据库存储顺序依次获得数据/项目信息
 // @Description 按数据库存储顺序依次获得数据/项目信息
 // @tags API1 数据/项目（需要认证）
 // @Accept  json
@@ -509,16 +526,22 @@ type listDatasets struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
+// @Param type query string false "type, default 1, 0未知 1训练 2预测 10全部类型"
+// @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listdatasets [get]
 func ListDatasets(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
+	typeStr := c.DefaultQuery("type", "1")
+	orderStr := c.DefaultQuery("order", "1")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	_type, _ := strconv.ParseInt(typeStr, 10, 64)
+	_order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	total, ds, err := m.ListDataset(int(limit), int(skip))
+	total, ds, err := m.ListDataset(int(limit), int(skip), int(_type), int(_order))
 	if err != nil {
 		logger.Info.Println(err)
 	}
@@ -541,22 +564,28 @@ func ListDatasets(c *gin.Context) {
 }
 
 // GetJobResult 获得任务状态（数据处理/训练/预测）
-// @Description 获得任务状态（数据处理/训练/预测）
+// @Summary 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
+// @Description 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
 // @tags API1 任务（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Param id query string false "id, default 1"
+// @Param done query string false "查看完成前的标注信息还是完成后的细胞统计信息, default 0 是完成之前的标注信息， 1是完成之后的细胞信息"
+// @Success 200 {object} function.JobInfo
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobresult [get]
 func GetJobResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
-	d, _ := m.GetOneDatasetById(int(id))
+	doneStr := c.DefaultQuery("done", "0")
+	done, _ := strconv.ParseInt(doneStr, 10, 64)
 
-	j := f.LoadJSONFile(f.GetInfoJSONPath(d))
-	logger.Info.Println(j.ID)
+	d, _ := m.GetOneDatasetByID(int(id))
+
+	j := f.LoadJSONFile(f.GetInfoJSONPath(d, done))
+	j.Status = d.Status
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -567,29 +596,42 @@ func GetJobResult(c *gin.Context) {
 }
 
 // GetJobPercent 获得任务进度（数据处理/训练/预测）
+// @Summary 获得任务进度（数据处理/训练/预测）
 // @Description 获得任务进度（数据处理/训练/预测）
 // @tags API1 任务（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param id query string false "id, default 0, 数据集的ID"
+// @Param job query string false "job, default 0, 任务进度的类型，1-训练 2-预测 其他是数据处理进度"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobpercent [get]
 func GetJobPercent(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
+	jobStr := c.DefaultQuery("job", "0")
+	jobtype, _ := strconv.ParseInt(jobStr, 10, 64)
 
-	d, _ := m.GetOneDatasetById(int(id))
+	d, _ := m.GetOneDatasetByID(int(id))
+
+	percent := d.ProcessPercent
+	if jobtype == 1 {
+		percent = d.TrainPercent
+	} else if jobtype == 2 {
+		percent = d.PredictPercent
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   d.Percent,
+		"data":   percent,
 	})
 
 	return
 }
 
 // GetJobLog 获得任务数据处理/训练/预测后端产生的log
+// @Summary 获得任务数据处理/训练/预测后端产生的log
 // @Description 获得任务数据处理/训练/预测后端产生的log
 // @tags API1 任务（需要认证）
 // @Accept  json
@@ -603,7 +645,7 @@ func GetJobLog(c *gin.Context) {
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	typeStr := c.DefaultQuery("type", "c") // c-- crop  t--train
 
-	d, _ := m.GetOneDatasetById(int(id))
+	d, _ := m.GetOneDatasetByID(int(id))
 
 	j := f.GetLogContent(d, typeStr)
 
@@ -615,47 +657,93 @@ func GetJobLog(c *gin.Context) {
 	return
 }
 
-// GetModelInfo 获得训练任务生成模型的信息
-// @Description 获得训练任务生成模型的信息
+type listMods struct {
+	Models []m.Model `json:"models"`
+	Total  int64     `json:"total"`
+}
+
+// GetModelLists 获得模型的信息列表
+// @Summary 获得模型的信息列表
+// @Description 获得模型的信息列表
 // @tags API1 模型（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Success 200 {object} controllers.listMods
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/jobmodel [get]
-func GetModelInfo(c *gin.Context) {
-	idStr := c.DefaultQuery("id", "1")
-	id, _ := strconv.ParseInt(idStr, 10, 64)
-	typeStr := c.DefaultQuery("type", "c") // s-- svm  g--gan
+// @Router /api1/listmodel [get]
+func GetModelLists(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "10")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
-	d, _ := m.GetOneDatasetById(int(id))
-
-	j := f.GetModelInfo(d, typeStr)
+	total, mods, _ := m.ListModel(int(limit), int(skip))
+	lm := listMods{
+		Models: mods,
+		Total:  total,
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   j,
+		"data":   lm,
 	})
 	return
 }
 
+type savemod struct {
+	ID   int64  `json:"id"   example:"1"`          //任务ID，或者叫做数据集的ID
+	Desc string `json:"desc" example:"某某的训练得到的模型"` //模型的文字描述
+}
+
 // SaveModelInfo 把训练任务生成模型信息存数据库
-// @Description 把训练任务生成模型信息存数据库
+// @Summary 把训练任务生成模型信息存数据库
+// @Description 把训练任务生成模型信息存数据库, 模型信息直接从后端取，前端不需要传回去
 // @tags API1 模型（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param SaveModel body controllers.savemod true "保存模型的信息"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/savemodel [get]
+// @Router /api1/savemodel [post]
 func SaveModelInfo(c *gin.Context) {
-	w := m.Model{}
+	w := savemod{}
 	err := c.BindJSON(&w)
 
-	logger.Info.Println(w, err)
+	d, err := m.GetOneDatasetByID(int(w.ID))
+	if err != nil || d.Status != 9 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets trainning not finished or not found",
+		})
+		return
+	}
 
-	err = w.CreateModelInfo()
+	modinfo := f.LoadModJSONFile(d.Dir)
+	if modinfo.Path == "" {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "load modinfo failed",
+		})
+		return
+	}
+
+	ret := modinfo.ModelInfoSaved()
+	if ret == true {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "model already saved",
+		})
+		return
+	}
+
+	modinfo.ID = 0
+	modinfo.Desc = w.Desc
+
+	err = modinfo.CreateModelInfo()
 	if err == nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -667,5 +755,191 @@ func SaveModelInfo(c *gin.Context) {
 			"data":   "failed",
 		})
 	}
+	return
+}
+
+type trainpostdata struct {
+	ID        int64 `json:"id"        example:"1"` //任务ID，或者叫做数据集的ID
+	Celltypes []int `json:"celltypes" example:"7"` //选择哪几个类型做训练
+}
+
+// Train 根据传递来的细胞类型，创建训练任务
+// @Summary 根据传递来的细胞类型，创建训练任务
+// @Description 创建训练任务
+// @Description status：
+// @Description 200 创建
+// @Summary 创建训练任务
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Train body controllers.trainpostdata true "要创建的训练任务信息"
+// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Router /api1/train [post]
+func Train(c *gin.Context) {
+	var postdata trainpostdata
+	if err := c.ShouldBind(&postdata); err != nil || len(postdata.Celltypes) < 2 {
+		logger.Info.Println(err)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "invalied postdata",
+		})
+		return
+	}
+
+	d, err1 := m.GetOneDatasetByID(int(postdata.ID))
+	if err1 != nil || d.Status != 4 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets is not ready for train",
+		})
+		return
+	}
+
+	f.NewTrainJSONFile(postdata.ID, postdata.Celltypes, d.Dir, d.Status)
+
+	// 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
+	m.UpdateDatasetsStatus(d.ID, 6)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   "ok",
+	})
+	return
+}
+
+// GetTrainResult 获取训练结果及信息
+// @Summary 获取训练结果及信息
+// @Description 获取训练结果及信息
+// @Description status：
+// @Description 200 成功
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "数据集的ID, default 0"
+// @Success 200 {object} models.Model
+// @Router /api1/trainresult [get]
+func GetTrainResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "1")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	d, err := m.GetOneDatasetByID(int(id))
+	if err != nil || d.Status != 9 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets trainning not finished or not found",
+		})
+		return
+	}
+
+	modinfo := f.LoadModJSONFile(d.Dir)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   modinfo,
+	})
+	return
+}
+
+type predictpostdata struct {
+	MID       int   `json:"mid" example:"1"`       //模型的ID
+	DID       int   `json:"did" example:"1"`       //用来做预测的数据集的ID
+	Celltypes []int `json:"celltypes" example:"7"` //选择哪几个类型做训练
+}
+
+// Predict 根据传递来的模型ID，数据集ID做预测
+// @Summary 根据传递来的模型ID，数据集ID做预测
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Predict body controllers.predictpostdata true "要创建的训练任务信息"
+// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Router /api1/predict [post]
+func Predict(c *gin.Context) {
+	var postdata predictpostdata
+	if err := c.ShouldBind(&postdata); err != nil || postdata.MID < 1 || postdata.DID < 1 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "invalied postdata",
+		})
+		return
+	}
+
+	minfo, err2 := m.FindModelInfoByID(postdata.MID)
+	if err2 != nil || minfo.Path == "" {
+		logger.Info.Println(err2)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "model info not found",
+		})
+		return
+	}
+
+	dinfo, err3 := m.GetOneDatasetByID(postdata.DID)
+	if err3 != nil {
+		logger.Info.Println(err3)
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets info not found",
+		})
+		return
+	}
+
+	p := f.PredictInfo{
+		ID:    0,
+		DID:   dinfo.ID,
+		MID:   int64(minfo.ID),
+		Types: postdata.Celltypes,
+		DDir:  dinfo.Dir,
+		MPath: minfo.Path,
+	}
+	p.NewPredictJSONFile()
+
+	dinfo.Status = 10 // 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
+	m.UpdateDatasetsStatus(dinfo.ID, dinfo.Status)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   "ok",
+	})
+	return
+}
+
+// GetPredictResult 根据传递来的数据集ID，返回预测的结果
+// @Summary 根据传递来的数据集ID，返回预测的结果
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 任务（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "id, default 0, 被预测的数据集ID"
+// @Success 200 {object} function.PredictInfo2
+// @Router /api1/predictresult [get]
+func GetPredictResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "0")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	dinfo, err := m.GetOneDatasetByID(int(id))
+	if err != nil {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets info not found",
+		})
+		return
+	}
+
+	str := f.LoadPredictJSONFile(dinfo.Dir)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   str,
+	})
 	return
 }

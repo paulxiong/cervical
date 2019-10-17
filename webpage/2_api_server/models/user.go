@@ -12,16 +12,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// gorm 用 tag 的方式来标识 mysql 里面的约束
+// UserType 用户类型 gorm 用 tag 的方式来标识 mysql 里面的约束
 type UserType struct {
-	Id          int       `json:"id"           gorm:"column:id"           "ID"`
-	Name        string    `json:"name"         gorm:"column:name"         "类型名称"`
-	Description string    `json:"description"  gorm:"column:description"  "描述"`
-	Image       string    `json:"image"        gorm:"column:image"        "类型图片"`
-	CreatedAt   time.Time `json:"created_at"   gorm:"column:created_at"   "创建时间"`
-	UpdatedAt   time.Time `json:"updated_at"   gorm:"column:updated_at"   "更新时间"`
+	ID          int       `json:"id"           gorm:"column:id"`          //"ID"
+	Name        string    `json:"name"         gorm:"column:name"`        //"类型名称"
+	Description string    `json:"description"  gorm:"column:description"` //"描述"
+	Image       string    `json:"image"        gorm:"column:image"`       //"类型图片"
+	CreatedAt   time.Time `json:"created_at"   gorm:"column:created_at"`  //"创建时间"
+	UpdatedAt   time.Time `json:"updated_at"   gorm:"column:updated_at"`  //"更新时间"
 }
 
+// BeforeCreate insert 之前的hook
 func (u *UserType) BeforeCreate(scope *gorm.Scope) error {
 	if u.CreatedAt.IsZero() {
 		u.CreatedAt = time.Now()
@@ -32,6 +33,7 @@ func (u *UserType) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+// NewUserType 新建用户类型
 func NewUserType(nut *UserType) error {
 	ut := UserType{}
 	ret := db.Model(&UserType{}).Where("name = ?", nut.Name).First(&ut)
@@ -42,10 +44,11 @@ func NewUserType(nut *UserType) error {
 	return ret.Error
 }
 
+// UserTypeInit 初始化时候默认新建的用户类型
 func UserTypeInit() error {
 	uts := [...]UserType{
-		UserType{Id: 1, Name: "超级管理员", Description: "拥有所有权限", Image: ""},
-		UserType{Id: 1000, Name: "普通用户", Description: "使用者", Image: ""},
+		UserType{ID: 1, Name: "超级管理员", Description: "拥有所有权限", Image: ""},
+		UserType{ID: 1000, Name: "普通用户", Description: "使用者", Image: ""},
 	}
 	for _, ut := range uts {
 		err := NewUserType(&ut)
@@ -56,18 +59,20 @@ func UserTypeInit() error {
 	return nil
 }
 
+// User 用户信息
 type User struct {
-	Id        int64     `json:"id"                 gorm:"column:id"          "ID"`
-	Mobile    string    `json:"mobile"             gorm:"column:mobile"      "手机号"`
-	Email     string    `json:"email"              gorm:"column:email"       "邮箱"`
-	Name      string    `json:"name"               gorm:"column:name"        "用户名"`
-	Image     string    `json:"image"              gorm:"column:image"       "用户头像"`
-	TypeId    int       `json:"type_id"            gorm:"column:type_id"     "用户类型"`
-	Password  string    `json:"-"                  gorm:"column:password"    "密码"`
-	CreatedAt time.Time `json:"created_at"         gorm:"column:created_at"  "创建时间"`
-	UpdatedAt time.Time `json:"updated_at"         gorm:"column:updated_at"  "更新时间"`
+	ID        int64     `json:"id"                 gorm:"column:id"`         //ID
+	Mobile    string    `json:"mobile"             gorm:"column:mobile"`     //手机号
+	Email     string    `json:"email"              gorm:"column:email"`      //邮箱
+	Name      string    `json:"name"               gorm:"column:name"`       //用户名
+	Image     string    `json:"image"              gorm:"column:image"`      //用户头像
+	TypeID    int       `json:"type_id"            gorm:"column:type_id"`    //用户类型
+	Password  string    `json:"-"                  gorm:"column:password"`   //密码
+	CreatedAt time.Time `json:"created_at"         gorm:"column:created_at"` //创建时间
+	UpdatedAt time.Time `json:"updated_at"         gorm:"column:updated_at"` //更新时间
 }
 
+// BeforeCreate insert之前的hook
 func (u *User) BeforeCreate(scope *gorm.Scope) error {
 	if u.CreatedAt.IsZero() {
 		u.CreatedAt = time.Now()
@@ -83,6 +88,7 @@ func (u *User) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
+// Getallusers 列出所有的用户
 func Getallusers() {
 	var limit int = 10
 	var users []User
@@ -92,15 +98,17 @@ func Getallusers() {
 	}
 }
 
-func (u *User) FinduserbyId() (*User, error) {
+// FinduserbyID 通过用户ID查找用户
+func (u *User) FinduserbyID() (*User, error) {
 	user := &User{}
-	ret := db.First(user, u.Id)
+	ret := db.First(user, u.ID)
 	if ret.Error != nil {
 		return user, ret.Error
 	}
 	return user, nil
 }
 
+// FinduserbyMobile 通过手机号查找用户
 func (u *User) FinduserbyMobile() (*User, error) {
 	mobile := u.Mobile
 	if mobile == "" {
@@ -114,6 +122,7 @@ func (u *User) FinduserbyMobile() (*User, error) {
 	return user, nil
 }
 
+// Finduserbyname 通过用户名查找用户
 func (u *User) Finduserbyname() (*User, error) {
 	name := u.Name
 	if name == "" {
@@ -127,6 +136,7 @@ func (u *User) Finduserbyname() (*User, error) {
 	return user, nil
 }
 
+// Finduserbyemail 通过邮箱查找用户
 func (u *User) Finduserbyemail() (*User, error) {
 	email := u.Email
 	if email == "" {
@@ -140,6 +150,7 @@ func (u *User) Finduserbyemail() (*User, error) {
 	return user, nil
 }
 
+// Newuser 新建用户
 func (u *User) Newuser() error {
 	ret := db.Create(u)
 	if ret.Error != nil {
@@ -148,15 +159,17 @@ func (u *User) Newuser() error {
 	return nil
 }
 
+// UserLogined 用户登录之后更新信息
 func (u *User) UserLogined() error {
 	lu := &User{UpdatedAt: time.Now()}
 	db.Model(&u).Updates(lu)
 
-	ret := db.First(u, u.Id)
+	ret := db.First(u, u.ID)
 	u.Password = ""
 	return ret.Error
 }
 
+// CheckUserExist 检查这个用户是否存在
 func (u *User) CheckUserExist() (user *User, errcode int) {
 	user, err := u.Finduserbyname()
 	if err == nil && user != nil {
@@ -176,6 +189,7 @@ func (u *User) CheckUserExist() (user *User, errcode int) {
 	return nil, e.StatusSucceed
 }
 
+// CheckUserExist2 检查这个用户是否存在
 func CheckUserExist2(name string, email string, mobile string) (user *User, errcode int) {
 	u := &User{Name: name}
 	user, err := u.Finduserbyname()
@@ -200,11 +214,12 @@ func CheckUserExist2(name string, email string, mobile string) (user *User, errc
 	return nil, e.StatusSucceed
 }
 
+// GetUserFromContext 从请求上下文获得用户信息
 func GetUserFromContext(c *gin.Context) (*User, bool) {
-	user_tmp, exists := c.Get("user")
-	if exists == true && user_tmp != nil {
-		user_tmp2 := user_tmp.(*User)
-		user, err := user_tmp2.FinduserbyId()
+	userTmp, exists := c.Get("user")
+	if exists == true && userTmp != nil {
+		userTmp2 := userTmp.(*User)
+		user, err := userTmp2.FinduserbyID()
 		user.Password = ""
 		if err == nil {
 			return user, exists
@@ -213,13 +228,16 @@ func GetUserFromContext(c *gin.Context) (*User, bool) {
 	}
 	return &User{}, exists
 }
+
+// SaveUsertoContext 把用户信息存到请求上下文
 func SaveUsertoContext(c *gin.Context, u *User) {
 	c.Set("user", u)
 }
 
+// UserHistory 用户访问记录的信息
 type UserHistory struct {
-	Id        int64     `json:"id"           gorm:"column:id"           "ID"`
-	UserId    int64     `json:"uid"          gorm:"column:uid"          "用户ID"`
-	Path      string    `json:"path"         gorm:"column:path"         "访问的页面路径"`
-	CreatedAt time.Time `json:"created_at"   gorm:"column:updated_at"   "创建时间"`
+	ID        int64     `json:"id"           gorm:"column:id"`         //ID
+	UserID    int64     `json:"uid"          gorm:"column:uid"`        //用户ID
+	Path      string    `json:"path"         gorm:"column:path"`       //访问的页面路径
+	CreatedAt time.Time `json:"created_at"   gorm:"column:updated_at"` //创建时间
 }

@@ -1,6 +1,6 @@
-/*整理数据库才用，平时不用*/
-
 package platforms
+
+/*整理数据库才用，平时不用*/
 
 import (
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
@@ -22,12 +22,14 @@ var (
 	bucketManager *storage.BucketManager
 )
 
-func getSHA1StringOfUrl(data string) string {
+// getSHA1StringOfUrl 计算字符串的SHA
+func getSHA1StringOfURL(data string) string {
 	t := sha1.New()
 	io.WriteString(t, data)
 	return fmt.Sprintf("%x", t.Sum(nil))
 }
 
+// QiniuInit 初始化七牛云的配置
 func QiniuInit() {
 	if len(configs.Qiniu.AccessKey) != 40 || len(configs.Qiniu.SecretKey) != 40 {
 		logger.Error.Println("invalied Qiniu.AccessKey/Qiniu.SecretKey")
@@ -47,9 +49,9 @@ func QiniuInit() {
 	// dataCleanChoiceQuestion()
 }
 
-//直接传入url，七牛下级下载之后返回key
+// UploadImageByURL 直接传入url，七牛下级下载之后返回key
 func UploadImageByURL(url string) (newurl string, e error) {
-	key := prefix + getSHA1StringOfUrl(url)
+	key := prefix + getSHA1StringOfURL(url)
 	fetchRet, err := bucketManager.Fetch(url, bucket, key)
 	if err != nil {
 		logger.Error.Println("fetch error,", err, fetchRet)
@@ -58,8 +60,8 @@ func UploadImageByURL(url string) (newurl string, e error) {
 	return (ossHost + key), err
 }
 
-// 拿出所有的img标签
-func findUrlLists(content string, originsite string) ([]string, int) {
+// findURLLists 拿出所有的img标签
+func findURLLists(content string, originsite string) ([]string, int) {
 	var start, end int = 0, 0
 	var ret []string = make([]string, 0)
 	var str string = content
@@ -89,7 +91,7 @@ func findUrlLists(content string, originsite string) ([]string, int) {
 	return ret, len(ret)
 }
 
-// 拿出标签里面的url
+// getUrlfromString 拿出标签里面的url
 func getUrlfromString(content string) string {
 	var start int = 0
 	var ret string
@@ -103,10 +105,10 @@ func getUrlfromString(content string) string {
 	return s1
 }
 
-func replaceWithQiniuUrl(old string) (string, int) {
+func replaceWithQiniuURL(old string) (string, int) {
 	var retstr string = old
 	var originsite string = "21cnjy"
-	arr, cnt := findUrlLists(old, originsite)
+	arr, cnt := findURLLists(old, originsite)
 	if cnt > 0 {
 		for _, img := range arr {
 			oldurl := getUrlfromString(img)

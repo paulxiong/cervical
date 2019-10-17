@@ -22,61 +22,74 @@
           <el-input
             ref="username"
             v-model="loginForm.username"
-            placeholder="手机或邮箱"
+            placeholder="请输入邮箱"
             name="username"
-            type="text"
+            type="email"
             tabindex="1"
             autocomplete="on"
           />
         </el-form-item>
 
-        <el-tooltip v-model="capsTooltip" content="忘记密码了？" placement="right" manual>
-          <el-form-item prop="password">
-            <span class="svg-container">
-              <svg-icon icon-class="password" />
-            </span>
-            <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
-              placeholder="密码"
-              name="password"
-              tabindex="2"
-              autocomplete="on"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="handleLogin"
-            />
-            <span class="show-pwd" @click="showPwd">
-              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-            </span>
-          </el-form-item>
-        </el-tooltip>
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="password"
+            v-model="loginForm.password"
+            :type="passwordType"
+            placeholder="密码"
+            name="password"
+            tabindex="2"
+            autocomplete="on"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
 
-        <el-tooltip v-if="register" v-model="capsTooltip" content="忘记密码了？" placement="right" manual>
-          <el-form-item prop="password">
-            <span class="svg-container">
-              <svg-icon icon-class="password" />
-            </span>
-            <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.confirmPassword"
-              :type="passwordType"
-              placeholder="确认密码"
-              name="password"
-              tabindex="2"
-              autocomplete="on"
-              @keyup.native="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="handleLogin"
-            />
-            <span class="show-pwd" @click="showPwd">
-              <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
-            </span>
-          </el-form-item>
-        </el-tooltip>
+        <el-form-item prop="confirmPassword" v-if="register">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            :key="passwordType"
+            ref="confirmPassword"
+            v-model="loginForm.confirmPassword"
+            :type="passwordType"
+            placeholder="确认密码"
+            name="confirmPassword"
+            tabindex="2"
+            autocomplete="on"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+          </span>
+        </el-form-item>
+
+        <el-form-item prop="code" v-if="register">
+          <span class="svg-container">
+            <svg-icon icon-class="email" />
+          </span>
+          <el-input
+            key="code"
+            ref="code"
+            maxlength="6"
+            v-model="loginForm.code"
+            type="text"
+            placeholder="邮箱验证码"
+            name="code"
+            tabindex="2"
+            autocomplete="on"
+          />
+          <span class="send-code" @click="sendCode">
+            <b v-if="time === 60">发送验证码</b>
+            <i v-else>{{time}}</i>
+          </span>
+        </el-form-item>
 
         <el-button
           :loading="loading"
@@ -98,32 +111,26 @@
         </div>
       </el-form>
     </section>
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br />
-      <br />
-      <br />
-      <social-sign />
-    </el-dialog>
     <loginFooter></loginFooter>
   </div>
 </template>
 
 <script>
-import { validEmail, validPhone } from '@/utils/validate'
-import SocialSign from './components/SocialSignin'
+import { validEmail } from '@/utils/validate'
 import loginHeader from './components/login-header'
 import loginFooter from './components/login-footer'
+import { getCode, getUserInfo } from '@/api/user'
+let timer
 
 export default {
   name: 'Login',
-  components: { SocialSign, loginHeader, loginFooter },
+  components: { loginHeader, loginFooter },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validEmail(value) || !validPhone(value)) {
+      if (validEmail(value) || this.loginForm.username === 'admin') {
         callback()
       } else {
-        callback(new Error('请输入正确的邮箱或手机号'))
+        callback(new Error('请输入正确的邮箱号'))
       }
     }
     const validatePassword = (rule, value, callback) => {
@@ -134,8 +141,15 @@ export default {
       }
     }
     const validateConfirmPassword = (rule, value, callback) => {
-      if (this.loginForm.password === this.loginForm.confirmPassword) {
+      if (this.loginForm.password !== this.loginForm.confirmPassword) {
         callback(new Error('两次输入的密码不同'))
+      } else {
+        callback()
+      }
+    }
+    const validateCode = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('请输入6位的邮箱验证码'))
       } else {
         callback()
       }
@@ -144,10 +158,12 @@ export default {
       fuValue: '',
       register: false,
       loginForm: {
-        username: 'admin',
-        password: '123',
+        username: '',
+        code: '',
+        password: '',
         confirmPassword: ''
       },
+      time: 60,
       loginRules: {
         username: [
           { required: true, trigger: 'blur', validator: validateUsername }
@@ -157,6 +173,9 @@ export default {
         ],
         confirmPassword: [
           { required: true, trigger: 'blur', validator: validateConfirmPassword }
+        ],
+        code: [
+          { required: true, trigger: 'blur', validator: validateCode }
         ]
       },
       passwordType: 'password',
@@ -169,7 +188,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler(route) {
         const query = route.query
         if (query) {
           this.redirect = query.redirect
@@ -182,36 +201,27 @@ export default {
   created() {
     // window.addEventListener('storage', this.afterQRScan)
   },
-  mounted() {
-    if (this.loginForm.username === '') {
-      this.$refs.username.focus()
-    } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
-    }
-  },
   destroyed() {
+    clearInterval(timer)
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
     handleRegisterLogin() {
       this.register = !this.register
+      this.passwordType = 'password'
       this.loginForm.username = ''
       this.loginForm.password = ''
     },
-    checkCapslock({ shiftKey, key } = {}) {
-      if (key && key.length === 1) {
-        if (
-          (shiftKey && (key >= 'a' && key <= 'z')) ||
-          (!shiftKey && (key >= 'A' && key <= 'Z'))
-        ) {
-          this.capsTooltip = true
-        } else {
-          this.capsTooltip = false
+    sendCode() {
+      if (!validEmail(this.loginForm.username)) return
+      getCode({ 'email': this.loginForm.username })
+      timer = setInterval(() => {
+        this.time--
+        if (this.time === 0) {
+          clearInterval(timer)
+          this.time = 60
         }
-      }
-      if (key === 'CapsLock' && this.capsTooltip === true) {
-        this.capsTooltip = false
-      }
+      }, 1e3)
     },
     showPwd() {
       if (this.passwordType === 'password') {
@@ -221,6 +231,11 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.password.focus()
+      })
+    },
+    getUserInfo() {
+      getUserInfo().then(res => {
+        localStorage.setItem('USER_INFO', JSON.stringify(res.data.data))
       })
     },
     handleLogin() {
@@ -235,6 +250,7 @@ export default {
                   this.$store
                     .dispatch('user/login', this.loginForm)
                     .then(() => {
+                      this.getUserInfo()
                       this.$router.push({
                         path: this.redirect || '/',
                         query: this.otherQuery
@@ -246,10 +262,14 @@ export default {
                     })
                 }, 1e3)
               })
+              .catch(() => {
+                this.loading = false
+              })
           } else {
             this.$store
               .dispatch('user/login', this.loginForm)
               .then(() => {
+                this.getUserInfo()
                 this.$router.push({
                   path: this.redirect || '/',
                   query: this.otherQuery
@@ -261,7 +281,6 @@ export default {
               })
           }
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -412,14 +431,31 @@ $light_gray: #eee;
     cursor: pointer;
     user-select: none;
   }
-
+  .send-code {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 16px;
+    padding: 0 5px;
+    color: #fff;
+    cursor: pointer;
+    background: #5b646e;
+    height: 100%;
+    line-height: 50px;
+  }
   .thirdparty-button {
     position: absolute;
     right: 0;
     bottom: 6px;
   }
 
-  @media only screen and (max-width: 470px) {
+  @media only screen and (max-width: 650px) {
+    .img {
+      display: none;
+    }
+  }
+
+  @media only screen and (max-width: 650px) {
     .thirdparty-button {
       display: none;
     }

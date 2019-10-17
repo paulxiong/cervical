@@ -21,7 +21,7 @@ func Router() *gin.Engine {
 	r.Use(gin.Recovery())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	r.StaticFile("/favicon.png", "./web/dist/favicon.ico")
+	r.StaticFile("/favicon.ico", "./web/dist/favicon.ico")
 	r.StaticFile("/", "./web/dist/")
 	r.StaticFS("/static", http.Dir("./web/dist/static"))
 	r.NoRoute(func(c *gin.Context) { c.JSON(404, gin.H{"text": "Not Found."}) })
@@ -34,16 +34,21 @@ func Router() *gin.Engine {
 	})
 	r.Use(corsObject)
 
+	r.Use(ctr.History)
+
 	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
 
 	/* 用户相关的API */
 	user := r.Group("/user")
 	user.POST("/register", ctr.RegisterUser)
 	user.POST("/login", ctr.LoginUser)
+	user.POST("/emailcode", ctr.GetEmailCode)
 	user.Use(ctr.CheckAuth)
 	{
 		user.GET("/info", ctr.GetUser)
 		user.GET("/logout", ctr.LogoutUser)
+		user.GET("/userinfo", ctr.GetUser)
+		user.GET("/accesslog", ctr.GetAccessLog)
 	}
 
 	api1 := r.Group("/api1")
@@ -56,8 +61,6 @@ func Router() *gin.Engine {
 	{
 		api1.GET("/refresh_token", ctr.AuthMiddleware.RefreshHandler) // Refresh time can be longer than token timeout
 		api1.GET("/authping", ctr.AuthPong)
-		//用户
-		api1.GET("/userinfo", ctr.GetUser)
 		// 数据
 		api1.GET("/dtinfo", ctr.AllInfo)
 		api1.GET("/batchinfo", ctr.GetBatchInfo)
@@ -73,8 +76,12 @@ func Router() *gin.Engine {
 		api1.GET("/jobresult", ctr.GetJobResult)
 		api1.GET("/jobpercent", ctr.GetJobPercent)
 		api1.GET("/joblog", ctr.GetJobLog)
+		api1.POST("/train", ctr.Train)
+		api1.GET("/trainresult", ctr.GetTrainResult)
+		api1.POST("/predict", ctr.Predict)
+		api1.GET("/predictresult", ctr.GetPredictResult)
 		// 模型
-		api1.GET("/jobmodel", ctr.GetModelInfo)
+		api1.GET("/listmodel", ctr.GetModelLists)
 		api1.POST("/savemodel", ctr.SaveModelInfo)
 	}
 	return r

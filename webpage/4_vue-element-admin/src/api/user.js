@@ -8,6 +8,30 @@ export function login(data) {
   })
 }
 
+export function getUserInfo(query) {
+  return request({
+    url: '/user/userinfo',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getUserLog(query) {
+  return request({
+    url: '/user/accesslog',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getCode(data) {
+  return request({
+    url: '/user/emailcode',
+    method: 'post',
+    data
+  })
+}
+
 export function register(data) {
   return request({
     url: '/user/register',

@@ -18,3 +18,5 @@ WORKDIR /tf/data
 ADD requirements.txt /tf/data/requirements.txt
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir && \
     rm -rf /root/.nv/ && rm -rf requirements.txt && ls -alh
+ADD main_server.py /tf/data/main_server.py
+ADD utilslib  /tf/data/utilslib

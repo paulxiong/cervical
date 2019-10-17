@@ -4,12 +4,19 @@
       <h3 class="np">
         选择的批次和病例中
         <br />
-        N:{{countNP.countn}} / p:{{countNP.countp}}
+        n/p : {{countNP.countn}}/{{countNP.countp}}
       </h3>
       <el-button type="primary" @click="nextStep" class="next-btn" :disabled="!checkList.length">
         下一步
         <i class="el-icon-arrow-right el-icon--right"></i>
       </el-button>
+    </section>
+    <section class="train-type flex">
+      <h3>此数据集将用作</h3>
+      <el-radio-group v-model="trainType" class="type-raido" size="small">
+        <el-radio-button label="训练"></el-radio-button>
+        <el-radio-button label="预测"></el-radio-button>
+      </el-radio-group>
     </section>
     <el-input class="filter-input flex" placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
     <el-tree
@@ -28,15 +35,16 @@
 <script>
 import { getBatchInfo, getMedicalIdInfo, getimgnptypebymids } from '@/api/cervical'
 export default {
-  name: "checkImg",
+  name: 'CheckImg',
   watch: {
     filterText(val) {
-      this.$refs.tree.filter(val);
+      this.$refs.tree.filter(val)
     }
   },
   data() {
     return {
-      filterText: "",
+      filterText: '',
+      trainType: '训练',
       batchList: [],
       countNP: {
         countn: 0,
@@ -44,16 +52,16 @@ export default {
       },
       checkList: [],
       defaultProps: {
-        children: "children",
-        label: "label"
+        children: 'children',
+        label: 'label'
       }
     }
   },
 
   methods: {
     filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     nextStep() {
       this.$parent.stepNext()
@@ -62,11 +70,11 @@ export default {
       getBatchInfo().then(res1 => {
         const data1 = res1.data.data
         data1.batchs.map(v => {
-          let obj = {}
+          const obj = {}
           obj['label'] = v
           getMedicalIdInfo({ 'batchid': v }).then(res2 => {
             const data2 = res2.data.data
-            let medicalids = []
+            const medicalids = []
             data2.medicalids.map(item => {
               item = {
                 'label': item
@@ -96,19 +104,18 @@ export default {
       // 去重
       postBatchs = Array.from(new Set(postBatchs))
       postMedicalIds = Array.from(new Set(postMedicalIds))
-      console.log(postBatchs, postMedicalIds)
       this.getimgnptypebymids(postBatchs, postMedicalIds)
     },
     getimgnptypebymids(postBatchs, postMedicalIds) {
-      let postData = {
+      const postData = {
         'batchids': postBatchs,
-        'desc': 'cy测试数据集',
         'medicalids': postMedicalIds,
-        'type': 1
+        'type': this.trainType === '训练' ? 1 : 2
       }
       localStorage.setItem('POST_DATA', JSON.stringify(postData))
       getimgnptypebymids(postData).then(res => {
         this.countNP = res.data.data
+        localStorage.setItem('countNP', JSON.stringify(this.countNP))
       })
     }
   },
@@ -134,6 +141,9 @@ export default {
     .el-tree-node__children {
       display: flex;
     }
+  }
+  .type-raido {
+    margin-left: 20px;
   }
   .filter-input {
     width: 30%;

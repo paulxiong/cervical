@@ -1,37 +1,62 @@
 <template>
   <div class="home">
-    <h3>我的数据集 <el-button type="primary" @click="goNewTrain">新建数据集</el-button></h3>
+    <h3>
+      我的数据集
+      <el-switch
+        v-model="switchVal"
+        class="switch-btn"
+        active-text="训练"
+        inactive-text="预测"
+        @change="switchChange"
+      ></el-switch>
+      <el-button type="primary" @click="goNewTrain">新建数据集</el-button>
+    </h3>
     <section class="project-list flex">
-      <el-card v-for="(v,i) in dataList" :key="i" class="box-card" shadow="hover">
+      <el-card
+        v-for="(v,i) in dataList"
+        :key="i"
+        class="box-card"
+        :style="v.status === 3 || v.status === 5 || v.status === 8 ?'border:1px dashed #fc4b4e;box-shadow: 3px 3px 10px #fc4b4e;':''"
+        :shadow="v.status === 3 || v.status === 5 || v.status === 8 ?'always':'hover'"
+      >
         <div slot="header" class="clearfix">
           <span>{{v.desc}}</span>
-          <el-button style="float: right; padding: 3px 0" type="text" @click="goDetailsTrain(v.id)">查看详情</el-button>
+          <el-button
+            style="float: right; padding: 3px 0"
+            type="text"
+            @click="goDetailsTrain(v)"
+          >查看详情</el-button>
         </div>
-        
+
         <div class="content flex">
           <div class="info">
-            <i>id :</i> {{v.id}}<br/>
-            <i>目录 :</i> {{v.dir}}<br/>
-            <i>创建者 :</i> {{v.created_by}}<br/>
-            <i>类型 :</i> {{v.type | filtersType}}<br/>
-            <i>状态 :</i> {{v.status | filtersTaskStatus}}<br/>
-            <!-- <i>批次 :</i> fujianfuyou<br/>
-            <i>病例 :</i> 18237,28374,12943, ...<br/>
-            <i>图片 :</i> <el-link type="primary">请进入详情查看</el-link><br/>
-            <i>医生标注 :</i> 2345asd.csv<br/>
-            <i>细胞类型 :</i> 1_Norm, 7_ASCUS, ...<br/>
-            <i>n/p比例 :</i> 0.5 -->
+            <i>id :</i>
+            {{v.id}}
+            <br />
+            <i>路径 :</i>
+            {{v.dir}}
+            <br />
+            <i>创建者 :</i>
+            {{v.created_by | filterCreated}}
+            <br />
+            <i>类型 :</i>
+            {{v.type | filtersStatus}}
+            <br />
+            <i>状态 :</i>
+            <el-tag
+              :type="v.status | filtersTaskType"
+              effect="dark"
+            >{{v.status | filtersTaskStatus}}</el-tag>
           </div>
-          <el-timeline :reverse="reverse" class="timeline">
+          <el-timeline reverse class="timeline">
             <el-timeline-item
               v-for="(activity, index) in v.activities"
               :icon="activity.icon"
               :color="activity.color"
               :type="activity.type"
               :key="index"
-              :timestamp="activity.timestamp">
-              {{activity.content}}
-            </el-timeline-item>
+              :timestamp="activity.timestamp"
+            >{{activity.content}}</el-timeline-item>
           </el-timeline>
         </div>
       </el-card>
@@ -41,24 +66,30 @@
 
 <script>
 import { listdatasets } from '@/api/cervical'
-import { taskStatus, typeStatus } from '@/const/const'
+import { taskStatus, typeStatus, taskType, createdBy } from '@/const/const'
 import { dateformat3 } from '@/utils/dateformat'
 
 export default {
-  name: 'home',
+  name: 'Home',
   components: {},
   data() {
     return {
-      reverse: true,
+      switchVal: true,
       dataList: []
     }
   },
   filters: {
-    filtersTaskStatus(value) {
-      return taskStatus[value].status
+    filterCreated(value) {
+      return createdBy[value]
     },
-    filtersType(value) {
-      return typeStatus[value].status
+    filtersTaskType(value) {
+      return taskType[value]
+    },
+    filtersTaskStatus(value) {
+      return taskStatus[value]
+    },
+    filtersStatus(value) {
+      return typeStatus[value]
     }
   },
   methods: {
@@ -67,13 +98,17 @@ export default {
         path: '/train/newTrain'
       })
     },
-    goDetailsTrain(id) {
+    goDetailsTrain(v) {
+      localStorage.setItem('isPredict', v.type)
       this.$router.push({
-        path: `/train/detailsTrain?id=${id}`
+        path: `/train/detailsTrain?id=${v.id}`
       })
     },
-    listdatasets(limit, skip) {
-      listdatasets({ 'limit': limit, 'skip': skip }).then(res => {
+    switchChange() {
+      this.listdatasets(100, 0, this.switchVal ? 1 : 2)
+    },
+    listdatasets(limit, skip, type) {
+      listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
         res.data.data.datasets.map(v => {
           v.activities = [{
             content: taskStatus[v.status].status,
@@ -100,7 +135,7 @@ export default {
     }
   },
   mounted() {
-    this.listdatasets(100, 0)
+    this.listdatasets(100, 0, 1)
   }
 }
 </script>
@@ -108,9 +143,14 @@ export default {
 <style lang="scss" scoped>
 .home {
   padding: 30px;
+  .switch-btn {
+    position: absolute;
+    right: 80px;
+  }
   i {
     color: #666;
     font-size: 14px;
+    font-style: normal;
   }
   .project-list {
     justify-content: flex-start;

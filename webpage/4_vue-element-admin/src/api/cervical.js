@@ -1,13 +1,5 @@
 import request from '@/utils/request'
 
-export function getPing1(query) {
-  return request({
-    url: '/api1/ping1',
-    method: 'get',
-    params: query
-  })
-}
-
 export function getPercent(query) {
   return request({
     url: '/api1/jobpercent',
@@ -35,14 +27,6 @@ export function getBatchInfo(query) {
 export function getMedicalIdInfo(query) {
   return request({
     url: '/api1/medicalidinfo',
-    method: 'get',
-    params: query
-  })
-}
-
-export function getCategoryInfo(query) {
-  return request({
-    url: '/api1/categoryinfo',
     method: 'get',
     params: query
   })
@@ -96,6 +80,14 @@ export function listdatasets(query) {
   })
 }
 
+export function getCategoryInfo(query) {
+  return request({
+    url: '/api1/categoryinfo',
+    method: 'get',
+    params: query
+  })
+}
+
 export function jobresult(data) {
   return request({
     url: '/api1/jobresult',
@@ -120,6 +112,14 @@ export function getjoblog(query) {
   })
 }
 
+export function createTrain(data) {
+  return request({
+    url: '/api1/train',
+    method: 'post',
+    data
+  })
+}
+
 export function getjobmodel(query) {
   return request({
     url: '/api1/jobmodel',
@@ -133,5 +133,37 @@ export function savemodel(data) {
     url: '/api1/savemodel',
     method: 'post',
     data
+  })
+}
+
+export function getTrainresult(query) {
+  return request({
+    url: '/api1/trainresult',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getListmodel(query) {
+  return request({
+    url: '/api1/listmodel',
+    method: 'get',
+    params: query
+  })
+}
+
+export function createPredict(data) {
+  return request({
+    url: '/api1/predict',
+    method: 'post',
+    data
+  })
+}
+
+export function getPredictResult(query) {
+  return request({
+    url: '/api1/predictresult',
+    method: 'get',
+    params: query
   })
 }

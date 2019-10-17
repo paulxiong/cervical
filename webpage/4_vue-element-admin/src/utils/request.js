@@ -1,8 +1,9 @@
 import axios from 'axios'
-import { MessageBox } from 'element-ui'
+import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import { APIUrl } from '@/const/config'
+import { errCode } from '@/const/errCode'
 
 // create an axios instance
 const service = axios.create({
@@ -33,6 +34,11 @@ service.interceptors.response.use(
   response => {
     if (response.data.status === 200) {
       return response
+    } else {
+      Message.error({
+        message: errCode[response.data.status].msg,
+        type: 'error'
+      })
     }
   },
   /**
@@ -70,10 +76,9 @@ service.interceptors.response.use(
   //   }
   // },
   error => {
-    MessageBox.confirm(`请求错误，可以取消继续留在该页面，或者重新登录`, '确定登出', {
-      confirmButtonText: '重新登录',
-      cancelButtonText: '取消',
-      type: 'warning'
+    Message.error({
+      message: error,
+      type: 'error'
     })
     // location.reload() // 为了重新实例化vue-router对象 避免bug
     return Promise.reject(error)

@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'temps',
+  name: 'Temps',
   components: {},
   data() {
     return {

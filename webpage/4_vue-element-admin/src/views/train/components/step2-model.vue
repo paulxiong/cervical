@@ -1,7 +1,7 @@
 <template>
   <div class="checkModel">
     <section class="btn flex">
-      <el-button type="primary" @click="nextStep" class="next-btn">
+      <el-button type="primary" :disabled="!options.length" @click="nextStep" class="next-btn">
         下一步
         <i class="el-icon-arrow-right el-icon--right"></i>
       </el-button>
@@ -9,60 +9,66 @@
     <section class="info flex">
       <section class="model-info">
         <h4>模型选择</h4>
-        <el-select class="model-option" v-model="value" clearable placeholder="请选择">
+        <el-select class="model-option" v-model="model" clearable placeholder="请选择">
           <el-option
             v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            :key="item.id"
+            :label="item.desc"
+            :value="item"
           ></el-option>
-        </el-select>      
+        </el-select>
       </section>
 
+      <section class="param">
+        <h4>图片色彩</h4>
+        <el-radio-group v-model="imgColor">
+          <el-radio-button label="黑白"></el-radio-button>
+          <el-radio-button label="彩色"></el-radio-button>
+        </el-radio-group>
+      </section>
       <section class="param">
         <h4>裁剪大小(单位px)</h4>
         <el-input class="input" v-model="cutInput" placeholder="请输入裁剪大小"></el-input>
       </section>
     </section>
   </div>
-</template> 
+</template>
 
 <script>
+import { getListmodel } from '@/api/cervical'
 export default {
-  name: "checkModel",
+  name: 'CheckModel',
   components: {},
   data() {
     return {
+      imgColor: '黑白',
       cutInput: 100,
-      options: [
-        {
-          value: "选项1",
-          label: "Cell0822019_v2019081220904"
-        },
-        {
-          value: "选项2",
-          label: "Aell0822019_v201242304"
-        },
-        {
-          value: "选项3",
-          label: "Bell0822019_v20193242342340904"
-        },
-        {
-          value: "选项4",
-          label: "Dell0822019_v2012342320904"
-        },
-        {
-          value: "选项5",
-          label: "Tell0822019_v2ad213081220904"
-        }
-      ],
-      value: "选项1"
+      options: [],
+      model: ''
     }
   },
   methods: {
     nextStep() {
+      /**
+       * 保存model和参数信息并下一步
+       */
+      const modelInfo = {
+        imgColor: this.imgColor,
+        cutSize: this.cutInput,
+        model: this.model
+      }
+      localStorage.setItem('MODEL_INFO', JSON.stringify(modelInfo))
       this.$parent.stepNext()
+    },
+    getListmodel() {
+      getListmodel().then(res => {
+        this.options = res.data.data.models
+        this.model = this.options[0]
+      })
     }
+  },
+  mounted() {
+    this.getListmodel()
   }
 }
 </script>
@@ -73,8 +79,8 @@ export default {
     width: 150px;
     font-weight: bold;
   }
-  .model-info {
-    margin-right: 30px;
+  .param {
+    margin-left: 30px;
   }
   .input {
     width: 200px;

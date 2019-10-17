@@ -100,58 +100,39 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/page1',
+    path: '/',
     component: Layout,
-    redirect: '/page1',
+    redirect: '/label',
     children: [
       {
-        path: 'page1',
-        component: () => import('@/views/page1/index'),
-        name: '概览',
-        meta: { title: '概览', icon: 'chart', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/page2',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/page2/index'),
-        name: '导出数据',
-        meta: { title: '导出数据', icon: 'documentation', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/page3',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/page3/index'),
+        path: 'label',
+        component: () => import('@/views/label/index'),
         name: '标注',
-        meta: { title: '标注', icon: 'tree-table', affix: true }
+        meta: { title: '标注', icon: 'edit', affix: true }
       }
     ]
   },
   {
-    path: '/page4',
+    path: '/authManage',
     component: Layout,
+    redirect: '/authManage',
+    name: '权限管理',
+    meta: {
+      title: '权限管理',
+      icon: 'component'
+    },
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/page4/index'),
-        name: '我的数据集合',
-        meta: { title: '我的数据集合', icon: 'tree-table', affix: true }
+        path: 'userManage',
+        component: () => import('@/views/userMannage/index'),
+        name: '用户管理',
+        meta: { title: '用户管理', icon: 'peoples', affix: true }
       },
       {
-        path: 'details',
-        component: () => import('@/views/page4/details'),
-        name: '详细信息',
-        meta: { title: '详细信息', icon: 'tree-table', affix: true },
-        hidden: true
+        path: 'userLog',
+        component: () => import('@/views/userLog/index'),
+        name: '用户日志',
+        meta: { title: '用户日志', icon: 'nested', affix: true }
       }
     ]
   }

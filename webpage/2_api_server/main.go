@@ -2,6 +2,7 @@ package main
 
 import (
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	"github.com/paulxiong/cervical/webpage/2_api_server/routes"
 
@@ -22,13 +23,13 @@ import (
 // @description 这是API说明文档，开发服务器才有， 正式部署之后没有。
 // @description 认证时候填 "token eyJhbGciOiJIU..." (注意token后面有个空格， token向管理员申请)
 // @description 网络请求每次返回code比如200、404或者401。返回内容是JSON {status: 状态码, data: 具体内容}
-// @termsOfService http://9200.gpu.raidcdn.cn:9700
+// @termsOfService http://dev.medical.raidcdn.cn:3000
 // @contact.name API Support
-// @contact.url http://9200.gpu.raidcdn.cn:9700
+// @contact.url http://dev.medical.raidcdn.cn:3000
 // @contact.email ggxxde@163.com
 // @license.name Apache 2.0
-// @license.url http://9200.gpu.raidcdn.cn:9700
-// @host 9200.gpu.raidcdn.cn:9700
+// @license.url http://dev.medical.raidcdn.cn:3000
+// @host dev.medical.raidcdn.cn:3000
 // @BasePath /
 
 // JWT 认证, 认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格)
@@ -37,6 +38,7 @@ import (
 // @name Authorization
 
 func atexit() {
+	f.Region.Close()
 }
 
 func printlistenaddr(port string) {

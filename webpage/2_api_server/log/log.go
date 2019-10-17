@@ -1,4 +1,4 @@
-package log_utils
+package logutils
 
 import (
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
@@ -14,39 +14,43 @@ import (
 var errorfile string = "error.log"
 
 var (
-	Trace   *log.Logger
-	Info    *log.Logger
+	//Trace 调试
+	Trace *log.Logger
+	//Info 调试
+	Info *log.Logger
+	//Warning 警告
 	Warning *log.Logger
-	Error   *log.Logger
+	//Error 错误
+	Error *log.Logger
 )
 
 func init() {
-	trace_writer := io.Writer(os.Stdout)
-	info_writer := io.Writer(os.Stdout)
-	warning_writer := io.Writer(os.Stdout)
-	error_writer := io.Writer(os.Stdout)
+	traceWriter := io.Writer(os.Stdout)
+	infoWriter := io.Writer(os.Stdout)
+	warningWriter := io.Writer(os.Stdout)
+	errorWriter := io.Writer(os.Stdout)
 
-	if configs.Log.Log_out != "enable" {
-		trace_writer = ioutil.Discard
-		info_writer = ioutil.Discard
-		warning_writer = ioutil.Discard
-		error_writer = ioutil.Discard
+	if configs.Log.LogOut != "enable" {
+		traceWriter = ioutil.Discard
+		infoWriter = ioutil.Discard
+		warningWriter = ioutil.Discard
+		errorWriter = ioutil.Discard
 
 		gin.SetMode(gin.ReleaseMode)
 		gin.DefaultWriter = ioutil.Discard
 	} else {
-		if configs.Log.Log_level == "Info" {
-			trace_writer = ioutil.Discard
-		} else if configs.Log.Log_level == "Warning" {
-			trace_writer = ioutil.Discard
-			info_writer = ioutil.Discard
-		} else if configs.Log.Log_level == "error_writer" {
-			trace_writer = ioutil.Discard
-			info_writer = ioutil.Discard
-			warning_writer = ioutil.Discard
+		if configs.Log.LogLevel == "Info" {
+			traceWriter = ioutil.Discard
+		} else if configs.Log.LogLevel == "Warning" {
+			traceWriter = ioutil.Discard
+			infoWriter = ioutil.Discard
+		} else if configs.Log.LogLevel == "error_writer" {
+			traceWriter = ioutil.Discard
+			infoWriter = ioutil.Discard
+			warningWriter = ioutil.Discard
 		}
 
-		if configs.Log.Log_gin == "enable" {
+		if configs.Log.LogGin == "enable" {
 			gin.SetMode(gin.DebugMode)
 			gin.DisableConsoleColor()
 			gin.DefaultWriter = os.Stdout
@@ -56,8 +60,8 @@ func init() {
 		}
 	}
 
-	Trace = log.New(trace_writer, "TRACE:   ", log.Ltime|log.Lshortfile)
-	Info = log.New(info_writer, "INFO:    ", log.Ltime|log.Lshortfile)
-	Warning = log.New(warning_writer, "WARNING: ", log.Ltime|log.Lshortfile)
-	Error = log.New(error_writer, "ERROR:   ", log.Ltime|log.Lshortfile)
+	Trace = log.New(traceWriter, "TRACE:   ", log.Ltime|log.Lshortfile)
+	Info = log.New(infoWriter, "INFO:    ", log.Ltime|log.Lshortfile)
+	Warning = log.New(warningWriter, "WARNING: ", log.Ltime|log.Lshortfile)
+	Error = log.New(errorWriter, "ERROR:   ", log.Ltime|log.Lshortfile)
 }

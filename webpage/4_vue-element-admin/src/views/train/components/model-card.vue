@@ -1,86 +1,178 @@
 <template>
   <div class="card">
     <el-card class="box-card" shadow="hover">
-      <div slot="header" class="clearfix">
-        <span>Cell20198_231125978646576151</span>
+      <div slot="header" class="flex card-header">
+        <el-select
+          v-if="predict === 'predict'"
+          class="model-option"
+          v-model="model"
+          clearable
+          placeholder="请选择"
+          @change="modelChange"
+        >
+          <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx"></el-option>
+        </el-select>
+        <el-input
+          class="model-input"
+          type="text"
+          placeholder="请输入模型名称"
+          v-model="modelInfo.desc"
+          maxlength="30"
+          @blur="emitDesc"
+          @keyup.enter.native="emitDesc"
+          show-word-limit
+          v-else
+        >
+        </el-input>
+        <b style="display:block;">{{modelInfo.type | filterModelType}}</b>
+        <div class="score flex">
+          <section class="precision-info">
+            <i>Precision</i>
+            <b>{{modelInfo.precision}}</b>
+          </section>
+          <section class="recall-info">
+            <i>Recall</i>
+            <b>{{modelInfo.recall}}</b>
+          </section>
+        </div>
       </div>
       <div class="flex model-info">
-        <section class="info flex created">
-          <h3>Created</h3>
-          <b>2019.8.20</b>
-          <i>1 computer hour</i>
+        <section class="info">
+          <i>ID:</i>
+          <b>{{modelInfo.id}}</b>
+        </section><section class="info">
+          <i>Datasets ID:</i>
+          <b>{{modelInfo.did}}</b>
         </section>
-        <section class="info flex analyzed">
-          <h3>Analyzed</h3>
-          <b>5238 images</b>
-          <i>2 labels,520 test images</i>
+        <section class="info">
+          <i>路径:</i>
+          <b>{{modelInfo.path}}</b>
         </section>
-        <section class="info flex avg">
-          <h3>Avg precision</h3>
-          <b>0.996</b>
+        <section class="info">
+          <i>损失:</i>
+          <b>{{modelInfo.loss}}</b>
         </section>
-        <section class="percent">
-          <el-progress type="circle" class="percent" :percentage="percentage1"></el-progress>
-          <h4 class="percent-title">Precision</h4>
-          <el-tooltip placement="bottom" class="percent-tip">
-            <div slot="content">
-              percent
-              <br />表示精确度
-            </div>
-            <i class="el-icon-question"></i>
-          </el-tooltip>
+        <section class="info">
+          <i>训练有几个分类:</i>
+          <b>{{modelInfo.n_classes}}</b>
         </section>
-        <section class="recall">
-          <el-progress type="circle" class="recall" :percentage="percentage2"></el-progress>
-          <h4 class="recall-title">Recall</h4>
-          <el-tooltip placement="bottom" class="recall-tip">
-            <div slot="content">
-              recall
-              <br />表示有点东西
-            </div>
-            <i class="el-icon-question"></i>
-          </el-tooltip>
+        <section class="info">
+          <i>训练用了多少张图片:</i>
+          <b>{{modelInfo.n_train}}</b>
         </section>
+        <section class="info">
+          <i>训练准确度:</i>
+          <b>{{modelInfo.metric_value}}</b>
+        </section>
+        <section class="info">
+          <i>评估准确度:</i>
+          <b>{{modelInfo.evaluate_value}}</b>
+        </section>
+        <section class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;" v-if="predict === 'predict'">
+          <i>细胞类型选择:</i>
+          <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox" @change="changeCellTypes">
+            <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
+          </el-checkbox-group>
+        </section>
+        <!-- <section class="info">
+          <i>创建时间</i>
+          <b>{{modelInfo.created_at}}</b>
+        </section>
+        <section class="info">
+          <i>更新时间</i>
+          <b>{{modelInfo.updated_at}}</b>
+        </section> -->
       </div>
     </el-card>
   </div>
 </template>
 
 <script>
+import { modelType, cellsType } from '@/const/const'
+
 export default {
-  name: "card",
+  name: 'Card',
   components: {},
   data() {
     return {
-      percentage1: 10,
-      percentage2: 10
+      checkboxCell: [],
+      model: 0
     }
   },
-  methods: {},
+  props: {
+    modelInfo: {
+      type: Object || String
+    },
+    modelList: {
+      type: Array
+    },
+    predict: {
+      type: String
+    }
+  },
+  filters: {
+    filterModelType(value) {
+      return modelType[value]
+    },
+    filtersCheckbox(val) {
+      return `${val} ${cellsType[val]}`
+    }
+  },
+  methods: {
+    modelChange() {
+      this.modelInfo = this.modelList[this.model]
+    },
+    changeCellTypes() {
+      const postCelltypes = []
+      this.checkboxCell.map(v => {
+        v = parseInt(v.slice(0, 1))
+        postCelltypes.push(v)
+      })
+      this.$emit('changeCellTypes', postCelltypes)
+    },
+    emitDesc() {
+      this.$emit('changeDesc', this.trainInfo.desc)
+    }
+  },
   mounted() {
-    setTimeout(() => { this.percentage1 = 27;this.percentage2 = 20 }, 4000)
-    setTimeout(() => { this.percentage1 = 64;this.percentage2 = 40 }, 4500)
-    setTimeout(() => { this.percentage1 = 88;this.percentage2 = 66 }, 5000)
-    setTimeout(() => { this.percentage1 = 95;this.percentage2 = 96 }, 5500)
+    this.changeCellTypes()
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .card {
-  margin-top: 20px;
+  margin-top: 10px;
+  opacity: 0.9;
   i {
-    color: #ccc;
+    color: #666;
     font-style: normal;
+    margin-right: 15px;
   }
   b {
     font-size: 22px;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  }
+  .model-input {
+    width: 50%;
+  }
+  .card-header {
+    justify-content: space-between;
+    .precision-info {
+      margin-right: 20px;
+    }
   }
   .model-info {
-    justify-content: space-around;
+    justify-content: space-between;
+    flex-wrap: wrap;
     .info {
-      flex-direction: column;
-      justify-content: flex-start;
+      width: 60%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 10px 0;
+    }
+    .info:nth-child(even) {
+      width: 40%;
     }
     .percent {
       position: relative;

@@ -55,6 +55,7 @@ class cropper():
             else:
                 color = [0,0,255]
             cv2.rectangle(img, (x1, y1), (x2, y2), color,2)
+            cv2.imrite()
         return cropped
 
     # 细胞原图加mask生成细胞核
@@ -113,11 +114,13 @@ class cropper():
                     img1[p, q, :] = 255
         cv2.imwrite(masked_path, img1)
         return
-
+    
     def crop_fovs(self):
         imgs = get_image_lists(self.original_img_path)
         total_steps = len(imgs)
         step = 0
+        if total_steps < 1:
+            return False
         for i in imgs:
             print("step %s/%d" % (step, total_steps))
             step = step + 1
@@ -126,15 +129,64 @@ class cropper():
 
             csv_path = os.path.join(self.cells_rois_path, (filename + '_.csv_and.csv')) # 交集
             if not os.path.exists(csv_path):
-                continue
+                print('no and_csv')
             csv_org_path = imgpath[:-3] + 'csv' # 医生csv
             csv_seg_path = csv_path[:-8]
             if not os.path.exists(csv_path):
                 print("not found %s" % csv_path)
-                continue
+               #continue
             img = cv2.imread(imgpath) 
-            degug = ['1'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
-            if '1' in degug:
+#             degug = ['1'] # '1', '2', '3'分别代表交集csv，医生csv，裁减csv
+#             if '1' in degug:
+#                 df1 = pd.read_csv(csv_path) # 交集csv
+#                 for index, row in df1.iterrows():
+#                     x1, y1, x2, y2 = int(row['x1']), int(row['y1']), int(row['x2']), int(row['y2'])
+#                     cell_type, fov_type = str(int(row['type'])), get_fov_type(str(int(row['type'])))
+#                     cell_path = os.path.join(self.cells_crop_path, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename,
+#                                              fov_type, cell_type, x1, y1, x2, y2))
+#                     x = int((x1 + x2)/2)
+#                     y = int((y1 + y2)/2)
+#                     crop_img = self.crop_fov(img, cell_path, x1, y1, x2, y2, side = 50, sign = 1)
+#                     roi = [x1, y1, x2, y2]
+#                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
+#                     masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_masked.png'.format(filename,
+#                                                fov_type, cell_type, x1, y1, x2, y2))
+#                     self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
+#                     # 下面的注释代码方便调试医生csv，裁剪csv，交集csv细胞在FOV上标记，以调试交集csv产生方法和性能提升，需保留
+# #                     x = int(row['x'])
+# #                     y = int(row['y'])
+# #                     self.crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 1) 
+#             if '2' in degug:
+#                 df_org = pd.read_csv(csv_org_path) # 原始csv
+#                 for index_org, row_org in df_org.iterrows():
+#                     x, y = row_org['X'], row_org['Y']
+#                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row_org['Type']) + \
+#                                     str(row_org['Type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
+#                     self.crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 1)
+#             if '3' in degug:
+#                 df_seg = pd.read_csv(csv_seg_path) # 裁减csv
+#                 for index_seg, row_seg in df_seg.iterrows():
+#                     x1,x2, y1,y2 = row_seg['x1'], row_seg['x2'],row_seg['y1'],row_seg['y2']
+#                     y = int((x1+x2)/2)
+#                     x = int((y1+y2)/2)
+#                     cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
+#                                     str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
+                    
+#                     #self.crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
+#                     crop_img = self.crop_fov(img, cell_path, int(x1), int(y1), int(x2), int(y2), side = 50, sign = 1)
+#             cv2.imwrite(imgpath + '_abc.png', crop_img)
+
+            if not os.path.exists(csv_path):    
+                df_seg = pd.read_csv(csv_seg_path) # 裁减csv
+                for index_seg, row_seg in df_seg.iterrows():
+                    x1,x2, y1,y2 = row_seg['x1'], row_seg['x2'],row_seg['y1'],row_seg['y2']
+                    y = int((x1+x2)/2)
+                    x = int((y1+y2)/2)
+                    cell_path = os.path.join(self.cells_crop_path, (filename + '_NAN_' + \
+                                    str(int(x1)) + '_' + str(int(y1)) + '_' + str(int(x2)) + '_' + str(int(y2)) + '.png'))
+                    crop_img = self.crop_fov(img, cell_path, int(x1), int(y1), int(x2), int(y2), side = 50, sign = 1 )
+
+            else:
                 df1 = pd.read_csv(csv_path) # 交集csv
                 for index, row in df1.iterrows():
                     x1, y1, x2, y2 = int(row['x1']), int(row['y1']), int(row['x2']), int(row['y2'])
@@ -146,31 +198,10 @@ class cropper():
                     crop_img = self.crop_fov(img, cell_path, x1, y1, x2, y2, side = 50, sign = 1)
                     roi = [x1, y1, x2, y2]
                     npy_path = os.path.join(self.cells_npy_path, '{}_{}_{}_{}_{}.npy'.format(filename, x1, y1, x2, y2))
-                    masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_maksed.png'.format(filename,
+                    masked_path = os.path.join(self.cells_crop_masked, '{}_{}_{}_{}_{}_{}_{}_masked.png'.format(filename,
                                                fov_type, cell_type, x1, y1, x2, y2))
                     self.processing_img(crop_img, npy_path, masked_path, expand_side = 1)
-                    # 下面的注释代码方便调试医生csv，裁剪csv，交集csv细胞在FOV上标记，以调试交集csv产生方法和性能提升，需保留
-#                     x = int(row['x'])
-#                     y = int(row['y'])
-#                     self.crop_fov(img, cell_path, int(x), int(y), side = 50, sign = 1) 
-            if '2' in degug:
-                df_org = pd.read_csv(csv_org_path) # 原始csv
-                for index_org, row_org in df_org.iterrows():
-                    x, y = row_org['X'], row_org['Y']
-                    cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row_org['Type']) + \
-                                    str(row_org['Type']) + '_' + str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-                    self.crop_fov(img, cell_path, int(x), int(y), side = 55, sign = 1)
-            if '3' in degug:
-                df_seg = pd.read_csv(csv_seg_path) # 裁减csv
-                for index_seg, row_seg in df_seg.iterrows():
-                    x1,x2, y1,y2 = row_seg['x1'], row_seg['x2'],row_seg['y1'],row_seg['y2']
-                    y = int((x1+x2)/2)
-                    x = int((y1+y2)/2)
-                    cell_path = os.path.join(self.cells_crop_path, (filename + getFOVlabel(row['type']) + \
-                                    str(int(x)) + '_' + str(int(y)) + '_w_h.png'))
-                    self.crop_fov(img, cell_path, int(x), int(y), side = 60, sign = 1)
-            cv2.imwrite(imgpath + '_abc.png', img)
-        return
+        return True
 
 if __name__ == '__main__':
     c = cropper('./')

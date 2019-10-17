@@ -17,7 +17,8 @@ ENV PYTHONUNBUFFERED "0"
 
 WORKDIR /notebooks/data
 ADD requirements.txt /notebooks/data/requirements.txt
-ADD mrcnn /notebooks/data/mrcnn
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir && \
     rm -rf /root/.nv/ && rm -rf requirements.txt && ls -alh && \
     cat /tmp/bashrc >> /root/.bashrc && rm /tmp/bashrc
+ADD mrcnn /notebooks/data/mrcnn
+WORKDIR /notebooks/data/mrcnn

@@ -3,23 +3,26 @@ import os, gc, sys, time, shutil
 from enum import Enum
 from utilslib.webserverapi import get_one_job, post_job_status
 from utilslib.logger import logger
-from utilslib.fileinfo import copy_origin_imgs
+from utilslib.fileinfo import copy_origin_imgs, get_info_by_FOV, get_info_by_cells
 from utilslib.jsonfile import update_info_json
 from my_inference import detector
+from tocsv import get_trusted_labels
+from tocells import cropper
 
 localdebug = os.environ.get('DEBUG', 'False')
 
 # datasets status
 class ds(Enum):
     INIT            = 0 #0初始化
-    READ4PROCESS    = 1 #1用户要求开始处理
+    READY4PROCESS   = 1 #1用户要求开始处理
     PROCESSING      = 2 #2开始处理
     PROCESSING_ERR  = 3 #3处理出错
     PROCESSING_DONE = 4 #4处理完成
     PATH_ERR        = 5 #5目录不存在
-    TRAINNING       = 6 #6开始训练
-    TRAINNING_ERR   = 7 #7训练出错
-    TRAINNING_DONE  = 8 #8训练完成
+    READY4TRAIN     = 6 #6用户要求开始训练
+    TRAINNING       = 7 #7开始训练
+    TRAINNING_ERR   = 8 #8训练出错
+    TRAINNING_DONE  = 9 #9训练完成
 
 # datasets type
 class dt(Enum):
@@ -41,15 +44,20 @@ class cervical_seg():
         self.gray        = True #检测细胞用黑白图（无论True还是False，最终扣出的细胞是彩色的）
         self.filelist    = os.path.join(self.rootdir, 'filelist.csv') #页面上选中的图片的列表
         self.infojson    = os.path.join(self.rootdir, 'info.json') #存任务的所有信息
+        self.infojson2   = os.path.join(self.rootdir, 'info2.json') #任务处理完之后的信息，不是上面开始之前的
         self.origin_imgs = os.path.join(self.rootdir, 'origin_imgs') #存放原图和原图对应的csv文件的目录
         self.cells       = os.path.join(self.rootdir, 'cells') #存放细胞相关的，比如检测出来原图细胞的坐标csv文件，细胞的mask，裁剪出来的细胞
         self.mask_npy    = os.path.join(self.cells, 'mask_npy') #ndarray 存成的npy文件，里面是每个细胞的mask
         self.rois        = os.path.join(self.cells, 'rois') #存放细胞在原图里的坐标
         self.crop        = os.path.join(self.cells, 'crop') #存放扣出来的细胞图，目前特指医生标注过的
         self.crop_masked = os.path.join(self.cells, 'crop_masked') #存放扣出来的细胞图去掉了背景，目前特指医生标注过的
+        self.statistics  = os.path.join(self.rootdir, 'statistics') #存放输入输出数据的信息统计csv
+        self.statistics_trusted_labels = os.path.join(self.statistics, str(self.jid) + '_trusted_labels.csv') #医生标注信息汇总
+        self.statistics_crop = os.path.join(self.statistics, str(self.jid) + '_crop_cells.csv') #裁剪之后的信息汇总
         #初始化
         self.prepare_fs()
         self.d = detector(self.model1_path, self.origin_imgs, self.rois, self.mask_npy) # 准备裁剪
+        self.c = cropper(self.rootdir)
         #log
         self.logger = logger(str(self.jid), self.rootdir)
 
@@ -61,12 +69,30 @@ class cervical_seg():
                 self.logger.info('copy origin images failed')
                 return False
             self.processing(5)
-
+            #统计医生的标注信息
+            get_info_by_FOV(self.origin_imgs, self.statistics_trusted_labels)
+            #处理完之前更新任务信息到info.json，方便web展示原图
+            update_info_json(self, ds.PROCESSING.value)
             #开始从图片里面定位细胞
             ret = self.d.detect_image(gray=self.gray, print2=self.logger.info)
             if ret == False:
                 self.logger.info('detect cells failed')
                 return False
+            self.processing(45)
+            #挑出医生标注过的坐标和检测出来的细胞的交集
+            ret = get_trusted_labels(self.origin_imgs, self.rois)
+            if ret == False:
+                self.logger.info('get_trusted_labels failed')
+                return False
+            self.processing(75)
+            #上面挑出来的细胞扣成细胞图
+            ret = self.c.crop_fovs()
+            if ret == False:
+                self.logger.info('crop_fovs failed')
+                return False
+            self.processing(95)
+            #统计裁剪出来的细胞的信息
+            get_info_by_cells(self.crop, self.statistics_crop)
         except Exception as ex:
             self.logger.info(ex)
             return False
@@ -74,40 +100,59 @@ class cervical_seg():
 
     #初始化必要的文件夹
     def prepare_fs(self):
-        dirs1 = [self.scratchdir, self.rootdir, self.origin_imgs, self.cells,
+        dirs1 = [self.scratchdir, self.rootdir, self.statistics, self.origin_imgs, self.cells,
                  self.mask_npy, self.rois, self.crop, self.crop_masked]
         for folder in dirs1:
             if not os.path.exists(folder):
                 os.makedirs(folder)
 
     def done(self, text):
-        #0初始化1用户要求开始处理2开始处理3处理出错4处理完成5目录不存在6开始训练7训练出错8训练完成
         self.percent = 100
-        post_job_status(self.jid, 4, self.percent)
+        post_job_status(self.jid, ds.PROCESSING_DONE.value, self.percent)
         print(text)
         return
     def processing(self, percent):
         self.percent = percent
-        post_job_status(self.jid, 2, self.percent)
+        post_job_status(self.jid, ds.PROCESSING.value, self.percent)
         return
     def failed(self, text):
-        post_job_status(self.jid, 3, self.percent)
+        post_job_status(self.jid, ds.PROCESSING_ERR.value, self.percent)
         print(text)
         return
 
+def get_segmentation_job():
+    jobid, dirname = 0, None
+    #向服务器请求任务，任务的状态必须是 READY4PROCESS, 训练用的数据集
+    if localdebug is not True and localdebug != "True":
+        # datatype:  0未知1训练2预测
+        jobid, status, dirname, jobtype = get_one_job(ds.READY4PROCESS.value, dt.TRAIN.value)
+    else:
+        jobid = 31
+        status = ds.READY4PROCESS.value
+        dirname = 'BVv1p1U6'
+    #检查得到的任务是不是想要的
+    if status != ds.READY4PROCESS.value or dirname is None:
+        jobid, dirname = 0, None
+    else:
+        return jobid, dirname
+
+    #向服务器请求任务，任务的状态必须是 READY4PROCESS, 预测用的数据集
+    if localdebug is not True and localdebug != "True":
+        # datatype:  0未知1训练2预测
+        jobid, status, dirname, jobtype = get_one_job(ds.READY4PROCESS.value, dt.PREDICT.value)
+    else:
+        jobid = 31
+        status = ds.READY4PROCESS.value
+        dirname = 'BVv1p1U6'
+    #检查得到的任务是不是想要的
+    if status != ds.READY4PROCESS.value or dirname is None:
+        jobid, dirname = 0, None
+    return jobid, dirname
+
 if __name__ == '__main__':
     while 1:
-        #向服务器请求任务，任务的状态必须是 READ4PROCESS
-        if localdebug is not True and localdebug != "True":
-            # datatype:  0未知1训练2预测
-            jobid, status, dirname, jobtype = get_one_job(ds.READ4PROCESS.value, dt.TRAIN.value)
-        else:
-            jobid = 31
-            status = ds.READ4PROCESS.value
-            dirname = 'BVv1p1U6'
-
-        #检查得到的任务是不是想要的
-        if status != ds.READ4PROCESS.value or dirname is None:
+        jobid, dirname = get_segmentation_job()
+        if jobid == 0 or dirname is None or dirname == "":
             time.sleep(5)
             continue
 
@@ -115,12 +160,14 @@ if __name__ == '__main__':
         cseg = cervical_seg(jobid, dirname)
         #开始处理任务
         ret = cseg.segmentation()
-        #处理完之后更新任务信息到info.json
-        update_info_json(cseg)
         #处理结果判断
         if ret == True:
+            #处理完之后更新任务信息到info.json
+            update_info_json(cseg, ds.PROCESSING_DONE.value)
             cseg.done('done!')
         else:
+            #处理完之后更新任务信息到info.json
+            update_info_json(cseg, ds.PROCESSING_ERR.value)
             cseg.failed("failed segmentation: %d %s" % (cseg.jid, cseg.jobdir))
 
         del cseg
