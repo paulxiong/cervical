@@ -10,7 +10,7 @@
         <template slot-scope="scope">
           <el-popover placement="right" width="400" trigger="click">
             <div>{{scope.row}}</div>
-            <el-button slot="reference" @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button slot="reference" @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
           </el-popover>
           <el-button type="text" size="small">删除</el-button>
         </template>

@@ -100,15 +100,15 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/doctor',
+    path: '/',
     component: Layout,
-    redirect: '/doctor',
+    redirect: '/label',
     children: [
       {
-        path: 'doctor',
-        component: () => import('@/views/doctor/index'),
-        name: '医生',
-        meta: { title: '医生', icon: 'tree', affix: true }
+        path: 'label',
+        component: () => import('@/views/label/index'),
+        name: '标注',
+        meta: { title: '标注', icon: 'edit', affix: true }
       }
     ]
   },
@@ -132,7 +132,7 @@ export const constantRoutes = [
         path: 'userLog',
         component: () => import('@/views/userLog/index'),
         name: '用户日志',
-        meta: { title: '用户日志', icon: 'people', affix: true }
+        meta: { title: '用户日志', icon: 'nested', affix: true }
       }
     ]
   }

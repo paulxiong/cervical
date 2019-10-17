@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'otto',
-      logo: '../../../assets/avatar.jpg'
+      title: '讯动医疗',
+      logo: '../../../assets/login.png'
     }
   }
 }
