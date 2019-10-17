@@ -3,7 +3,7 @@
 ### 1 医生标注的CSV转换成 PASCALVOC VOC2007 数据集的格式
 安装依赖
 ```
-$ pip3 install xmltodict -i https://pypi.tuna.tsinghua.edu.cn/simple
+$ pip3 install xmltodict pandas -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 $ sudo apt-get install libsm-dev libxrender-dev libxext-dev
 $ pip3 install opencv-python -i https://pypi.tuna.tsinghua.edu.cn/simple
@@ -35,6 +35,11 @@ all1010
 ├── 17P0603.1903779.IMG005x016.xml
 ├── 17P0603.1903779.IMG005x016.csv
 ├── redhouse.1817144.IMG053x021.JPG
-└── redhouse.1817144.IMG053x021.xml
+├── redhouse.1817144.IMG053x021.xml
 └── redhouse.1817144.IMG053x021.csv
+```
+
+### 2 PASCALVOC VOC2007 数据集里面切出正方形的图片来
+```
+$ python3 cropxml.py
 ```
