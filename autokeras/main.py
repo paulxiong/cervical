@@ -46,7 +46,7 @@ def resize_img(input_dir, output_dir, RESIZE):
             img = cv2.imread("%s/%s/%s"%(input_dir,cls_name,img_name))
             if img.shape[0] != img.shape[1]:
                 print("skip this image w != h: %s" % img_name)
-                #continue
+                continue
             img = cv2.resize(img,(RESIZE,RESIZE),interpolation=cv2.INTER_LINEAR)
             if os.path.exists("%s/%s"%(output_dir,cls_name)):
                 cv2.imwrite("%s/%s/%s"%(output_dir,cls_name,img_name),img)
@@ -131,7 +131,7 @@ class cervical_autokeras():
         autokeras_model = pickle_from_file(self.MODEL_DIR)
         autokeras_score = autokeras_model.evaluate(test_data, test_labels)
         print('acu', autokeras_score)
-    
+
     def print_score(self, label_record, total_num, false_num):
         count = 0
         for label in label_record:
