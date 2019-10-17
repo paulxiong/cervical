@@ -135,7 +135,6 @@ export default {
     }
     .data-list {
       width: 350px;
-      height: 300px;
       margin-top: 10px;
       .list {
         list-style-type: none;
