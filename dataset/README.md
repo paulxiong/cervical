@@ -65,3 +65,17 @@ datanew0918/
     └── bianping0909
         ├── ...
 ```
+### output
+```
+链接：https://pan.baidu.com/s/17Vv_9Ry_yb0QSeVmzRSLTA 
+提取玛：p87e
+说明：共两类细胞，cluster为阳性细胞团和细胞，good为阴性细胞团和细胞
+目录结构：
+output
+├── cluster
+│   ├── ffa7ce055.png
+│   ├── ...
+└── good
+│   ├── ccb7ce025.png
+│   ├── ...
+```
