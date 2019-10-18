@@ -7,20 +7,20 @@
         <el-button type="info">去训练</el-button>
         <el-button type="info">去预测</el-button>
       </div>
-      <el-checkbox-group class="cell-type" v-model="checkedCells">
-        <el-checkbox v-for="cell in cells" :label="cell" :key="cell"></el-checkbox>
+      <el-checkbox-group v-model="checkedCells" class="cell-type">
+        <el-checkbox v-for="cell in cells" :key="cell" :label="cell" />
       </el-checkbox-group>
-      <img id="hallstatt" class="img-result" :src="imgResult" />
+      <img id="hallstatt" class="img-result" :src="imgResult">
     </section>
     <section class="info-block flex">
       <div class="label-info">
         <b class="title">标记信息</b>
-        <el-image :src="img"></el-image>
+        <el-image :src="img" />
       </div>
       <div class="data-list">
         <b class="title">数据集</b>
         <ul class="list">
-          <li v-for="item in dataList" :key="item">{{item}}</li>
+          <li v-for="item in dataList" :key="item">{{ item }}</li>
         </ul>
       </div>
     </section>
@@ -53,6 +53,11 @@ export default {
       img: 'http://dev.medical.raidcdn.cn:3001/unsafe/400x0/scratch/DDzCz2KF/cells/crop/20190523.1807206.N.IMG004x011.JPG_n_5_1837_616_1936_716.png',
       imgInfo: {}
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.getLabelByImageId()
+    }, 1e3)
   },
   methods: {
     getLabelByImageId() {
@@ -96,11 +101,6 @@ export default {
         window.anno.addAnnotation(annotation)
       }
     }
-  },
-  mounted() {
-    setTimeout(() => {
-      this.getLabelByImageId()
-    }, 1e3)
   }
 }
 </script>

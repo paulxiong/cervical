@@ -1,16 +1,16 @@
 <template>
   <section class="trainDetails">
-    <section class="step flex" v-if="showStep===1?true:false">
-      <el-button size="mini" :type="active===0?'success':'info'" @click="active=0"><i :class="percentage!==100?'el-icon-loading':'el-icon-finished'"></i>图片</el-button>
-      <i class="el-icon-arrow-right icon-right"></i>
-      <el-button size="mini" :type="active===1?'success':'info'" @click="active=1" :disabled="percentage!==100"><i class="el-icon-finished"></i>训练&评估</el-button>
-      <i class="el-icon-arrow-right icon-right"></i>
-      <el-button size="mini" :type="active===2?'success':'info'" @click="active=2" :disabled="percentage!==100"><i class="el-icon-finished"></i>预测</el-button>
+    <section v-if="showStep===1?true:false" class="step flex">
+      <el-button size="mini" :type="active===0?'success':'info'" @click="active=0"><i :class="percentage!==100?'el-icon-loading':'el-icon-finished'" />图片</el-button>
+      <i class="el-icon-arrow-right icon-right" />
+      <el-button size="mini" :type="active===1?'success':'info'" :disabled="percentage!==100" @click="active=1"><i class="el-icon-finished" />训练&评估</el-button>
+      <i class="el-icon-arrow-right icon-right" />
+      <el-button size="mini" :type="active===2?'success':'info'" :disabled="percentage!==100" @click="active=2"><i class="el-icon-finished" />预测</el-button>
     </section>
     <section class="box">
-      <imagesCom @finished="imagesFinished" v-if="active===0"></imagesCom>
-      <trainCom v-if="active===1"></trainCom>
-      <predictCom v-if="active===2"></predictCom>
+      <imagesCom v-if="active===0" @finished="imagesFinished" />
+      <trainCom v-if="active===1" />
+      <predictCom v-if="active===2" />
     </section>
   </section>
 </template>

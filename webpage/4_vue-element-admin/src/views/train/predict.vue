@@ -8,45 +8,45 @@
         :percentage="percentage"
         class="progress"
         status="success"
-      ></el-progress>
+      />
       <el-button type="danger" class="predict-btn" @click="createPredict">开始预测</el-button>
     </section>
-    <section class="content" v-if="!startPredict">
-      <section class="model-info" v-if="modelList.length">
+    <section v-if="!startPredict" class="content">
+      <section v-if="modelList.length" class="model-info">
         <el-badge is-dot class="badge">模型信息</el-badge>
         <modelCard
-          :modelInfo="modelInfo"
+          :model-info="modelInfo"
           :predict="predict"
-          :modelList="modelList"
+          :model-list="modelList"
           @changeCellTypes="changeCellTypes"
         />
       </section>
       <!-- v-if="datasetsList.length" -->
-      <section class="datasets-info" v-if="datasetsList.length">
+      <section v-if="datasetsList.length" class="datasets-info">
         <el-badge is-dot class="badge">数据信息</el-badge>
-        <datasetsCard :datasetsInfo="datasetsInfo" :predict="predict" :datasetsList="datasetsList" />
+        <datasetsCard :datasets-info="datasetsInfo" :predict="predict" :datasets-list="datasetsList" />
       </section>
     </section>
-    <section class="results" v-else>
+    <section v-else class="results">
       <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
-          <el-table-column prop="type" width="400" label="类型"></el-table-column>
-          <el-table-column prop="total_org" label="输入个数"></el-table-column>
-          <el-table-column prop="total" label="实际预测个数"></el-table-column>
-          <el-table-column prop="count_false" label="错误个数"></el-table-column>
-          <el-table-column prop="count_right" label="正确个数"></el-table-column>
+          <el-table-column prop="type" width="400" label="类型" />
+          <el-table-column prop="total_org" label="输入个数" />
+          <el-table-column prop="total" label="实际预测个数" />
+          <el-table-column prop="count_false" label="错误个数" />
+          <el-table-column prop="count_right" label="正确个数" />
         </el-table>
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
           <el-tab-pane :label="`错误细胞 ${falseCellsList.length}`">
-            <el-tooltip class="item" effect="dark" v-for="v in falseCellsList" :key="v.url" :content="`实际${v.type} - 预测${v.predict}`" placement="bottom">
-              <img class="img-item img-false" :src="hosturlpath64+v.url" />
+            <el-tooltip v-for="v in falseCellsList" :key="v.url" :content="`实际${v.type} - 预测${v.predict}`" effect="dark" class="item" placement="bottom">
+              <img class="img-item img-false" :src="hosturlpath64+v.url">
             </el-tooltip>
           </el-tab-pane>
           <el-tab-pane :label="`正确细胞 ${rightCellsList.length}`">
-            <el-tooltip class="item" effect="dark" v-for="v in rightCellsList" :key="v.url" :content="v.type" placement="bottom">
-              <img class="img-item img-right" :src="hosturlpath64+v.url" />
+            <el-tooltip v-for="v in rightCellsList" :key="v.url" :content="v.type" effect="dark" class="item" placement="bottom">
+              <img class="img-item img-right" :src="hosturlpath64+v.url">
             </el-tooltip>
           </el-tab-pane>
         </el-tabs>
@@ -81,6 +81,10 @@ export default {
       rightCellsList: [],
       falseCellsList: []
     }
+  },
+  mounted() {
+    this.getListmodel(10, 0)
+    this.getListdatasets(100, 0, 2)
   },
   methods: {
     getListmodel(limit, skip) {
@@ -149,10 +153,6 @@ export default {
   },
   beforedestroy() {
     clearInterval(timer)
-  },
-  mounted() {
-    this.getListmodel(10, 0)
-    this.getListdatasets(100, 0, 2)
   }
 }
 </script>

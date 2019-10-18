@@ -1,8 +1,8 @@
 <template>
   <div class="login-container">
-    <loginHeader></loginHeader>
+    <loginHeader />
     <section class="main flex">
-      <img class="img" src="../../assets/login.png" />
+      <img class="img" src="../../assets/login.png">
       <el-form
         ref="loginForm"
         :model="loginForm"
@@ -50,7 +50,7 @@
           </span>
         </el-form-item>
 
-        <el-form-item prop="confirmPassword" v-if="register">
+        <el-form-item v-if="register" prop="confirmPassword">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
@@ -70,15 +70,15 @@
           </span>
         </el-form-item>
 
-        <el-form-item prop="code" v-if="register">
+        <el-form-item v-if="register" prop="code">
           <span class="svg-container">
             <svg-icon icon-class="email" />
           </span>
           <el-input
             key="code"
             ref="code"
-            maxlength="6"
             v-model="loginForm.code"
+            maxlength="6"
             type="text"
             placeholder="邮箱验证码"
             name="code"
@@ -87,7 +87,7 @@
           />
           <span class="send-code" @click="sendCode">
             <b v-if="time === 60">发送验证码</b>
-            <i v-else>{{time}}</i>
+            <i v-else>{{ time }}</i>
           </span>
         </el-form-item>
 
@@ -96,7 +96,7 @@
           type="primary"
           style="width:100%;margin-bottom:20px;"
           @click.native.prevent="handleLogin"
-        >{{register?'注册并登录':'登录'}}</el-button>
+        >{{ register?'注册并登录':'登录' }}</el-button>
         <div style="position:relative">
           <div class="tips">
             <el-link type="primary" :underline="false" icon="el-icon-key">忘记密码</el-link>
@@ -106,12 +106,12 @@
               icon="el-icon-user"
               class="register"
               @click="handleRegisterLogin"
-            >{{!register?'注册':'登录'}}</el-link>
+            >{{ !register?'注册':'登录' }}</el-link>
           </div>
         </div>
       </el-form>
     </section>
-    <loginFooter></loginFooter>
+    <loginFooter />
   </div>
 </template>
 

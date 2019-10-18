@@ -2,9 +2,9 @@
   <div class="train">
     <section class="step">
       <el-steps :active="step">
-        <el-step title="选择批次和病例" description="步骤1" icon="el-icon-picture"></el-step>
-        <el-step title="选择模型并调整参数" description="步骤2" icon="el-icon-edit"></el-step>
-        <el-step title="选择开始训练" description="步骤3" icon="el-icon-upload"></el-step>
+        <el-step title="选择批次和病例" description="步骤1" icon="el-icon-picture" />
+        <el-step title="选择模型并调整参数" description="步骤2" icon="el-icon-edit" />
+        <el-step title="选择开始训练" description="步骤3" icon="el-icon-upload" />
       </el-steps>
 
       <!-- <section class="btn flex">
@@ -17,20 +17,20 @@
     </section>
 
     <section class="main">
-      <checkImg v-if="step===1"></checkImg>
-      <checkModel v-if="step===2"></checkModel>
-      <startTrain v-if="step===3"></startTrain>
+      <checkImg v-if="step===1" />
+      <checkModel v-if="step===2" />
+      <startTrain v-if="step===3" />
     </section>
   </div>
 </template>
 
 <script>
-import checkImg from "./components/step1-img"
-import checkModel from "./components/step2-model"
-import startTrain from "./components/step3-train"
+import checkImg from './components/step1-img'
+import checkModel from './components/step2-model'
+import startTrain from './components/step3-train'
 
 export default {
-  name: "train",
+  name: 'Train',
   components: { checkImg, checkModel, startTrain },
   data() {
     return {

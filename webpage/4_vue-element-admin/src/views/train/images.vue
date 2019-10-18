@@ -8,61 +8,61 @@
         :stroke-width="26"
         :percentage="percentage"
         status="success"
-      ></el-progress>
+      />
     </section>
     <section class="main">
       <section class="info-box">
         <el-table :data="tableData" stripe border style="width: 100%">
-          <el-table-column prop="name" label="类型"></el-table-column>
-          <el-table-column prop="dir" label="目录"></el-table-column>
-          <el-table-column prop="batchids" label="批次"></el-table-column>
-          <el-table-column prop="medicalids" label="病例" width="180"></el-table-column>
-          <el-table-column prop="fovcnt" label="图片总数"></el-table-column>
-          <el-table-column prop="fovncnt" label="fov-n个数"></el-table-column>
-          <el-table-column prop="fovpcnt" label="fov-p个数"></el-table-column>
-          <el-table-column prop="labelcnt" label="标记次数或输出细胞个数"></el-table-column>
-          <el-table-column prop="labelncnt" label="n标记次数或输出细胞个数"></el-table-column>
-          <el-table-column prop="labelpcnt" label="p标记次数或输出细胞个数"></el-table-column>
+          <el-table-column prop="name" label="类型" />
+          <el-table-column prop="dir" label="目录" />
+          <el-table-column prop="batchids" label="批次" />
+          <el-table-column prop="medicalids" label="病例" width="180" />
+          <el-table-column prop="fovcnt" label="图片总数" />
+          <el-table-column prop="fovncnt" label="fov-n个数" />
+          <el-table-column prop="fovpcnt" label="fov-p个数" />
+          <el-table-column prop="labelcnt" label="标记次数或输出细胞个数" />
+          <el-table-column prop="labelncnt" label="n标记次数或输出细胞个数" />
+          <el-table-column prop="labelpcnt" label="p标记次数或输出细胞个数" />
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
-      <el-tabs tab-position="left" @tab-click="tabClick" v-loading="loading" class="img-tabs">
+      <el-tabs v-loading="loading" tab-position="left" class="img-tabs" @tab-click="tabClick">
         <el-tab-pane label="原图">
           <el-image
-            class="img"
             v-for="(img,idx) in origin_imgs"
             :key="idx"
+            class="img"
             :src="hosturlpath100 + img"
             lazy
           >
             <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
+              <i class="el-icon-picture-outline" />
             </div>
           </el-image>
         </el-tab-pane>
         <el-tab-pane label="细胞图">
           <el-image
-            class="img"
             v-for="(img,idx) in cells_crop"
             :key="idx"
+            class="img"
             :src="hosturlpath32 + img"
             lazy
           >
             <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
+              <i class="el-icon-picture-outline" />
             </div>
           </el-image>
         </el-tab-pane>
         <el-tab-pane label="细胞核图">
           <el-image
-            class="img"
             v-for="(img,idx) in cells_crop_masked"
             :key="idx"
+            class="img"
             :src="hosturlpath32 + img"
             lazy
           >
             <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
+              <i class="el-icon-picture-outline" />
             </div>
           </el-image>
         </el-tab-pane>
@@ -106,6 +106,12 @@ export default {
       cells_crop: [],
       cells_crop_masked: []
     }
+  },
+  mounted() {
+    this.getjobresult()
+    this.getPercent()
+    this.getjoblog()
+    this.loopGetPercent()
   },
   methods: {
     getjobresult() {
@@ -171,12 +177,6 @@ export default {
         }
       }, 1e4)
     }
-  },
-  mounted() {
-    this.getjobresult()
-    this.getPercent()
-    this.getjoblog()
-    this.loopGetPercent()
   },
   beforedestroy() {
     clearInterval(timer)

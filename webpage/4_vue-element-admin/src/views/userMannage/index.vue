@@ -1,16 +1,16 @@
 <template>
   <div class="userList">
     <el-table :data="userList" style="width: 100%">
-      <el-table-column prop="id" label="ID" width="100"></el-table-column>
-      <el-table-column prop="user_id" label="用户ID" width="100"></el-table-column>
-      <el-table-column prop="name" label="用户名" width="180"></el-table-column>
-      <el-table-column prop="type" label="类型" width="100"></el-table-column>
-      <el-table-column prop="city" label="城市"></el-table-column>
+      <el-table-column prop="id" label="ID" width="100" />
+      <el-table-column prop="user_id" label="用户ID" width="100" />
+      <el-table-column prop="name" label="用户名" width="180" />
+      <el-table-column prop="type" label="类型" width="100" />
+      <el-table-column prop="city" label="城市" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" width="400" trigger="click">
-            <div>{{scope.row}}</div>
-            <el-button slot="reference" @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+            <div>{{ scope.row }}</div>
+            <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
           </el-popover>
           <el-button type="text" size="small">删除</el-button>
         </template>
@@ -19,12 +19,12 @@
     <footer class="tools flex">
       <el-pagination
         class="page"
-        @current-change="handleCurrentChange"
         :current-page.sync="currentPage"
         :page-size="100"
         layout="prev, pager, next, jumper"
         :total="1000"
-      ></el-pagination>
+        @current-change="handleCurrentChange"
+      />
     </footer>
   </div>
 </template>

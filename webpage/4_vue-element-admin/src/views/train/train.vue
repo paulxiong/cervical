@@ -8,12 +8,12 @@
         :percentage="percentage"
         class="progress"
         status="success"
-      ></el-progress>
+      />
       <el-button
         type="danger"
         class="train-btn"
-        @click="handleTrain"
         :disabled="checkboxCell.length<2 || startedTrain === 'ok' || jobResult.status >= 6"
+        @click="handleTrain"
       >开始训练</el-button>
     </section>
     <section class="model-info">
@@ -25,19 +25,19 @@
           :label="v | filtersCheckbox"
           :checked="i<=1"
           border
-        ></el-checkbox>
+        />
       </el-checkbox-group>
-      <div class="model-box" v-if="modelInfo.path">
+      <div v-if="modelInfo.path" class="model-box">
         <el-badge is-dot class="badge">模型信息</el-badge>
         <el-button
+          v-if="showSaveBtn"
           type="danger"
           size="small"
           class="save-btn"
           :disabled="!modelInfo.desc"
           @click="saveModel"
-          v-if="showSaveBtn"
         >保存模型</el-button>
-        <modelCard :modelInfo="modelInfo" @changeDesc="changeDesc"></modelCard>
+        <modelCard :model-info="modelInfo" @changeDesc="changeDesc" />
       </div>
     </section>
   </div>
@@ -52,6 +52,11 @@ let timer
 export default {
   name: 'Train',
   components: { modelCard },
+  filters: {
+    filtersCheckbox(val) {
+      return `${val.celltype} ${cellsType[val.celltype]}: ${val.labelcnt}`
+    }
+  },
   data() {
     return {
       percentage: 0,
@@ -62,10 +67,10 @@ export default {
       startedTrain: ''
     }
   },
-  filters: {
-    filtersCheckbox(val) {
-      return `${val.celltype} ${cellsType[val.celltype]}: ${val.labelcnt}`
-    }
+  mounted() {
+    this.getTrainresult()
+    this.getPercent()
+    this.loopGetPercent()
   },
   methods: {
     handleTrain() {
@@ -129,11 +134,6 @@ export default {
   },
   beforedestroy() {
     clearInterval(timer)
-  },
-  mounted() {
-    this.getTrainresult()
-    this.getPercent()
-    this.loopGetPercent()
   }
 }
 </script>

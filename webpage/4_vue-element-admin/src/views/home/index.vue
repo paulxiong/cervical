@@ -8,7 +8,7 @@
         active-text="训练"
         inactive-text="预测"
         @change="switchChange"
-      ></el-switch>
+      />
       <el-button type="primary" @click="goNewTrain">新建数据集</el-button>
     </h3>
     <section class="project-list flex">
@@ -20,7 +20,7 @@
         :shadow="v.status === 3 || v.status === 5 || v.status === 8 ?'always':'hover'"
       >
         <div slot="header" class="clearfix">
-          <span>{{v.desc}}</span>
+          <span>{{ v.desc }}</span>
           <el-button
             style="float: right; padding: 3px 0"
             type="text"
@@ -31,32 +31,32 @@
         <div class="content flex">
           <div class="info">
             <i>id :</i>
-            {{v.id}}
-            <br />
+            {{ v.id }}
+            <br>
             <i>路径 :</i>
-            {{v.dir}}
-            <br />
+            {{ v.dir }}
+            <br>
             <i>创建者 :</i>
-            {{v.created_by | filterCreated}}
-            <br />
+            {{ v.created_by | filterCreated }}
+            <br>
             <i>类型 :</i>
-            {{v.type | filtersStatus}}
-            <br />
+            {{ v.type | filtersStatus }}
+            <br>
             <i>状态 :</i>
             <el-tag
               :type="v.status | filtersTaskType"
               effect="dark"
-            >{{v.status | filtersTaskStatus}}</el-tag>
+            >{{ v.status | filtersTaskStatus }}</el-tag>
           </div>
           <el-timeline reverse class="timeline">
             <el-timeline-item
               v-for="(activity, index) in v.activities"
+              :key="index"
               :icon="activity.icon"
               :color="activity.color"
               :type="activity.type"
-              :key="index"
               :timestamp="activity.timestamp"
-            >{{activity.content}}</el-timeline-item>
+            >{{ activity.content }}</el-timeline-item>
           </el-timeline>
         </div>
       </el-card>
@@ -72,12 +72,6 @@ import { dateformat3 } from '@/utils/dateformat'
 export default {
   name: 'Home',
   components: {},
-  data() {
-    return {
-      switchVal: true,
-      dataList: []
-    }
-  },
   filters: {
     filterCreated(value) {
       return createdBy[value]
@@ -91,6 +85,15 @@ export default {
     filtersStatus(value) {
       return typeStatus[value]
     }
+  },
+  data() {
+    return {
+      switchVal: true,
+      dataList: []
+    }
+  },
+  mounted() {
+    this.listdatasets(100, 0, 1)
   },
   methods: {
     goNewTrain() {
@@ -133,9 +136,6 @@ export default {
         this.dataList = res.data.data.datasets || []
       })
     }
-  },
-  mounted() {
-    this.listdatasets(100, 0, 1)
   }
 }
 </script>
