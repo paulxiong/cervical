@@ -20,7 +20,7 @@
       <div class="data-list">
         <b class="title">数据集</b>
         <ul class="list">
-          <li v-for="item in dataList" :key="item">{{ item }}</li>
+          <li v-for="(item, idx) in dataList" :key="idx">{{ item }}</li>
         </ul>
       </div>
     </section>
@@ -39,7 +39,7 @@ export default {
       cells: ['1 Norm 正常细胞', '2 LSIL 鳞状上皮细胞低度病变', '3 HSIL 鳞状上皮细胞高度病变'],
       checkedCells: [],
       dataList: [
-        '20190523.1807206.N.IMG001x019.JPG20190523.1807206.N.IMG001x019.JPG',
+        '20190523.1807206.N.IMG001x019.JPG',
         '20190523.1807206.N.IMG001x019.JPG',
         '20190523.1807206.N.IMG001x019.JPG',
         '20190523.1807206.N.IMG001x019.JPG',
@@ -68,13 +68,13 @@ export default {
     },
     setaddAnnotation(url, labels, divide) {
       window.anno.makeAnnotatable(document.getElementById('hallstatt'))
-      window.anno.setProperties({
-        outline: 'yellow',
-        outline_width: 2,
-        hi_outline: 'yellow',
-        hi_outline_width: 2,
-        stroke: 'yellow'
-      })
+      // window.anno.setProperties({
+      //   outline: 'yellow',
+      //   outline_width: 2,
+      //   hi_outline: 'yellow',
+      //   hi_outline_width: 2,
+      //   stroke: 'yellow'
+      // })
       // 遍历获取snapshot表里图片头像框坐标信息并等比换算处理到页面上展示
       for (let i = 0; i < labels.length; i++) {
         const annotation = {
@@ -101,6 +101,9 @@ export default {
         window.anno.addAnnotation(annotation)
       }
     }
+  },
+  mounted() {
+    this.getLabelByImageId()
   }
 }
 </script>

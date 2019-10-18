@@ -1,16 +1,17 @@
 <template>
   <div class="userLog">
     <el-table :data="userLog" style="width: 100%">
-      <el-table-column prop="id" label="ID" width="100" />
-      <el-table-column prop="user_id" label="用户ID" width="100" />
-      <el-table-column prop="ip" label="IP" width="180" />
-      <el-table-column prop="region.isp" width="100" label="运营商" />
-      <el-table-column prop="region.city" label="城市" width="100" />
-      <el-table-column prop="path" label="路径" />
-      <el-table-column prop="ua.device.type" label="硬件" width="100" />
-      <el-table-column prop="ua.os.name" label="操作系统" width="100" />
-      <el-table-column prop="ua.browser.name" label="浏览器" width="100" />
-      <el-table-column prop="cost" label="耗时(us)" width="100" />
+      <el-table-column prop="id" label="ID" width="100"></el-table-column>
+      <el-table-column prop="user_id" label="用户ID" width="100"></el-table-column>
+      <el-table-column prop="ip" label="IP" width="180"></el-table-column>
+      <el-table-column prop="region.isp" width="100" label="运营商"></el-table-column>
+      <el-table-column prop="region.city" label="城市" width="100"></el-table-column>
+      <el-table-column prop="path" label="路径"></el-table-column>
+      <el-table-column prop="created_at" label="时间"></el-table-column>
+      <el-table-column prop="ua.device.type" label="硬件" width="100"></el-table-column>
+      <el-table-column prop="ua.os.name" label="操作系统" width="100"></el-table-column>
+      <el-table-column prop="ua.browser.name" label="浏览器" width="100"></el-table-column>
+      <el-table-column prop="cost" label="耗时(us)" width="100"></el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" width="400" trigger="click">
@@ -36,6 +37,7 @@
 
 <script>
 import { getUserLog } from '@/api/user'
+import { formatTime } from '@/utils/index'
 import UA from 'ua-device'
 
 export default {
@@ -61,6 +63,7 @@ export default {
       getUserLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.accesslog.map(v => {
           v.ua = new UA(v.ua)
+          v.created_at = formatTime(v.created_at)
         })
         this.userLog = res.data.data.accesslog
       })

@@ -105,8 +105,8 @@ export const constantRoutes = [
     redirect: '/label',
     children: [
       {
-        path: '',
-        component: () => import('@/views/label/index'),
+        path: '/label',
+        component: () => import('@/views/label/index2'),
         name: '标注',
         meta: { title: '标注', icon: 'edit', affix: true }
       }

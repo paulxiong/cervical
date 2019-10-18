@@ -43,6 +43,7 @@
     "ua-device": "0.1.10",
     "vue": "2.6.10",
     "vue-count-to": "1.0.13",
+    "vue-picture-bd-marker": "^1.2.2",
     "vue-router": "3.0.2",
     "vue-splitpane": "1.0.4",
     "vuedraggable": "2.20.0",
