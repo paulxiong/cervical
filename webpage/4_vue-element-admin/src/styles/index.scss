@@ -4,7 +4,6 @@
 @import './element-ui.scss';
 @import './sidebar.scss';
 @import './btn.scss';
-@import './login.scss';
 
 body {
   height: 100%;
@@ -118,6 +117,12 @@ aside {
       color: rgb(32, 160, 255);
     }
   }
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 //main-container全局样式
