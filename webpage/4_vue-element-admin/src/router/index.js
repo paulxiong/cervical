@@ -106,7 +106,7 @@ export const constantRoutes = [
     children: [
       {
         path: '/label',
-        component: () => import('@/views/label/index2'),
+        component: () => import('@/views/label/index'),
         name: '标注',
         meta: { title: '标注', icon: 'edit', affix: true }
       }

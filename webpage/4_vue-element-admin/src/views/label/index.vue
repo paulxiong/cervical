@@ -101,9 +101,6 @@ export default {
         window.anno.addAnnotation(annotation)
       }
     }
-  },
-  mounted() {
-    this.getLabelByImageId()
   }
 }
 </script>
