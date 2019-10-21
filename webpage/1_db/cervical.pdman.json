@@ -1458,6 +1458,14 @@
               "defaultValue": "0"
             },
             {
+              "name": "isp",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "运营商",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
               "name": "input",
               "type": "LongText",
               "remark": "",
@@ -1605,14 +1613,6 @@
               "type": "ShortString",
               "remark": "",
               "chnname": "城市名字",
-              "notNull": true,
-              "defaultValue": "\"\""
-            },
-            {
-              "name": "isp",
-              "type": "ShortString",
-              "remark": "",
-              "chnname": "运营商",
               "notNull": true,
               "defaultValue": "\"\""
             },

@@ -17,6 +17,7 @@ type Operationlog struct {
 	IP        string    `json:"ip"         gorm:"column:ip"`         //客户端IP
 	RegionID  int64     `json:"region_id"  gorm:"column:region_id"`  //客户端IP所在地理位置的ID
 	Region    Region    `json:"region"     gorm:"column:-"`          //客户端IP所在地理位置
+	ISP       string    `json:"-"        gorm:"column:isp"`          //运营商
 	Input     string    `json:"input"      gorm:"column:input"`      //post输入
 	UA        string    `json:"ua"         gorm:"column:ua"`         //UserAgent
 	Code      int       `json:"code"       gorm:"column:code"`       //请求的状态码
@@ -41,6 +42,7 @@ func (opl *Operationlog) AfterFind(scope *gorm.Scope) error {
 	}
 	region.FindRegionbyID()
 	opl.Region = region
+	region.ISP = opl.ISP
 	return nil
 }
 

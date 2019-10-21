@@ -13,7 +13,7 @@ type Region struct {
 	Region    string    `json:"region"     gorm:"column:region"`   //地区
 	Province  string    `json:"province"   gorm:"column:province"` //省/州
 	City      string    `json:"city"       gorm:"column:city"`     //城市
-	ISP       string    `json:"isp"        gorm:"column:isp"`      //运营商
+	ISP       string    `json:"isp"        gorm:"column:-"`        //运营商
 	CreatedAt time.Time `json:"-" gorm:"column:created_at"`        //创建时间
 }
 
