@@ -61,10 +61,10 @@ func ListOperationlog(limit int, skip int, order int) (totalNum int64, c []Opera
 	var total int64 = 0
 	ret := db.Model(&Operationlog{}).Count(&total)
 
-	orderStr := "created_at DESC"
+	orderStr := "id DESC"
 	//order, default 1, 1倒序，0顺序
 	if order == 0 {
-		orderStr = "created_at ASC"
+		orderStr = "id ASC"
 	}
 
 	ret = db.Model(&Operationlog{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_o)
