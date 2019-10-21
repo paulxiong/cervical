@@ -42,7 +42,7 @@ func (opl *Operationlog) AfterFind(scope *gorm.Scope) error {
 	}
 	region.FindRegionbyID()
 	opl.Region = region
-	region.ISP = opl.ISP
+	opl.Region.ISP = opl.ISP
 	return nil
 }
 
