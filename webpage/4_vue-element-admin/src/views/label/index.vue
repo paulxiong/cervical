@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { AIMarker } from 'Vue-Picture-BD-Marker'
+import { AIMarker } from 'vue-picture-bd-marker'
 import { cellsType } from '@/const/const'
 
 export default {
