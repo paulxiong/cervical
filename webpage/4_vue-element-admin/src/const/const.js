@@ -60,7 +60,7 @@ export const cellsType = {
   1: 'Norm 正常细胞',
   2: 'LSIL 鳞状上皮细胞低度病变',
   3: 'HSIL 鳞状上皮细胞高度病变',
-  4: 'HPV HPV感染',
+  4: 'HPV 感染',
   5: 'NILM 未见上皮内病变',
   6: 'SCC 鳞状上皮细胞癌',
   7: 'ASCUS 不典型鳞状细胞低',
