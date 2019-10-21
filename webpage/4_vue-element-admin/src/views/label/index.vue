@@ -2,17 +2,15 @@
   <div class="label flex">
     <section class="main">
       <section class="tools flex">
-        <el-badge is-dot class="badge-item">请选择细胞标记类型</el-badge>
         <div class="btn-box">
           <el-button size="mini" type="primary">选择导入数据集</el-button>
           <el-button size="mini" type="primary">去训练</el-button>
           <el-button size="mini" type="primary">去预测</el-button>
         </div>
-      </section>
-      <section class="cells-type">
-        <el-radio-group v-model="cellType" size="mini" class="list flex">
-          <el-radio-button v-for="(cell, idx) in cellsType" :key="idx" :label="idx">{{ cell }}</el-radio-button>
-        </el-radio-group>
+        <el-button-group>
+          <el-button size="mini" type="info" icon="el-icon-arrow-left">上一张</el-button>
+          <el-button size="mini" type="info">下一张<i class="el-icon-arrow-right el-icon--right" /></el-button>
+        </el-button-group>
       </section>
       <section class="label-img">
         <AIMarker
@@ -24,26 +22,16 @@
       </section>
     </section>
     <section class="info">
-      <div class="cell-info">
-        <el-badge is-dot class="badge-item">细胞详情</el-badge>
-        <el-image class="cell-img" :src="cell_img" />
-        <div class="cell">
-          LSIL 鳞状上皮细胞低度病变
-        </div>
+      <div class="cells-type">
+        <el-badge is-dot class="badge-item">请选择细胞标记类型</el-badge>
+        <el-radio-group v-model="cellType" size="mini" class="list">
+          <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
+        </el-radio-group>
       </div>
       <div class="data-info">
         <el-badge is-dot class="badge-item">数据集</el-badge>
         <div class="list">
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
-          <div class="item">20190523.1807285.N.IMG002x010.JPG</div>
+          <div v-for="item in 17" :key="item" class="item" :class="item===activeItem?'active-item':''" @click="activeItem=item">20190523.1807285.N.IMG002x01{{ item }}.JPG</div>
         </div>
       </div>
     </section>
@@ -60,6 +48,7 @@ export default {
   data() {
     return {
       cellsType: cellsType,
+      activeItem: 1,
       cellType: '1',
       fov_img: 'http://medical.raidcdn.cn:3001/unsafe/1000x0/scratch/93jeRNKB/origin_imgs/redhouse.1816953.N.IMG018x024.JPG',
       cell_img: 'http://medical.raidcdn.cn:3001/unsafe/100x0/scratch/93jeRNKB/cells/crop/17P0603.1904165A.N.IMG001x020.JPG_n_5_1111_1394_1211_1494.png'
@@ -86,42 +75,46 @@ export default {
     height: 100%;
     .tools {
       justify-content: space-between;
+      padding: 0 5px;
       margin: 5px 0;
-    }
-    .cells-type {
-      .list {
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
     }
   }
   .info {
     width: 20%;
     height: 100%;
-    .cell-info {
+    .cells-type {
       border: 2px solid #ccc;
       height: 50%;
-      .cell-img {
+      overflow: auto;
+      padding-left: 5px;
+      padding-top: 5px;
+      .list {
         display: block;
-        margin: 5px;
-      }
-      .cell {
-        text-align: center;
-        color: #fc4b4e;
-        font-size: 20px;
+        .item {
+          display: block;
+          margin: 5px 0;
+        }
       }
     }
     .data-info {
       border: 2px solid #ccc;
       height: 50%;
+      overflow: auto;
+      overflow-x: hidden;
       .list {
         margin-top: 5px;
-        overflow-x: auto;
-        overflow-y: auto;
         .item {
           border-top: 1px solid #000;
           border-bottom: 1px solid #000;
+          font-size: 12px;
           padding: 5px 0;
+          cursor: pointer;
+        }
+        .active-item {
+          border-top: 1px solid #0088f9;
+          border-bottom: 1px solid #0088f9;
+          background: #0088f9;
+          color: #fff;
         }
       }
     }

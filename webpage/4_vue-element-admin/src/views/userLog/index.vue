@@ -1,6 +1,6 @@
 <template>
   <div class="userLog">
-    <el-table :data="userLog" style="width: 100%">
+    <el-table :data="userLog.accesslog" style="width: 100%">
       <el-table-column prop="id" label="ID" width="100" />
       <el-table-column prop="user_id" label="用户ID" width="100" />
       <el-table-column prop="ip" label="IP" width="180" />
@@ -26,7 +26,7 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-size="100"
+        :page-size="10"
         layout="prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
@@ -65,7 +65,7 @@ export default {
           v.ua = new UA(v.ua)
           v.created_at = formatTime(v.created_at)
         })
-        this.userLog = res.data.data.accesslog
+        this.userLog = res.data.data
       })
     }
   }
@@ -75,6 +75,8 @@ export default {
 <style lang="scss" scoped>
 .userLog {
   padding-top: 10px;
+  overflow: auto;
+  height: 100%;
   .tools {
     margin-top: 10px;
     justify-content: space-around;
