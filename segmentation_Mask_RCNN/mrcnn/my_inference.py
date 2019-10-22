@@ -223,10 +223,13 @@ class detector():
                 x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
                 _mask_npy = mask_npy[y1:y2, x1:x2]
 
+                if _mask_npy.shape[1] != _mask_npy.shape[0]:
+                    continue
                 mask_cell_npy.append(_mask_npy)
                 _rois.append([y1, x1, y2, x2])
+                print(_mask_npy.shape)
 
-            #mask_cell = np.array(mask_cell_npy)
+            print('>>',len(mask_cell_npy))
             mask_npy = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
             if sign == '1': # 训练
