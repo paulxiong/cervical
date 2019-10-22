@@ -16,7 +16,7 @@
         <AIMarker
           ref="aiPanel-editor"
           class="ai-observer"
-          :img-url="fov_img"
+          :img="fov_img"
           @vmarker:onDrawOne="drawOne"
         />
       </section>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { AIMarker } from 'vue-picture-bd-marker'
+import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 
 export default {

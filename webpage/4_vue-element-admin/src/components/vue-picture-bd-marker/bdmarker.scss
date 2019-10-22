@@ -1,0 +1,96 @@
+@charset "utf-8";
+
+.annotation {
+  cursor: move;
+  border: 1px solid #3e3e3e;
+  background: rgba(0, 0, 0, 0.2);
+}
+.selected{
+  background: rgba(255, 255, 255, 0.1);
+  .g-image-op {
+    bottom: 0;
+    cursor: auto;
+    position: absolute;
+  }
+  .g-image-op-content{
+    box-sizing: border-box;
+  }
+  .g-image-op-del {
+    cursor: pointer;
+  }
+}
+.hidden{
+  display: none;
+}
+.resize-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(255, 255, 255);
+  box-sizing: border-box;
+
+  &-n {
+    position: absolute;
+    cursor: n-resize;
+    top: -4px;
+    left: 50%;
+    margin-left: -4px;
+  }
+
+  &-s {
+    position: absolute;
+    cursor: s-resize;
+    bottom: -4px;
+    left: 50%;
+    margin-left: -4px;
+  }
+
+  &-w {
+    position: absolute;
+    cursor: w-resize;
+    left: -4px;
+    top: 50%;
+    margin-top: -4px;
+  }
+
+  &-e {
+    position: absolute;
+    cursor: e-resize;
+    right: -4px;
+    top: 50%;
+    margin-top: -4px;
+  }
+
+  &-nw {
+    position: absolute;
+    cursor: nw-resize;
+    margin-top: -4px;
+    margin-left: -4px;
+  }
+
+  &-ne {
+    position: absolute;
+    cursor: ne-resize;
+    right: 0;
+    margin-top: -4px;
+    margin-right: -4px;
+  }
+
+  &-sw {
+    position: absolute;
+    cursor: sw-resize;
+    bottom: 0;
+    margin-left: -4px;
+    margin-bottom: -4px;
+  }
+
+  &-se {
+    cursor: se-resize;
+    right: -4px;
+    bottom: 0;
+    margin-bottom: -4px;
+  }
+
+}
+
