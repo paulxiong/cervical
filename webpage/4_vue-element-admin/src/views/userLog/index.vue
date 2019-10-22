@@ -26,7 +26,29 @@
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" width="400" trigger="click">
-            <div>{{ scope.row }}</div>
+            <div>
+              <table id="tfhover" class="tftable" border="1">
+                <tr><th>ID:</th><th>{{ scope.row.id }}</th></tr>
+                <tr><td>用户ID:</td><td>{{ scope.row.user_id }}</td></tr>
+                <tr><td>请求大小:</td><td>{{ scope.row.bodysize }}</td></tr>
+                <tr><td>状态码:</td><td>{{ scope.row.code }}</td></tr>
+                <tr><td>耗时(ms):</td><td>{{ scope.row.cost }}</td></tr>
+                <tr><td>创建时间:</td><td>{{ scope.row.created_at }}</td></tr>
+                <tr><td>请求方式:</td><td>{{ scope.row.method }}</td></tr>
+                <tr><td>路径:</td><td>{{ scope.row.path }}</td></tr>
+                <tr><td>参数:</td><td>{{ scope.row.query }}</td></tr>
+                <tr><td>来源:</td><td>{{ scope.row.referer }}</td></tr>
+                <tr><td>地域ID:</td><td>{{ scope.row.region_id }}</td></tr>
+                <tr><td>国家:</td><td>{{ scope.row.region.country }}</td></tr>
+                <tr><td>省份:</td><td>{{ scope.row.region.province }}</td></tr>
+                <tr><td>城市:</td><td>{{ scope.row.region.city }}</td></tr>
+                <tr><td>运营商:</td><td>{{ scope.row.region.isp }}</td></tr>
+                <tr><td>硬件:</td><td>{{ scope.row.ua.device.type }}</td></tr>
+                <tr><td>操作系统:</td><td>{{ scope.row.ua.os.name }} {{ scope.row.ua.os.version.original }}</td></tr>
+                <tr><td>浏览器:</td><td>{{ scope.row.ua.browser.name }} {{ scope.row.ua.browser.version.original }}</td></tr>
+                <tr><td>浏览器内核:</td><td>{{ scope.row.ua.engine.name }} {{ scope.row.ua.engine.version.original }}</td></tr>
+              </table>
+            </div>
             <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
           </el-popover>
           <el-button type="text" size="small">删除</el-button>
@@ -93,5 +115,31 @@ export default {
     margin-top: 10px;
     justify-content: space-around;
   }
+}
+table.tftable {
+  font-size:12px;
+  color:#333333;
+  border-width: 1px;
+  border-color: #729ea5;
+  border-collapse: collapse;
+}
+table.tftable th {
+  font-size:12px;
+  background-color:#acc8cc;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #729ea5;
+  text-align:left;
+}
+table.tftable tr {
+  background-color:#d4e3e5;
+}
+table.tftable td {
+  font-size:12px;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #729ea5;
 }
 </style>
