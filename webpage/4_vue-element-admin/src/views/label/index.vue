@@ -16,7 +16,7 @@
         <AIMarker
           ref="aiPanel-editor"
           class="ai-observer"
-          :imgUrl="fov_img"
+          :img-url="fov_img"
           @vmarker:onDrawOne="drawOne"
         />
       </section>
