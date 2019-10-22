@@ -168,7 +168,7 @@ class detector():
         cv2.imwrite(cells_masked_crop_file_path, img_masked)
         return
 
-    def detect_image(self, gray=False, print2=None, sign = '2'): # sign == 1为训练， sign == 2为预测
+    def detect_image(self, gray=False, print2=None, sign = '1'): # sign == 1为训练， sign == 2为预测
         pathList = self.get_image_lists()
         if print2 is None:
             print2 = print
@@ -227,6 +227,7 @@ class detector():
                 _rois.append([y1, x1, y2, x2])
 
             #mask_cell = np.array(mask_cell_npy)
+            mask_npy = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
             if sign == '1': # 训练
                 org_csv_path = image_path[:-4] + '.csv' # 拼原始csv路径
@@ -240,7 +241,7 @@ class detector():
                     if ret == True:
                         fov_type = self.get_FOV_type(org_csv_path)
                         cell_point = [y1, x1, y2, x2]
-                        self.crop_fov(original_image, cell_points[index_, :], mask_cell_npy[index_,], cells_path, 
+                        self.crop_fov(original_image, cell_points[index_, :], mask_npy[index_,], cells_path, 
                                       cells_mask_path, filename, fov_type, cell_type)
 
             elif sign == '2': # 预测
