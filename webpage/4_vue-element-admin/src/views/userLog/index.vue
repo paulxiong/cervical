@@ -4,6 +4,7 @@
       <el-table-column prop="user_id" label="用户ID" width="100" />
       <el-table-column prop="ip" label="IP" width="180" />
       <el-table-column prop="region.city" label="城市" width="100" />
+      <el-table-column prop="path" label="路径" />
       <el-table-column prop="created_at" label="时间">
         <template slot-scope="scope">
           <i class="el-icon-time" />
@@ -59,7 +60,7 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-size="10"
+        :page-size="20"
         layout="prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"

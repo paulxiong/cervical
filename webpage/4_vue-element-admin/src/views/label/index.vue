@@ -101,13 +101,14 @@ export default {
       height: 50%;
       overflow: auto;
       overflow-x: hidden;
+      padding-top: 5px;
       .list {
         margin-top: 5px;
         .item {
           border-top: 1px solid #000;
           border-bottom: 1px solid #000;
           font-size: 12px;
-          padding: 5px 0;
+          padding: 5px;
           cursor: pointer;
         }
         .active-item {
