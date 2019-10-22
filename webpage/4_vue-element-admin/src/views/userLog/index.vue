@@ -6,18 +6,23 @@
       <el-table-column prop="region.city" label="城市" width="100" />
       <el-table-column prop="created_at" label="时间">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
+          <i class="el-icon-time" />
           <span>{{ scope.row.created_at }}</span>
         </template>
       </el-table-column>
       <el-table-column label="硬件" width="100">
         <template slot-scope="scope">
-          <svg-icon style="width:20px;height:20px;" :icon-class="scope.row.ua.device.icon" />
-          <span>{{ scope.row.ua.device.type }}</span>
+          <svg-icon style="width:20px;height:20px;" :icon-class="scope.row.ua.device.type" />
+          <!-- <span>{{scope.row.ua.device.type}}</span> -->
         </template>
       </el-table-column>
-      <el-table-column prop="ua.os.name" label="操作系统" width="100" />
-      <el-table-column prop="cost" label="耗时(us)" width="100" />
+      <el-table-column label="操作系统" width="100">
+        <template slot-scope="scope">
+          <svg-icon style="width:20px;height:20px;" :icon-class="scope.row.ua.os.name" />
+          <!-- <span>{{scope.row.ua.os.name}}</span> -->
+        </template>
+      </el-table-column>
+      <el-table-column prop="cost" label="耗时(ms)" width="100" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" width="400" trigger="click">
@@ -65,19 +70,11 @@ export default {
     handleCurrentChange(val) {
       this.getUserLog(10, val * 10, 1)
     },
-    iconDevice(val) {
-      switch (val) {
-        case 'desktop':
-          return 'pc'
-        case 'mobile':
-          return 'mobile'
-      }
-    },
     getUserLog(limit, skip, order) {
       getUserLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.accesslog.map(v => {
           v.ua = new UA(v.ua)
-          v.ua.device.icon = this.iconDevice(v.ua.device.type)
+          v.cost = (v.cost / 1000).toFixed(2)
           v.created_at = formatTime(v.created_at)
         })
         this.userLog = res.data.data
