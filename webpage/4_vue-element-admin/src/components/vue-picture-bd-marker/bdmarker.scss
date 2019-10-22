@@ -2,18 +2,27 @@
 
 .annotation {
   cursor: move;
-  border: 1px solid #3e3e3e;
-  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid #ccc;
+  background: rgba(0, 0, 0, 0.1);
 }
 .selected{
+  border: 2px solid #dff01c;
   background: rgba(255, 255, 255, 0.1);
+}
+.g-image-op {
+  visibility: hidden;
+}
+.selected:hover {
   .g-image-op {
-    bottom: 0;
+    visibility: visible;
+    overflow: auto;
+    bottom: -20px;
     cursor: auto;
     position: absolute;
+    width: 200px;
   }
   .g-image-op-content{
-    box-sizing: border-box;
+    font-size: 12px;
   }
   .g-image-op-del {
     cursor: pointer;
@@ -24,8 +33,8 @@
 }
 .resize-dot {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: rgb(255, 255, 255);
   box-sizing: border-box;
