@@ -139,12 +139,12 @@ class detector():
         return False, index, x1_, y1_, x2_, y2_
 
     def get_FOV_type(self, org_csv_path): # 获取FOV类型
-        sign_N = ['1','5','12','13','14','15']
+        sign_N = [1,5,12,13,14,15]
         if not os.path.exists(original_img_path):
             return '-1' # 表示预测类型
         df1 = pd.read_csv(org_csv_path)
         for index, row in df1.iterrows(): # 遍历原始csv
-            _type = row['Type']
+            _type = int(row['Type'])
             if _type in sign_N:
                 return 'N'
             else:
@@ -227,9 +227,7 @@ class detector():
                     continue
                 mask_cell_npy.append(_mask_npy)
                 _rois.append([y1, x1, y2, x2])
-                print(_mask_npy.shape)
 
-            print('>>',len(mask_cell_npy))
             mask_npy = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
             if sign == '1': # 训练
