@@ -4,6 +4,7 @@
       <el-table-column prop="user_id" label="用户ID" width="100" />
       <el-table-column prop="ip" label="IP" width="180" />
       <el-table-column prop="region.city" label="城市" width="100" />
+      <el-table-column prop="path" label="路径" />
       <el-table-column prop="created_at" label="时间">
         <template slot-scope="scope">
           <i class="el-icon-time" />
@@ -25,8 +26,28 @@
       <el-table-column prop="cost" label="耗时(ms)" width="100" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-popover placement="right" width="400" trigger="click">
-            <div>{{ scope.row }}</div>
+          <el-popover placement="right" trigger="click">
+            <table class="tftable" border="1">
+              <tr><th class="td-1">ID:</th><th>{{ scope.row.id }}</th></tr>
+              <tr><td class="td-1">用户ID:</td><td>{{ scope.row.user_id }}</td></tr>
+              <tr><td class="td-1">请求大小:</td><td>{{ scope.row.bodysize }}</td></tr>
+              <tr><td class="td-1">状态码:</td><td>{{ scope.row.code }}</td></tr>
+              <tr><td class="td-1">耗时(ms):</td><td>{{ scope.row.cost }}</td></tr>
+              <tr><td class="td-1">创建时间:</td><td>{{ scope.row.created_at }}</td></tr>
+              <tr><td class="td-1">请求方式:</td><td>{{ scope.row.method }}</td></tr>
+              <tr><td class="td-1">路径:</td><td>{{ scope.row.path }}</td></tr>
+              <tr><td class="td-1">参数:</td><td style="width:250px;">{{ scope.row.query }}</td></tr>
+              <tr><td class="td-1">来源:</td><td>{{ scope.row.referer }}</td></tr>
+              <tr><td class="td-1">地域ID:</td><td>{{ scope.row.region_id }}</td></tr>
+              <tr><td class="td-1">国家:</td><td>{{ scope.row.region.country }}</td></tr>
+              <tr><td class="td-1">省份:</td><td>{{ scope.row.region.province }}</td></tr>
+              <tr><td class="td-1">城市:</td><td>{{ scope.row.region.city }}</td></tr>
+              <tr><td class="td-1">运营商:</td><td>{{ scope.row.region.isp }}</td></tr>
+              <tr><td class="td-1">硬件:</td><td>{{ scope.row.ua.device.type }}</td></tr>
+              <tr><td class="td-1">操作系统:</td><td>{{ scope.row.ua.os.name }}</td></tr>
+              <tr><td class="td-1">浏览器:</td><td>{{ scope.row.ua.browser.name }}</td></tr>
+              <tr><td class="td-1">浏览器内核:</td><td>{{ scope.row.ua.engine.name }}</td></tr>
+            </table>
             <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
           </el-popover>
           <el-button type="text" size="small">删除</el-button>
@@ -37,7 +58,7 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-size="10"
+        :page-size="20"
         layout="prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
@@ -93,5 +114,34 @@ export default {
     margin-top: 10px;
     justify-content: space-around;
   }
+}
+table.tftable {
+  font-size:12px;
+  color:#333333;
+  border-width: 1px;
+  border-color: #729ea5;
+  border-collapse: collapse;
+}
+table.tftable th {
+  font-size:12px;
+  background-color:#acc8cc;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #729ea5;
+  text-align:left;
+}
+table.tftable tr {
+  background-color:#d4e3e5;
+}
+table.tftable td {
+  font-size:12px;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #729ea5;
+}
+.tftable .td-1 {
+  width: 100px;
 }
 </style>
