@@ -62,7 +62,7 @@ class detector():
         self.original_img_path = original_img_path
         self.cells_mask_path = cells_mask_path
         self.cells_path = cells_path
-        self.debug = False
+        self.debug = True
         self.inference_config = None
         self.logs_dir = './logs'
         self.output_image_path = './output_image'
@@ -90,14 +90,14 @@ class detector():
         if not os.path.exists(self.original_img_path) or \
            not os.path.isdir(self.original_img_path):
             raise RuntimeError('not found folder: %s' % self.original_img_path)
-        image_list = []
+        image_list = []  
         allfiles = os.listdir(self.original_img_path)
         allfiles_num = len(allfiles)
         for i in allfiles:
             path1 = os.path.join(self.original_img_path, i)
-            if os.path.isdir(path1):
+            if os.path.isdir(path1): 
                 if self.debug:
-                    print(">>> unexpected folder: %s, must be image." % path1)
+                    print(">>> unexpected folder Error: %s, must be image." % path1)
                 continue
             ext = os.path.splitext(path1)[1]
             ext = ext.lower()
@@ -105,10 +105,11 @@ class detector():
                 if self.debug and (not ext in ['.csv']):
                     print(">>> unexpected file: %s, must be jpg/png/bmp" % path1)
             else:
-                image_list.append(i)
+                image_list.append(i) 
         if self.debug is True and allfiles_num > len(image_list):
             print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
         return image_list
+
     def calculate_wh(self, x, y, img, side):
         limit_x = img.shape[1]
         limit_y = img.shape[0]
@@ -231,7 +232,13 @@ class detector():
             cell_points = np.array(_rois)
             if sign == '1': # 训练
                 org_csv_path = image_path[:-4] + '.csv' # 拼原始csv路径
+                
+                if os.path.exists(org_csv_path) == False:
+                    print( filename + ' no csv')
+                    continue
+
                 df1 = pd.read_csv(org_csv_path)
+                
                 for index, row in df1.iterrows(): # 遍历原始csv
                     x_center = int(row['X'])
                     y_center = int(row['Y'])
@@ -253,19 +260,19 @@ class detector():
 
             if self.debug:
                 visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
-                output_image_path = os.path.join(self.output_image_path, filename + '_.png')
+                output_image_path = os.path.join(self.output_image_path, filename + '1_.png')
                 for i in range(len(final_rois)):
                     score = scores_masks[i]
                     rois = final_rois[i,:]
                     x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
                     draw_color = (0, 0, 255)
-                    if (score >= 0.98):
-                        draw_color = (0, 0, 255)
-                    elif (0.94 < score < 0.98) :
-                        draw_color = (0, 255, 0)
-                    elif score <= 0.94 :
-                        draw_color = (255, 0, 0)
-                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 4)
+#                     if (score >= 0.98):
+#                         draw_color = (0, 0, 255)
+#                     elif (0.94 < score < 0.98) :
+#                         draw_color = (0, 255, 0)
+#                     elif score <= 0.94 :
+#                         draw_color = (255, 0, 0)
+                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 1)
                 cv2.imwrite(output_image_path, original_image)
 
         return True
