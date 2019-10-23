@@ -62,7 +62,7 @@ class detector():
         self.original_img_path = original_img_path
         self.cells_mask_path = cells_mask_path
         self.cells_path = cells_path
-        self.debug = True
+        self.debug = False
         self.inference_config = None
         self.logs_dir = './logs'
         self.output_image_path = './output_image'
@@ -90,12 +90,12 @@ class detector():
         if not os.path.exists(self.original_img_path) or \
            not os.path.isdir(self.original_img_path):
             raise RuntimeError('not found folder: %s' % self.original_img_path)
-        image_list = []  
+        image_list = []
         allfiles = os.listdir(self.original_img_path)
         allfiles_num = len(allfiles)
         for i in allfiles:
             path1 = os.path.join(self.original_img_path, i)
-            if os.path.isdir(path1): 
+            if os.path.isdir(path1):
                 if self.debug:
                     print(">>> unexpected folder Error: %s, must be image." % path1)
                 continue
@@ -105,7 +105,7 @@ class detector():
                 if self.debug and (not ext in ['.csv']):
                     print(">>> unexpected file: %s, must be jpg/png/bmp" % path1)
             else:
-                image_list.append(i) 
+                image_list.append(i)
         if self.debug is True and allfiles_num > len(image_list):
             print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
         return image_list
@@ -232,13 +232,10 @@ class detector():
             cell_points = np.array(_rois)
             if sign == '1': # 训练
                 org_csv_path = image_path[:-4] + '.csv' # 拼原始csv路径
-                
                 if os.path.exists(org_csv_path) == False:
                     print( filename + ' no csv')
                     continue
-
                 df1 = pd.read_csv(org_csv_path)
-                
                 for index, row in df1.iterrows(): # 遍历原始csv
                     x_center = int(row['X'])
                     y_center = int(row['Y'])
