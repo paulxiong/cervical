@@ -194,7 +194,6 @@ func CheckUserExist2(name string, email string, mobile string) (user *User, errc
 	u := &User{Name: name}
 	user, err := u.Finduserbyname()
 	if err == nil && user != nil {
-		logger.Warning.Println("UserExisted " + u.Name)
 		return user, e.StatusRegisterUserExisted70
 	}
 
@@ -219,19 +218,20 @@ func GetUserFromContext(c *gin.Context) (*User, bool) {
 	userTmp, exists := c.Get("user")
 	if exists == true && userTmp != nil {
 		userTmp2 := userTmp.(*User)
-		user, err := userTmp2.FinduserbyID()
-		user.Password = ""
-		if err == nil {
-			return user, exists
-		}
-		return &User{}, false
+		return userTmp2, exists
 	}
 	return &User{}, exists
 }
 
 // SaveUsertoContext 把用户信息存到请求上下文
 func SaveUsertoContext(c *gin.Context, u *User) {
-	c.Set("user", u)
+	user, err := u.FinduserbyID()
+	if err == nil {
+		user.Password = ""
+		c.Set("user", user)
+	} else {
+		c.Set("user", u)
+	}
 }
 
 // UserHistory 用户访问记录的信息
