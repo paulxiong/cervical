@@ -197,6 +197,29 @@ data_all_1010_new/
 └── img
     ├── ...
 ```
+### bianping_eleven
+```
+链接：https://pan.baidu.com/s/1UrGbOCYlpUWDN4OMi-6zBA 
+提取码：tf4k
+说明：尺寸100*100，2019年10月21日至2019年10月23日的原始细胞数据，属于data_all_1010_new数据集中bianping批次的数据，目录crop/valid为人工筛选过的细胞图，csv与img存放原始FOV图像和标注文件
+目录结构（括号内为细胞数量）
+bianping_eleven
+├── crop
+│   ├── invalid
+│   │   ├── ...
+│   └── valid
+│       ├── 12(5)
+│       ├── 15(2)
+│       ├── 2(34)
+│       ├── 4(39)
+│       ├── 5(1294)
+│       ├── 7(313)
+│       └── 8(17)
+├── csv
+│   ├── ...
+└── img
+    ├── ...
+```
 #### C模型测试数据
 ### temp_data_1021_torun
 ```
