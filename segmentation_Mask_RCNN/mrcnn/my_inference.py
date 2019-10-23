@@ -140,12 +140,12 @@ class detector():
         return False, index, x1_, y1_, x2_, y2_
 
     def get_FOV_type(self, org_csv_path): # 获取FOV类型
-        sign_N = [1,5,12,13,14,15]
+        sign_N = ['1','5','12','13','14','15']
         if not os.path.exists(original_img_path):
             return '-1' # 表示预测类型
         df1 = pd.read_csv(org_csv_path)
         for index, row in df1.iterrows(): # 遍历原始csv
-            _type = int(row['Type'])
+            _type = row['Type']
             if _type in sign_N:
                 return 'N'
             else:
@@ -229,6 +229,7 @@ class detector():
                 mask_cell_npy.append(_mask_npy)
                 _rois.append([y1, x1, y2, x2])
 
+            mask_cell = np.array(mask_cell_npy)
             mask_npy = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
             if sign == '1': # 训练
@@ -264,12 +265,12 @@ class detector():
                     rois = final_rois[i,:]
                     x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
                     draw_color = (0, 0, 255)
-#                     if (score >= 0.98):
-#                         draw_color = (0, 0, 255)
-#                     elif (0.94 < score < 0.98) :
-#                         draw_color = (0, 255, 0)
-#                     elif score <= 0.94 :
-#                         draw_color = (255, 0, 0)
+                    if (score >= 0.98):
+                        draw_color = (0, 0, 255)
+                    elif (0.94 < score < 0.98) :
+                        draw_color = (0, 255, 0)
+                    elif score <= 0.94 :
+                        draw_color = (255, 0, 0)
                     cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 1)
                 cv2.imwrite(output_image_path, original_image)
 
