@@ -26,7 +26,7 @@
       <el-table-column prop="cost" label="耗时(ms)" width="100" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-popover placement="right" width="400" trigger="click">
+          <el-popover placement="right" trigger="click">
             <table class="tftable" border="1">
               <tr><th class="td-1">ID:</th><th>{{ scope.row.id }}</th></tr>
               <tr><td class="td-1">用户ID:</td><td>{{ scope.row.user_id }}</td></tr>
@@ -36,7 +36,7 @@
               <tr><td class="td-1">创建时间:</td><td>{{ scope.row.created_at }}</td></tr>
               <tr><td class="td-1">请求方式:</td><td>{{ scope.row.method }}</td></tr>
               <tr><td class="td-1">路径:</td><td>{{ scope.row.path }}</td></tr>
-              <tr><td class="td-1">参数:</td><td>{{ scope.row.query }}</td></tr>
+              <tr><td class="td-1">参数:</td><td style="width:250px;">{{ scope.row.query }}</td></tr>
               <tr><td class="td-1">来源:</td><td>{{ scope.row.referer }}</td></tr>
               <tr><td class="td-1">地域ID:</td><td>{{ scope.row.region_id }}</td></tr>
               <tr><td class="td-1">国家:</td><td>{{ scope.row.region.country }}</td></tr>

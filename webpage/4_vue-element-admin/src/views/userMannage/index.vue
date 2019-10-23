@@ -8,8 +8,16 @@
       <el-table-column prop="city" label="城市" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-popover placement="right" width="400" trigger="click">
-            <div>{{ scope.row }}</div>
+          <el-popover placement="right" trigger="click">
+            <div>
+              <table class="tftable" border="1">
+                <tr><th class="td-1">ID:</th><th>{{ scope.row.id }}</th></tr>
+                <tr><td class="td-1">用户ID:</td><td>{{ scope.row.user_id }}</td></tr>
+                <tr><td class="td-1">城市:</td><td>{{ scope.row.city }}</td></tr>
+                <tr><td class="td-1">用户名:</td><td>{{ scope.row.name }}</td></tr>
+                <tr><td class="td-1">类型:</td><td>{{ scope.row.type }}</td></tr>
+              </table>
+            </div>
             <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
           </el-popover>
           <el-button type="text" size="small">删除</el-button>
@@ -55,7 +63,7 @@ export default {
         {
           'id': 2,
           'user_id': 14,
-          'name': '7171823@qq.com',
+          'name': '717138552@qq.com',
           'type': '管理员',
           'city': '昆明市'
         },
@@ -90,5 +98,34 @@ export default {
     margin-top: 10px;
     justify-content: space-around;
   }
+}
+table.tftable {
+  font-size:12px;
+  color:#333333;
+  border-width: 1px;
+  border-color: #729ea5;
+  border-collapse: collapse;
+}
+table.tftable th {
+  font-size:12px;
+  background-color:#acc8cc;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #729ea5;
+  text-align:left;
+}
+table.tftable tr {
+  background-color:#d4e3e5;
+}
+table.tftable td {
+  font-size:12px;
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: #729ea5;
+}
+.tftable .td-1 {
+  width: 100px;
 }
 </style>
