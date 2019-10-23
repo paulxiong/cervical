@@ -50,7 +50,6 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		MaxRefresh:  time.Second * time.Duration(configs.Jwt.ExpireSecond*60),
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			logger.Info.Println("PayloadFunc")
 			user, ok := data.(*m.User)
 			if ok {
 				return jwt.MapClaims{
@@ -62,13 +61,11 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			userID := int64(claims[IdentityKey].(float64))
-			logger.Info.Println("IdentityHandler ")
 			user := &m.User{ID: userID}
 			m.SaveUsertoContext(c, user)
 			return user
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			logger.Info.Println("Authenticator ")
 			var loginVals LoginFormData
 			if err := c.ShouldBind(&loginVals); err != nil {
 				logger.Info.Println(err)
@@ -78,9 +75,6 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			EmailMobile := loginVals.EmailOrMobile
 			password := loginVals.Password
 			userFound, errstring := LoginWithPasswd(userName, password, EmailMobile)
-			logger.Info.Println(userName)
-			logger.Info.Println(EmailMobile)
-			logger.Info.Println(password)
 			m.SaveUsertoContext(c, userFound)
 			if userFound == nil {
 				return "", errors.New(errstring)
@@ -88,7 +82,6 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			return userFound, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			logger.Info.Println("Authorizator ", data)
 			return true
 			/*
 				if v, ok := data.(*m.User); ok && v.Name == "admin" {
@@ -98,7 +91,6 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			*/
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			logger.Info.Println("Unauthorized ", message, code)
 			if message == "missing Username or Password" || message == "" {
 				c.JSON(code, gin.H{"status": e.StatusLoginInvalidData64, "data": message})
 			} else if message == "LoginUserNotFound" {
@@ -118,7 +110,6 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 				user.ID = userTmp2.ID
 				newtoken.UserID = userTmp2.ID
 			}
-			logger.Info.Println("LoginResponse")
 
 			newtoken.UpdateToken(token, expire)
 			user.UserLogined()

@@ -53,6 +53,8 @@ scratch/
 const (
 	inputDatasets = "origin_imgs"
 	scratchRoot   = "scratch"
+	datasetsDir   = "datasets"
+	projectsDir   = "projects"
 )
 
 type typesinfo struct {
@@ -98,7 +100,7 @@ func writeJSON(cfg string, jsonByte []byte) {
 
 // GetInfoJSONPath 拿出info.json的路径, isDone=1表示拿出裁剪完之后的细胞统计信息，isDone=0表示拿出裁剪之前的标注信息
 func GetInfoJSONPath(d m.Dataset, isDone int64) string {
-	infopath := scratchRoot + "/" + d.Dir + "/"
+	infopath := scratchRoot + "/" + datasetsDir + "/" + d.Dir + "/"
 	if isDone == 0 {
 		infopath = infopath + "info.json"
 	} else {
@@ -176,18 +178,18 @@ func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 		log.Println("ERROR:", err)
 	}
 
-	info := scratchRoot + "/" + d.Dir + "/info.json"
+	info := scratchRoot + "/" + datasetsDir + "/" + d.Dir + "/info.json"
 	writeJSON(info, data)
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
 func CreateDataset(imgs []m.ImagesByMedicalID, dirname string) (n int, p int) {
-	err := os.MkdirAll(scratchRoot+"/"+dirname, os.ModePerm) //创建多级目录
+	err := os.MkdirAll(scratchRoot+"/"+datasetsDir+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)
 	}
 
-	filelist := scratchRoot + "/" + dirname + "/filelist.csv"
+	filelist := scratchRoot + "/" + datasetsDir + "/" + dirname + "/filelist.csv"
 	fd, err1 := os.OpenFile(filelist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)

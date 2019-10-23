@@ -348,10 +348,10 @@ func GetLabelByImageID(c *gin.Context) {
 
 // imagesNPTypeByMedicalID 选中的批次、病例的传入参数
 type imagesNPTypeByMedicalID struct {
-	Batchids   []string `json:"batchids"`   //批次号数组
-	Medicalids []string `json:"medicalids"` //病历号数组
-	Desc       string   `json:"desc"`       //数据集的文字描述
-	Type       int      `json:"type"`       //数据集的类型，0未知1训练2预测
+	Batchids   []string `json:"batchids"   example:"redhouse"`          //批次号数组
+	Medicalids []string `json:"medicalids" example:"1817134"`           //病历号数组
+	Desc       string   `json:"desc"       example:"this is a dataset"` //数据集的文字描述
+	Type       int      `json:"type"       example:"0"`                 //数据集的类型，0未知1训练2预测
 }
 type imagesNPCount struct {
 	CountN int `json:"countn"`
@@ -403,25 +403,33 @@ func CreateDataset(c *gin.Context) {
 		logger.Info.Println(err)
 	}
 
-	// usr, _ := m.GetUserFromContext(c)
+	usr, _ := m.GetUserFromContext(c)
 
 	dt := m.Dataset{}
 	dt.ID = 0
-	dt.CreatedBy = 1
+	dt.CreatedBy = usr.ID
 	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
 	dt.Status = 0
 	dt.Type = w.Type
 	dt.CreateDatasets()
 
-	imgs := make([]m.ImagesByMedicalID, 0)
+	medicalids := make([]m.ImagesByMedicalID, 0)
 	for _, v := range w.Medicalids {
 		_imgs, _ := m.ListImagesByMedicalID(v)
 		for _, v2 := range _imgs {
-			imgs = append(imgs, v2)
+			medicalids = append(medicalids, v2)
 		}
 	}
-	cntn, cntp := f.CreateDataset(imgs, dt.Dir)
+	if len(medicalids) < 1 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "invalied data",
+		})
+		return
+	}
+
+	cntn, cntp := f.CreateDataset(medicalids, dt.Dir)
 	dt.Status = 1
 	m.UpdateDatasetsStatus(dt.ID, dt.Status)
 

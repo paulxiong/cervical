@@ -154,6 +154,7 @@ export default {
   }
   .project-list {
     justify-content: flex-start;
+    align-items: flex-start;
     flex-wrap: wrap;
     .box-card {
       width: 410px;
