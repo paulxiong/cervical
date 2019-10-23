@@ -1,6 +1,6 @@
 <template>
   <div class="userList">
-    <el-table :data="userList" style="width: 100%">
+    <el-table :data="userList" height="600" style="width: 100%">
       <el-table-column prop="id" label="ID" width="100" />
       <el-table-column prop="user_id" label="用户ID" width="100" />
       <el-table-column prop="name" label="用户名" width="180" />

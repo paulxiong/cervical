@@ -142,7 +142,7 @@ export default {
 
 <style lang="scss" scoped>
 .home {
-  padding: 30px;
+  padding: 0 30px;
   .switch-btn {
     position: absolute;
     right: 80px;

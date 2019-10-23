@@ -163,7 +163,6 @@ export default {
     },
     onDrawOne(data, currentMovement) {
       this.$emit('vmarker:onDrawOne', data, this.key)
-      console.log(data)
     },
     onSelect(data) {
       this.$emit('vmarker:onSelect', data, this.key)

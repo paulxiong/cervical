@@ -17,19 +17,19 @@
           ref="aiPanel-editor"
           class="ai-observer"
           :img="fov_img"
-          @vmarker:onDrawOne="drawOne"
+          @vmarker:onDrawOne="onDrawOne"
         />
       </section>
     </section>
     <section class="info">
       <div class="cells-type">
-        <el-badge is-dot class="badge-item">请选择细胞标记类型</el-badge>
+        <el-divider content-position="left"><el-badge is-dot class="badge-item">请选择细胞标记类型</el-badge></el-divider>
         <el-radio-group v-model="cellType" size="mini" class="list">
           <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
         </el-radio-group>
       </div>
       <div class="data-info">
-        <el-badge is-dot class="badge-item">数据集</el-badge>
+        <el-divider content-position="left"><el-badge is-dot class="badge-item">标注记录</el-badge></el-divider>
         <div class="list">
           <div v-for="item in 17" :key="item" class="item" :class="item===activeItem?'active-item':''" @click="activeItem=item">20190523.1807285.N.IMG002x01{{ item }}.JPG</div>
         </div>
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { getLabelByImageId } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 
@@ -50,16 +51,43 @@ export default {
       cellsType: cellsType,
       activeItem: 1,
       cellType: '1',
+      labelLog: [],
+      imgInfo: {},
       fov_img: 'http://medical.raidcdn.cn:3001/unsafe/1000x0/scratch/93jeRNKB/origin_imgs/redhouse.1816953.N.IMG018x024.JPG',
       cell_img: 'http://medical.raidcdn.cn:3001/unsafe/100x0/scratch/93jeRNKB/cells/crop/17P0603.1904165A.N.IMG001x020.JPG_n_5_1111_1394_1211_1494.png'
     }
   },
+  mounted() {
+    this.getLabelByImageId()
+  },
   methods: {
-    drawOne() {
-      this.$refs['aiPanel-editor'].setTag({
-        tagName: this.cellsType[this.cellType],
-        tag: this.cellType
+    getLabelByImageId() {
+      getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': 5 }).then(res => {
+        this.imgInfo = res.data.data
+        this.imgInfo.labels.map(v => {
+          v.tag = `${v.imgid}-${v.id}`
+          v.tagName = this.cellsType[v.type]
+          v.position = {
+            x: parseFloat(v.x / this.imgInfo.imgw) * 100 + '%',
+            x1: parseFloat(v.x / this.imgInfo.imgw) * 100 + parseFloat(v.h / this.imgInfo.imgh) * 100 + '%',
+            y: parseFloat(v.y / this.imgInfo.imgh) * 100 + '%',
+            y1: parseFloat(v.y / this.imgInfo.imgh) * 100 + parseFloat(v.h / this.imgInfo.imgh) * 100 + '%'
+          }
+          v.uuid = v.id
+        })
+        console.log(this.imgInfo.labels)
+        this.renderLabel()
       })
+    },
+    onDrawOne(data, currentMovement) {
+      // this.$refs['aiPanel-editor'].setTag({
+      //   tagName: this.cellsType[this.cellType],
+      //   tag: this.cellType
+      // })
+      this.labelLog.push()
+    },
+    renderLabel() {
+      this.$refs['aiPanel-editor'].getMarker().renderData(this.imgInfo.labels)
     }
   }
 }
@@ -77,6 +105,10 @@ export default {
       justify-content: space-between;
       padding: 0 5px;
       margin: 5px 0;
+    }
+    .label-img {
+      max-height: calc(100vh - 90px);
+      overflow: hidden;
     }
   }
   .info {
@@ -98,12 +130,11 @@ export default {
     }
     .data-info {
       border: 2px solid #ccc;
-      height: 50%;
-      overflow: auto;
-      overflow-x: hidden;
       padding-top: 5px;
       .list {
         margin-top: 5px;
+        max-height: calc(100vh - 485px);
+        overflow: auto;
         .item {
           border-top: 1px solid #000;
           border-bottom: 1px solid #000;

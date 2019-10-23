@@ -1,6 +1,6 @@
 <template>
   <div class="userLog">
-    <el-table :data="userLog.accesslog" style="width: 100%">
+    <el-table :data="userLog.accesslog" height="600" style="width: 100%">
       <el-table-column prop="user_id" label="用户ID" width="100" />
       <el-table-column prop="ip" label="IP" width="180" />
       <el-table-column prop="region.city" label="城市" width="100" />
