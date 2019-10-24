@@ -302,11 +302,11 @@
             },
             {
               "name": "region_id",
-              "type": "BigInt",
+              "type": "IdOrKey",
               "remark": "",
               "chnname": "ip所在的地区的编号",
               "notNull": true,
-              "defaultValue": "0",
+              "defaultValue": "\"\"",
               "relationNoShow": false
             },
             {
@@ -324,7 +324,7 @@
               "remark": "",
               "chnname": "输入的参数",
               "notNull": false,
-              "defaultValue": "",
+              "defaultValue": "\"\"",
               "uiHint": "",
               "relationNoShow": true
             },
@@ -437,12 +437,20 @@
           "fields": [
             {
               "name": "id",
-              "type": "BigInt",
-              "remark": "0表示局域网",
-              "chnname": "城市的id",
+              "type": "IdOrKey",
+              "remark": "是字符串的MD5，32的长度",
+              "chnname": "id",
               "pk": true,
               "notNull": true,
-              "defaultValue": ""
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "cityid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "城市的id",
+              "notNull": true,
+              "defaultValue": "0"
             },
             {
               "name": "country",
@@ -476,6 +484,14 @@
               "type": "ShortString",
               "remark": "",
               "chnname": "城市名字",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "isp",
+              "type": "ShortString",
+              "remark": "",
+              "chnname": "运营商",
               "notNull": true,
               "defaultValue": "\"\""
             },
@@ -894,44 +910,6 @@
             ],
             "sourceAnchor": 1,
             "targetAnchor": 0
-          },
-          {
-            "shape": "erdRelation",
-            "relation": "1:1",
-            "source": "924b1a0a",
-            "target": "4479f6be",
-            "id": "f8313f32",
-            "controlPoints": [
-              {
-                "x": 900.5288238525391,
-                "y": 272.70454545454544
-              },
-              {
-                "x": 942.2399139404297,
-                "y": 272.5357142857143
-              }
-            ],
-            "sourceAnchor": 5,
-            "targetAnchor": 0
-          },
-          {
-            "shape": "erdRelation",
-            "relation": "1:0,n",
-            "source": "99eba7f4",
-            "target": "924b1a0a",
-            "id": "e4ddaf2b",
-            "controlPoints": [
-              {
-                "x": 585.7669219970703,
-                "y": 232.3409090909091
-              },
-              {
-                "x": 619.4711761474609,
-                "y": 232.3409090909091
-              }
-            ],
-            "sourceAnchor": 1,
-            "targetAnchor": 0
           }
         ]
       },
@@ -944,18 +922,18 @@
           },
           "to": {
             "entity": "user",
-            "field": "type_id"
+            "field": "name"
           }
         },
         {
           "relation": "1:0,n",
           "from": {
             "entity": "user",
-            "field": "email"
+            "field": "mobile"
           },
           "to": {
             "entity": "email",
-            "field": "toaddr"
+            "field": "id"
           }
         },
         {
@@ -966,29 +944,7 @@
           },
           "to": {
             "entity": "token",
-            "field": "uid"
-          }
-        },
-        {
-          "relation": "1:1",
-          "from": {
-            "entity": "operationlog",
-            "field": "region_id"
-          },
-          "to": {
-            "entity": "region",
             "field": "id"
-          }
-        },
-        {
-          "relation": "1:0,n",
-          "from": {
-            "entity": "user",
-            "field": "id"
-          },
-          "to": {
-            "entity": "operationlog",
-            "field": "user_id"
           }
         }
       ]
