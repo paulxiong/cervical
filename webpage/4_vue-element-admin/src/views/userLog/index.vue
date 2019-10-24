@@ -58,7 +58,7 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-size="20"
+        :page-size="10"
         layout="prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
@@ -89,7 +89,7 @@ export default {
       console.log(row)
     },
     handleCurrentChange(val) {
-      this.getUserLog(10, val * 10, 1)
+      this.getUserLog(10, (val - 1) * 10, 1)
     },
     getUserLog(limit, skip, order) {
       getUserLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
