@@ -324,7 +324,7 @@
               "remark": "",
               "chnname": "输入的参数",
               "notNull": false,
-              "defaultValue": "\"\"",
+              "defaultValue": "",
               "uiHint": "",
               "relationNoShow": true
             },
