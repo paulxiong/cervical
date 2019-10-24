@@ -2,6 +2,7 @@ package function
 
 import (
 	"bufio"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -194,9 +195,13 @@ func CreateDataset(imgs []m.ImagesByMedicalID, dirname string) (n int, p int) {
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)
 	}
-
 	var cntn int = 0
 	var cntp int = 0
+
+	w := csv.NewWriter(fd)
+	w.Write([]string{"imgpath", "csvpath", "toimgname"})
+	w.Flush()
+
 	for _, v := range imgs {
 		imgpath := v.Batchid + "/" + v.Medicalid + "/Images/" + v.Imgpath
 		csvpath := v.Csvpath
@@ -208,8 +213,8 @@ func CreateDataset(imgs []m.ImagesByMedicalID, dirname string) (n int, p int) {
 			toimgname = v.Batchid + "." + v.Medicalid + ".P." + v.Imgpath
 			cntp = cntp + 1
 		}
-		s := imgpath + " " + csvpath + " " + toimgname
-		fd.WriteString(s + "\n")
+		w.Write([]string{imgpath, csvpath, toimgname})
+		w.Flush()
 	}
 	fd.Close()
 	return cntn, cntp
