@@ -35,6 +35,7 @@
               <tr><td class="td-1">耗时(ms):</td><td>{{ scope.row.cost }}</td></tr>
               <tr><td class="td-1">创建时间:</td><td>{{ scope.row.created_at }}</td></tr>
               <tr><td class="td-1">请求方式:</td><td>{{ scope.row.method }}</td></tr>
+              <tr><td class="td-1">IP:</td><td>{{ scope.row.ip }}</td></tr>
               <tr><td class="td-1">路径:</td><td>{{ scope.row.path }}</td></tr>
               <tr><td class="td-1">参数:</td><td style="width:250px;">{{ scope.row.query }}</td></tr>
               <tr><td class="td-1">来源:</td><td>{{ scope.row.referer }}</td></tr>
