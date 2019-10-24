@@ -15,7 +15,7 @@ type Operationlog struct {
 	Query     string    `json:"query"      gorm:"column:query"`      //query string
 	Method    string    `json:"method"     gorm:"column:method"`     //请求方式
 	IP        string    `json:"ip"         gorm:"column:ip"`         //客户端IP
-	RegionID  int64     `json:"region_id"  gorm:"column:region_id"`  //客户端IP所在地理位置的ID
+	RegionID  string    `json:"region_id"  gorm:"column:region_id"`  //客户端IP所在地理位置的ID
 	Region    Region    `json:"region"     gorm:"column:-"`          //客户端IP所在地理位置
 	ISP       string    `json:"-"          gorm:"column:isp"`        //运营商
 	Input     string    `json:"input"      gorm:"column:input"`      //post输入

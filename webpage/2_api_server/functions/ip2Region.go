@@ -26,15 +26,16 @@ func IP2Region(ip string) (m.Region, error) {
 	if err != nil {
 		return r, err
 	}
-	r.ID = city.CityId
+	r.ID = ""
+	r.CityID = city.CityId
 	r.Country = city.Country
 	r.Region = city.Region
 	r.Province = city.Province
 	r.City = city.City
 	r.ISP = city.ISP
 
-	if r.ID == 0 { //局域网
-		r.ID = -1
+	if r.CityID == 0 { //局域网
+		r.CityID = -1
 	}
 	if r.Country == "0" {
 		r.Country = ""

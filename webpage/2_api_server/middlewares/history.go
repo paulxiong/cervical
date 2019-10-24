@@ -57,7 +57,7 @@ func History() gin.HandlerFunc {
 			Query:    raw,
 			Method:   method,
 			IP:       clientIP,
-			RegionID: 0,
+			RegionID: "",
 			ISP:      "",
 			Input:    c.Request.PostForm.Encode(),
 			UA:       c.Request.UserAgent(),
