@@ -15,7 +15,7 @@ const empImg = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8
 export default {
   name: 'VueMarker',
   props: {
-    readOnly: {
+    read: {
       type: Boolean,
       default: false
     },
@@ -54,7 +54,7 @@ export default {
     width: function(n, o) {
       this.__updateFrame()
     },
-    readOnly: function(n, o) {
+    read: function(n, o) {
       this.options.options = {
         ...this.options.options,
         editable: !n
@@ -83,7 +83,7 @@ export default {
       options: {
         blurOtherDots: true,
         blurOtherDotsShowTags: true,
-        editable: this.readOnly ? 'false' : 'true',
+        editable: this.read ? 'false' : 'true',
         trashPositionStart: 1
       },
       onDataRendered: self.onDataRendered,
