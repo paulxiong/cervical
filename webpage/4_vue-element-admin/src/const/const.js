@@ -42,7 +42,7 @@ export const typeStatus = {
 // 用户
 export const createdBy = {
   0: '普通用户',
-  1: '超级管理员'
+  1: '管理员'
 }
 
 // 训练模型类型

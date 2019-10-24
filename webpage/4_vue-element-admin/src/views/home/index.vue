@@ -74,7 +74,7 @@ export default {
   components: {},
   filters: {
     filterCreated(value) {
-      return createdBy[value]
+      return createdBy[value] || '普通用户'
     },
     filtersTaskType(value) {
       return taskType[value]
@@ -114,7 +114,7 @@ export default {
       listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
         res.data.data.datasets.map(v => {
           v.activities = [{
-            content: taskStatus[v.status].status,
+            content: taskStatus[v.status],
             type: 'success',
             size: 'large',
             icon: 'el-icon-circle-check',
