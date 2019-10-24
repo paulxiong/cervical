@@ -101,7 +101,7 @@ func Getallusers() {
 // FinduserbyID 通过用户ID查找用户
 func (u *User) FinduserbyID() (*User, error) {
 	user := &User{}
-	ret := db.First(user, u.ID)
+	ret := db.Model(u).Where("id=?", u.ID).First(u)
 	if ret.Error != nil {
 		return user, ret.Error
 	}
@@ -164,7 +164,7 @@ func (u *User) UserLogined() error {
 	lu := &User{UpdatedAt: time.Now()}
 	db.Model(&u).Updates(lu)
 
-	ret := db.First(u, u.ID)
+	ret := db.Model(u).Where("id=?", u.ID).First(u)
 	u.Password = ""
 	return ret.Error
 }

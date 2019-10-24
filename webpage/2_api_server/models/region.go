@@ -16,7 +16,7 @@ type Region struct {
 	Region    string    `json:"region"     gorm:"column:region"`   //地区
 	Province  string    `json:"province"   gorm:"column:province"` //省/州
 	City      string    `json:"city"       gorm:"column:city"`     //城市
-	ISP       string    `json:"isp"        gorm:"-"`               //运营商
+	ISP       string    `json:"isp"        gorm:"column:isp"`      //运营商
 	CreatedAt time.Time `json:"-" gorm:"column:created_at"`        //创建时间
 }
 
@@ -31,7 +31,6 @@ func (r *Region) BeforeCreate(scope *gorm.Scope) error {
 // NewRegion 新建地区信息
 func (r *Region) NewRegion() error {
 	r.MD5RegionID()
-
 	_, err := r.FindRegionbyID()
 	if err == nil {
 		return nil
@@ -46,7 +45,7 @@ func (r *Region) NewRegion() error {
 
 // FindRegionbyID 通过用户ID查找用户
 func (r *Region) FindRegionbyID() (*Region, error) {
-	ret := db.First(r, r.ID)
+	ret := db.Model(r).Where("id=?", r.ID).First(r)
 	if ret.Error != nil {
 		return r, ret.Error
 	}

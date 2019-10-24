@@ -73,7 +73,11 @@ func History() gin.HandlerFunc {
 			if err2 == nil {
 				operationlog.RegionID = region.ID
 				operationlog.ISP = region.ISP
+			} else {
+				logger.Info.Println(err2)
 			}
+		} else {
+			logger.Info.Println(err)
 		}
 
 		err3 := operationlog.NewOperationlog()
