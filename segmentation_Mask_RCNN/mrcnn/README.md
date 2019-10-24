@@ -88,9 +88,6 @@
 生成的fov对比图片在https://github.com/paulxiong/cervical/issues/13 中第六点有展示。
 ```
 ```
-![image](https://github.com/paulxiong/cervical/blob/master/segmentation_Mask_RCNN/mrcnn/images/IMG002x017.JPG_.png_.png)
-```
-```
 (2)、无细胞fov和有细胞fov速度对比（有细胞的fov，每张的细胞数目大致在150个细胞左右）
 
 | fov类型   | fov数量 | 总共用时 | 每张fov平均用时 |
