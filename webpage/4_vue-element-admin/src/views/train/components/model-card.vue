@@ -4,74 +4,73 @@
       <div slot="header" class="flex card-header">
         <el-select
           v-if="predict === 'predict'"
-          class="model-option"
           v-model="model"
+          class="model-option"
           clearable
           placeholder="请选择"
           @change="modelChange"
         >
-          <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx"></el-option>
+          <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx" />
         </el-select>
         <el-input
+          v-else
+          v-model="modelInfo.desc"
           class="model-input"
           type="text"
           placeholder="请输入模型名称"
-          v-model="modelInfo.desc"
           maxlength="30"
+          show-word-limit
           @blur="emitDesc"
           @keyup.enter.native="emitDesc"
-          show-word-limit
-          v-else
-        >
-        </el-input>
-        <b style="display:block;">{{modelInfo.type | filterModelType}}</b>
+        />
+        <b style="display:block;">{{ modelInfo.type | filterModelType }}</b>
         <div class="score flex">
           <section class="precision-info">
             <i>Precision</i>
-            <b>{{modelInfo.precision}}</b>
+            <b>{{ modelInfo.precision }}</b>
           </section>
           <section class="recall-info">
             <i>Recall</i>
-            <b>{{modelInfo.recall}}</b>
+            <b>{{ modelInfo.recall }}</b>
           </section>
         </div>
       </div>
       <div class="flex model-info">
         <section class="info">
           <i>ID:</i>
-          <b>{{modelInfo.id}}</b>
+          <b>{{ modelInfo.id }}</b>
         </section><section class="info">
           <i>Datasets ID:</i>
-          <b>{{modelInfo.did}}</b>
+          <b>{{ modelInfo.did }}</b>
         </section>
         <section class="info">
           <i>路径:</i>
-          <b>{{modelInfo.path}}</b>
+          <b>{{ modelInfo.path }}</b>
         </section>
         <section class="info">
           <i>损失:</i>
-          <b>{{modelInfo.loss}}</b>
+          <b>{{ modelInfo.loss }}</b>
         </section>
         <section class="info">
           <i>训练有几个分类:</i>
-          <b>{{modelInfo.n_classes}}</b>
+          <b>{{ modelInfo.n_classes }}</b>
         </section>
         <section class="info">
           <i>训练用了多少张图片:</i>
-          <b>{{modelInfo.n_train}}</b>
+          <b>{{ modelInfo.n_train }}</b>
         </section>
         <section class="info">
           <i>训练准确度:</i>
-          <b>{{modelInfo.metric_value}}</b>
+          <b>{{ modelInfo.metric_value }}</b>
         </section>
         <section class="info">
           <i>评估准确度:</i>
-          <b>{{modelInfo.evaluate_value}}</b>
+          <b>{{ modelInfo.evaluate_value }}</b>
         </section>
-        <section class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;" v-if="predict === 'predict'">
+        <section v-if="predict === 'predict'" class="info flex" style="justify-content:flex-start;flex-wrap:wrap;width:100%;">
           <i>细胞类型选择:</i>
           <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox" @change="changeCellTypes">
-            <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border></el-checkbox>
+            <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border />
           </el-checkbox-group>
         </section>
         <!-- <section class="info">
@@ -93,23 +92,6 @@ import { modelType, cellsType } from '@/const/const'
 export default {
   name: 'Card',
   components: {},
-  data() {
-    return {
-      checkboxCell: [],
-      model: 0
-    }
-  },
-  props: {
-    modelInfo: {
-      type: Object || String
-    },
-    modelList: {
-      type: Array
-    },
-    predict: {
-      type: String
-    }
-  },
   filters: {
     filterModelType(value) {
       return modelType[value]
@@ -117,6 +99,31 @@ export default {
     filtersCheckbox(val) {
       return `${val} ${cellsType[val]}`
     }
+  },
+  props: {
+    modelInfo: {
+      type: Object || String,
+      default: ''
+    },
+    modelList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    predict: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      checkboxCell: [],
+      model: 0
+    }
+  },
+  mounted() {
+    this.changeCellTypes()
   },
   methods: {
     modelChange() {
@@ -133,9 +140,6 @@ export default {
     emitDesc() {
       this.$emit('changeDesc', this.trainInfo.desc)
     }
-  },
-  mounted() {
-    this.changeCellTypes()
   }
 }
 </script>
