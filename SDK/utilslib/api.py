@@ -35,23 +35,22 @@ class api():
         payload = {'id': 0, 'status': status, 'type': _type}
         job = self.post_api_job(payload)
         if job is None:
-            return None, None, None, None
+            return None, None, None
         try:
             jobjson = json.loads(job.decode())
             status = jobjson['data']['status']
             dirname = jobjson['data']['dir']
             jobid = jobjson['data']['id']
-            datatype = jobjson['data']['type']
         except Exception as ex:
             print(ex)
             code = None
-            return None, None, None, None
+            return None, None, None
         else:
             if status is None:
-                return None, None, None, None
+                return None, None, None
 
             status = int(status)
-            return jobid, status, dirname, datatype
+            return jobid, status, dirname
 
     def post_job_status(self, jobid, status, percent):
         payload = {'id': jobid, 'status': status, 'percent': percent}
