@@ -69,13 +69,26 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
+    redirect: '/dashboard',
     children: [
       {
         path: 'home',
-        component: () => import('@/views/home/index'),
+        component: () => import('@/views/dashboard/index'),
         name: '首页',
         meta: { title: '首页', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/workSpace',
+    component: Layout,
+    redirect: '/workSpace',
+    children: [
+      {
+        path: 'workSpace',
+        component: () => import('@/views/workSpace/index'),
+        name: '工作台',
+        meta: { title: '工作台', icon: 'component', affix: true }
       }
     ]
   },
@@ -119,7 +132,7 @@ export const constantRoutes = [
     name: '权限管理',
     meta: {
       title: '权限管理',
-      icon: 'component'
+      icon: 'people'
     },
     children: [
       {

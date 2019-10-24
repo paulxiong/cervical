@@ -2,11 +2,11 @@
 
 .annotation {
   cursor: move;
-  border: 1px solid #ccc;
+  border: 2px solid rgb(0, 255, 17);
   background: rgba(0, 0, 0, 0.1);
 }
 .selected{
-  border: 1px solid #ff2d2d;
+  border: 2px solid rgb(255, 255, 0);
   background: rgba(255, 255, 255, 0.1);
 }
 .g-image-op {
@@ -36,7 +36,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #666;
+  background: rgb(223, 219, 219);
   box-sizing: border-box;
 
   &-n {
