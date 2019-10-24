@@ -957,7 +957,7 @@
           "title": "dataset",
           "fields": [
             {
-              "name": "ID",
+              "name": "id",
               "type": "BigInt",
               "remark": "",
               "chnname": "ID",
@@ -966,80 +966,48 @@
               "notNull": true
             },
             {
-              "name": "TYPE",
-              "type": "Integer",
-              "remark": "0未知1训练2预测",
-              "chnname": "类型",
-              "notNull": true
-            },
-            {
-              "name": "DESCRIPTION",
+              "name": "description",
               "type": "MiddleString",
               "remark": "",
               "chnname": "描述",
               "notNull": false,
-              "relationNoShow": true
+              "relationNoShow": true,
+              "defaultValue": "\"\""
             },
             {
-              "name": "STATUS",
+              "name": "status",
               "type": "Integer",
-              "remark": "0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成",
+              "remark": "0初始化 1送去处理 2开始处理 3处理出错 4处理完成",
               "chnname": "状态",
               "notNull": true,
-              "relationNoShow": true
+              "relationNoShow": true,
+              "defaultValue": "0"
             },
             {
-              "name": "DIR",
+              "name": "dir",
               "type": "ShortString",
-              "remark": "文件夹名称(创建时间 + ID)",
+              "remark": "文件夹名称",
               "chnname": "文件夹名称",
               "notNull": true,
-              "relationNoShow": true
+              "relationNoShow": true,
+              "defaultValue": "\"\""
             },
             {
-              "name": "PROCESS_TIME",
+              "name": "process_time",
               "type": "DateTime",
               "remark": "",
               "chnname": "开始处理(裁剪)时间",
               "relationNoShow": true
             },
             {
-              "name": "PROCESS_END",
+              "name": "process_end",
               "type": "DateTime",
               "remark": "",
               "chnname": "处理(裁剪)结束时间",
               "relationNoShow": true
             },
             {
-              "name": "TRAIN_TIME",
-              "type": "DateTime",
-              "remark": "",
-              "chnname": "开始训练的时间",
-              "relationNoShow": true
-            },
-            {
-              "name": "TRAIN_END",
-              "type": "DateTime",
-              "remark": "",
-              "chnname": "训练结束的时间",
-              "relationNoShow": true
-            },
-            {
-              "name": "PREDICT_TIME",
-              "type": "DateTime",
-              "remark": "",
-              "chnname": "开始预测的时间",
-              "relationNoShow": true
-            },
-            {
-              "name": "PREDICT_END",
-              "type": "DateTime",
-              "remark": "",
-              "chnname": "预测结束的时间",
-              "relationNoShow": true
-            },
-            {
-              "name": "PROCESS_PERCENT",
+              "name": "process_percent",
               "type": "Integer",
               "remark": "100表示完成",
               "chnname": "处理数据的进度",
@@ -1047,31 +1015,52 @@
               "relationNoShow": true
             },
             {
-              "name": "TRAIN_PERCENT",
+              "name": "parameter_gray",
               "type": "Integer",
-              "remark": "100表示完成",
-              "chnname": "训练的进度",
-              "defaultValue": "0",
-              "relationNoShow": true
+              "remark": "默认1使用灰色，0使用彩色",
+              "chnname": "数据处理时候颜色",
+              "notNull": true,
+              "defaultValue": "1"
             },
             {
-              "name": "PREDICT_PERCENT",
+              "name": "parameter_size",
               "type": "Integer",
-              "remark": "100表示完成",
-              "chnname": "预测的进度",
-              "defaultValue": "0",
-              "relationNoShow": true
+              "remark": "默认100像素",
+              "chnname": "切割的正方形边长",
+              "notNull": true,
+              "defaultValue": "100"
             },
             {
-              "name": "CREATED_BY",
+              "name": "parameter_type",
+              "type": "Integer",
+              "remark": "0--图片直接检测并切割出细胞 1--按照标注csv切割细胞 2--mask-rcnn检测细胞和csv交集的切割",
+              "chnname": "切割类型",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "parameter_mid",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "切割使用的模型"
+            },
+            {
+              "name": "parameter_cache",
+              "type": "Integer",
+              "remark": "0--不使用1--使用",
+              "chnname": "是否使用裁剪过的cache"
+            },
+            {
+              "name": "created_by",
               "type": "BigInt",
               "remark": "",
               "chnname": "创建者",
               "notNull": true,
-              "relationNoShow": true
+              "relationNoShow": true,
+              "defaultValue": "0"
             },
             {
-              "name": "CREATED_TIME",
+              "name": "created_at",
               "type": "DateTime",
               "remark": "",
               "chnname": "创建时间",
@@ -1079,7 +1068,7 @@
               "relationNoShow": true
             },
             {
-              "name": "UPDATED_TIME",
+              "name": "updated_at",
               "type": "DateTime",
               "remark": "",
               "chnname": "更新时间",
@@ -1756,25 +1745,6 @@
             ],
             "sourceAnchor": 5,
             "targetAnchor": 0
-          },
-          {
-            "shape": "erdRelation",
-            "relation": "0,1:0,n",
-            "source": "c2d354a7",
-            "target": "e6833b22",
-            "id": "1e20c1f5",
-            "controlPoints": [
-              {
-                "x": 310.01683044433594,
-                "y": 462.5357142857143
-              },
-              {
-                "x": 361.95103454589844,
-                "y": 474.4423076923077
-              }
-            ],
-            "sourceAnchor": 1,
-            "targetAnchor": 2
           }
         ]
       },
@@ -1799,17 +1769,6 @@
           "to": {
             "entity": "category",
             "field": "ID"
-          }
-        },
-        {
-          "relation": "0,1:0,n",
-          "from": {
-            "entity": "dataset",
-            "field": "ID"
-          },
-          "to": {
-            "entity": "model",
-            "field": "DID"
           }
         }
       ]

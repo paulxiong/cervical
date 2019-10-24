@@ -411,7 +411,6 @@ func CreateDataset(c *gin.Context) {
 	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
 	dt.Status = 0
-	dt.Type = w.Type
 	dt.CreateDatasets()
 
 	medicalids := make([]m.ImagesByMedicalID, 0)
@@ -429,7 +428,7 @@ func CreateDataset(c *gin.Context) {
 		return
 	}
 
-	cntn, cntp := f.CreateDataset(medicalids, dt.Dir)
+	cntn, cntp := f.CreateDataset(medicalids, &dt)
 	dt.Status = 1
 	m.UpdateDatasetsStatus(dt.ID, dt.Status)
 
@@ -464,7 +463,7 @@ func GetOneJob(c *gin.Context) {
 	w := jobResult{}
 	err := c.BindJSON(&w)
 
-	dt, err := m.GetOneDatasetsToProcess(w.Status, w.Type)
+	dt, err := m.GetOneDatasetsToProcess(w.Status)
 	if err != nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -534,7 +533,6 @@ type listDatasets struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
-// @Param type query string false "type, default 1, 0未知 1训练 2预测 10全部类型"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
@@ -542,14 +540,12 @@ type listDatasets struct {
 func ListDatasets(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
-	typeStr := c.DefaultQuery("type", "1")
 	orderStr := c.DefaultQuery("order", "1")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
-	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 	_order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	total, ds, err := m.ListDataset(int(limit), int(skip), int(_type), int(_order))
+	total, ds, err := m.ListDataset(int(limit), int(skip), int(_order))
 	if err != nil {
 		logger.Info.Println(err)
 	}
@@ -611,24 +607,16 @@ func GetJobResult(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param id query string false "id, default 0, 数据集的ID"
-// @Param job query string false "job, default 0, 任务进度的类型，1-训练 2-预测 其他是数据处理进度"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobpercent [get]
 func GetJobPercent(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
-	jobStr := c.DefaultQuery("job", "0")
-	jobtype, _ := strconv.ParseInt(jobStr, 10, 64)
 
 	d, _ := m.GetOneDatasetByID(int(id))
 
 	percent := d.ProcessPercent
-	if jobtype == 1 {
-		percent = d.TrainPercent
-	} else if jobtype == 2 {
-		percent = d.PredictPercent
-	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,

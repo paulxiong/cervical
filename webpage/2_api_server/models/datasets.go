@@ -344,25 +344,30 @@ func GetCategoryByID(id int) (c Category, e error) {
 	return _c, ret.Error
 }
 
+// DatasetParameter 当前数据集的参数
+type DatasetParameter struct {
+	ParameterGray  int `json:"parameter_gray"  gorm:"column:parameter_gray"`  //数据处理时候颜色
+	ParameterSize  int `json:"parameter_size"  gorm:"column:parameter_size"`  //切割的正方形边长
+	ParameterType  int `json:"parameter_type"  gorm:"column:parameter_type"`  //切割类型
+	ParameterMid   int `json:"parameter_mid"   gorm:"column:parameter_mid"`   //切割使用的模型
+	ParameterCache int `json:"parameter_cache" gorm:"column:parameter_cache"` //是否使用裁剪过的cache
+}
+
 // Dataset 数据集的信息
 type Dataset struct {
-	ID             int64     `json:"id"             gorm:"column:ID"`               //ID
-	Type           int       `json:"type"           gorm:"column:TYPE"`             //分类
-	Desc           string    `json:"desc"           gorm:"column:DESCRIPTION"`      //描述
-	Status         int       `json:"status"         gorm:"column:STATUS"`           //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
-	Dir            string    `json:"dir"            gorm:"column:DIR"`              //文件夹名称(创建时间 + ID)
-	ProcessTime    time.Time `json:"processtime"    gorm:"column:PROCESS_TIME"`     //开始处理数据时间
-	ProcessEnd     time.Time `json:"processend"     gorm:"column:PROCESS_END"`      //处理数据结束时间
-	TrainTime      time.Time `json:"traintime"      gorm:"column:TRAIN_TIME"`       //开始训练的时间
-	TrainEnd       time.Time `json:"trainend"       gorm:"column:TRAIN_END"`        //训练结束的时间
-	PredictTime    time.Time `json:"predicttime"    gorm:"column:PREDICT_TIME"`     //开始预测的时间
-	PredictEnd     time.Time `json:"predictend"     gorm:"column:PREDICT_END"`      //预测结束的时间
-	ProcessPercent int       `json:"process_percent" gorm:"column:PROCESS_PERCENT"` //处理数据的进度
-	TrainPercent   int       `json:"train_percent"   gorm:"column:TRAIN_PERCENT"`   //训练的进度
-	PredictPercent int       `json:"predict_percent" gorm:"column:PREDICT_PERCENT"` //预测的进度
-	CreatedBy      int64     `json:"created_by"      gorm:"column:CREATED_BY"`      //创建者
-	CreatedAt      time.Time `json:"created_at"      gorm:"column:CREATED_TIME"`    //创建时间
-	UpdatedAt      time.Time `json:"updated_at"      gorm:"column:UPDATED_TIME"`    //更新时间
+	ID             int64     `json:"id"              gorm:"column:id"`              //ID
+	Desc           string    `json:"desc"            gorm:"column:description"`     //描述
+	Status         int       `json:"status"          gorm:"column:status"`          //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在
+	Dir            string    `json:"dir"             gorm:"column:dir"`             //文件夹名称
+	ProcessTime    time.Time `json:"processtime"     gorm:"column:process_time"`    //开始处理数据时间
+	ProcessEnd     time.Time `json:"processend"      gorm:"column:process_end"`     //处理数据结束时间
+	ProcessPercent int       `json:"process_percent" gorm:"column:process_percent"` //处理数据的进度
+
+	DatasetParameter
+
+	CreatedBy int64     `json:"created_by"      gorm:"column:created_by"` //创建者
+	CreatedAt time.Time `json:"created_at"      gorm:"column:created_at"` //创建时间
+	UpdatedAt time.Time `json:"updated_at"      gorm:"column:updated_at"` //更新时间
 }
 
 // BeforeCreate insert 之前的hook
@@ -377,41 +382,25 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 		d.ProcessTime = time.Now()
 		d.ProcessEnd = time.Now()
 	}
-	if d.TrainTime.IsZero() {
-		d.TrainTime = time.Now()
-		d.TrainEnd = time.Now()
-	}
-	if d.PredictTime.IsZero() {
-		d.PredictTime = time.Now()
-		d.PredictEnd = time.Now()
-	}
 	return nil
 }
 
 // ListDataset 依次列出数据集
-func ListDataset(limit int, skip int, _type int, order int) (totalNum int64, c []Dataset, e error) {
+func ListDataset(limit int, skip int, order int) (totalNum int64, c []Dataset, e error) {
 	//type, default 1, 0未知 1训练 2预测 10全部类型
 	var _d []Dataset
 	var total int64 = 0
 	ret := db.Model(&Dataset{}).Count(&total)
 
-	orderStr := "CREATED_TIME DESC"
+	orderStr := "created_at DESC"
 	//order, default 1, 1倒序，0顺序
 	if order == 0 {
-		orderStr = "CREATED_TIME ASC"
+		orderStr = "created_at ASC"
 	}
 
-	if _type == 0 || _type == 10 {
-		ret = db.Model(&Dataset{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
-		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
-		}
-	} else {
-		db.Model(&Dataset{}).Where("TYPE=?", _type).Count(&total)
-		ret = db.Model(&Dataset{}).Where("TYPE=?", _type).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
-		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
-		}
+	ret = db.Model(&Dataset{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
 	}
 	return total, _d, ret.Error
 }
@@ -424,7 +413,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 		logger.Info.Println(ret.Error)
 	}
 
-	ret2 := db.Model(d).Where("DIR=?", d.Dir).First(&d)
+	ret2 := db.Model(d).Where("dir=?", d.Dir).First(&d)
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
@@ -434,7 +423,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 // UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
 func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
+	ret2 := db.Model(&d).Where("id=?", did).First(&d)
 	if ret2.Error != nil {
 		return ret2.Error
 	}
@@ -447,13 +436,9 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d.Status = status
 	if status == 2 {
 		d.ProcessTime = time.Now()
-	} else if status == 6 {
-		d.TrainTime = time.Now()
-	} else if status == 10 {
-		d.PredictTime = time.Now()
 	}
 
-	ret := db.Model(&d).Where("ID=?", did).Updates(d)
+	ret := db.Model(&d).Where("id=?", did).Updates(d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
@@ -463,20 +448,16 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 // UpdateDatasetsPercent 更新任务完成的百分比
 func UpdateDatasetsPercent(did int64, percent int) (e error) {
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("ID=?", did).First(&d)
+	ret2 := db.Model(&d).Where("id=?", did).First(&d)
 	if ret2.Error != nil {
 		return ret2.Error
 	}
 
 	if d.Status < 6 { //处理数据集的进度, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在
 		d.ProcessPercent = percent
-	} else if d.Status < 10 && d.Type == 1 { //训练进度, 6送去训练 7开始训练 8训练出错 9训练完成
-		d.TrainPercent = percent
-	} else if d.Status < 13 && d.Type == 2 { //预测进度, 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
-		d.PredictPercent = percent
 	}
 
-	ret := db.Model(&d).Where("ID=?", did).Updates(d)
+	ret := db.Model(&d).Where("id=?", did).Updates(d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
@@ -484,9 +465,9 @@ func UpdateDatasetsPercent(did int64, percent int) (e error) {
 }
 
 // GetOneDatasetsToProcess 请求一个指定状态和类型的数据集去处理
-func GetOneDatasetsToProcess(status int, _type int) (dt Dataset, e error) {
+func GetOneDatasetsToProcess(status int) (dt Dataset, e error) {
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("STATUS=? AND TYPE=?", status, _type).First(&d)
+	ret2 := db.Model(&d).Where("status=?", status).First(&d)
 	if ret2.Error != nil {
 		return d, ret2.Error
 	}
@@ -496,7 +477,7 @@ func GetOneDatasetsToProcess(status int, _type int) (dt Dataset, e error) {
 // GetOneDatasetByID 通过ID查找数据集
 func GetOneDatasetByID(id int) (dt Dataset, e error) {
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("ID=?", id).First(&d)
+	ret2 := db.Model(&d).Where("id=?", id).First(&d)
 	if ret2.Error != nil {
 		return d, ret2.Error
 	}

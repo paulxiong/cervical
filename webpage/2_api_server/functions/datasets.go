@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
@@ -87,6 +88,7 @@ type JobInfo struct {
 	LabelpCnt       int         `json:"labelpcnt"         example:"900"`           //p 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
 	LabelCnt        int         `json:"labelcnt"          example:"1000"`          //总的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
 	Types           []typesinfo `json:"types"`                                     //各个type标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	m.DatasetParameter
 }
 
 func writeJSON(cfg string, jsonByte []byte) {
@@ -101,7 +103,7 @@ func writeJSON(cfg string, jsonByte []byte) {
 
 // GetInfoJSONPath 拿出info.json的路径, isDone=1表示拿出裁剪完之后的细胞统计信息，isDone=0表示拿出裁剪之前的标注信息
 func GetInfoJSONPath(d m.Dataset, isDone int64) string {
-	infopath := scratchRoot + "/" + datasetsDir + "/" + d.Dir + "/"
+	infopath := datasetsDir + "/" + d.Dir + "/"
 	if isDone == 0 {
 		infopath = infopath + "info.json"
 	} else {
@@ -179,18 +181,19 @@ func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 		log.Println("ERROR:", err)
 	}
 
-	info := scratchRoot + "/" + datasetsDir + "/" + d.Dir + "/info.json"
+	info := datasetsDir + "/" + d.Dir + "/info.json"
 	writeJSON(info, data)
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
-func CreateDataset(imgs []m.ImagesByMedicalID, dirname string) (n int, p int) {
-	err := os.MkdirAll(scratchRoot+"/"+datasetsDir+"/"+dirname, os.ModePerm) //创建多级目录
+func CreateDataset(imgs []m.ImagesByMedicalID, dt *m.Dataset) (n int, p int) {
+	dirname := dt.Dir
+	err := os.MkdirAll(datasetsDir+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)
 	}
 
-	filelist := scratchRoot + "/" + datasetsDir + "/" + dirname + "/filelist.csv"
+	filelist := datasetsDir + "/" + dirname + "/filelist.csv"
 	fd, err1 := os.OpenFile(filelist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)
@@ -199,21 +202,13 @@ func CreateDataset(imgs []m.ImagesByMedicalID, dirname string) (n int, p int) {
 	var cntp int = 0
 
 	w := csv.NewWriter(fd)
-	w.Write([]string{"imgpath", "csvpath", "toimgname"})
+	w.Write([]string{"imgpath", "csvpath", "p1n0", "batchid", "medicalid", "imgname"})
 	w.Flush()
 
 	for _, v := range imgs {
 		imgpath := v.Batchid + "/" + v.Medicalid + "/Images/" + v.Imgpath
 		csvpath := v.Csvpath
-		toimgname := ""
-		if v.P1N0 == 0 {
-			toimgname = v.Batchid + "." + v.Medicalid + ".N." + v.Imgpath
-			cntn = cntn + 1
-		} else {
-			toimgname = v.Batchid + "." + v.Medicalid + ".P." + v.Imgpath
-			cntp = cntp + 1
-		}
-		w.Write([]string{imgpath, csvpath, toimgname})
+		w.Write([]string{imgpath, csvpath, strconv.Itoa(v.P1N0), v.Batchid, v.Medicalid, v.Imgpath})
 		w.Flush()
 	}
 	fd.Close()
