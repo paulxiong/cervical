@@ -7,9 +7,9 @@
         placeholder="输入描述"
         show-word-limit
         maxlength="30"
-        @keyup.enter.native="goTrain"
         class="input-name"
-      ></el-input>
+        @keyup.enter.native="goTrain"
+      />
       <el-button
         class="start-btn"
         type="danger"
@@ -28,16 +28,16 @@
             effect="dark"
             size="small"
             type="info"
-          >{{postData.type===1?'训练':'预测'}}</el-tag>
+          >{{ postData.type===1?'训练':'预测' }}</el-tag>
         </div>
         <div class="info-list flex">
           <section class="info">
             <i>批次</i>
-            <b>{{postData.batchids}}</b>
+            <b>{{ postData.batchids }}</b>
           </section>
           <section class="info">
             <i>病例</i>
-            <b>{{postData.medicalids}}</b>
+            <b>{{ postData.medicalids }}</b>
           </section>
           <section class="info">
             <i>细胞类型</i>
@@ -45,7 +45,7 @@
           </section>
           <section class="info">
             <i>n/p比例</i>
-            <b>{{countNP.countn}}/{{countNP.countp}}</b>
+            <b>{{ countNP.countn }}/{{ countNP.countp }}</b>
           </section>
         </div>
       </el-card>
@@ -57,32 +57,32 @@
             effect="dark"
             size="small"
             type="info"
-          >{{modelInfo.model.type | filterModelType}}</el-tag>
+          >{{ modelInfo.model.type | filterModelType }}</el-tag>
         </div>
         <div class="info-list flex">
           <section class="info">
             <i>模型ID</i>
-            <b>{{modelInfo.model.id}}</b>
+            <b>{{ modelInfo.model.id }}</b>
           </section>
           <section class="info">
             <i>模型</i>
-            <b>{{modelInfo.model.desc}}</b>
+            <b>{{ modelInfo.model.desc }}</b>
           </section>
           <section class="info">
             <i>图片色彩</i>
-            <b>{{modelInfo.imgColor}}</b>
+            <b>{{ modelInfo.imgColor }}</b>
           </section>
           <section class="info">
             <i>裁剪大小</i>
-            <b>{{modelInfo.cutSize}}</b>
+            <b>{{ modelInfo.cutSize }}</b>
           </section>
           <section class="info">
             <i>Precision</i>
-            <b>{{modelInfo.model.precision}}</b>
+            <b>{{ modelInfo.model.precision }}</b>
           </section>
           <section class="info">
             <i>Recall</i>
-            <b>{{modelInfo.model.recall}}</b>
+            <b>{{ modelInfo.model.recall }}</b>
           </section>
         </div>
       </el-card>
@@ -97,6 +97,11 @@ import { modelType } from '@/const/const'
 export default {
   name: 'StartTrain',
   components: {},
+  filters: {
+    filterModelType(value) {
+      return modelType[value]
+    }
+  },
   data() {
     return {
       loading: false,
@@ -104,11 +109,6 @@ export default {
       postData: JSON.parse(localStorage.getItem('POST_DATA')),
       countNP: JSON.parse(localStorage.getItem('countNP')),
       modelInfo: JSON.parse(localStorage.getItem('MODEL_INFO'))
-    }
-  },
-  filters: {
-    filterModelType(value) {
-      return modelType[value]
     }
   },
   methods: {

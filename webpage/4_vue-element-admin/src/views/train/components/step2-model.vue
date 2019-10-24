@@ -1,34 +1,34 @@
 <template>
   <div class="checkModel">
     <section class="btn flex">
-      <el-button type="primary" :disabled="!options.length" @click="nextStep" class="next-btn">
+      <el-button type="primary" :disabled="!options.length" class="next-btn" @click="nextStep">
         下一步
-        <i class="el-icon-arrow-right el-icon--right"></i>
+        <i class="el-icon-arrow-right el-icon--right" />
       </el-button>
     </section>
     <section class="info flex">
       <section class="model-info">
         <h4>模型选择</h4>
-        <el-select class="model-option" v-model="model" clearable placeholder="请选择">
+        <el-select v-model="model" class="model-option" clearable placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.id"
             :label="item.desc"
             :value="item"
-          ></el-option>
+          />
         </el-select>
       </section>
 
       <section class="param">
         <h4>图片色彩</h4>
         <el-radio-group v-model="imgColor">
-          <el-radio-button label="黑白"></el-radio-button>
-          <el-radio-button label="彩色"></el-radio-button>
+          <el-radio-button label="黑白" />
+          <el-radio-button label="彩色" />
         </el-radio-group>
       </section>
       <section class="param">
         <h4>裁剪大小(单位px)</h4>
-        <el-input class="input" v-model="cutInput" placeholder="请输入裁剪大小"></el-input>
+        <el-input v-model="cutInput" class="input" placeholder="请输入裁剪大小" />
       </section>
     </section>
   </div>
@@ -46,6 +46,9 @@ export default {
       options: [],
       model: ''
     }
+  },
+  mounted() {
+    this.getListmodel()
   },
   methods: {
     nextStep() {
@@ -66,9 +69,6 @@ export default {
         this.model = this.options[0]
       })
     }
-  },
-  mounted() {
-    this.getListmodel()
   }
 }
 </script>

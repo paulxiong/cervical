@@ -3,32 +3,32 @@
     <section class="next-info flex">
       <h3 class="np">
         选择的批次和病例中
-        <br />
-        n/p : {{countNP.countn}}/{{countNP.countp}}
+        <br>
+        n/p : {{ countNP.countn }}/{{ countNP.countp }}
       </h3>
-      <el-button type="primary" @click="nextStep" class="next-btn" :disabled="!checkList.length">
+      <el-button type="primary" class="next-btn" :disabled="!checkList.length" @click="nextStep">
         下一步
-        <i class="el-icon-arrow-right el-icon--right"></i>
+        <i class="el-icon-arrow-right el-icon--right" />
       </el-button>
     </section>
     <section class="train-type flex">
       <h3>此数据集将用作</h3>
       <el-radio-group v-model="trainType" class="type-raido" size="small">
-        <el-radio-button label="训练"></el-radio-button>
-        <el-radio-button label="预测"></el-radio-button>
+        <el-radio-button label="训练" />
+        <el-radio-button label="预测" />
       </el-radio-group>
     </section>
-    <el-input class="filter-input flex" placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
+    <el-input v-model="filterText" class="filter-input flex" placeholder="输入关键字进行过滤" />
     <el-tree
+      ref="tree"
       class="filter-tree flex"
       :data="batchList"
       :props="defaultProps"
       show-checkbox
-      @check="getCheck"
       highlight-current
       :filter-node-method="filterNode"
-      ref="tree"
-    ></el-tree>
+      @check="getCheck"
+    />
   </div>
 </template>
 
@@ -36,11 +36,6 @@
 import { getBatchInfo, getMedicalIdInfo, getimgnptypebymids } from '@/api/cervical'
 export default {
   name: 'CheckImg',
-  watch: {
-    filterText(val) {
-      this.$refs.tree.filter(val)
-    }
-  },
   data() {
     return {
       filterText: '',
@@ -57,7 +52,14 @@ export default {
       }
     }
   },
-
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    }
+  },
+  mounted() {
+    this.getBatchInfo()
+  },
   methods: {
     filterNode(value, data) {
       if (!value) return true
@@ -118,10 +120,6 @@ export default {
         localStorage.setItem('countNP', JSON.stringify(this.countNP))
       })
     }
-  },
-
-  mounted() {
-    this.getBatchInfo()
   }
 }
 </script>
