@@ -1,15 +1,34 @@
 
-<<<<<<< HEAD
-1、maskrcnn检测不同尺寸fov速度和精度对比
-=======
 1、运行环境
 ```
 （1）、单个tesla-v100 gpu。
+
+（2）、环境搭建。
+ tensorflow-gpu==1.3.0
+ cuda==8.0
+ python=3.5.2
+
+ pip install numpy==1.17.0 -i https://pypi.tuna.tsinghua.edu.cn/simple 
+ pip install keras==2.0.8 -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install scikit-image==0.15.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install imgaug==0.2.9 -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install utils==0.9.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install opencv-python==4.1.0.25 -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install h5py==2.7.0  -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install matplotlib  -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install scipy==0.19.1  -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install Pillow==6.1.0  -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install sklearn==0.19.0  -i https://pypi.tuna.tsinghua.edu.cn/simple
+ pip install ipython==6.1.0   -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```     
 
-2、运行代码  
+2、运行代码
+
+ (1) 测试代码版本：commit d284e46e33a076308491b8be636dc85ab5d7207a
+  
+
+（2）、组织输入目录：
 ```
-（1）、组织输入目录： 
      有标记csv的目录结构：
      -- origin_imgs
             |-- IMG002x009.JPG
@@ -25,18 +44,24 @@
                     .....
                     .....
             |-- IMG003x019.JPG
-          
-（2）、查看模型；
+```        
+（4）、查看模型；
+```
     -- model
       └── deepretina_final.h5 
-     如果没有模型，模型下载地址为： https://drive.google.com/file/d/19kVton20JL9u0CpwGssD7EbBvsWcq1ty/view?usp=sharing   
-（3）、运行代码；
+```     
+   如果没有模型，模型下载地址为： https://drive.google.com/file/d/19kVton20JL9u0CpwGssD7EbBvsWcq1ty/view?usp=sharing   
+    
+（5）、运行代码；
+```
     python my_inference.py
 
 ```
 
 
 3、查看结果
+
+（1）、生成的细胞目录
 ```
   在cells/crop目录下生成切割好的细胞图：
   --cells
@@ -46,27 +71,21 @@
                           ...........
         ├--400P_thirteen_1800952_IMG022X023.jpg_P_5_1592_1621_1692_1721.png
 ```
+（2）、针对不同的fov背景复杂度、染色深度、在output_image下生成fov标记图片。
+       做如下直观展示，展示地址为：https://github.com/paulxiong/cervical/issues/13
 
 
 4、maskrcnn检测不同尺寸fov速度和精度对比
 
 (1)、fov缩小两倍之后的精度速度对比。
 
->>>>>>> 07bd5116768d61cf96d64600d402ce35d12a94c9
 | fov尺寸   | fov数量 | 检测时间 | 检测到的总细胞数目 | 检测到的真是细胞 | 检测到的错误细胞（细胞浆）、黑色粒子等 |
 |-----------|---------|----------|--------------------|------------------|----------------------------------------|
 | 1936x1216 | 50      | 1153.91s | 4821               | 4530             | 291                                    |
 | 968x608   | 50      | 275.39s  | 3604               | 3559             | 45                                     |
-<<<<<<< HEAD
-
-You can now import Markdown table code directly using File/Paste table data... dialog. 
-
-2、无细胞fov和有细胞fov速度对比（有细胞的fov，每张的细胞数目大致在150个细胞左右）
-=======
 ```
 ```
-生成的对比图片如下，随机选了两张背景不同的fov图；其中红色框为原图片尺寸检测到的细胞情况，绿色框为缩小一半尺寸后细胞的检测情况。
-![image](https://github.com/paulxiong/cervical/blob/master/segmentation_Mask_RCNN/mrcnn/images/IMG002x014.JPG_.png_.png)
+生成的fov对比图片在https://github.com/paulxiong/cervical/issues/13 中第六点有展示。
 ```
 ```
 ![image](https://github.com/paulxiong/cervical/blob/master/segmentation_Mask_RCNN/mrcnn/images/IMG002x017.JPG_.png_.png)
@@ -74,22 +93,16 @@ You can now import Markdown table code directly using File/Paste table data... d
 ```
 (2)、无细胞fov和有细胞fov速度对比（有细胞的fov，每张的细胞数目大致在150个细胞左右）
 
->>>>>>> 07bd5116768d61cf96d64600d402ce35d12a94c9
 | fov类型   | fov数量 | 总共用时 | 每张fov平均用时 |
 |-----------|---------|----------|-----------------|
 | 无细胞fov | 40      | 31.36s   | 0.33s           |
 | 有细胞fov | 40      | 447.12s  | 10s             |
-<<<<<<< HEAD
-
-
-=======
 ```
 ```
 5、彩色图像和黑白图像检测对比；
-  这是彩色图片的检测结果，因为受颜色的影响，部分染色较深的细胞浆被识别成细胞核。
-  ![image](https://github.com/paulxiong/cervical/blob/master/segmentation_Mask_RCNN/mrcnn/images/redhouse2019661817144IMG053x021.JPG1_.png)
-  ```
-  ```
-  灰度化后的检测图像如下，混度化后剔除了颜色带来的干扰，检测结果更加好，没得把细胞浆检测为细胞核。
-  ![imag](https://github.com/paulxiong/cervical/blob/master/segmentation_Mask_RCNN/mrcnn/images/redhouse2019661817144IMG053x021.JPG_.png)
->>>>>>> 07bd5116768d61cf96d64600d402ce35d12a94c9
+
+  彩色图片的检测结果因为受颜色的影响，部分染色较深的细胞浆被识别成细胞核。 
+  
+  灰度化后剔除了颜色带来的干扰，检测结果更加好，没有把细胞浆检测为细胞核。
+  
+  彩色和灰度化后的图像检测结果展示链接为 https://github.com/paulxiong/cervical/issues/13 中的第七点。
