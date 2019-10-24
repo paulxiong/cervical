@@ -101,7 +101,7 @@ func Getallusers() {
 // FinduserbyID 通过用户ID查找用户
 func (u *User) FinduserbyID() (*User, error) {
 	user := &User{}
-	ret := db.Model(u).Where("id=?", u.ID).First(u)
+	ret := db.Model(u).Where("id=?", u.ID).First(user)
 	if ret.Error != nil {
 		return user, ret.Error
 	}
