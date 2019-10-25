@@ -56,6 +56,7 @@ export default {
   },
   computed: {
     errorLogs() {
+      console.log('错误捕获输出：', this.$store.getters.errorLogs)
       return this.$store.getters.errorLogs
     }
   },
