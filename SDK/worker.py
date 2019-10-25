@@ -23,6 +23,7 @@ class worker_fs():
             self.dataset_dir = os.path.join(self.datasets_dir, self.wdir)
             self.info_json = os.path.join(self.dataset_dir, 'info.json')
             self.dataset_lists = os.path.join(self.dataset_dir, 'filelist.csv')
+            self.dataset_cellslists = os.path.join(self.dataset_dir, 'cellslist.csv')
             self.cells_dir = os.path.join(self.dataset_dir, 'cells')
             self.cells_crop_dir = os.path.join(self.cells_dir, 'crop')
             self.cells_crop_masked_dir = os.path.join(self.cells_dir, 'crop_masked')
@@ -102,9 +103,11 @@ class worker(worker_api, worker_fs):
         self.log.info("worker run wid=%d wdir=%s wtype=%d" % (workerid, workerdir, wtype))
         self.percent = 0
         self.status = ds.PROCESSING.value
+
     def done(self):
         self.status = ds.PROCESSING_DONE.value
         self.woker_percent(100)
+
     def error(self):
         self.status = ds.PROCESSING_ERR.value
         self.woker_percent(0)
