@@ -458,6 +458,7 @@ type jobResult struct {
 	ID      int64 `json:"id"`
 	Type    int   `json:"type"`
 	Status  int   `json:"status"`
+	ETA     int   `json:"ETA"`
 	Percent int   `json:"percent"` // 完成百分比
 }
 
@@ -522,7 +523,7 @@ func SetJobResult(c *gin.Context) {
 	}
 
 	m.UpdateDatasetsStatus(w.ID, w.Status)
-	m.UpdateDatasetsPercent(w.ID, w.Percent)
+	m.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,

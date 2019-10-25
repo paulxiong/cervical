@@ -362,6 +362,7 @@ type Dataset struct {
 	ProcessTime    time.Time `json:"processtime"     gorm:"column:process_time"`    //开始处理数据时间
 	ProcessEnd     time.Time `json:"processend"      gorm:"column:process_end"`     //处理数据结束时间
 	ProcessPercent int       `json:"process_percent" gorm:"column:process_percent"` //处理数据的进度
+	ETA            int       `json:"ETA"             gorm:"column:ETA"`             //预估还要多长时间结束,单位是秒
 
 	DatasetParameter
 
@@ -445,8 +446,8 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	return ret.Error
 }
 
-// UpdateDatasetsPercent 更新任务完成的百分比
-func UpdateDatasetsPercent(did int64, percent int) (e error) {
+// UpdateDatasetsPercent 更新任务完成的百分比以及预估还要多长时间结束
+func UpdateDatasetsPercent(did int64, percent int, ETA int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("id=?", did).First(&d)
 	if ret2.Error != nil {
@@ -455,6 +456,7 @@ func UpdateDatasetsPercent(did int64, percent int) (e error) {
 
 	if d.Status < 6 { //处理数据集的进度, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在
 		d.ProcessPercent = percent
+		d.ETA = ETA
 	}
 
 	ret := db.Model(&d).Where("id=?", did).Updates(d)

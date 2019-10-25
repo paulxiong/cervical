@@ -1015,6 +1015,13 @@
               "relationNoShow": true
             },
             {
+              "name": "ETA",
+              "type": "Integer",
+              "remark": "单位是秒",
+              "chnname": "预估还要多长时间结束",
+              "defaultValue": "0"
+            },
+            {
               "name": "parameter_gray",
               "type": "Integer",
               "remark": "默认1使用灰色，0使用彩色",
