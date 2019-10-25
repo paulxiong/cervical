@@ -18,6 +18,7 @@ class worker_fs():
         self.datasets_dir = os.path.join(self.rootdir, 'datasets')
         self.projects_dir = os.path.join(self.rootdir, 'projects')
         self.scratch_dir  = os.path.join(self.rootdir, 'scratch')
+        self.modules_dir  = os.path.join(self.rootdir, 'modules')
 
         if self.wtype == wt.DATA.value:
             self.dataset_dir = os.path.join(self.datasets_dir, self.wdir)
