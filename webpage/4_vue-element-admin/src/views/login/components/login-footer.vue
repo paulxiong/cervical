@@ -1,5 +1,5 @@
 <template>
-  <el-footer class="login-footer flex">{{value}}<el-link class="link"  type="info" :underline="false" v-if="env === 'development'" href="http://dev.medical.raidcdn.cn:3000/swagger/index.html" target="_blank">Swagger</el-link></el-footer>
+  <el-footer class="login-footer flex">{{ value }}<el-link v-if="env === 'development'" class="link" type="info" :underline="false" href="http://dev.medical.raidcdn.cn:3000/swagger/index.html" target="_blank">Swagger</el-link></el-footer>
 </template>
 
 <script>

@@ -1,21 +1,21 @@
 <template>
   <el-header class="login-header flex">
-    <img class="logo" src="../../../assets/logo.png" alt="xd-logo" />
-    <p class="p">{{value}}</p>
+    <img class="logo" src="../../../assets/logo.png" alt="xd-logo">
+    <p class="p">{{ value }}</p>
   </el-header>
 </template>
 
 <script>
 export default {
-  name: "login-header",
+  name: 'Loginheader',
   components: {},
   data() {
     return {
-      value: "讯动科技"
-    };
+      value: '讯动科技'
+    }
   },
   methods: {}
-};
+}
 </script>
 
 <style lang="scss" scoped>
