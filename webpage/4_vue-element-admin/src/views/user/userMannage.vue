@@ -93,9 +93,8 @@ export default {
 
 <style lang="scss" scoped>
 .userList {
-  padding-top: 10px;
   .tools {
-    margin-top: 10px;
+    background: #fff;
     justify-content: space-around;
   }
 }

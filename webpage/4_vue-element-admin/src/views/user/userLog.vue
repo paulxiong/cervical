@@ -170,11 +170,10 @@ export default {
 
 <style lang="scss" scoped>
 .userLog {
-  padding-top: 10px;
   overflow: auto;
   height: 100%;
   .tools {
-    margin-top: 10px;
+    background: #fff;
     justify-content: space-around;
   }
 }
