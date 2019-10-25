@@ -96,6 +96,7 @@ export default {
 .dashboard-editor-container {
   padding: 32px;
   position: relative;
+  background-color: rgb(240, 242, 245);
 
   .github-corner {
     position: absolute;
