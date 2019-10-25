@@ -54,4 +54,4 @@ class api():
 
     def post_job_status(self, jobid, status, percent):
         payload = {'id': jobid, 'status': status, 'percent': percent}
-        post2webserver(path='/api1/jobresult', payload=payload)
+        self.post2webserver(path='/api1/jobresult', payload=payload)
