@@ -113,6 +113,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/report',
+    component: Layout,
+    redirect: '/report',
+    children: [
+      {
+        path: '/report',
+        component: () => import('@/views/report/report'),
+        name: '医疗报告',
+        meta: { title: '医疗报告', icon: 'documentation', affix: true }
+      }
+    ]
+  },
+  {
     path: '/label',
     component: Layout,
     redirect: '/label',
@@ -170,6 +183,12 @@ export const constantRoutes = [
         component: () => import('@/views/system/resource'),
         name: '资源管理',
         meta: { title: '资源管理', icon: 'tree-table', affix: true }
+      },
+      {
+        path: 'errLog',
+        component: () => import('@/views/system/errLog'),
+        name: '错误日志',
+        meta: { title: '错误日志', icon: 'bug', affix: true }
       }
     ]
   }
