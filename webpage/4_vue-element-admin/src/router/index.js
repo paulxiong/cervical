@@ -137,15 +137,39 @@ export const constantRoutes = [
     children: [
       {
         path: 'userManage',
-        component: () => import('@/views/userMannage/index'),
+        component: () => import('@/views/user/userMannage'),
         name: '用户管理',
         meta: { title: '用户管理', icon: 'peoples', affix: true }
       },
       {
         path: 'userLog',
-        component: () => import('@/views/userLog/index'),
+        component: () => import('@/views/user/userLog'),
         name: '用户日志',
         meta: { title: '用户日志', icon: 'nested', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system',
+    name: '系统设置',
+    meta: {
+      title: '系统设置',
+      icon: 'table'
+    },
+    children: [
+      {
+        path: 'email',
+        component: () => import('@/views/system/email'),
+        name: '邮件设置',
+        meta: { title: '邮件设置', icon: 'email', affix: true }
+      },
+      {
+        path: 'resourece',
+        component: () => import('@/views/system/resource'),
+        name: '资源管理',
+        meta: { title: '资源管理', icon: 'tree-table', affix: true }
       }
     ]
   }

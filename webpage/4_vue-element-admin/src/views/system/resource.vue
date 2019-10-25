@@ -1,14 +1,14 @@
 <template>
-  <div class="temps">{{ value }}</div>
+  <div class="resource">{{ value }}</div>
 </template>
 
 <script>
 export default {
-  name: 'Temps',
+  name: 'Resource',
   components: {},
   data() {
     return {
-      value: 'temps'
+      value: 'resource'
     }
   },
   methods: {}
@@ -16,6 +16,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.temps {
+.resource {
 }
 </style>
