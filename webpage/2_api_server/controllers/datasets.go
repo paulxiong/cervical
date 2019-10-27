@@ -355,7 +355,7 @@ type imagesNPTypeByMedicalID struct {
 	ParameterGray  int      `json:"parameter_gray"  example:"1"`            //数据处理时候颜色，默认1使用灰色，0使用彩色
 	ParameterSize  int      `json:"parameter_size"  example:"100"`          //切割的正方形边长，默认100像素
 	ParameterType  int      `json:"parameter_type"  example:"0"`            //切割类型，0--图片直接检测并切割出细胞 1--按照标注csv切割细胞 2--mask-rcnn检测细胞和csv交集的切割
-	ParameterMid   int      `json:"parameter_mid"   example:"1"`            //切割使用的模型id
+	ParameterMid   int      `json:"parameter_mid"   example:"12"`           //切割使用的模型id
 	ParameterCache int      `json:"parameter_cache" example:"1"`            //是否使用裁剪过的cache，0--不使用1--使用
 }
 type imagesNPCount struct {

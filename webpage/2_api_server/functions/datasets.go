@@ -88,6 +88,7 @@ type JobInfo struct {
 	LabelpCnt       int         `json:"labelpcnt"         example:"900"`           //p 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
 	LabelCnt        int         `json:"labelcnt"          example:"1000"`          //总的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
 	Types           []typesinfo `json:"types"`                                     //各个type标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	ModPath         string      `json:"modpath"           example:"任务目录"`          //模型文件的路径
 	m.DatasetParameter
 }
 
@@ -172,6 +173,16 @@ func NewJSONFile(d m.Dataset, batchids []string, medicalids []string, cntn int, 
 	c.Desc = d.Desc
 	c.Status = d.Status
 	c.Dir = d.Dir
+	// 处理的参数
+	c.ParameterGray = d.ParameterGray
+	c.ParameterSize = d.ParameterSize
+	c.ParameterType = d.ParameterType
+	c.ParameterMid = d.ParameterMid
+	c.ParameterCache = d.ParameterCache
+
+	mod, _ := m.FindModelInfoByID(c.ParameterMid)
+	c.ModPath = mod.Path
+
 	c.Batchids = batchids
 	c.Medicalids = medicalids
 	c.FovnCnt = cntn
