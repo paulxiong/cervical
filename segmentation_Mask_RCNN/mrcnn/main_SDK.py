@@ -1,3 +1,4 @@
+import time
 from cells_detect_crop import cells_detect_crop
 
 if __name__ == '__main__':
