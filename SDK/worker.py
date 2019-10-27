@@ -22,6 +22,7 @@ class worker_fs():
 
         if self.wtype == wt.DATA.value:
             self.dataset_dir = os.path.join(self.datasets_dir, self.wdir)
+            self.logfile = os.path.join(self.dataset_dir, 'log.txt')
             self.info_json = os.path.join(self.dataset_dir, 'info.json')
             self.dataset_lists = os.path.join(self.dataset_dir, 'filelist.csv')
             self.dataset_cellslists = os.path.join(self.dataset_dir, 'cellslist.csv')
@@ -87,8 +88,8 @@ class worker(worker_api, worker_fs):
         worker_api.__init__(self, self.apihost, self.wtype)
 
         #日志
-        self.logfile = os.path.join(self.rootdir, 'log.txt')
-        self.log = logger(self.logfile, stdout=self.debug)
+        self.logfile = None
+        self.log = logger(self.logfile)
 
         #初始化完成
         self.log.info("worker initialized %d" % time.time())
@@ -100,6 +101,9 @@ class worker(worker_api, worker_fs):
         #目录和文件初始化
         worker_fs.__init__(self)
         self.checkdir()
+
+        #初始化日志到工作目录
+        self.log = logger(self.logfile)
 
         self.log.info("worker run wid=%d wdir=%s wtype=%d" % (workerid, workerdir, wtype))
         self.percent = 0

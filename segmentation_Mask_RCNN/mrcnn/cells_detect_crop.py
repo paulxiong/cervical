@@ -1,6 +1,7 @@
 import os, time, cv2
 import pandas as pd
 from SDK.worker import worker
+from SDK.const.const import wt
 from config import Config
 import model as modellib
 
@@ -131,8 +132,9 @@ def make_square(x1, y1, x2, y2, maxx, maxy):
 
 # 裁剪原图为细胞图，主要函数是crop_images，其他函数是被这个函数调用
 class cells_detect_crop(worker):
-    def __init__(self, wtype):
-        worker.__init__(self, wtype)
+    def __init__(self):
+        #初始化一个dataset的worker
+        worker.__init__(self, wt.DATA.value)
 
         self.model_path = ""
         self.detector =  None

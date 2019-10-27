@@ -1,7 +1,7 @@
 from cells_detect_crop import cells_detect_crop
 
 if __name__ == '__main__':
-    w = cells_detect_crop(1)
+    w = cells_detect_crop()
     while 1:
         wid, wdir = w.get_job()
         if wdir == None:
