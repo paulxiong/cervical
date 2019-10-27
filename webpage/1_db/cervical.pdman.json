@@ -1708,14 +1708,14 @@
             {
               "name": "status",
               "type": "Integer",
-              "remark": "",
+              "remark": "0初始化 1送去处理 2开始处理 3处理出错 4处理完成",
               "chnname": "项目状态",
               "defaultValue": "0"
             },
             {
               "name": "type",
               "type": "Integer",
-              "remark": "0 未知 1 训练 2 预测",
+              "remark": "0未知 1数据处理 2训练 3预测",
               "chnname": "项目类型",
               "notNull": true,
               "defaultValue": "0"

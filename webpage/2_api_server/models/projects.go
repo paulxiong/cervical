@@ -13,7 +13,7 @@ type Project struct {
 	DID       int64     `json:"did"        gorm:"column:did"`         //数据集的id
 	Desc      string    `json:"desc"       gorm:"column:description"` //项目工作目录
 	Dir       string    `json:"dir"        gorm:"column:dir"`         //描述
-	Status    int       `json:"status"     gorm:"column:status"`      //状态
+	Status    int       `json:"status"     gorm:"column:status"`      //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
 	Type      int       `json:"type"       gorm:"column:type"`        //项目类型 0 未知 1 训练 2 预测
 	CreatedBy int64     `json:"created_by" gorm:"column:created_by"`  //创建者
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`  //创建时间
@@ -44,4 +44,36 @@ func (p *Project) CreateProject() (e error) {
 		logger.Info.Println(ret2.Error)
 	}
 	return ret2.Error
+}
+
+// GetOneProjectToProcess 请求一个指定状态和类型的工程去处理
+func GetOneProjectToProcess(status int) (p Project, e error) {
+	_p := Project{}
+	ret2 := db.Model(&_p).Where("status=?", status).First(&_p)
+	if ret2.Error != nil {
+		return _p, ret2.Error
+	}
+	return _p, ret2.Error
+}
+
+// UpdateProjectStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
+func UpdateProjectStatus(pid int64, status int) (e error) {
+	p := Project{}
+	ret2 := db.Model(&p).Where("id=?", pid).First(&p)
+	if ret2.Error != nil {
+		return ret2.Error
+	}
+
+	p.Status = status
+	/*
+		if status == 2 {
+			p.ProcessTime = time.Now()
+		}
+	*/
+
+	ret := db.Model(&p).Where("id=?", pid).Updates(p)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
 }

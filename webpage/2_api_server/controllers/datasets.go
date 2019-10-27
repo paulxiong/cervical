@@ -455,8 +455,8 @@ func CreateDataset(c *gin.Context) {
 
 type jobResult struct {
 	ID      int64 `json:"id"`
-	Type    int   `json:"type"`
-	Status  int   `json:"status"`
+	Type    int   `json:"type"`   //0未知 1数据处理 2训练 3预测
+	Status  int   `json:"status"` //0初始化 1送去处理 2开始处理 3处理出错 4处理完成
 	ETA     int   `json:"ETA"`
 	Percent int   `json:"percent"` // 完成百分比
 }
@@ -473,30 +473,46 @@ type jobResult struct {
 // @Router /api1/job [post]
 func GetOneJob(c *gin.Context) {
 	w := jobResult{}
-	err := c.BindJSON(&w)
+	c.BindJSON(&w)
 
-	dt, err := m.GetOneDatasetsToProcess(w.Status)
-	if err != nil {
+	//数据处理
+	if w.Type == 1 {
+		dt, err := m.GetOneDatasetsToProcess(w.Status)
+		if err != nil {
+			c.JSON(e.StatusReqOK, gin.H{
+				"status": e.StatusSucceed,
+				"data":   dt,
+			})
+			return
+		}
+		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
+		if w.Status == 1 {
+			m.UpdateDatasetsStatus(dt.ID, 2)
+		}
+
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
 			"data":   dt,
 		})
-		return
-	}
-	//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
-	//7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
-	if w.Status == 1 {
-		m.UpdateDatasetsStatus(dt.ID, 2)
-	} else if w.Status == 4 {
-		m.UpdateDatasetsStatus(dt.ID, 6)
-	} else if w.Status == 10 {
-		m.UpdateDatasetsStatus(dt.ID, 11)
-	}
+	} else if w.Type == 2 || w.Type == 3 {
+		project, err := m.GetOneProjectToProcess(w.Status)
+		if err != nil {
+			c.JSON(e.StatusReqOK, gin.H{
+				"status": e.StatusSucceed,
+				"data":   project,
+			})
+			return
+		}
+		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
+		if w.Status == 1 {
+			m.UpdateProjectStatus(project.ID, 2)
+		}
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   dt,
-	})
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   project,
+		})
+	}
 	return
 }
 
@@ -521,8 +537,12 @@ func SetJobResult(c *gin.Context) {
 		return
 	}
 
-	m.UpdateDatasetsStatus(w.ID, w.Status)
-	m.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
+	if w.Type == 1 {
+		m.UpdateDatasetsStatus(w.ID, w.Status)
+		m.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
+	} else if w.Type == 2 || w.Type == 3 {
+		m.UpdateProjectStatus(w.ID, w.Status)
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
