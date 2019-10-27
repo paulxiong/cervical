@@ -52,6 +52,6 @@ class api():
             status = int(status)
             return jobid, status, dirname
 
-    def post_job_status(self, jobid, status, percent):
-        payload = {'id': jobid, 'status': status, 'percent': percent}
+    def post_job_status(self, jobid, status, percent, ETA):
+        payload = {'id': jobid, 'status': status, 'percent': int(percent), 'ETA': int(ETA)}
         self.post2webserver(path='/api1/jobresult', payload=payload)

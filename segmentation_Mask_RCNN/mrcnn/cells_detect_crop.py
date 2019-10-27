@@ -252,7 +252,7 @@ class cells_detect_crop(worker):
             ts1 = ts2
 
             #向服务器报告任务进度,这里占95%
-            self.woker_percent(int(95 * (index + 1) / (df_imgs.shape[0] -1)))
+            self.woker_percent(int(95 * (index + 1) / (df_imgs.shape[0] -1)), needtime/1000)
 
             #创建缓存切割细胞的目录
             cache_dir = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells')

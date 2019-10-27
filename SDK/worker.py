@@ -74,15 +74,16 @@ class worker_api(api):
         if status != _status or dirname is None:
             wid, dirname = 0, None
         return wid, dirname
-    def woker_percent(self, percent):
+    def woker_percent(self, percent, ETA):
         self.percent = percent
-        self.post_job_status(self.wid, self.status, self.percent)
+        self.post_job_status(self.wid, self.status, self.percent, ETA)
 
 class worker(worker_api, worker_fs):
     def __init__(self, wtype):
         self.wtype = wtype    #任务的类型
         self.debug, self.rootdir, self.apihost = get_environment()
         self.percent, self.status = 0, 0
+        self.ETA = 0 #预估还要多长时间结束
 
         #API初始化
         worker_api.__init__(self, self.apihost, self.wtype)
@@ -111,8 +112,8 @@ class worker(worker_api, worker_fs):
 
     def done(self):
         self.status = ds.PROCESSING_DONE.value
-        self.woker_percent(100)
+        self.woker_percent(100, 0)
 
     def error(self):
         self.status = ds.PROCESSING_ERR.value
-        self.woker_percent(0)
+        self.woker_percent(self.percent, self.ETA)

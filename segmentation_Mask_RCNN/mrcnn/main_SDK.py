@@ -5,7 +5,6 @@ if __name__ == '__main__':
     while 1:
         wid, wdir = w.get_job()
         if wdir == None:
-            exit()
             time.sleep(5)
             continue
         w.log.info("获得一个数据集预处理任务%d 工作目录%s" % (wid, wdir))
@@ -17,7 +16,7 @@ if __name__ == '__main__':
         w.log.info("读取数据集信息完成")
 
         w.log.info("开始数据预处理")
-        w.woker_percent(4)
+        w.woker_percent(4, 0)
         ret = w.crop_images()
 
         if ret == True:
@@ -26,4 +25,3 @@ if __name__ == '__main__':
         else:
             w.error()
             w.log.info("数据集预处理出错 %d 工作目录%s" % (wid, wdir))
-        exit()

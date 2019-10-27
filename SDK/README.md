@@ -15,9 +15,6 @@ SDK提供的是框架，改变算法或者处理流程，SDK不需要改变。
 ┃  CPU  ┃  GPU1 ┃CPU/GPU┃  GPU2 ┃
 ┗━━━━━━━┷━━━━━━━┷━━━━━━━┷━━━━━━━┛
 
-worker支持热插拔，根据任务处理的时间来(手动)安排不同worker使用的资源和worker的个数
-worker正在处理的任务支持手动终止，然后这个worker又自动向任务队列请求新的任务来执行
-如果是数据处理或者预测的任务，worker会根据不同的任务类型自动加载不同的模型
 ```
 
 #### 2 数据约定
@@ -138,7 +135,7 @@ from SDK.worker import worker
 def worker_load(wk):
     for i in range(100):
         #向服务器端报告任务进度
-        wk.woker_percent(int(95 * i / 100))
+        wk.woker_percent(int(95 * i / 100), (100 - i) * 4)
 
         #do something
         time.sleep(4)
@@ -162,7 +159,7 @@ if __name__ == '__main__':
         w.log.info("读取数据集信息完成")
 
         w.log.info("开始数据预处理")
-        w.woker_percent(4)
+        w.woker_percent(4, 0)
         ret = worker_load()
 
         if ret == True:
