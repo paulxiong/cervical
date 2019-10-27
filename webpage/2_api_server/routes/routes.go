@@ -72,6 +72,10 @@ func Router() *gin.Engine {
 		api1.POST("/createdataset", ctr.CreateDataset)
 		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalID)
 		api1.GET("/listdatasets", ctr.ListDatasets)
+
+		// 项目
+		api1.POST("/createproject", ctr.CreateProject)
+
 		// 任务
 		api1.GET("/jobresult", ctr.GetJobResult)
 		api1.GET("/jobpercent", ctr.GetJobPercent)

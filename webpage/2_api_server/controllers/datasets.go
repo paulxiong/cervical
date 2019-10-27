@@ -351,7 +351,6 @@ type imagesNPTypeByMedicalID struct {
 	Batchids       []string `json:"batchids"   example:"redhouse"`          //批次号数组
 	Medicalids     []string `json:"medicalids" example:"1817134"`           //病历号数组
 	Desc           string   `json:"desc"       example:"this is a dataset"` //数据集的文字描述
-	Type           int      `json:"type"       example:"0"`                 //数据集的类型，0未知1训练2预测
 	ParameterGray  int      `json:"parameter_gray"  example:"1"`            //数据处理时候颜色，默认1使用灰色，0使用彩色
 	ParameterSize  int      `json:"parameter_size"  example:"100"`          //切割的正方形边长，默认100像素
 	ParameterType  int      `json:"parameter_type"  example:"0"`            //切割类型，0--图片直接检测并切割出细胞 1--按照标注csv切割细胞 2--mask-rcnn检测细胞和csv交集的切割

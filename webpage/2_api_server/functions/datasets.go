@@ -17,41 +17,6 @@ import (
 	"github.com/toolkits/file"
 )
 
-/*
-CSV和JPG存放路径
-lambdatest/
-├── csv
-│   └── 20190523
-│       └── TCT
-│           └── 1807178
-│               └── IMG001x008.csv
-└── img
-    └── 20190523
-        └── 1807178
-            ├── Images
-            │   └── IMG001x001.JPG
-            └── Thumbs
-
-
-要生成的目录结构
-scratch/
-└── vqoM7xEt
-    ├── 30.log
-    ├── cells
-    │   ├── crop
-    │   ├── crop_masked
-    │   ├── mask_npy
-    │   │   ├── 17P0603=1903779=P=IMG032x009.JPG_563_1885_663_1985.npy
-    │   │   ├── 17P0603=1903779=P=IMG032x009.JPG_563_1910_663_2010.npy
-    │   └── rois
-    │       ├── 17P0603=1903779=N=IMG033x021.JPG_.csv
-    │       └── 17P0603=1903779=P=IMG036x013.JPG_.csv
-    ├── filelist.csv
-    ├── info.json
-    └── origin_imgs
-        ├── 17P0603=1903779=N=IMG033x021.csv
-        ├── 17P0603=1903779=N=IMG033x021.JPG
-*/
 const (
 	inputDatasets = "origin_imgs"
 	scratchRoot   = "scratch"
