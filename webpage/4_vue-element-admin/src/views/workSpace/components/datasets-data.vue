@@ -33,7 +33,7 @@
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-edit"
-        @click="createDatasets"
+        @click="dialogFormVisible = true"
       >新增数据集</el-button>
     </div>
     <el-table
@@ -118,6 +118,13 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <el-dialog title="新建数据集" :visible.sync="dialogFormVisible">
+      <newDatasets />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="dialogFormVisible = false">上一步</el-button>
+        <el-button size="mini" type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -125,14 +132,17 @@
 import { listdatasets } from '@/api/cervical'
 import { taskStatus, createdBy } from '@/const/const'
 import { parseTime } from '@/utils/index'
+import newDatasets from './newTrain'
 
 export default {
   name: 'DatasetsData',
-  components: {},
+  components: { newDatasets },
   data() {
     return {
       datasetsList: [],
+      step: 1,
       total: undefined,
+      dialogFormVisible: false,
       currentPage: 1,
       listQuery: {
         desc: undefined,
@@ -158,6 +168,12 @@ export default {
     this.listdatasets(10, 0, 1)
   },
   methods: {
+    stepNext() {
+      this.step++
+    },
+    stepBack() {
+      this.step = 1
+    },
     filterSearch() {
       console.log(1)
     },
@@ -165,7 +181,7 @@ export default {
       console.log(2)
     },
     handleCurrentChange(val) {
-      console.log(val)
+      console.log(3)
     },
     listdatasets(limit, skip, order) {
       listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {

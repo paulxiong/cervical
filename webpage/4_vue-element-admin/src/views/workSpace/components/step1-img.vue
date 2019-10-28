@@ -57,7 +57,7 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
-  mounted() {
+  created() {
     this.getBatchInfo()
   },
   methods: {
