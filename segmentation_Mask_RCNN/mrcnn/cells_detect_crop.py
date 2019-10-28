@@ -155,7 +155,7 @@ class cells_detect_crop(worker):
         """
         细胞信息, 存成csv，方便后面抠图和统计细胞信息
         """
-        columns = ['batchid', 'medicalid', 'imgname', 'p1n0', 'parameter_gray',
+        columns = ['batchid', 'medicalid', 'imgname', 'imgpath', 'p1n0', 'parameter_gray',
                    'parameter_size', 'parameter_type', 'parameter_mid', 'parameter_cache',
                    'cellpath', 'x1', 'y1', 'x2', 'y2', 'celltype']
         cellsinfo2 = []
@@ -167,11 +167,13 @@ class cells_detect_crop(worker):
             cellpath = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells', _cell_name)
             if (x2 - x1) != (y2 - y1):
                 self.log.info("not square!")
+            image_path = os.path.join(self.img_dir, imginfo['imgpath'])
 
             _cellsinfo2 = []
             _cellsinfo2.append(str(imginfo['batchid']))
             _cellsinfo2.append(str(imginfo['medicalid']))
             _cellsinfo2.append(str(imginfo['imgname']))
+            _cellsinfo2.append(image_path)
             _cellsinfo2.append(str(imginfo['p1n0']))
             _cellsinfo2.append(int(self.datasetinfo['parameter_gray']))
             _cellsinfo2.append(int(self.datasetinfo['parameter_size']))
@@ -221,6 +223,34 @@ class cells_detect_crop(worker):
         w, h, channels = image.shape[0], image.shape[1], image.shape[2]
         return image, w, h, channels
 
+    #裁剪完之后统计信息
+    def update_info_json(self, df):
+        job_info = self.load_info_json()
+        #job_info['origin_imgs']       = _get_filelist(job.origin_imgs, startdir, suffix=['.jpg', '.JPG', '.png'])
+        #job_info['cells_crop']        = _get_filelist(job.crop, startdir, suffix=['.jpg', '.JPG', '.png'])
+        #job_info['cells_crop_masked'] = _get_filelist(job.crop_masked, startdir, suffix=['.jpg', '.JPG', '.png'])
+        #job_info['cells_mask_npy']    = _get_filelist(job.mask_npy, startdir, suffix=['.npy'])
+        #job_info['cells_rois']        = _get_filelist(job.rois, startdir, suffix=['.csv'])
+        job_info['status'] = self.status
+
+        #统计医生标注的信息
+        df = pd.read_csv(self.dataset_cellslists)
+        job_info['batchcnt']   = df.groupby(['batchid']).size().shape[0] #总的批次数
+        job_info['medicalcnt'] = df.groupby(['medicalid']).size().shape[0] #总的病例数
+        job_info['fovcnt']     = df.groupby(['imgpath']).size().shape[0] #总的图片数
+        job_info['fovncnt']    = df[df.p1n0.isin(['0'])].groupby(['imgpath']).size().shape[0] #FOVN的个数
+        job_info['fovpcnt']    = df[df.p1n0.isin(['1'])].groupby(['imgpath']).size().shape[0] #FOVP的个数
+        #job_info['labelncnt']  = df[df.cellpn.isin(['N'])].shape[0] #n的标注次数
+        #job_info['labelpcnt']  = df[df.cellpn.isin(['P'])].shape[0] #p的标注次数
+        job_info['labelcnt']   = df.shape[0] #总的标注次数
+        types = [] #各个type标注次数
+        for celltype, df1 in df.groupby(['celltype']):
+            onetype = {'celltype': celltype, 'labelcnt': df1.shape[0]}
+            types.append(onetype)
+        job_info['types'] = types
+
+        self.save_info_json(job_info, self.info2_json)
+
     def crop_images(self):
         """
         裁剪方式：
@@ -232,6 +262,7 @@ class cells_detect_crop(worker):
                 细胞信息生成
                 抠图
             }
+            统计信息
         """
         #细胞定位时候才需要，如果按照标注裁剪不需要
         if self.datasetinfo['parameter_type'] == 0:
@@ -288,5 +319,8 @@ class cells_detect_crop(worker):
         #保存所有细胞的信息到文件
         if df_allcells is not None:
             df_allcells.to_csv(self.dataset_cellslists, quoting = 1, mode = 'w', index = False, header = True)
+
+
+        self.update_info_json(df_allcells)
 
         return True

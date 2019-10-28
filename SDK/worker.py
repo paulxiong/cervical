@@ -1,4 +1,4 @@
-import os, time
+import os, time, json
 from .const.const import wt, dt, ds
 from .utilslib.logger import logger
 from .utilslib.api import api
@@ -24,6 +24,7 @@ class worker_fs():
             self.dataset_dir = os.path.join(self.datasets_dir, self.wdir)
             self.logfile = os.path.join(self.dataset_dir, 'log.txt')
             self.info_json = os.path.join(self.dataset_dir, 'info.json')
+            self.info2_json = os.path.join(self.dataset_dir, 'info2.json')
             self.dataset_lists = os.path.join(self.dataset_dir, 'filelist.csv')
             self.dataset_cellslists = os.path.join(self.dataset_dir, 'cellslist.csv')
             self.cells_dir = os.path.join(self.dataset_dir, 'cells')
@@ -54,10 +55,24 @@ class worker_fs():
                     os.makedirs(folder)
 
     def load_info_json(self):
-        return load_json_file(self.info_json)
+        info = load_json_file(self.info_json)
+
+        #训练或者预测时候找到被训练或者被预测的数据集，细胞信息全在cellslist.csv文件
+        if self.wtype == wt.TRAIN.value or self.wtype == wt.PREDICT.value:
+            self.cellslist_csv =  self.cellslist_path(info['ddir'])
+        return info
+
+    def save_info_json(self, info, savefile):
+        with open(savefile, 'w', encoding='utf-8') as file:
+            file.write(json.dumps(info, indent=2, ensure_ascii=False))
+        return
 
     def cells_cache_path(self, batchid, medicalid, cellname):
         return os.path.join(self.scratch_dir, batchid, medicalid, cellname)
+
+    #传入任意数据集的dirname，返回这个目录下的cellslist.csv路径
+    def cellslist_path(self, wdir):
+        return os.path.join(self.datasets_dir, wdir, 'cellslist.csv')
 
 class worker_api(api):
     def __init__(self, apihost, wtype):
@@ -76,7 +91,7 @@ class worker_api(api):
         return wid, dirname
     def woker_percent(self, percent, ETA):
         self.percent = percent
-        self.post_job_status(self.wid, self.status, self.percent, ETA)
+        self.post_job_status(self.wid, self.status, self.wtype, self.percent, ETA)
 
 class worker(worker_api, worker_fs):
     def __init__(self, wtype):
