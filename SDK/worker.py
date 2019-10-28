@@ -34,9 +34,11 @@ class worker_fs():
         elif self.wtype == wt.TRAIN.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
+            self.project_train_dir = os.path.join(self.project_dir, 'train')
         elif self.wtype == wt.PREDICT.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
+            self.project_predict_dir = os.path.join(self.project_dir, 'predict')
         else:
             raise RuntimeError("unknown worker type %d" % self.wtype)
 
@@ -46,13 +48,23 @@ class worker_fs():
             if not os.path.exists(folder):
                 raise RuntimeError("not found %s of %d" % (folder, self.wid))
         #创建处理数据集的目录
+        cells_dirs = []
+        worker_dir = None
         if self.wtype == wt.DATA.value:
-            if not os.path.exists(self.dataset_dir):
-                raise RuntimeError("not found %s of %d" % (self.dataset_dir, self.wid))
+            worker_dir = self.dataset_dir
             cells_dirs = [self.cells_dir, self.cells_crop_dir, self.cells_crop_masked_dir, self.cells_statistics_dir]
-            for folder in cells_dirs:
-                if not os.path.exists(folder):
-                    os.makedirs(folder)
+        elif self.wtype == wt.TRAIN.value:
+            worker_dir = self.project_dir
+            cells_dirs = [self.project_train_dir]
+        elif self.wtype == wt.PREDICT.value:
+            worker_dir = self.project_dir
+            cells_dirs = [self.project_predict_dir]
+
+        if not os.path.exists(self.project_dir):
+            raise RuntimeError("not found %s of %d" % (self.dataset_dir, self.wid))
+        for folder in cells_dirs:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
 
     def load_info_json(self):
         info = load_json_file(self.info_json)
