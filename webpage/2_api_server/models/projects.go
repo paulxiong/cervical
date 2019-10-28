@@ -77,3 +77,23 @@ func UpdateProjectStatus(pid int64, status int) (e error) {
 	}
 	return ret.Error
 }
+
+// ListProject 依次列出项目
+func ListProject(limit int, skip int, order int) (totalNum int64, c []Project, e error) {
+	//type, default 1, 0未知 1训练 2预测 10全部类型
+	var _p []Project
+	var total int64 = 0
+	ret := db.Model(&Project{}).Count(&total)
+
+	orderStr := "created_at DESC"
+	//order, default 1, 1倒序，0顺序
+	if order == 0 {
+		orderStr = "created_at ASC"
+	}
+
+	ret = db.Model(&Project{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _p, ret.Error
+}
