@@ -1713,6 +1713,32 @@
               "defaultValue": "0"
             },
             {
+              "name": "start_time",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "开始训练/预测时间"
+            },
+            {
+              "name": "end_time",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "训练/预结束时间"
+            },
+            {
+              "name": "percent",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "训练/预的进度",
+              "defaultValue": "0"
+            },
+            {
+              "name": "ETA",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "预估还要多长时间结束",
+              "defaultValue": "0"
+            },
+            {
               "name": "type",
               "type": "Integer",
               "remark": "0未知 1数据处理 2训练 3预测",

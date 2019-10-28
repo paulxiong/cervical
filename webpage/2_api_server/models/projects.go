@@ -15,6 +15,10 @@ type Project struct {
 	Dir       string    `json:"dir"        gorm:"column:dir"`         //描述
 	Status    int       `json:"status"     gorm:"column:status"`      //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
 	Type      int       `json:"type"       gorm:"column:type"`        //项目类型 0 未知 1 训练 2 预测
+	StartTime time.Time `json:"starttime"  gorm:"column:start_time"`  //开始处理数据时间
+	EndTime   time.Time `json:"endtime"    gorm:"column:end_time"`    //处理数据结束时间
+	Percent   int       `json:"percent"    gorm:"column:percent"`     //处理数据的进度
+	ETA       int       `json:"ETA"        gorm:"column:ETA"`         //预估还要多长时间结束,单位是秒
 	CreatedBy int64     `json:"created_by" gorm:"column:created_by"`  //创建者
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`  //创建时间
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`  //更新时间
@@ -27,6 +31,12 @@ func (p *Project) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if p.UpdatedAt.IsZero() {
 		p.UpdatedAt = time.Now()
+	}
+	if p.StartTime.IsZero() {
+		p.StartTime = time.Now()
+	}
+	if p.EndTime.IsZero() {
+		p.EndTime = time.Now()
 	}
 	return nil
 }
@@ -65,11 +75,12 @@ func UpdateProjectStatus(pid int64, status int) (e error) {
 	}
 
 	p.Status = status
-	/*
-		if status == 2 {
-			p.ProcessTime = time.Now()
-		}
-	*/
+
+	if status == 2 {
+		p.StartTime = time.Now()
+	} else if status == 4 {
+		p.EndTime = time.Now()
+	}
 
 	ret := db.Model(&p).Where("id=?", pid).Updates(p)
 	if ret.Error != nil {
@@ -78,9 +89,26 @@ func UpdateProjectStatus(pid int64, status int) (e error) {
 	return ret.Error
 }
 
+// UpdateProjectPercent 更新项目完成的百分比以及预估还要多长时间结束
+func UpdateProjectPercent(pid int64, percent int, ETA int) (e error) {
+	_p := Project{}
+	ret2 := db.Model(&_p).Where("id=?", pid).First(&_p)
+	if ret2.Error != nil {
+		return ret2.Error
+	}
+
+	_p.Percent = percent
+	_p.ETA = ETA
+
+	ret := db.Model(&_p).Where("id=?", pid).Updates(_p)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}
+
 // ListProject 依次列出项目
 func ListProject(limit int, skip int, order int) (totalNum int64, c []Project, e error) {
-	//type, default 1, 0未知 1训练 2预测 10全部类型
 	var _p []Project
 	var total int64 = 0
 	ret := db.Model(&Project{}).Count(&total)

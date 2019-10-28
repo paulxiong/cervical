@@ -542,6 +542,7 @@ func SetJobResult(c *gin.Context) {
 		m.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
 	} else if w.Type == 2 || w.Type == 3 {
 		m.UpdateProjectStatus(w.ID, w.Status)
+		m.UpdateProjectPercent(w.ID, w.Percent, w.ETA)
 	}
 
 	c.JSON(e.StatusReqOK, gin.H{

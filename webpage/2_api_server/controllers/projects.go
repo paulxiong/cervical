@@ -48,7 +48,7 @@ func CreateProject(c *gin.Context) {
 		DID:    np.DID,
 		Desc:   np.Desc,
 		Dir:    u.GetRandomSalt(),
-		Status: 0,
+		Status: 1, //送去处理
 		Type:   np.Type,
 	}
 
