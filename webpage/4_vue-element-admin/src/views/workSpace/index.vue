@@ -3,27 +3,53 @@
     <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
       <el-tab-pane label="项目" name="project">
         <projectData :projectlist="projectList" />
+        <div class="block" style="text-align:center">
+          <el-pagination
+            :current-page.sync="projectCurrentPage"
+            :page-size="10"
+            layout="prev, pager, next, jumper"
+            :total="projectList.length"
+            @current-change="projectCurrentChange"
+          />
+        </div>
       </el-tab-pane>
       <el-tab-pane label="数据集" name="datasets">
         <datasetsData :datasetslist="datasetsList" />
+        <div class="block" style="text-align:center">
+          <el-pagination
+            :current-page.sync="datasetsCurrentPage"
+            :page-size="10"
+            layout="prev, pager, next, jumper"
+            :total="datasetsList.length"
+            @current-change="datasetsCurrentChange"
+          />
+        </div>
       </el-tab-pane>
       <el-tab-pane label="模型" name="model">
         <modelData :modellist="modelList" />
+        <div class="block" style="text-align:center">
+          <el-pagination
+            :current-page.sync="modelCurrentPage"
+            :page-size="10"
+            layout="prev, pager, next, jumper"
+            :total="modelList.length"
+            @current-change="modelCurrentChange"
+          />
+        </div>
       </el-tab-pane>
       <el-tab-pane label="回收站" name="recycle">
-        <datasetsCard :datalist="datasetsList" />
+        <datasetsCard :recylelist="recyleList" />
+        <div class="block" style="text-align:center">
+          <el-pagination
+            :current-page.sync="recyleCurrentPage"
+            :page-size="10"
+            layout="prev, pager, next, jumper"
+            :total="recyleList.length"
+            @current-change="recyleCurrentChange"
+          />
+        </div>
       </el-tab-pane>
     </el-tabs>
-    <!-- <div class="block">
-      <el-pagination
-        :current-page.sync="currentPage3"
-        :page-size="10"
-        layout="prev, pager, next, jumper"
-        :total="1000"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div> -->
   </div>
 </template>
 
@@ -42,7 +68,12 @@ export default {
   data() {
     return {
       switchVal: true,
-      activeName: 'project',
+      activeName: 'project' | 'datasets' | 'model',
+      projectCurrentPage: 1,
+      datasetsCurrentPage: 1,
+      modelCurrentPage: 1,
+      recyleCurrentPage: 1,
+      pagesize: 10,
       projectList: [
         {
           'id': '1',
@@ -166,7 +197,8 @@ export default {
         }
       ],
       datasetsList: [],
-      modelList: []
+      modelList: [],
+      recyleList: []
     }
   },
   mounted() {
@@ -175,6 +207,18 @@ export default {
   methods: {
     handleClick(tab, event) {
       console.log(tab, event)
+    },
+    projectCurrentChange(val) {
+      this.projectCurrentPage = val
+    },
+    datasetsCurrentChange(val) {
+      this.datasetsCurrentPage = val
+    },
+    modelCurrentChange(val) {
+      this.modelCurrentPage = val
+    },
+    recyleCurrentChange(val) {
+      this.recyleCurrentPage = val
     },
     goNewTrain() {
       this.$router.push({
