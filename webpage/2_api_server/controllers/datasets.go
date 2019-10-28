@@ -7,7 +7,7 @@ import (
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
-	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -49,21 +49,21 @@ func AllInfo(c *gin.Context) {
 	st := Statistics{}
 	st.CategoryLists = make([]Category2, 0)
 
-	total1, _, _ := m.ListImage(1, 0)
+	total1, _, _ := models.ListImage(1, 0)
 	st.TotalImage = total1
 
-	total, cs, _ := m.ListCategory(100, 0)
+	total, cs, _ := models.ListCategory(100, 0)
 	st.TotalCategory = total
 
-	total2, _ := m.ListImageCntByLabelType(1)
+	total2, _ := models.ListImageCntByLabelType(1)
 	st.TotalImageNorm = total2
 
-	totalN, _ := m.ListLabelCountByPN(0)
-	totalP, _ := m.ListLabelCountByPN(1)
+	totalN, _ := models.ListLabelCountByPN(0)
+	totalP, _ := models.ListLabelCountByPN(1)
 
 	for _, v := range cs {
-		_total, _, _ := m.ListLabelByType(1, 0, int(v.ID))
-		_total2, _ := m.ListImageCntByLabelType(int(v.ID))
+		_total, _, _ := models.ListLabelByType(1, 0, int(v.ID))
+		_total2, _ := models.ListImageCntByLabelType(int(v.ID))
 		st.CategoryLists = append(st.CategoryLists, Category2{
 			Name:   v.Name,
 			Other:  v.Other,
@@ -74,7 +74,7 @@ func AllInfo(c *gin.Context) {
 		})
 	}
 
-	total2, ls2, err2 := m.ListLabel(1, 0)
+	total2, ls2, err2 := models.ListLabel(1, 0)
 	logger.Info.Println(total2, ls2, err2)
 	st.TotalLabel = total2
 	st.TotalLabelP = totalP
@@ -104,7 +104,7 @@ type BatchInfo struct {
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/batchinfo [get]
 func GetBatchInfo(c *gin.Context) {
-	total, bs, err := m.ListBatch(100, 0)
+	total, bs, err := models.ListBatch(100, 0)
 	if err != nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -145,7 +145,7 @@ func GetMedicalIDInfo(c *gin.Context) {
 	batchid := c.DefaultQuery("batchid", "")
 	batchids := strings.Split(batchid, "|")
 	for _, v := range batchids {
-		totalms, _ms, _ := m.ListMedicalIDByBatchID(100, 0, v)
+		totalms, _ms, _ := models.ListMedicalIDByBatchID(100, 0, v)
 		total = total + int(totalms)
 		for _, mdicalid := range _ms {
 			allms = append(allms, mdicalid)
@@ -189,7 +189,7 @@ type CategorysInfo struct {
 func GetCategoryInfo(c *gin.Context) {
 	var ci CategorysInfo
 	ci.Categorys = make([]CategoryInfo, 0)
-	total, cs, _ := m.ListCategory(100, 0)
+	total, cs, _ := models.ListCategory(100, 0)
 	ci.Total = int(total)
 	for _, v := range cs {
 		ci.Categorys = append(ci.Categorys, CategoryInfo{
@@ -242,7 +242,7 @@ func GetImgListOfWanted(c *gin.Context) {
 
 	for _, v := range w.Categorys {
 		logger.Info.Println(v.Num, 0, w.Batchs, w.Medicalids, v.ID)
-		ws, err2 := m.ListWantedImages(v.Num, 0, w.Batchs, w.Medicalids, v.ID)
+		ws, err2 := models.ListWantedImages(v.Num, 0, w.Batchs, w.Medicalids, v.ID)
 		logger.Info.Println(ws, err2)
 
 		for _, v2 := range ws {
@@ -259,7 +259,7 @@ func GetImgListOfWanted(c *gin.Context) {
 }
 
 type imageslists struct {
-	Images []m.Image `json:"images"`
+	Images []models.Image `json:"images"`
 }
 
 // GetImgListOneByOne 按数据库存储的顺序依次得到图片的信息
@@ -279,9 +279,9 @@ func GetImgListOneByOne(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
 	images := imageslists{}
-	images.Images = make([]m.Image, 0)
+	images.Images = make([]models.Image, 0)
 
-	total, imgs, _ := m.ListImage(int(limit), int(skip))
+	total, imgs, _ := models.ListImage(int(limit), int(skip))
 
 	for _, v := range imgs {
 		images.Images = append(images.Images, v)
@@ -298,9 +298,9 @@ func GetImgListOneByOne(c *gin.Context) {
 
 // Labelslists 标注信息
 type Labelslists struct {
-	Labels []m.Label `json:"labels"`
-	W      int       `json:"imgw"`
-	H      int       `json:"imgh"`
+	Labels []models.Label `json:"labels"`
+	W      int            `json:"imgw"`
+	H      int            `json:"imgh"`
 }
 
 // GetLabelByImageID 通过图片的ID获得对应的所有标注信息
@@ -322,17 +322,17 @@ func GetLabelByImageID(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
 	labels := Labelslists{}
-	labels.Labels = make([]m.Label, 0)
+	labels.Labels = make([]models.Label, 0)
 
-	img, err := m.GetImageByID(imgid)
+	img, err := models.GetImageByID(imgid)
 	if err == nil {
 		labels.W = img.W
 		labels.H = img.H
 	}
 
-	total, _labels, _ := m.ListLabelByImageID(int(limit), int(skip), int(imgid))
+	total, _labels, _ := models.ListLabelByImageID(int(limit), int(skip), int(imgid))
 	for _, v := range _labels {
-		_c, _ := m.GetCategoryByID(v.Type)
+		_c, _ := models.GetCategoryByID(v.Type)
 		v.TypeOut = _c.Name
 		labels.Labels = append(labels.Labels, v)
 	}
@@ -378,7 +378,7 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 	err := c.BindJSON(&w)
 	logger.Info.Println(err, w.Medicalids)
 
-	totaln, totalp, _ := m.ListImagesNPTypeByMedicalID(w.Medicalids)
+	totaln, totalp, _ := models.ListImagesNPTypeByMedicalID(w.Medicalids)
 	cnt.CountN = totaln
 	cnt.CountP = totalp
 	logger.Info.Println(totaln, totalp)
@@ -407,9 +407,9 @@ func CreateDataset(c *gin.Context) {
 		logger.Info.Println(err)
 	}
 
-	usr, _ := m.GetUserFromContext(c)
+	usr, _ := models.GetUserFromContext(c)
 
-	dt := m.Dataset{}
+	dt := models.Dataset{}
 	dt.ID = 0
 	dt.CreatedBy = usr.ID
 	dt.Desc = w.Desc
@@ -424,9 +424,9 @@ func CreateDataset(c *gin.Context) {
 
 	dt.CreateDatasets()
 
-	medicalids := make([]m.ImagesByMedicalID, 0)
+	medicalids := make([]models.ImagesByMedicalID, 0)
 	for _, v := range w.Medicalids {
-		_imgs, _ := m.ListImagesByMedicalID(v)
+		_imgs, _ := models.ListImagesByMedicalID(v)
 		for _, v2 := range _imgs {
 			medicalids = append(medicalids, v2)
 		}
@@ -441,7 +441,7 @@ func CreateDataset(c *gin.Context) {
 
 	cntn, cntp := f.CreateDataset(medicalids, &dt)
 	dt.Status = 1
-	m.UpdateDatasetsStatus(dt.ID, dt.Status)
+	models.UpdateDatasetsStatus(dt.ID, dt.Status)
 
 	f.NewJSONFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
 
@@ -477,7 +477,7 @@ func GetOneJob(c *gin.Context) {
 
 	//数据处理
 	if w.Type == 1 {
-		dt, err := m.GetOneDatasetsToProcess(w.Status)
+		dt, err := models.GetOneDatasetsToProcess(w.Status)
 		if err != nil {
 			c.JSON(e.StatusReqOK, gin.H{
 				"status": e.StatusSucceed,
@@ -487,7 +487,7 @@ func GetOneJob(c *gin.Context) {
 		}
 		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
 		if w.Status == 1 {
-			m.UpdateDatasetsStatus(dt.ID, 2)
+			models.UpdateDatasetsStatus(dt.ID, 2)
 		}
 
 		c.JSON(e.StatusReqOK, gin.H{
@@ -495,7 +495,7 @@ func GetOneJob(c *gin.Context) {
 			"data":   dt,
 		})
 	} else if w.Type == 2 || w.Type == 3 {
-		project, err := m.GetOneProjectToProcess(w.Status)
+		project, err := models.GetOneProjectToProcess(w.Status)
 		if err != nil {
 			c.JSON(e.StatusReqOK, gin.H{
 				"status": e.StatusSucceed,
@@ -505,7 +505,7 @@ func GetOneJob(c *gin.Context) {
 		}
 		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
 		if w.Status == 1 {
-			m.UpdateProjectStatus(project.ID, 2)
+			models.UpdateProjectStatus(project.ID, 2)
 		}
 
 		c.JSON(e.StatusReqOK, gin.H{
@@ -538,11 +538,11 @@ func SetJobResult(c *gin.Context) {
 	}
 
 	if w.Type == 1 {
-		m.UpdateDatasetsStatus(w.ID, w.Status)
-		m.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
+		models.UpdateDatasetsStatus(w.ID, w.Status)
+		models.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
 	} else if w.Type == 2 || w.Type == 3 {
-		m.UpdateProjectStatus(w.ID, w.Status)
-		m.UpdateProjectPercent(w.ID, w.Percent, w.ETA)
+		models.UpdateProjectStatus(w.ID, w.Status)
+		models.UpdateProjectPercent(w.ID, w.Percent, w.ETA)
 	}
 
 	c.JSON(e.StatusReqOK, gin.H{
@@ -553,8 +553,8 @@ func SetJobResult(c *gin.Context) {
 }
 
 type listDatasets struct {
-	Datasets []m.Dataset `json:"datasets"`
-	Total    int64       `json:"total"`
+	Datasets []models.Dataset `json:"datasets"`
+	Total    int64            `json:"total"`
 }
 
 // ListDatasets 按数据库存储顺序依次获得数据/项目信息
@@ -578,7 +578,7 @@ func ListDatasets(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	_order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	total, ds, err := m.ListDataset(int(limit), int(skip), int(_order))
+	total, ds, err := models.ListDataset(int(limit), int(skip), int(_order))
 	if err != nil {
 		logger.Info.Println(err)
 	}
@@ -619,7 +619,7 @@ func GetJobResult(c *gin.Context) {
 	doneStr := c.DefaultQuery("done", "0")
 	done, _ := strconv.ParseInt(doneStr, 10, 64)
 
-	d, _ := m.GetOneDatasetByID(int(id))
+	d, _ := models.GetOneDatasetByID(int(id))
 
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d, done))
 	j.Status = d.Status
@@ -647,7 +647,7 @@ func GetJobPercent(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
-	d, _ := m.GetOneDatasetByID(int(id))
+	d, _ := models.GetOneDatasetByID(int(id))
 
 	percent := d.ProcessPercent
 
@@ -674,7 +674,7 @@ func GetJobLog(c *gin.Context) {
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	typeStr := c.DefaultQuery("type", "c") // c-- crop  t--train
 
-	d, _ := m.GetOneDatasetByID(int(id))
+	d, _ := models.GetOneDatasetByID(int(id))
 
 	j := f.GetLogContent(d, typeStr)
 
@@ -687,8 +687,8 @@ func GetJobLog(c *gin.Context) {
 }
 
 type listMods struct {
-	Models []m.Model `json:"models"`
-	Total  int64     `json:"total"`
+	Models []models.Model `json:"models"`
+	Total  int64          `json:"total"`
 }
 
 // GetModelLists 获得模型的信息列表
@@ -709,7 +709,7 @@ func GetModelLists(c *gin.Context) {
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
-	total, mods, _ := m.ListModel(int(limit), int(skip))
+	total, mods, _ := models.ListModel(int(limit), int(skip))
 	lm := listMods{
 		Models: mods,
 		Total:  total,
@@ -742,7 +742,7 @@ func SaveModelInfo(c *gin.Context) {
 	w := savemod{}
 	err := c.BindJSON(&w)
 
-	d, err := m.GetOneDatasetByID(int(w.ID))
+	d, err := models.GetOneDatasetByID(int(w.ID))
 	if err != nil || d.Status != 9 {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -816,7 +816,7 @@ func Train(c *gin.Context) {
 		return
 	}
 
-	d, err1 := m.GetOneDatasetByID(int(postdata.ID))
+	d, err1 := models.GetOneDatasetByID(int(postdata.ID))
 	if err1 != nil || d.Status != 4 {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -828,7 +828,7 @@ func Train(c *gin.Context) {
 	f.NewTrainJSONFile(postdata.ID, postdata.Celltypes, d.Dir, d.Status)
 
 	// 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成
-	m.UpdateDatasetsStatus(d.ID, 6)
+	models.UpdateDatasetsStatus(d.ID, 6)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -853,7 +853,7 @@ func GetTrainResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
-	d, err := m.GetOneDatasetByID(int(id))
+	d, err := models.GetOneDatasetByID(int(id))
 	if err != nil || d.Status != 9 {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
@@ -899,7 +899,7 @@ func Predict(c *gin.Context) {
 		return
 	}
 
-	minfo, err2 := m.FindModelInfoByID(postdata.MID)
+	minfo, err2 := models.FindModelInfoByID(postdata.MID)
 	if err2 != nil || minfo.Path == "" {
 		logger.Info.Println(err2)
 		c.JSON(e.StatusReqOK, gin.H{
@@ -909,7 +909,7 @@ func Predict(c *gin.Context) {
 		return
 	}
 
-	dinfo, err3 := m.GetOneDatasetByID(postdata.DID)
+	dinfo, err3 := models.GetOneDatasetByID(postdata.DID)
 	if err3 != nil {
 		logger.Info.Println(err3)
 		c.JSON(e.StatusReqOK, gin.H{
@@ -930,7 +930,7 @@ func Predict(c *gin.Context) {
 	p.NewPredictJSONFile()
 
 	dinfo.Status = 10 // 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
-	m.UpdateDatasetsStatus(dinfo.ID, dinfo.Status)
+	models.UpdateDatasetsStatus(dinfo.ID, dinfo.Status)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
@@ -955,7 +955,7 @@ func GetPredictResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 
-	dinfo, err := m.GetOneDatasetByID(int(id))
+	dinfo, err := models.GetOneDatasetByID(int(id))
 	if err != nil {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,

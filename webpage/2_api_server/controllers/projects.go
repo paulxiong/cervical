@@ -6,7 +6,7 @@ import (
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
-	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -43,7 +43,7 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
-	p := m.Project{
+	p := models.Project{
 		ID:     0,
 		DID:    np.DID,
 		Desc:   np.Desc,
@@ -67,8 +67,8 @@ func CreateProject(c *gin.Context) {
 }
 
 type listProjectsData struct {
-	Projects []m.Project `json:"projects"`
-	Total    int64       `json:"total"`
+	Projects []models.Project `json:"projects"` //项目列表的数组
+	Total    int64            `json:"total"`    //项目总个数
 }
 
 // ListProjects 按数据库存储顺序依次获得项目信息
@@ -81,7 +81,7 @@ type listProjectsData struct {
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.listProjectsData
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listprojects [get]
 func ListProjects(c *gin.Context) {
@@ -92,7 +92,7 @@ func ListProjects(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	_order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	total, p, err := m.ListProject(int(limit), int(skip), int(_order))
+	total, p, err := models.ListProject(int(limit), int(skip), int(_order))
 	if err != nil {
 		logger.Info.Println(err)
 	}
