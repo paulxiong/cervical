@@ -94,7 +94,7 @@ export default {
       cell_img: 'http://medical.raidcdn.cn:3001/unsafe/100x0/scratch/93jeRNKB/cells/crop/17P0603.1904165A.N.IMG001x020.JPG_n_5_1111_1394_1211_1494.png'
     }
   },
-  mounted() {
+  created() {
     this.getLabelByImageId()
     this.getBatchInfo()
   },

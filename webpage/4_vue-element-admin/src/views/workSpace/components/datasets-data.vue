@@ -1,7 +1,43 @@
 <template>
   <div class="datasetsData">
+    <div class="filter-box">
+      <el-input
+        v-model="listQuery.desc"
+        placeholder="请输入描述搜索"
+        style="width:200px;"
+        class="filter-input"
+        @keyup.enter.native="filterSearch"
+      />
+      <el-select
+        v-model="listQuery.type"
+        placeholder="类型"
+        clearable
+        class="filter-type"
+        style="width: 130px"
+      >
+        <el-option
+          v-for="item in typeOptions"
+          :key="item.key"
+          :label="item.name"
+          :value="item.key"
+        />
+      </el-select>
+      <el-button
+        class="filter-btn"
+        type="primary"
+        icon="el-icon-search"
+        @click="filterSearch"
+      >搜索</el-button>
+      <el-button
+        class="filter-btn"
+        style="margin-left: 10px;"
+        type="success"
+        icon="el-icon-edit"
+        @click="createProject"
+      >新增数据集</el-button>
+    </div>
     <el-table
-      :data="datasetslist"
+      :data="datasetsList"
       style="width: 100%"
     >
       <el-table-column type="expand">
@@ -48,22 +84,27 @@
       </el-table-column>
       <el-table-column
         label="项目 ID"
+        align="center"
         prop="id"
       />
       <el-table-column
         label="描述"
+        align="center"
         prop="desc"
       />
       <el-table-column
         label="创建者"
+        align="center"
         prop="created_by"
       />
       <el-table-column
         label="裁剪模型"
+        align="center"
         prop="parameter_mid"
       />
       <el-table-column
         label="状态"
+        align="center"
         prop="status"
       />
     </el-table>
@@ -71,23 +112,63 @@
 </template>
 
 <script>
+import { listdatasets } from '@/api/cervical'
+import { taskStatus, createdBy } from '@/const/const'
+import { parseTime } from '@/utils/index'
+
 export default {
   name: 'DatasetsData',
   components: {},
-  props: {
-    datasetslist: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
-  },
   data() {
     return {
-      value: 'datasetsData'
+      datasetsList: [],
+      total: undefined,
+      listQuery: {
+        desc: undefined,
+        type: undefined
+      },
+      typeOptions: [
+        {
+          key: '0',
+          name: '全部'
+        },
+        {
+          key: '1',
+          name: '训练'
+        },
+        {
+          key: '2',
+          name: '预测'
+        }
+      ]
     }
   },
-  methods: {}
+  created() {
+    this.listdatasets(10, 0, 1)
+  },
+  methods: {
+    filterSearch() {
+      console.log(1)
+    },
+    createDatasets() {
+      console.log(2)
+    },
+    listdatasets(limit, skip, order) {
+      listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        res.data.data.datasets.map(v => {
+          v.created_at = parseTime(v.created_at)
+          v.updated_at = parseTime(v.updated_at)
+          v.processtime = parseTime(v.processtime)
+          v.processend = parseTime(v.processend)
+          v.created_by = createdBy[v.created_by] || '普通用户'
+          v.status = taskStatus[v.status]
+          v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
+          v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
+        })
+        this.datasetsList = res.data.data.datasets || []
+      })
+    }
+  }
 }
 </script>
 
@@ -103,7 +184,7 @@ export default {
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 50%;
+    width: calc(100%/4);
   }
 }
 </style>

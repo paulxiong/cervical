@@ -49,7 +49,7 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     this.insertToBody()
   },
   beforeDestroy() {

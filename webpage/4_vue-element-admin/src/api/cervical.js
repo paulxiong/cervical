@@ -16,6 +16,14 @@ export function getDatasetLists(query) {
   })
 }
 
+export function getListprojects(query) {
+  return request({
+    url: '/api1/listprojects',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getBatchInfo(query) {
   return request({
     url: '/api1/batchinfo',

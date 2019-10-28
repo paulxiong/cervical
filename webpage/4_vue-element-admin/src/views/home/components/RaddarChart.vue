@@ -30,7 +30,7 @@ export default {
       chart: null
     }
   },
-  mounted() {
+  created() {
     this.$nextTick(() => {
       this.initChart()
     })

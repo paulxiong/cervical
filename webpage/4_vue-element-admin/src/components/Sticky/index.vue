@@ -37,7 +37,7 @@ export default {
       isSticky: false
     }
   },
-  mounted() {
+  created() {
     this.height = this.$el.getBoundingClientRect().height
     window.addEventListener('scroll', this.handleScroll)
     window.addEventListener('resize', this.handleResize)

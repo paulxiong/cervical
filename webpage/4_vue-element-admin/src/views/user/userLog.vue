@@ -143,7 +143,7 @@ export default {
       userLog: []
     }
   },
-  mounted() {
+  created() {
     this.getUserLog(10, 0, 1)
   },
   methods: {

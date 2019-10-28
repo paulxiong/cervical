@@ -87,7 +87,7 @@ export default {
       this.initOnce = false
     }
   },
-  mounted() {
+  created() {
     const element = document.getElementById(this.id)
     const vm = this
     this.dropzone = new Dropzone(element, {

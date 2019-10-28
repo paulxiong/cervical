@@ -54,7 +54,7 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     this.searchPool = this.generateRoutes(this.routes)
   },
   methods: {

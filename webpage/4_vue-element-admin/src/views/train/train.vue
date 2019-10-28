@@ -67,7 +67,7 @@ export default {
       startedTrain: ''
     }
   },
-  mounted() {
+  created() {
     this.getTrainresult()
     this.getPercent()
     this.loopGetPercent()

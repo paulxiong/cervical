@@ -14,7 +14,7 @@ export default {
       isFullscreen: false
     }
   },
-  mounted() {
+  created() {
     this.init()
   },
   beforeDestroy() {

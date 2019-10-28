@@ -31,7 +31,7 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     this.jsonEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
       lineNumbers: true,
       mode: 'application/json',

@@ -74,10 +74,10 @@ export default {
     this.key = this.uniqueKey
     this.rootClass = this.uniqueKey ? `pannel-${this.uniqueKey}` : void 0
   },
-  mounted() {
+  created() {
     this.__updateFrame()
   },
-  created() {
+  mounted() {
     const self = this
     this.options = {
       options: {

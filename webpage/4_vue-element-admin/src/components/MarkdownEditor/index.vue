@@ -77,7 +77,7 @@ export default {
       this.editor.changeMode(newValue)
     }
   },
-  mounted() {
+  created() {
     this.initEditor()
   },
   destroyed() {

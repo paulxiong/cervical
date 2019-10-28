@@ -107,7 +107,7 @@ export default {
       cells_crop_masked: []
     }
   },
-  mounted() {
+  created() {
     this.getjobresult()
     this.getPercent()
     this.getjoblog()

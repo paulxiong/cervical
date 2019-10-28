@@ -17,7 +17,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('resize', this.$_resizeHandler)
   },
-  mounted() {
+  created() {
     const isMobile = this.$_isMobile()
     if (isMobile) {
       store.dispatch('app/toggleDevice', 'mobile')

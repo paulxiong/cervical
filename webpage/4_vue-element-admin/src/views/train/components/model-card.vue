@@ -122,7 +122,7 @@ export default {
       model: 0
     }
   },
-  mounted() {
+  created() {
     this.changeCellTypes()
   },
   methods: {

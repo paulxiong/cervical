@@ -6,7 +6,7 @@ export default {
       $_sidebarElm: null
     }
   },
-  mounted() {
+  created() {
     this.__resizeHandler = debounce(() => {
       if (this.chart) {
         this.chart.resize()

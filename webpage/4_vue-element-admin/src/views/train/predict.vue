@@ -82,7 +82,7 @@ export default {
       falseCellsList: []
     }
   },
-  mounted() {
+  created() {
     this.getListmodel(10, 0)
     this.getListdatasets(100, 0, 2)
   },

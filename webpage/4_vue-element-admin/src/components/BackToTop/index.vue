@@ -44,7 +44,7 @@ export default {
       isMoving: false
     }
   },
-  mounted() {
+  created() {
     window.addEventListener('scroll', this.handleScroll)
   },
   beforeDestroy() {

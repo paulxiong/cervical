@@ -47,7 +47,7 @@ export default {
       model: ''
     }
   },
-  mounted() {
+  created() {
     this.getListmodel()
   },
   methods: {
