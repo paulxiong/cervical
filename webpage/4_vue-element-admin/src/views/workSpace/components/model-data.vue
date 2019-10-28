@@ -1,7 +1,7 @@
 <template>
   <div class="modelData">
     <el-table
-      :data="modellist"
+      :data="modelList"
       style="width: 100%"
     >
       <el-table-column type="expand">
@@ -55,6 +55,16 @@
         prop="status"
       />
     </el-table>
+    <div class="page-box flex">
+      <el-pagination
+        class="page"
+        :current-page.sync="currentPage"
+        :page-size="10"
+        layout="prev, pager, next, jumper"
+        :total="total"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -62,20 +72,18 @@
 export default {
   name: 'ModelData',
   components: {},
-  props: {
-    modellist: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
-  },
   data() {
     return {
-      value: 'modelData'
+      currentPage: 1,
+      total: undefined,
+      modelList: []
     }
   },
-  methods: {}
+  methods: {
+    handleCurrentChange(val) {
+      console.log(val)
+    }
+  }
 }
 </script>
 

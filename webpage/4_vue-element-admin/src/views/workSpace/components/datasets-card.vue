@@ -53,7 +53,6 @@
 
 <script>
 import { taskStatus, typeStatus, taskType, createdBy } from '@/const/const'
-
 export default {
   name: 'Card',
   components: {},

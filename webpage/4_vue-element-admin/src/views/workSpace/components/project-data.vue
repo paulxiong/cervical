@@ -86,6 +86,16 @@
       <el-table-column label="进度" align="center" prop="percent" />
       <el-table-column label="状态" align="center" prop="status" />
     </el-table>
+    <div class="page-box flex">
+      <el-pagination
+        class="page"
+        :current-page.sync="currentPage"
+        :page-size="10"
+        layout="prev, pager, next, jumper"
+        :total="total"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -99,6 +109,7 @@ export default {
     return {
       projectlist: undefined,
       total: undefined,
+      currentPage: 1,
       listQuery: {
         desc: undefined,
         type: undefined
@@ -128,6 +139,9 @@ export default {
     },
     createProject() {
       console.log(2)
+    },
+    handleCurrentChange(val) {
+      console.log(val)
     },
     getListprojects(limit, skip, order) {
       getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {

@@ -33,7 +33,7 @@
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-edit"
-        @click="createProject"
+        @click="createDatasets"
       >新增数据集</el-button>
     </div>
     <el-table
@@ -108,6 +108,16 @@
         prop="status"
       />
     </el-table>
+    <div class="page-box flex">
+      <el-pagination
+        class="page"
+        :current-page.sync="currentPage"
+        :page-size="10"
+        layout="prev, pager, next, jumper"
+        :total="total"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -123,6 +133,7 @@ export default {
     return {
       datasetsList: [],
       total: undefined,
+      currentPage: 1,
       listQuery: {
         desc: undefined,
         type: undefined
@@ -153,6 +164,9 @@ export default {
     createDatasets() {
       console.log(2)
     },
+    handleCurrentChange(val) {
+      console.log(val)
+    },
     listdatasets(limit, skip, order) {
       listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.datasets.map(v => {
@@ -166,6 +180,7 @@ export default {
           v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
         })
         this.datasetsList = res.data.data.datasets || []
+        this.total = res.data.data.total
       })
     }
   }
