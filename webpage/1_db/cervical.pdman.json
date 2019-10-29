@@ -1747,6 +1747,20 @@
               "defaultValue": "0"
             },
             {
+              "name": "parameter_time",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "训练多长时间autokeras参数",
+              "defaultValue": "1800"
+            },
+            {
+              "name": "parameter_resize",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "训练之前统一的尺寸",
+              "defaultValue": "100"
+            },
+            {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",

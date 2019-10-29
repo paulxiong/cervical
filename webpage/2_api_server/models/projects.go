@@ -9,19 +9,21 @@ import (
 
 // Project 数据集的信息
 type Project struct {
-	ID        int64     `json:"id"         gorm:"column:id" example:"7"` //ID
-	DID       int64     `json:"did"        gorm:"column:did"`            //数据集的id
-	Desc      string    `json:"desc"       gorm:"column:description"`    //项目工作目录
-	Dir       string    `json:"dir"        gorm:"column:dir"`            //描述
-	Status    int       `json:"status"     gorm:"column:status"`         //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
-	Type      int       `json:"type"       gorm:"column:type"`           //项目类型 0 未知 1 训练 2 预测
-	StartTime time.Time `json:"starttime"  gorm:"column:start_time"`     //开始处理数据时间
-	EndTime   time.Time `json:"endtime"    gorm:"column:end_time"`       //处理数据结束时间
-	Percent   int       `json:"percent"    gorm:"column:percent"`        //处理数据的进度
-	ETA       int       `json:"ETA"        gorm:"column:ETA"`            //预估还要多长时间结束,单位是秒
-	CreatedBy int64     `json:"created_by" gorm:"column:created_by"`     //创建者
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"`     //创建时间
-	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"`     //更新时间
+	ID              int64     `json:"id"         gorm:"column:id" example:"7"`         //ID
+	DID             int64     `json:"did"        gorm:"column:did"`                    //数据集的id
+	Desc            string    `json:"desc"       gorm:"column:description"`            //项目工作目录
+	Dir             string    `json:"dir"        gorm:"column:dir"`                    //描述
+	Status          int       `json:"status"     gorm:"column:status"`                 //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
+	Type            int       `json:"type"       gorm:"column:type"`                   //项目类型 0 未知 1 训练 2 预测
+	StartTime       time.Time `json:"starttime"  gorm:"column:start_time"`             //开始处理数据时间
+	EndTime         time.Time `json:"endtime"    gorm:"column:end_time"`               //处理数据结束时间
+	Percent         int       `json:"percent"    gorm:"column:percent"`                //处理数据的进度
+	ETA             int       `json:"ETA"        gorm:"column:ETA"`                    //预估还要多长时间结束,单位是秒
+	CreatedBy       int64     `json:"created_by" gorm:"column:created_by"`             //创建者
+	CreatedAt       time.Time `json:"created_at" gorm:"column:created_at"`             //创建时间
+	UpdatedAt       time.Time `json:"updated_at" gorm:"column:updated_at"`             //更新时间
+	ParameterTime   int       `json:"parameter_time"   gorm:"column:parameter_time"`   //训练使用的最长时间
+	ParameterResize int       `json:"parameter_resize" gorm:"column:parameter_resize"` //训练之前统一的尺寸
 }
 
 // BeforeCreate insert 之前的hook
