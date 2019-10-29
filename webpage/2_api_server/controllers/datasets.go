@@ -495,7 +495,7 @@ func GetOneJob(c *gin.Context) {
 			"data":   dt,
 		})
 	} else if w.Type == 2 || w.Type == 3 {
-		project, err := models.GetOneProjectToProcess(w.Status)
+		project, err := models.GetOneProjectToProcess(w.Status, w.Type)
 		if err != nil {
 			c.JSON(e.StatusReqOK, gin.H{
 				"status": e.StatusSucceed,

@@ -1,9 +1,13 @@
 import time, os, shutil, cv2, json
 import pandas as pd
+import numpy as np
+from shutil import copyfile, rmtree
 from SDK.worker import worker
 from SDK.const.const import wt
 from sklearn.model_selection import train_test_split
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
+from autokeras.utils import pickle_from_file
+from keras.preprocessing.image import load_img, img_to_array
 
 #传入文件的路径，返回路径，文件名字，文件后缀
 def get_filePath_fileName_fileExt(filename):
@@ -11,28 +15,28 @@ def get_filePath_fileName_fileExt(filename):
     (shotname, extension) = os.path.splitext(tempfilename)
     return filepath, shotname, extension
 
-class cells_train(worker):
-    def __init__(self):
+class _cells_train(worker):
+    def __init__(self, workertype):
         #初始化一个dataset的worker
-        worker.__init__(self, wt.TRAIN.value)
+        worker.__init__(self, workertype)
         self.log.info("初始化一个训练的worker")
 
-    def get_train_cells_list(self):
+    def get_all_cells_list(self):
         #获得需要训练的分类
         types = self.projectinfo['types']
         if len(types) < 2 and self.wtype == wt.TRAIN.value:
             self.log.error("less then 2 labels to train")
             return None
         #获得所有用作训练的细胞的信息
-        df_traincells = None
+        df_allcells = None
         df_cells = pd.read_csv(self.cellslist_csv)
         for celltype in types:
             df2 = df_cells[df_cells['celltype'] == celltype]
-            if df_traincells is None:
-                df_traincells = df2
+            if df_allcells is None:
+                df_allcells = df2
             else:
-                df_traincells = df_traincells.append(df2)
-        return df_traincells
+                df_allcells = df_allcells.append(df2)
+        return df_allcells
 
     def _copy_train_cells(self, X, y, outdir):
         newX, newy = [], []
@@ -58,10 +62,15 @@ class cells_train(worker):
             X.append(cellpath_src)
             y.append(str(imginfo['celltype']))
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-        newX_train, newy_train = self._copy_train_cells(X_train, y_train, self.project_train_dir)
-        newX_test, newy_test = self._copy_train_cells(X_test, y_test, self.project_test_dir)
-        return newX_train, newX_test, newy_train, newy_test
+        if self.wtype == wt.PREDICT.value:
+            newX, newy = self._copy_train_cells(X, y, self.project_predict_dir)
+            return newX, None, newy, None
+        elif self.wtype == wt.TRAIN.value:
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+            newX_train, newy_train = self._copy_train_cells(X_train, y_train, self.project_train_dir)
+            newX_test, newy_test = self._copy_train_cells(X_test, y_test, self.project_test_dir)
+            return newX_train, newX_test, newy_train, newy_test
+        return None, None, None, None
 
     def resize_img(self, X, y, outdir, outcsvpath, RESIZE=100):
         filelist = []
@@ -89,13 +98,20 @@ class cells_train(worker):
     def mkdatasets(self):
         size = self.projectinfo['parameter_resize']
         #获得所选数据集的细胞列表信息
-        df = self.get_train_cells_list()
+        df = self.get_all_cells_list()
+        if df is None or df.shape[0] < 1:
+            return False
         #组织训练的目录结构
-        X_train, X_test, y_train, y_test = self.copy_train_cells(df)
-        #resize
-        self.resize_img(X_train, y_train, self.project_resize_train_dir, self.project_train_labels_csv, RESIZE=size)
-        self.resize_img(X_test, y_test, self.project_resize_test_dir, self.project_test_labels_csv, RESIZE=size)
-        return True
+        if self.wtype == wt.PREDICT.value:
+            X_predict, _, y_predict, _ = self.copy_train_cells(df)
+            self.resize_img(X_predict, y_predict, self.project_resize_predict_dir, self.project_predict_labels_csv, RESIZE=size)
+            return True
+        elif self.wtype == wt.TRAIN.value:
+            X_train, X_test, y_train, y_test = self.copy_train_cells(df)
+            #resize
+            self.resize_img(X_train, y_train, self.project_resize_train_dir, self.project_train_labels_csv, RESIZE=size)
+            self.resize_img(X_test, y_test, self.project_resize_test_dir, self.project_test_labels_csv, RESIZE=size)
+            return True
 
     def update_model_info_json(self, modinfo):
         if os.path.exists(self.info_json) is False:
@@ -119,8 +135,10 @@ class cells_train(worker):
     def train_autokeras(self):
         time_limit = self.projectinfo['parameter_time']
         #Load images
-        train_data, train_labels = load_image_dataset(csv_file_path=self.project_train_labels_csv, images_path=self.project_resize_train_dir)
-        test_data, test_labels = load_image_dataset(csv_file_path=self.project_test_labels_csv, images_path=self.project_resize_test_dir)
+        train_data, train_labels = load_image_dataset(csv_file_path=self.project_train_labels_csv,
+                                                      images_path=self.project_resize_train_dir)
+        test_data, test_labels = load_image_dataset(csv_file_path=self.project_test_labels_csv,
+                                                    images_path=self.project_resize_test_dir)
 
         train_data = train_data.astype('float32') / 255
         test_data = test_data.astype('float32') / 255
@@ -152,7 +170,9 @@ class cells_train(worker):
         return dic
 
     def train(self):
-        self.mkdatasets()
+        ret = self.mkdatasets()
+        if ret is False:
+            return False
         self.woker_percent(10, 1800) #默认设置ETA为30分钟
         dic = self.train_autokeras()
 
@@ -160,8 +180,83 @@ class cells_train(worker):
 
         return True
 
+    def predict(self):
+        ret = self.mkdatasets()
+        if ret is False:
+            return False
+        model = pickle_from_file(self.projectinfo['modpath'])
+        self.woker_percent(10, 1800) #默认设置ETA为30分钟
+
+        result = []
+        df_cells = pd.read_csv(self.project_predict_labels_csv)
+        ts1 = int(time.time()*1000)
+        for index, cellinfo in df_cells.iterrows():
+            ts2 = int(time.time()*1000)
+            needtime = (ts2 - ts1) * (df_cells.shape[0] - index)
+            if index > 0:
+                self.log.info("step %d / %d 预计还需要 %d秒" % (index, df_cells.shape[0] -1, needtime/1000))
+            else:
+                self.log.info("step %d / %d" % (index, df_cells.shape[0] -1))
+            ts1 = ts2
+            #向服务器报告任务进度,这里占90%
+            self.woker_percent(int(90 * (index + 1) / (df_cells.shape[0] -1)), needtime/1000)
+
+            celltype = str(cellinfo['Label'])
+            cellpath = os.path.join(self.project_resize_predict_dir, cellinfo['File Name'])
+            resize = self.projectinfo['parameter_resize']
+
+            img = load_img(cellpath)
+            x = img_to_array(img)
+            x = x.astype('float32') / 255
+            x = np.reshape(x, (1, resize, resize, 3))
+            y = model.predict(x)
+            correct = 1
+            if celltype != str(y[0]):
+                correct = 0
+            result.append([cellpath, celltype, str(y[0]), correct])
+
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'correct'])
+        return True
+
+class cells_train(_cells_train):
+    def __init__(self):
+        _cells_train.__init__(self, wt.TRAIN.value)
+        self.log.info("初始化一个训练的worker")
+
+class cells_predict(_cells_train):
+    def __init__(self):
+        _cells_train.__init__(self, wt.PREDICT.value)
+        self.log.info("初始化一个预测的worker")
+
 if __name__ == '__main__':
-    w = cells_train()
+    #w = cells_train() #训练
+    #while 1:
+    #    wid, wdir = w.get_job()
+    #    if wdir == None:
+    #        exit()
+    #        time.sleep(5)
+    #        continue
+    #    w.log.info("获得一个训练任务%d 工作目录%s" % (wid, wdir))
+
+    #    w.prepare(wid, wdir, wt.TRAIN.value)
+    #    w.log.info("初始化文件目录完成")
+
+    #    w.projectinfo = w.load_info_json()
+    #    w.log.info("读取训练信息完成")
+
+    #    w.log.info("开始训练")
+    #    w.woker_percent(4, 0)
+    #    ret = w.train()
+
+    #    if ret == True:
+    #        w.done()
+    #        w.log.info("训练完成 %d 工作目录%s" % (wid, wdir))
+    #    else:
+    #        w.error()
+    #        w.log.info("训练出错 %d 工作目录%s" % (wid, wdir))
+    #    exit()
+
+    w = cells_predict()
     while 1:
         wid, wdir = w.get_job()
         if wdir == None:
@@ -178,7 +273,8 @@ if __name__ == '__main__':
 
         w.log.info("开始训练")
         w.woker_percent(4, 0)
-        ret = w.train()
+        ret = w.predict()
+        #ret = w.train()
 
         if ret == True:
             w.done()

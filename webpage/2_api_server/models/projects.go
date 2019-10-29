@@ -62,9 +62,9 @@ func (p *Project) CreateProject() (e error) {
 }
 
 // GetOneProjectToProcess 请求一个指定状态和类型的工程去处理
-func GetOneProjectToProcess(status int) (p Project, e error) {
+func GetOneProjectToProcess(status int, _type int) (p Project, e error) {
 	_p := Project{}
-	ret2 := db.Model(&_p).Where("status=?", status).First(&_p)
+	ret2 := db.Model(&_p).Where("status=? AND type=?", status, _type).First(&_p)
 	if ret2.Error != nil {
 		return _p, ret2.Error
 	}
