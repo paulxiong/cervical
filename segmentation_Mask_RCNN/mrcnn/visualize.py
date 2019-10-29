@@ -84,7 +84,7 @@ def apply_mask(image, mask, color, alpha=0.5):
     return image
 
 
-def display_instances(image,image_id, boxes, masks, class_ids, class_names,
+def display_instances(image,filename, boxes, masks, class_ids, class_names,
                       scores=None, title="",
                       figsize=(16, 16), ax=None,
                       show_mask=True, show_bbox=True,
@@ -170,7 +170,9 @@ def display_instances(image,image_id, boxes, masks, class_ids, class_names,
     ax.imshow(masked_image.astype(np.uint8))
 
     if auto_show:
-        cv2.imwrite("./output_image/" + image_id + '.png', masked_image.astype(np.uint8))
+        mask_img_path = './mask_images'
+        mask_image_path = os.path.join(mask_img_path , filename ,'images',filename + '_mask.png')
+        cv2.imwrite(mask_image_path, masked_image.astype(np.uint8))
 
 def display_differences(image,
                         gt_box, gt_class_id, gt_mask,
