@@ -100,7 +100,7 @@ class cells_train(worker):
     def update_model_info_json(self, modinfo):
         if os.path.exists(self.info_json) is False:
             return False
-        job_info = load_json_file(self.info_json)
+        job_info = self.load_info_json(self.info_json)
         mod = modinfo
 
         mod['id'] = 0
