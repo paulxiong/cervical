@@ -119,10 +119,10 @@
       />
     </div>
     <el-dialog title="新建数据集" :visible.sync="dialogFormVisible">
-      <newDatasets />
+      <newDatasets ref="newDatasets" />
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="dialogFormVisible = false">上一步</el-button>
-        <el-button size="mini" type="primary" @click="dialogFormVisible = false">下一步</el-button>
+        <el-button size="mini" @click="stepBack">上一步</el-button>
+        <el-button size="mini" type="primary" @click="stepNext">下一步</el-button>
       </div>
     </el-dialog>
   </div>
@@ -169,10 +169,10 @@ export default {
   },
   methods: {
     stepNext() {
-      this.step++
+      this.$refs.newDatasets.stepNext()
     },
     stepBack() {
-      this.step = 1
+      this.$refs.newDatasets.stepBack()
     },
     filterSearch() {
       console.log(1)

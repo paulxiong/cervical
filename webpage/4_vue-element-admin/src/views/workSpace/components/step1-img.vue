@@ -3,7 +3,7 @@
     <section class="next-info flex">
       <h3 class="np">
         选择的批次和病例中
-        <br>
+        <hr>
         n/p : {{ countNP.countn }}/{{ countNP.countp }}
       </h3>
     </section>
@@ -11,10 +11,10 @@
       placeholder="试试搜索: redhouse"
       style="width: 100%;"
       :options="batchList"
-      :props="{ multiple: true, checkStrictly: true }"
+      :props="{ multiple: true }"
       clearable
       filterable
-      @change="getCheck"
+      @change="getimgnptypebymids"
     />
   </div>
 </template>
@@ -26,7 +26,6 @@ export default {
   data() {
     return {
       filterText: '',
-      trainType: '训练',
       batchList: [],
       countNP: {
         countn: 0,
@@ -35,7 +34,9 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'label'
-      }
+      },
+      postBatchs: [],
+      postMedicalIds: []
     }
   },
   watch: {
@@ -77,16 +78,15 @@ export default {
         })
       })
     },
-    getCheck(val) {
-      console.log(val)
-      // this.getimgnptypebymids(postBatchs, postMedicalIds)
-    },
-    getimgnptypebymids(postBatchs, postMedicalIds) {
+    getimgnptypebymids(val) {
       const postData = {
-        'batchids': postBatchs,
-        'medicalids': postMedicalIds,
-        'type': this.trainType === '训练' ? 1 : 2
+        'batchids': [],
+        'medicalids': []
       }
+      val.map(v => {
+        postData.batchids.push(v[0])
+        postData.medicalids.push(v[1])
+      })
       localStorage.setItem('POST_DATA', JSON.stringify(postData))
       getimgnptypebymids(postData).then(res => {
         this.countNP = res.data.data

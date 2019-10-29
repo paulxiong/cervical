@@ -11,8 +11,8 @@ import (
 type Project struct {
 	ID              int64     `json:"id"         gorm:"column:id" example:"7"`         //ID
 	DID             int64     `json:"did"        gorm:"column:did"`                    //数据集的id
-	Desc            string    `json:"desc"       gorm:"column:description"`            //项目工作目录
-	Dir             string    `json:"dir"        gorm:"column:dir"`                    //描述
+	Desc            string    `json:"desc"       gorm:"column:description"`            //描述
+	Dir             string    `json:"dir"        gorm:"column:dir"`                    //项目工作目录
 	Status          int       `json:"status"     gorm:"column:status"`                 //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
 	Type            int       `json:"type"       gorm:"column:type"`                   //项目类型 0 未知 1 训练 2 预测
 	StartTime       time.Time `json:"starttime"  gorm:"column:start_time"`             //开始处理数据时间
@@ -126,4 +126,14 @@ func ListProject(limit int, skip int, order int) (totalNum int64, c []Project, e
 		logger.Info.Println(ret.Error)
 	}
 	return total, _p, ret.Error
+}
+
+// GetOneProjectByID 通过ID查找数据集
+func GetOneProjectByID(id int) (p Project, e error) {
+	_p := Project{}
+	ret2 := db.Model(&_p).Where("id=?", id).First(&_p)
+	if ret2.Error != nil {
+		return _p, ret2.Error
+	}
+	return _p, ret2.Error
 }

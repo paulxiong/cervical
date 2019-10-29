@@ -1,0 +1,214 @@
+seed=123
+import numpy as np
+np.random.seed(seed)
+import tensorflow as tf
+tf.set_random_seed(seed)
+import random
+random.seed(seed)
+from skimage import img_as_ubyte
+import model as modellib
+import pandas as pd
+import os, sys
+import my_functions as f
+import time
+import cv2
+from config import Config
+import scipy
+import visualize
+import time
+
+class BowlConfig(Config):
+    """Configuration for training on the toy shapes dataset.
+    Derives from the base Config class and overrides values specific
+    to the toy shapes dataset.
+    """
+    # Give the configuration a recognizable name
+    NAME = "Inference"
+
+    IMAGE_RESIZE_MODE = "pad64" ## tried to modfied but I am using other git clone
+    ## No augmentation
+    ZOOM = False
+    ASPECT_RATIO = 1
+    MIN_ENLARGE = 1
+    IMAGE_MIN_SCALE = False ## Not using this
+
+    IMAGE_MIN_DIM = 512 # We scale small images up so that smallest side is 512
+    IMAGE_MAX_DIM = False
+
+    GPU_COUNT = 1
+    IMAGES_PER_GPU = 1
+
+    DETECTION_MAX_INSTANCES = 512
+    DETECTION_NMS_THRESHOLD =  0.2
+    DETECTION_MIN_CONFIDENCE = 0.9
+
+    LEARNING_RATE = 0.001
+
+    # Number of classes (including background)
+    NUM_CLASSES = 1 + 1 # background + nuclei
+
+    # Use smaller anchors because our image and objects are small
+    RPN_ANCHOR_SCALES = (8 , 16, 32, 64, 128)  # anchor side in pixels
+
+    # Reduce training ROIs per image because the images are small and have
+    # few objects. Aim to allow ROI sampling to pick 33% positive ROIs.
+    TRAIN_ROIS_PER_IMAGE = 600
+
+    USE_MINI_MASK = True
+
+class detector():
+    def __init__(self, model_path, original_img_path):
+        self.model_path = model_path
+        self.original_img_path = original_img_path
+        self.debug = True
+        self.inference_config = None
+        self.logs_dir = './logs'
+        if not os.path.exists(self.model_path):
+            raise RuntimeError("not found: %s" % model_path)
+        if not os.path.exists(self.original_img_path):
+            raise RuntimeError("not found: %s" % original_img_path)
+
+        self.model = self.detector_init()
+
+    def detector_init(self):
+        self.inference_config = BowlConfig()
+        if self.debug is True:
+            self.inference_config.display()
+
+        print("Loading weights from ", self.model_path)
+        model = modellib.MaskRCNN(mode = "inference",
+                    config = self.inference_config, model_dir = self.logs_dir)
+        model.load_weights(self.model_path, by_name = True)
+        return model
+
+    # 找出目录里面所有的图片, 只查找self.original_img_path这级目录
+    # 返回图片名称的一个数组
+    def get_image_lists(self):
+        if not os.path.exists(self.original_img_path) or \
+           not os.path.isdir(self.original_img_path):
+            raise RuntimeError('not found folder: %s' % self.original_img_path)
+        image_list = []
+        allfiles = os.listdir(self.original_img_path)
+        allfiles_num = len(allfiles)
+        for i in allfiles:
+            path1 = os.path.join(self.original_img_path, i)
+            if os.path.isdir(path1):
+                if self.debug:
+                    print(">>> unexpected folder Error: %s, must be image." % path1)
+                continue
+            ext = os.path.splitext(path1)[1]
+            ext = ext.lower()
+            if not ext in ['.jpg', '.png', '.jpeg', '.bmp']:
+                if self.debug and (not ext in ['.csv']):
+                    print(">>> unexpected file: %s, must be jpg/png/bmp" % path1)
+            else:
+                image_list.append(i)
+        if self.debug is True and allfiles_num > len(image_list):
+            print(">>> %d files/folder ignored !!" % (allfiles_num - len(image_list)))
+        return image_list
+
+    def detect_image(self, gray=False, print2=None):
+        pathList = self.get_image_lists()
+        if print2 is None:
+            print2 = print
+
+        step, total_steps = 0, len(pathList)
+        if total_steps < 1:
+            return False
+        for filename in pathList:
+            step = step + 1
+            image_path = os.path.join(self.original_img_path, filename)
+            print2("step %d/%d  %s" %(step, total_steps, image_path))
+            original_image = cv2.imread(image_path)
+            predict_img = original_image
+            mask_img_path = './mask_images'
+
+            if gray is True:
+                grayImage = cv2.cvtColor(original_image, cv2.COLOR_RGB2GRAY)
+                if len(grayImage.shape)<3:
+                    grayImage = img_as_ubyte(grayImage)
+                    grayImage = np.expand_dims(grayImage, 2)
+                    grayImage = grayImage[:,:,[0,0,0]] # flip r and b
+                grayImage = grayImage[:,:,:3]
+                predict_img = grayImage
+            else:
+                if len(original_image.shape)<3:
+                    original_image = img_as_ubyte(original_image)
+                    original_image = np.expand_dims(original_image,2)
+                    original_image = original_image[:,:,[0,0,0]] # flip r and b
+                original_image = original_image[:,:,:3]
+                predict_img = original_image
+
+            ## Make prediction for that image
+            results = self.model.detect([predict_img], verbose=0)
+            r = results[0]
+            scores_masks = r['scores']      #判别物得分
+            final_rois = r["rois"]         #交并比得到的回归框坐标
+            pred_masks = r['masks']
+
+            _rois = []
+            mask_cell_npy = []
+            threshold = float(0.90)
+
+            #生成mask掩码图
+            for i in range(0, len(scores_masks)):
+                score = scores_masks[i]
+                classid = r['class_ids'][i]
+                roi = final_rois[i]
+                if int(threshold*100) > int(score*100):
+                    print2("%s drop roi, score=%f" % (filename, score))
+                    continue
+
+                mask_npy = pred_masks[:,:,i]
+                w = mask_npy.shape[0]
+                h = mask_npy.shape[1]
+                g_imgs = np.ones((w,h))*255               
+                mask_imgs = mask_npy*g_imgs
+
+                y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
+                mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
+                mask_image_path = os.path.join(mask_img_path , filename ,'masks')
+                if os.path.exists(mask_image_path) is False:
+                    os.makedirs(mask_image_path)     
+                mask_image_path = os.path.join(mask_image_path, '{}_{}_{}_.png'.format(filename, mask_x, mask_y)) 
+                cv2.imwrite(mask_image_path, mask_imgs)
+
+            if self.debug:
+
+                output_image_path = os.path.join(mask_img_path , filename ,'images')
+                if os.path.exists(output_image_path) is False:
+                    os.makedirs(output_image_path) 
+
+                output_img_path = os.path.join(output_image_path, filename + '_roi_.png')
+                org_image_path = os.path.join(output_image_path, filename + '_org_.png')
+
+                #保存原图
+                cv2.imwrite(org_image_path, original_image)
+                
+                #保存款出来的细胞图
+                for i in range(len(final_rois)):
+                    score = scores_masks[i]
+                    rois = final_rois[i,:]
+                    x1, x2, y1, y2 = rois[0], rois[2], rois[1], rois[3]
+                    draw_color = (0, 0, 255)
+#                     if (score >= 0.98):
+#                         draw_color = (0, 0, 255)
+#                     elif (0.94 < score < 0.98) :
+#                         draw_color = (0, 255, 0)
+#                     elif score <= 0.94 :
+#                         draw_color = (255, 0, 0)
+                    cv2.rectangle(original_image, (y1, x1), (y2, x2), draw_color, 1)
+
+                #保存掩码图
+                visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
+
+        return True
+
+if __name__ == "__main__":
+    time_start=time.time()
+    model_path = "./model/deepretina_final.h5"
+    original_img_path = './origin_imgs'
+    d = detector(model_path, original_img_path)
+    d.detect_image(gray = True )
+    time_end=time.time()
+    print('totally cost:',time_end-time_start)

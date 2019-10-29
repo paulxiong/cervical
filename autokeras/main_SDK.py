@@ -97,6 +97,25 @@ class cells_train(worker):
         self.resize_img(X_test, y_test, self.project_resize_test_dir, self.project_test_labels_csv, RESIZE=size)
         return True
 
+    def update_model_info_json(self, modinfo):
+        if os.path.exists(self.info_json) is False:
+            return False
+        job_info = self.load_info_json()
+        mod = modinfo
+
+        mod['id'] = 0
+        mod['type'] = 5
+        mod['types'] = job_info['types']
+        mod['pid'] = job_info['id']
+        mod['path'] = self.project_mod_path
+        mod['desc'] = '未保存的模型'
+        mod['recall'] = -1
+        mod['precision'] = mod['metric_value']
+
+        with open(self.project_mod_json, 'w', encoding='utf-8') as file:
+            file.write(json.dumps(mod, indent=2, ensure_ascii=False))
+        return True
+
     def train_autokeras(self):
         time_limit = self.projectinfo['parameter_time']
         #Load images
@@ -136,6 +155,8 @@ class cells_train(worker):
         self.mkdatasets()
         self.woker_percent(10, 1800) #默认设置ETA为30分钟
         dic = self.train_autokeras()
+
+        self.update_model_info_json(dic)
 
         return True
 

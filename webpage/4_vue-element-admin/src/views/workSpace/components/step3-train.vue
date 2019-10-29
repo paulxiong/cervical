@@ -17,7 +17,6 @@
         :loading="loading"
         @click="goTrain"
       >开始处理</el-button>
-      <el-button class="errInfo-btn" type="info" size="mini" @click="goBack">重新编辑</el-button>
     </h2>
     <section class="train-box-info">
       <el-card shadow="hover">
@@ -28,20 +27,20 @@
             effect="dark"
             size="small"
             type="info"
-          >{{ postData.type===1?'训练':'预测' }}</el-tag>
+          >{{ modelInfo.type }}</el-tag>
         </div>
         <div class="info-list flex">
-          <section class="info">
+          <section class="info" style="width: 48%;height: 50px;overflow: auto;margin-right: 2%;">
             <i>批次</i>
             <b>{{ postData.batchids }}</b>
           </section>
-          <section class="info">
+          <section class="info" style="width: 50%;height: 50px;overflow: auto;">
             <i>病例</i>
             <b>{{ postData.medicalids }}</b>
           </section>
           <section class="info">
-            <i>细胞类型</i>
-            <b>['1_Norm', '7_ASCUS']</b>
+            <i>描述</i>
+            <b>{{ inputName }}</b>
           </section>
           <section class="info">
             <i>n/p比例</i>
@@ -60,29 +59,41 @@
           >{{ modelInfo.model.type | filterModelType }}</el-tag>
         </div>
         <div class="info-list flex">
-          <section class="info">
+          <section class="model-info">
             <i>模型ID</i>
             <b>{{ modelInfo.model.id }}</b>
           </section>
-          <section class="info">
+          <section class="model-info">
             <i>模型</i>
             <b>{{ modelInfo.model.desc }}</b>
           </section>
-          <section class="info">
-            <i>图片色彩</i>
+          <section class="model-info">
+            <i>是否使用缓存</i>
+            <b>{{ modelInfo.cache }}</b>
+          </section>
+          <section class="model-info">
+            <i>损失</i>
+            <b>{{ modelInfo.model.loss }}</b>
+          </section>
+          <section class="model-info">
+            <i>背景色</i>
             <b>{{ modelInfo.imgColor }}</b>
           </section>
-          <section class="info">
+          <section class="model-info">
             <i>裁剪大小</i>
             <b>{{ modelInfo.cutSize }}</b>
           </section>
-          <section class="info">
+          <section class="model-info">
             <i>Precision</i>
             <b>{{ modelInfo.model.precision }}</b>
           </section>
-          <section class="info">
+          <section class="model-info">
             <i>Recall</i>
             <b>{{ modelInfo.model.recall }}</b>
+          </section>
+          <section class="model-info">
+            <i>最后更新时间</i>
+            <b>{{ modelInfo.model.updated_at | filterDate }}</b>
           </section>
         </div>
       </el-card>
@@ -93,6 +104,7 @@
 <script>
 import { createdataset } from '@/api/cervical'
 import { modelType } from '@/const/const'
+import { parseTime } from '@/utils/index'
 
 export default {
   name: 'StartTrain',
@@ -100,6 +112,9 @@ export default {
   filters: {
     filterModelType(value) {
       return modelType[value]
+    },
+    filterDate(value) {
+      return parseTime(value)
     }
   },
   data() {
@@ -115,15 +130,17 @@ export default {
     goTrain() {
       this.loading = true
       this.postData['desc'] = this.inputName
+      this.postData['parameter_cache'] = this.modelInfo.cache === '是' ? 1 : 0
+      this.postData['parameter_gray'] = this.modelInfo.imgColor === '灰色' ? 1 : 0
+      this.postData['parameter_mid'] = this.modelInfo.model.did
+      this.postData['parameter_size'] = parseInt(this.modelInfo.cutSize)
+      this.postData['parameter_type'] = parseInt(this.modelInfo.type.slice(0, 1))
       createdataset(this.postData).then(res => {
         this.$router.push({
           path: `/train/detailsTrain?id=${res.data.data}`
         })
         this.loading = false
       })
-    },
-    goBack() {
-      this.$parent.stepBack()
     }
   }
 }
@@ -145,14 +162,6 @@ export default {
   .info-tag {
     margin-left: 10px;
   }
-  i {
-    color: #666;
-    font-style: normal;
-    margin-right: 10px;
-  }
-  b {
-    font-size: 22px;
-  }
   .link {
     line-height: 20px;
   }
@@ -168,13 +177,27 @@ export default {
     align-items: flex-start;
   }
   .info-list {
-    justify-content: space-around;
+    justify-content: space-between;
     flex-wrap: wrap;
+    i {
+      color: #666;
+      font-style: normal;
+      font-size: 14px;
+    }
+    b {
+      font-size: 14px;
+    }
+    .model-info {
+      width: calc(100%/3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 5px 0;
+    }
     .info {
       width: 50%;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin: 10px 0;
+      margin: 5px 0;
     }
   }
 }
