@@ -1,8 +1,9 @@
-import time, os, shutil
+import time, os, shutil, cv2
 import pandas as pd
 from SDK.worker import worker
 from SDK.const.const import wt
 from sklearn.model_selection import train_test_split
+from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 
 #传入文件的路径，返回路径，文件名字，文件后缀
 def get_filePath_fileName_fileExt(filename):
@@ -33,10 +34,11 @@ class cells_train(worker):
                 df_traincells = df_traincells.append(df2)
         return df_traincells
 
-    def _copy_train_cells(self, X, y, dirname):
+    def _copy_train_cells(self, X, y, outdir):
+        newX, newy = [], []
         for i in range(len(X)):
             cellpath_src, celltype = X[i], y[i]
-            cells_type_dir = os.path.join(self.project_dir, dirname, str(celltype))
+            cells_type_dir = os.path.join(outdir, str(celltype))
             if not os.path.exists(cells_type_dir):
                 os.makedirs(cells_type_dir)
             if not os.path.exists(cellpath_src):
@@ -44,7 +46,9 @@ class cells_train(worker):
             _, shotname, extension = get_filePath_fileName_fileExt(cellpath_src)
             cellpath_dst = os.path.join(cells_type_dir, shotname + extension)
             shutil.copyfile(cellpath_src, cellpath_dst)
-        return
+            newX.append(cellpath_dst)
+            newy.append(str(celltype))
+        return newX, newy
 
     def copy_train_cells(self, df, test_size=0.2):
         X, y = [], []
@@ -55,35 +59,84 @@ class cells_train(worker):
             y.append(str(imginfo['celltype']))
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-        self._copy_train_cells(X_train, y_train, 'train')
-        self._copy_train_cells(X_test, y_test, 'test')
+        newX_train, newy_train = self._copy_train_cells(X_train, y_train, self.project_train_dir)
+        newX_test, newy_test = self._copy_train_cells(X_test, y_test, self.project_test_dir)
+        return newX_train, newX_test, newy_train, newy_test
 
-        print(len(X_train), len(X_test))
+    def resize_img(self, X, y, outdir, outcsvpath, RESIZE=100):
+        filelist = []
+        for i in range(len(X)):
+            cellpath, celltype = X[i], y[i]
+            cellto_dir = os.path.join(outdir, celltype)
+            if not os.path.exists(cellto_dir):
+                os.makedirs(cellto_dir)
+            img = cv2.imread(cellpath)
+            if img.shape[0] != img.shape[1]:
+                self.log.info("skip this image w != h: %s" % cellpath)
+                continue
+            img = cv2.resize(img, (RESIZE, RESIZE), interpolation=cv2.INTER_LINEAR)
+
+            filepath, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+            cv2.imwrite(os.path.join(cellto_dir, shotname + extension), img)
+
+            filelist.append([os.path.join(celltype, shotname + extension), celltype])
+
+        if len(filelist) > 0:
+            df = pd.DataFrame(filelist, columns=['File Name', 'Label'])
+            df.to_csv(outcsvpath, quoting = 1, mode = 'w', index = False, header = True)
         return True
 
     def mkdatasets(self):
-        """
-        步骤：
-            获得所选数据集的细胞列表信息
-            组织训练的目录结构
-            resize
-        """
+        size = self.projectinfo['parameter_resize']
+        #获得所选数据集的细胞列表信息
         df = self.get_train_cells_list()
-        self.copy_train_cells(df)
+        #组织训练的目录结构
+        X_train, X_test, y_train, y_test = self.copy_train_cells(df)
+        #resize
+        self.resize_img(X_train, y_train, self.project_resize_train_dir, self.project_train_labels_csv, RESIZE=size)
+        self.resize_img(X_test, y_test, self.project_resize_test_dir, self.project_test_labels_csv, RESIZE=size)
+        return True
 
-        print(self.project_train_dir)
-        return
+    def train_autokeras(self):
+        time_limit = self.projectinfo['parameter_time']
+        #Load images
+        train_data, train_labels = load_image_dataset(csv_file_path=self.project_train_labels_csv, images_path=self.project_resize_train_dir)
+        test_data, test_labels = load_image_dataset(csv_file_path=self.project_test_labels_csv, images_path=self.project_resize_test_dir)
+
+        train_data = train_data.astype('float32') / 255
+        test_data = test_data.astype('float32') / 255
+        self.log.info("Train data shape: %d" % train_data.shape[0])
+
+        clf = ImageClassifier(verbose=True, path=self.project_tmp_dir, resume=False)
+        clf.fit(train_data, train_labels, time_limit=time_limit)
+        clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
+
+        evaluate_value = clf.evaluate(test_data, test_labels)
+        self.log.info("Evaluate: %f" % evaluate_value)
+
+        clf.export_autokeras_model(self.project_mod_path)
+
+        #统计训练信息
+        dic = {}
+        ishape = clf.cnn.searcher.input_shape
+        dic['n_train'] = train_data.shape[0]  #训练总共用了多少图
+        dic['n_classes'] = clf.cnn.searcher.n_classes
+        dic['input_shape'] = str(ishape[0]) + 'x' + str(ishape[1]) + 'x' + str(ishape[2])
+        dic['history'] = clf.cnn.searcher.history
+        dic['model_count'] = clf.cnn.searcher.model_count
+        dic['best_model'] = clf.cnn.searcher.get_best_model_id()
+        best_model = [item for item in dic['history'] if item['model_id'] == dic['best_model']]
+        if len(best_model) > 0:
+            dic['loss'] = best_model[0]['loss']
+            dic['metric_value'] = best_model[0]['metric_value']
+        dic['evaluate_value'] = evaluate_value
+        return dic
 
     def train(self):
         self.mkdatasets()
+        self.woker_percent(10, 1800) #默认设置ETA为30分钟
+        dic = self.train_autokeras()
 
-        for i in range(100):
-            #向服务器端报告任务进度
-            self.woker_percent(int(95 * i / 100), (100 - i) * 4)
-
-            #do something
-            time.sleep(1)
-            return False
         return True
 
 if __name__ == '__main__':

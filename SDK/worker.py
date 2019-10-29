@@ -35,10 +35,20 @@ class worker_fs():
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
             self.project_train_dir = os.path.join(self.project_dir, 'train')
+            self.project_resize_train_dir = os.path.join(self.project_dir, 'resize_train')
+            self.project_test_dir = os.path.join(self.project_dir, 'test')
+            self.project_resize_test_dir = os.path.join(self.project_dir, 'resize_test')
+            self.project_train_labels_csv = os.path.join(self.project_dir, 'train_labels.csv')
+            self.project_test_labels_csv = os.path.join(self.project_dir, 'test_labels.csv')
+            self.project_mod_path = os.path.join(self.project_dir, 'Modelak.h5')
+            self.project_tmp_dir = os.path.join(self.project_dir, 'autokeras')
         elif self.wtype == wt.PREDICT.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
             self.project_predict_dir = os.path.join(self.project_dir, 'predict')
+            self.project_resize_predict_dir = os.path.join(self.project_dir, 'resize_predict')
+            self.project_predict_error_data_dir = os.path.join(self.project_dir, 'predict_error_data')
+            self.project_predict_labels_csv = os.path.join(self.project_dir, 'predict_labels.csv')
         else:
             raise RuntimeError("unknown worker type %d" % self.wtype)
 
