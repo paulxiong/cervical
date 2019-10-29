@@ -1481,7 +1481,7 @@
           "title": "model",
           "fields": [
             {
-              "name": "ID",
+              "name": "id",
               "type": "Integer",
               "remark": "",
               "chnname": "模型ID",
@@ -1490,7 +1490,7 @@
               "autoIncrement": true
             },
             {
-              "name": "TYPE",
+              "name": "type",
               "type": "Integer",
               "remark": "0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS",
               "chnname": "类型",
@@ -1498,21 +1498,21 @@
               "relationNoShow": true
             },
             {
-              "name": "PID",
+              "name": "pid",
               "type": "BigInt",
               "remark": "",
               "chnname": "从哪个项目训练出来的",
               "notNull": true
             },
             {
-              "name": "DESCRIPTION",
+              "name": "description",
               "type": "MiddleString",
               "remark": "",
               "chnname": "描述",
               "relationNoShow": true
             },
             {
-              "name": "PATH",
+              "name": "path",
               "type": "MiddleString",
               "remark": "",
               "chnname": "模型路径",
@@ -1520,14 +1520,14 @@
               "relationNoShow": false
             },
             {
-              "name": "RECALL",
+              "name": "recall",
               "type": "Double",
               "remark": "",
               "chnname": "召回率",
               "relationNoShow": false
             },
             {
-              "name": "PRECISION1",
+              "name": "precision",
               "type": "Double",
               "remark": "",
               "chnname": "准确率",
@@ -1597,14 +1597,14 @@
               "relationNoShow": true
             },
             {
-              "name": "CREATED_BY",
+              "name": "created_by",
               "type": "BigInt",
               "remark": "",
               "chnname": "创建人",
               "relationNoShow": true
             },
             {
-              "name": "CREATED_TIME",
+              "name": "created_at",
               "type": "DateTime",
               "remark": "",
               "chnname": "创建时间",
@@ -1612,7 +1612,7 @@
               "relationNoShow": true
             },
             {
-              "name": "UPDATED_TIME",
+              "name": "updated_at",
               "type": "DateTime",
               "remark": "",
               "chnname": "更新时间",

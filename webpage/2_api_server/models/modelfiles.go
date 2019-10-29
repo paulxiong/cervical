@@ -11,13 +11,13 @@ import (
 
 // Model 模型信息
 type Model struct {
-	ID            int       `json:"id"             gorm:"column:ID"`             //id
-	Type          int       `json:"type"           gorm:"column:TYPE"`           //模型类别 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS
-	PID           int64     `json:"pid"            gorm:"column:PID"`            //从哪个项目训练出来的
-	Path          string    `json:"path"           gorm:"column:PATH"`           //模型文件路径
-	Desc          string    `json:"desc"           gorm:"column:DESCRIPTION"`    //模型的文字描述
-	Recall        float32   `json:"recall"         gorm:"column:RECALL"`         //训练评估得到的召回率,整数0.66表示66%
-	Precision     float32   `json:"precision"      gorm:"column:PRECISION1"`     //训练评估得到的准确率,整数0.66表示66%
+	ID            int       `json:"id"             gorm:"column:id"`             //id
+	Type          int       `json:"type"           gorm:"column:type"`           //模型类别 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS
+	PID           int64     `json:"pid"            gorm:"column:pid"`            //从哪个项目训练出来的
+	Path          string    `json:"path"           gorm:"column:path"`           //模型文件路径
+	Desc          string    `json:"desc"           gorm:"column:description"`    //模型的文字描述
+	Recall        float32   `json:"recall"         gorm:"column:recall"`         //训练评估得到的召回率,整数0.66表示66%
+	Precision     float32   `json:"precision"      gorm:"column:precision"`      //训练评估得到的准确率,整数0.66表示66%
 	Ntrain        int       `json:"n_train"        gorm:"column:n_train"`        //训练用了多少张图片
 	Nclasses      int       `json:"n_classes"      gorm:"column:n_classes"`      //训练有几个分类
 	Types1        []int     `json:"types"          gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
@@ -28,9 +28,9 @@ type Model struct {
 	Loss          float32   `json:"loss"           gorm:"column:loss"`           //损失
 	MetricValue   float32   `json:"metric_value"   gorm:"column:metric_value"`   //训练的准确度
 	EvaluateValue float32   `json:"evaluate_value" gorm:"column:evaluate_value"` //评估准确度
-	CreatedAt     time.Time `json:"created_at"     gorm:"column:CREATED_TIME"`   //创建时间
-	UpdatedAt     time.Time `json:"updated_at"     gorm:"column:UPDATED_TIME"`   //更新时间
-	CreatedBy     int64     `json:"-"              gorm:"column:CREATED_BY"`     //创建者ID
+	CreatedAt     time.Time `json:"created_at"     gorm:"column:created_at"`     //创建时间
+	UpdatedAt     time.Time `json:"updated_at"     gorm:"column:updated_at"`     //更新时间
+	CreatedBy     int64     `json:"-"              gorm:"column:created_by"`     //创建者ID
 }
 
 // BeforeCreate insert之前的hook
@@ -65,7 +65,7 @@ func (d *Model) CreateModelInfo() (e error) {
 	d.ID = 0
 	_d := Model{}
 
-	ret2 := db.Model(d).Where("PATH=?", d.Path).First(&_d)
+	ret2 := db.Model(d).Where("path=?", d.Path).First(&_d)
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
@@ -87,7 +87,7 @@ func ListModel(limit int, skip int, _type int) (totalNum int64, c []Model, e err
 	var total int64 = 0
 
 	db.Model(&Model{}).Count(&total)
-	ret := db.Model(&Model{}).Where("TYPE=?", _type).Limit(limit).Offset(skip).Find(&_d)
+	ret := db.Model(&Model{}).Where("type=?", _type).Limit(limit).Offset(skip).Find(&_d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
@@ -98,7 +98,7 @@ func ListModel(limit int, skip int, _type int) (totalNum int64, c []Model, e err
 func FindModelInfoByPath(modpath string) (m *Model, e error) {
 	_d := Model{}
 
-	ret2 := db.Model(&_d).Where("PATH=?", modpath).First(&_d)
+	ret2 := db.Model(&_d).Where("path=?", modpath).First(&_d)
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
@@ -109,7 +109,7 @@ func FindModelInfoByPath(modpath string) (m *Model, e error) {
 func FindModelInfoByID(mid int) (m *Model, e error) {
 	_d := Model{}
 
-	ret2 := db.Model(&_d).Where("ID=?", mid).First(&_d)
+	ret2 := db.Model(&_d).Where("id=?", mid).First(&_d)
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
@@ -120,7 +120,7 @@ func FindModelInfoByID(mid int) (m *Model, e error) {
 func (d *Model) ModelInfoSaved() bool {
 	_d := Model{}
 
-	ret2 := db.Model(&_d).Where("PATH=?", d.Path).First(&_d)
+	ret2 := db.Model(&_d).Where("path=?", d.Path).First(&_d)
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
