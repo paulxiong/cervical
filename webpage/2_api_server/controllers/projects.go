@@ -15,21 +15,23 @@ import (
 // newProject 新建项目
 type newProject struct {
 	Desc            string `json:"desc"             example:"this is a project"` //项目的描述
-	DID             int64  `json:"did"              example:"1"`                 //选择的数据集的ID
+	DID             int64  `json:"did"              example:"1"`                 //选择的数据集的ID, 训练项目表示训练和评估数据集， 预测项目表示预测使用的数据
 	Type            int    `json:"type"             example:"1"`                 //项目类型 0 未知 1 训练 2 预测
 	Celltypes       []int  `json:"celltypes"        example:"7"`                 //选择哪几个类型做训练或者预测
 	ParameterTime   int    `json:"parameter_time"   example:"1800"`              //训练使用的最长时间,单位是秒
-	ParameterResize int    `json:"parameter_resize" example:"100"`               //训练之前统一的尺寸,单位是像素
+	ParameterResize int    `json:"parameter_resize" example:"100"`               //训练/预测之前统一的尺寸,单位是像素
+	ParameterMID    int    `json:"parameter_mid"    example:"1"`                 //预测使用的模型的id,只有预测时候需要
+	ParameterType   int    `json:"parameter_type"   example:"0"`                 //预测方式,0没标注的图 1有标注的图
 }
 
-// CreateProject 新建项目
-// @Summary 新建项目
-// @Description 新建项目
+// CreateProject 新建(训练/预测)项目
+// @Summary 新建(训练/预测)项目
+// @Description 新建(训练/预测)项目
 // @tags API1 项目（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param CreateProject body controllers.newProject true "创建项目"
+// @Param CreateProject body controllers.newProject true "新建(训练/预测)项目"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/createproject [post]
@@ -54,6 +56,8 @@ func CreateProject(c *gin.Context) {
 		Type:            np.Type,
 		ParameterTime:   np.ParameterTime,
 		ParameterResize: np.ParameterResize,
+		ParameterMID:    np.ParameterMID,
+		ParameterType:   np.ParameterType,
 	}
 
 	logger.Info.Println(np.Desc)

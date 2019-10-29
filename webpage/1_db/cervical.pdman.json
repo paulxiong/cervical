@@ -1749,7 +1749,7 @@
             {
               "name": "parameter_time",
               "type": "Integer",
-              "remark": "",
+              "remark": "只有训练时候需要",
               "chnname": "训练多长时间autokeras参数",
               "defaultValue": "1800"
             },
@@ -1759,6 +1759,20 @@
               "remark": "",
               "chnname": "训练之前统一的尺寸",
               "defaultValue": "100"
+            },
+            {
+              "name": "parameter_mid",
+              "type": "Integer",
+              "remark": "只有预测时候需要",
+              "chnname": "预测使用的模型的id",
+              "defaultValue": "0"
+            },
+            {
+              "name": "parameter_type",
+              "type": "Integer",
+              "remark": "0没标注的图1有标注的图",
+              "chnname": "预测方式",
+              "defaultValue": "0"
             },
             {
               "name": "created_by",
