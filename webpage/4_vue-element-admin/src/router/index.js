@@ -99,12 +99,6 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: 'newTrain',
-        component: () => import('@/views/train/newTrain'),
-        name: '新建',
-        meta: { title: '新建', affix: true }
-      },
-      {
         path: 'detailsTrain',
         component: () => import('@/views/train/detailsTrain'),
         name: '详情',

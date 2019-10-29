@@ -186,7 +186,6 @@ export default {
   align-items: flex-start;
   .main {
     width: 80%;
-    height: 100%;
     .tools {
       justify-content: space-between;
       padding: 0 5px;
@@ -196,8 +195,11 @@ export default {
       }
     }
     .label-img {
-      max-height: calc(100vh - 90px);
+      height: calc(100vh - 90px);
       overflow: hidden;
+      .ai-observer {
+        height: calc(100vh - 90px);
+      }
     }
   }
   .info {

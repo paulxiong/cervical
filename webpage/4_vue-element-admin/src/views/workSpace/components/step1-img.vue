@@ -6,28 +6,15 @@
         <br>
         n/p : {{ countNP.countn }}/{{ countNP.countp }}
       </h3>
-      <el-button type="primary" class="next-btn" :disabled="!checkList.length" @click="nextStep">
-        下一步
-        <i class="el-icon-arrow-right el-icon--right" />
-      </el-button>
     </section>
-    <section class="train-type flex">
-      <h3>此数据集将用作</h3>
-      <el-radio-group v-model="trainType" class="type-raido" size="small">
-        <el-radio-button label="训练" />
-        <el-radio-button label="预测" />
-      </el-radio-group>
-    </section>
-    <el-input v-model="filterText" class="filter-input flex" placeholder="输入关键字进行过滤" />
-    <el-tree
-      ref="tree"
-      class="filter-tree flex"
-      :data="batchList"
-      :props="defaultProps"
-      show-checkbox
-      highlight-current
-      :filter-node-method="filterNode"
-      @check="getCheck"
+    <el-cascader
+      placeholder="试试搜索: redhouse"
+      style="width: 100%;"
+      :options="batchList"
+      :props="{ multiple: true, checkStrictly: true }"
+      clearable
+      filterable
+      @change="getCheck"
     />
   </div>
 </template>
@@ -45,7 +32,6 @@ export default {
         countn: 0,
         countp: 0
       },
-      checkList: [],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -74,12 +60,14 @@ export default {
         data1.batchs.map(v => {
           const obj = {}
           obj['label'] = v
+          obj['value'] = v
           getMedicalIdInfo({ 'batchid': v }).then(res2 => {
             const data2 = res2.data.data
             const medicalids = []
             data2.medicalids.map(item => {
               item = {
-                'label': item
+                'label': item,
+                'value': item
               }
               medicalids.push(item)
             })
@@ -89,24 +77,9 @@ export default {
         })
       })
     },
-    getCheck(checkedNodes, halfCheckedNodes) {
-      let postBatchs = []
-      let postMedicalIds = []
-      this.checkList = this.$refs.tree.getCheckedNodes()
-      halfCheckedNodes.checkedNodes.map(v => {
-        if (v.children) {
-          postBatchs.push(v.label)
-        } else {
-          postMedicalIds.push(v.label)
-        }
-      })
-      halfCheckedNodes.halfCheckedNodes.map(v => {
-        postBatchs.push(v.label)
-      })
-      // 去重
-      postBatchs = Array.from(new Set(postBatchs))
-      postMedicalIds = Array.from(new Set(postMedicalIds))
-      this.getimgnptypebymids(postBatchs, postMedicalIds)
+    getCheck(val) {
+      console.log(val)
+      // this.getimgnptypebymids(postBatchs, postMedicalIds)
     },
     getimgnptypebymids(postBatchs, postMedicalIds) {
       const postData = {
@@ -133,6 +106,8 @@ export default {
   }
   .np {
     text-align: center;
+    font-size: 14px;
+    color: #F56C6C;
   }
   .filter-tree {
     align-items: flex-start;

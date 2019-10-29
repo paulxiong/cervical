@@ -122,7 +122,7 @@
       <newDatasets />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="dialogFormVisible = false">上一步</el-button>
-        <el-button size="mini" type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button size="mini" type="primary" @click="dialogFormVisible = false">下一步</el-button>
       </div>
     </el-dialog>
   </div>
