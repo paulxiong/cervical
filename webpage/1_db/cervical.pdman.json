@@ -1498,10 +1498,10 @@
               "relationNoShow": true
             },
             {
-              "name": "DID",
+              "name": "PID",
               "type": "BigInt",
-              "remark": "被哪次dataset训练的",
-              "chnname": "dataset Id",
+              "remark": "",
+              "chnname": "从哪个项目训练出来的",
               "notNull": true
             },
             {
