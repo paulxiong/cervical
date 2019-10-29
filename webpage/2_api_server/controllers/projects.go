@@ -16,7 +16,7 @@ import (
 type newProject struct {
 	Desc            string `json:"desc"             example:"this is a project"` //项目的描述
 	DID             int64  `json:"did"              example:"1"`                 //选择的数据集的ID, 训练项目表示训练和评估数据集， 预测项目表示预测使用的数据
-	Type            int    `json:"type"             example:"1"`                 //项目类型 0 未知 1 训练 2 预测
+	Type            int    `json:"type"             example:"1"`                 //项目类型 0 未知 1 保留 2 训练 3 预测
 	Celltypes       []int  `json:"celltypes"        example:"7"`                 //选择哪几个类型做训练或者预测
 	ParameterTime   int    `json:"parameter_time"   example:"1800"`              //训练使用的最长时间,单位是秒
 	ParameterResize int    `json:"parameter_resize" example:"100"`               //训练/预测之前统一的尺寸,单位是像素

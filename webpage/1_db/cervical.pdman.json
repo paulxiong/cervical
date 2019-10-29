@@ -1741,7 +1741,7 @@
             {
               "name": "type",
               "type": "Integer",
-              "remark": "0 未知 1 训练 2 预测",
+              "remark": "0 未知 1 保留 2 训练 3 预测",
               "chnname": "项目类型",
               "notNull": true,
               "defaultValue": "0"
