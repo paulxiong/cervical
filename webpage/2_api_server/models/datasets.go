@@ -559,12 +559,12 @@ func (d *Model) CreateModelInfo() (e error) {
 }
 
 // ListModel 依次列出模型
-func ListModel(limit int, skip int) (totalNum int64, c []Model, e error) {
+func ListModel(limit int, skip int, _type int) (totalNum int64, c []Model, e error) {
 	var _d []Model
 	var total int64 = 0
 
 	db.Model(&Model{}).Count(&total)
-	ret := db.Model(&Model{}).Limit(limit).Offset(skip).Find(&_d)
+	ret := db.Model(&Model{}).Where("TYPE=?", _type).Limit(limit).Offset(skip).Find(&_d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
