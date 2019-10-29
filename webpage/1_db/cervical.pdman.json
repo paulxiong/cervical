@@ -1527,7 +1527,7 @@
               "relationNoShow": false
             },
             {
-              "name": "precision",
+              "name": "precision1",
               "type": "Double",
               "remark": "",
               "chnname": "准确率",

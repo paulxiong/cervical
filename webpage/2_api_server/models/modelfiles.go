@@ -17,7 +17,7 @@ type Model struct {
 	Path          string    `json:"path"           gorm:"column:path"`           //模型文件路径
 	Desc          string    `json:"desc"           gorm:"column:description"`    //模型的文字描述
 	Recall        float32   `json:"recall"         gorm:"column:recall"`         //训练评估得到的召回率,整数0.66表示66%
-	Precision     float32   `json:"precision"      gorm:"column:precision"`      //训练评估得到的准确率,整数0.66表示66%
+	Precision     float32   `json:"precision"      gorm:"column:precision1"`     //训练评估得到的准确率,整数0.66表示66%
 	Ntrain        int       `json:"n_train"        gorm:"column:n_train"`        //训练用了多少张图片
 	Nclasses      int       `json:"n_classes"      gorm:"column:n_classes"`      //训练有几个分类
 	Types1        []int     `json:"types"          gorm:"-"`                     //训练的标签, 数组(传递给前端，数据库没有这个字段)
