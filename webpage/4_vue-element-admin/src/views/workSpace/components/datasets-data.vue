@@ -27,7 +27,7 @@
         type="primary"
         icon="el-icon-search"
         @click="filterSearch"
-      >搜索</el-button>
+      >刷新</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
@@ -103,10 +103,34 @@
         prop="parameter_mid"
       />
       <el-table-column
+        label="剩余时间(秒)"
+        align="center"
+        prop="ETA"
+      />
+      <el-table-column
         label="状态"
         align="center"
         prop="status"
-      />
+      >
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.statusType"
+            effect="dark"
+          >
+            {{ scope.row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        fixed="right"
+        label="操作"
+        width="100"
+      >
+        <template slot-scope="scope">
+          <el-button type="text" @click="goDetail(scope.row)">查看</el-button>
+          <el-button type="text" style="color: #ff3c43;">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="page-box flex">
       <el-pagination
@@ -130,7 +154,7 @@
 
 <script>
 import { listdatasets } from '@/api/cervical'
-import { taskStatus, createdBy } from '@/const/const'
+import { taskStatus, createdBy, taskType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 import newDatasets from './newTrain'
 
@@ -175,13 +199,15 @@ export default {
       this.$refs.newDatasets.stepBack()
     },
     filterSearch() {
-      console.log(1)
-    },
-    createDatasets() {
-      console.log(2)
+      this.listdatasets(10, (this.currentPage - 1) * 10, 1)
     },
     handleCurrentChange(val) {
-      console.log(3)
+      this.listdatasets(10, (val - 1) * 10, 1)
+    },
+    goDetail(val) {
+      this.$router.push({
+        path: `/train/detailsTrain?id=${val.id}`
+      })
     },
     listdatasets(limit, skip, order) {
       listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
@@ -191,11 +217,12 @@ export default {
           v.processtime = parseTime(v.processtime)
           v.processend = parseTime(v.processend)
           v.created_by = createdBy[v.created_by] || '普通用户'
+          v.statusType = taskType[v.status]
           v.status = taskStatus[v.status]
           v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
           v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
         })
-        this.datasetsList = res.data.data.datasets || []
+        this.datasetsList = res.data.data.datasets
         this.total = res.data.data.total
       })
     }
