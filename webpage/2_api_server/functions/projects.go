@@ -29,6 +29,8 @@ type ProjectInfo struct {
 func NewProjectJSONFile(project models.Project, types []int) {
 	dt, _ := m.GetOneDatasetByID(int(project.DID))
 
+	_mod, _ := m.FindModelInfoByID(project.ParameterMID)
+
 	p := ProjectInfo{
 		ID:              project.ID,
 		DID:             project.DID,
@@ -37,7 +39,7 @@ func NewProjectJSONFile(project models.Project, types []int) {
 		Status:          project.Status,
 		Type:            project.Type,
 		Types:           types,
-		ModPath:         "",
+		ModPath:         _mod.Path,
 		ParameterTime:   project.ParameterTime,
 		ParameterResize: project.ParameterResize,
 		ParameterMID:    project.ParameterMID,
