@@ -30,6 +30,7 @@ class worker_fs():
         elif self.wtype == wt.TRAIN.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
+            self.project_mod_json = os.path.join(self.project_dir, 'mod.json')
             self.project_train_dir = os.path.join(self.project_dir, 'train')
             self.project_resize_train_dir = os.path.join(self.project_dir, 'resize_train')
             self.project_test_dir = os.path.join(self.project_dir, 'test')

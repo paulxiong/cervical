@@ -113,7 +113,7 @@ def xy_x1y1x2y2(x, y, w):
 
 def make_square(x1, y1, x2, y2, maxx, maxy):
     _x1, _y1, _x2, _y2 = x1, y1, x2, y2
-    if (_x2 - _x1) == (_y2 - _y1):
+    if (_x2 - _x1) == (_y2 - _y1) and _x2 < maxx and _y2 < maxy:
         return _x1, _y1, _x2, _y2
     #先生成正方形坐标
     delta = (_x2 - _x1) - (_y2 - _y1)
@@ -220,7 +220,7 @@ class cells_detect_crop(worker):
         image = cv2.imread(image_path)
         if image is None:
             return image, w, h, channels
-        w, h, channels = image.shape[0], image.shape[1], image.shape[2]
+        h, w, channels = image.shape[0], image.shape[1], image.shape[2]
         return image, w, h, channels
 
     #裁剪完之后统计信息
@@ -315,6 +315,8 @@ class cells_detect_crop(worker):
                     continue
                 cell_img = image[y1:y2, x1:x2]
                 cv2.imwrite(cellpath, cell_img)
+                if cell_img.shape[0] != cell_img.shape[1]:
+                    self.log.info("not square ! %d %d %s" % (cell_img.shape[0], cell_img.shape[1], cellpath))
 
         #保存所有细胞的信息到文件
         if df_allcells is not None:
