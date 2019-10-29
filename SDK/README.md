@@ -50,10 +50,6 @@ SDK提供的是框架，改变算法或者处理流程，SDK不需要改变。
 │   │   ├── info2.json    数据集的描述文件,裁剪完之后的统计
 │   │   ├── filelist.csv 前端需要用到的datasets的原图列表
 │   │   ├── cellslist.csv 细胞图列表
-│   │   ├── cells
-│   │   │   ├── crop
-│   │   │   ├── crop_masked
-│   │   │   ├── statistics
 │
 ├── projects          每新建一个项目，对应的文件系统产生一个这个目录
 │   ├── qXTqpz6P

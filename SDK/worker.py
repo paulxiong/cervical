@@ -27,10 +27,6 @@ class worker_fs():
             self.info2_json = os.path.join(self.dataset_dir, 'info2.json')
             self.dataset_lists = os.path.join(self.dataset_dir, 'filelist.csv')
             self.dataset_cellslists = os.path.join(self.dataset_dir, 'cellslist.csv')
-            self.cells_dir = os.path.join(self.dataset_dir, 'cells')
-            self.cells_crop_dir = os.path.join(self.cells_dir, 'crop')
-            self.cells_crop_masked_dir = os.path.join(self.cells_dir, 'crop_masked')
-            self.cells_statistics_dir = os.path.join(self.cells_dir, 'statistics')
         elif self.wtype == wt.TRAIN.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
@@ -62,7 +58,7 @@ class worker_fs():
         worker_dir = None
         if self.wtype == wt.DATA.value:
             worker_dir = self.dataset_dir
-            cells_dirs = [self.cells_dir, self.cells_crop_dir, self.cells_crop_masked_dir, self.cells_statistics_dir]
+            cells_dirs = []
         elif self.wtype == wt.TRAIN.value:
             worker_dir = self.project_dir
             cells_dirs = [self.project_train_dir]
@@ -70,8 +66,8 @@ class worker_fs():
             worker_dir = self.project_dir
             cells_dirs = [self.project_predict_dir]
 
-        if not os.path.exists(self.project_dir):
-            raise RuntimeError("not found %s of %d" % (self.dataset_dir, self.wid))
+        if not os.path.exists(worker_dir):
+            raise RuntimeError("not found %s of %d" % (worker_dir, self.wid))
         for folder in cells_dirs:
             if not os.path.exists(folder):
                 os.makedirs(folder)
