@@ -1,5 +1,5 @@
 <template>
-  <div class="modelData">
+  <div class="recycleData">
     <div class="filter-box">
       <el-input
         v-model="listQuery.desc"
@@ -28,16 +28,9 @@
         icon="el-icon-search"
         @click="filterSearch"
       >搜索</el-button>
-      <el-button
-        class="filter-btn"
-        style="margin-left: 10px;"
-        type="success"
-        icon="el-icon-edit"
-        @click="createModel"
-      >新增模型</el-button>
     </div>
     <el-table
-      :data="modelList"
+      :data="recycleList"
       style="width: 100%"
     >
       <el-table-column type="expand">
@@ -105,16 +98,15 @@
 </template>
 
 <script>
-import { getListmodel } from '@/api/cervical'
 export default {
-  name: 'ModelData',
+  name: 'RecycleData',
   components: {},
   data() {
     return {
       step: 1,
       currentPage: 1,
-      total: undefined,
-      modelList: [
+      total: 12,
+      recycleList: [
         {
           'id': '1',
           'desc': '第一个项目',
@@ -207,31 +199,19 @@ export default {
       ]
     }
   },
-  created() {
-    this.getListmodel(10, 0, 1)
-  },
   methods: {
     filterSearch() {
       console.log(1)
     },
-    createModel() {
-      console.log(2)
-    },
     handleCurrentChange(val) {
       console.log(val)
-    },
-    getListmodel(limit, skip, order) {
-      getListmodel({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        this.modellist = res.data.data.model
-        this.total = res.data.data.total
-      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.modelData {
+.recycleData {
   .table-expand {
     font-size: 0;
   }

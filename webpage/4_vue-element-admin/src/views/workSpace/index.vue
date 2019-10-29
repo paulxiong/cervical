@@ -11,7 +11,7 @@
         <modelData />
       </el-tab-pane>
       <el-tab-pane label="回收站" name="recycle">
-        <datasetsCard />
+        <recycleData />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -21,11 +21,11 @@
 import projectData from './components/project-data'
 import datasetsData from './components/datasets-data'
 import modelData from './components/model-data'
-import datasetsCard from './components/datasets-card'
+import recycleData from './components/recycle-data'
 
 export default {
   name: 'Home',
-  components: { projectData, datasetsData, modelData, datasetsCard },
+  components: { projectData, datasetsData, modelData, recycleData },
   data() {
     return {
       switchVal: true,
