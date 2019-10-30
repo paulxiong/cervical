@@ -132,7 +132,7 @@ export default {
       this.postData['desc'] = this.inputName
       this.postData['parameter_cache'] = this.modelInfo.cache === '是' ? 1 : 0
       this.postData['parameter_gray'] = this.modelInfo.imgColor === '灰色' ? 1 : 0
-      this.postData['parameter_mid'] = this.modelInfo.model.did
+      this.postData['parameter_mid'] = this.modelInfo.model.id
       this.postData['parameter_size'] = parseInt(this.modelInfo.cutSize)
       this.postData['parameter_type'] = parseInt(this.modelInfo.type.slice(0, 1))
       createdataset(this.postData).then(res => {
