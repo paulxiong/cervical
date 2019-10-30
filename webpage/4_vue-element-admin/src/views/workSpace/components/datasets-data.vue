@@ -25,7 +25,7 @@
       <el-button
         class="filter-btn"
         type="primary"
-        icon="el-icon-search"
+        :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
         @click="filterSearch"
       >刷新</el-button>
       <el-button
@@ -83,41 +83,32 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="项目 ID"
-        align="center"
+        label="ID"
+        width="60"
         prop="id"
       />
       <el-table-column
         label="描述"
-        align="center"
         prop="desc"
       />
       <el-table-column
         label="创建者"
-        align="center"
         prop="created_by"
       />
       <el-table-column
         label="裁剪模型"
-        align="center"
         prop="parameter_mid"
       />
       <el-table-column
-        label="剩余时间(秒)"
-        align="center"
-        prop="ETA"
-      />
-      <el-table-column
-        label="状态"
-        align="center"
-        prop="status"
+        label="状态/剩余时间(秒)"
+        prop="statusTime"
       >
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.statusType"
             effect="dark"
           >
-            {{ scope.row.status }}
+            {{ scope.row.statusTime }}
           </el-tag>
         </template>
       </el-table-column>
@@ -156,7 +147,7 @@
 import { listdatasets } from '@/api/cervical'
 import { taskStatus, createdBy, taskType } from '@/const/const'
 import { parseTime } from '@/utils/index'
-import newDatasets from './newTrain'
+import newDatasets from './newDatasets'
 
 export default {
   name: 'DatasetsData',
@@ -168,6 +159,7 @@ export default {
       total: undefined,
       dialogFormVisible: false,
       currentPage: 1,
+      loading: false,
       listQuery: {
         desc: undefined,
         type: undefined
@@ -175,14 +167,18 @@ export default {
       typeOptions: [
         {
           key: '0',
-          name: '全部'
+          name: '未知'
         },
         {
           key: '1',
-          name: '训练'
+          name: '保留'
         },
         {
           key: '2',
+          name: '训练'
+        },
+        {
+          key: '3',
           name: '预测'
         }
       ]
@@ -210,20 +206,25 @@ export default {
       })
     },
     listdatasets(limit, skip, order) {
+      this.loading = true
       listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        res.data.data.datasets.map(v => {
-          v.created_at = parseTime(v.created_at)
-          v.updated_at = parseTime(v.updated_at)
-          v.processtime = parseTime(v.processtime)
-          v.processend = parseTime(v.processend)
-          v.created_by = createdBy[v.created_by] || '普通用户'
-          v.statusType = taskType[v.status]
-          v.status = taskStatus[v.status]
-          v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
-          v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
-        })
-        this.datasetsList = res.data.data.datasets
-        this.total = res.data.data.total
+        if (res.data.data.total > 0) {
+          res.data.data.datasets.map(v => {
+            v.created_at = parseTime(v.created_at)
+            v.updated_at = parseTime(v.updated_at)
+            v.processtime = parseTime(v.processtime)
+            v.processend = parseTime(v.processend)
+            v.created_by = createdBy[v.created_by] || '普通用户'
+            v.statusType = taskType[v.status]
+            v.status = taskStatus[v.status]
+            v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+            v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
+            v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
+          })
+          this.datasetsList = res.data.data.datasets
+          this.total = res.data.data.total
+          this.loading = false
+        }
       })
     }
   }

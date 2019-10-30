@@ -3,7 +3,6 @@
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
         <el-select
-          v-if="predict === 'predict'"
           v-model="datasets"
           class="model-option"
           clearable
@@ -12,7 +11,6 @@
         >
           <el-option v-for="(item, idx) in datasetsList" :key="item.id" :label="item.desc" :value="idx" />
         </el-select>
-        <b v-else>{{ datasetsInfo.desc }}</b>
         <b style="display:block;">{{ datasetsInfo.type | filtersStatus }}</b>
         <div class="score">
           {{ datasetsInfo.created_by | filterCreated }}
@@ -82,10 +80,6 @@ export default {
       default() {
         return []
       }
-    },
-    predict: {
-      type: String,
-      default: ''
     }
   },
   data() {

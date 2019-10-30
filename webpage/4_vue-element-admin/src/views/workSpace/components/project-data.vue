@@ -22,7 +22,7 @@
           :value="item.key"
         />
       </el-select>
-      <el-button class="filter-btn" type="primary" icon="el-icon-search" @click="filterSearch">刷新</el-button>
+      <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
@@ -74,22 +74,21 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="项目 ID" align="center" prop="id" />
-      <el-table-column label="描述" align="center" prop="desc" />
-      <el-table-column label="数据集 ID" align="center" prop="did" />
-      <el-table-column label="创建者" align="center" prop="created_by" />
-      <el-table-column label="剩余时间(秒)" align="center" prop="ETA" />
+      <el-table-column width="60" label="ID" prop="id" />
+      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="数据集 ID" prop="did" />
+      <el-table-column label="创建者" prop="created_by" />
+      <el-table-column label="类型" prop="type" />
       <el-table-column
-        label="状态"
-        align="center"
-        prop="status"
+        label="状态/剩余时间(秒)"
+        prop="statusTime"
       >
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.statusType"
             effect="dark"
           >
-            {{ scope.row.status }}
+            {{ scope.row.statusTime }}
           </el-tag>
         </template>
       </el-table-column>
@@ -126,7 +125,7 @@
 
 <script>
 import { getListprojects } from '@/api/cervical'
-import { taskStatus, createdBy, taskType } from '@/const/const'
+import { taskStatus, createdBy, taskType, projectType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 import newProject from './newProject'
 
@@ -139,6 +138,7 @@ export default {
       total: undefined,
       dialogFormVisible: false,
       currentPage: 1,
+      loading: false,
       listQuery: {
         desc: undefined,
         type: undefined
@@ -146,14 +146,18 @@ export default {
       typeOptions: [
         {
           key: '0',
-          name: '全部'
+          name: '未知'
         },
         {
           key: '1',
-          name: '训练'
+          name: '保留'
         },
         {
           key: '2',
+          name: '训练'
+        },
+        {
+          key: '3',
           name: '预测'
         }
       ]
@@ -176,6 +180,7 @@ export default {
       this.getListprojects(10, (val - 1) * 10, 1)
     },
     getListprojects(limit, skip, order) {
+      this.loading = true
       getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.projects.map(v => {
           v.created_at = parseTime(v.created_at)
@@ -185,9 +190,12 @@ export default {
           v.created_by = createdBy[v.created_by] || '普通用户'
           v.statusType = taskType[v.status]
           v.status = taskStatus[v.status]
+          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+          v.type = projectType[v.type]
         })
         this.projectlist = res.data.data.projects
         this.total = res.data.data.total
+        this.loading = false
       })
     }
   }

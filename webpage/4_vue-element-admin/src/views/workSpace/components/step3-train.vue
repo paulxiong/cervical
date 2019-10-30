@@ -8,14 +8,14 @@
         show-word-limit
         maxlength="30"
         class="input-name"
-        @keyup.enter.native="goTrain"
+        @keyup.enter.native="goDetail"
       />
       <el-button
         class="start-btn"
         type="danger"
         :disabled="!inputName.length"
         :loading="loading"
-        @click="goTrain"
+        @click="goDetail"
       >开始处理</el-button>
     </h2>
     <section class="train-box-info">
@@ -127,7 +127,7 @@ export default {
     }
   },
   methods: {
-    goTrain() {
+    goDetail() {
       this.loading = true
       this.postData['desc'] = this.inputName
       this.postData['parameter_cache'] = this.modelInfo.cache === '是' ? 1 : 0

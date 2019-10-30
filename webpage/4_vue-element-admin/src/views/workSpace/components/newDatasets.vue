@@ -1,5 +1,5 @@
 <template>
-  <div class="train">
+  <div class="newDatasets">
     <section class="step">
       <el-steps :active="step">
         <el-step title="选择批次和病例" icon="el-icon-picture" />
@@ -22,7 +22,7 @@ import checkModel from './step2-model'
 import startTrain from './step3-train'
 
 export default {
-  name: 'Train',
+  name: 'Newdatasets',
   components: { checkImg, checkModel, startTrain },
   data() {
     return {

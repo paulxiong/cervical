@@ -1,51 +1,56 @@
 <template>
-  <div class="card flex">
-    <el-card
-      v-for="(v,i) in datalist"
-      :key="i"
-      class="box-card"
-      :style="v.status === 3 || v.status === 5 || v.status === 8 ?'border:1px dashed #fc4b4e;box-shadow: 3px 3px 10px #fc4b4e;':''"
-      :shadow="v.status === 3 || v.status === 5 || v.status === 8 ?'always':'hover'"
-    >
-      <div slot="header" class="clearfix">
-        <span>{{ v.desc }}</span>
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="goDetailsTrain(v)"
-        >查看详情</el-button>
-      </div>
-
-      <div class="content flex">
-        <div class="info">
-          <i>id :</i>
-          {{ v.id }}
-          <br>
-          <i>路径 :</i>
-          {{ v.dir }}
-          <br>
-          <i>创建者 :</i>
-          {{ v.created_by | filterCreated }}
-          <br>
-          <i>类型 :</i>
-          {{ v.type | filtersStatus }}
-          <br>
-          <i>状态 :</i>
-          <el-tag
-            :type="v.status | filtersTaskType"
-            effect="dark"
-          >{{ v.status | filtersTaskStatus }}</el-tag>
+  <div class="card">
+    <el-card class="box-card" shadow="hover">
+      <div slot="header" class="flex card-header">
+        <el-badge is-dot class="badge-item">选择数据集</el-badge>
+        <el-select
+          v-model="datasets"
+          class="model-option"
+          style="width:220px"
+          placeholder="请选择"
+          size="mini"
+          @change="datasetsChange"
+        >
+          <el-option v-for="(item, idx) in datasetsList" :key="item.id" :label="item.desc" :value="idx" />
+        </el-select>
+        <b style="display:block;">{{ datasetsInfo.type | filtersStatus }}</b>
+        <div class="score">
+          {{ datasetsInfo.created_by | filterCreated }}
         </div>
-        <el-timeline reverse class="timeline">
-          <el-timeline-item
-            v-for="(activity, index) in v.activities"
-            :key="index"
-            :icon="activity.icon"
-            :color="activity.color"
-            :type="activity.type"
-            :timestamp="activity.timestamp"
-          >{{ activity.content }}</el-timeline-item>
-        </el-timeline>
+      </div>
+      <div class="flex model-info">
+        <section class="info">
+          <i>创建者:</i>
+          <b>{{ datasetsInfo.created_by }}</b>
+        </section>
+        <section class="info">
+          <i>目录:</i>
+          <b>{{ datasetsInfo.dir }}</b>
+        </section>
+        <section class="info">
+          <i>状态:</i>
+          <b>{{ datasetsInfo.status }}</b>
+        </section>
+        <section class="info">
+          <i>裁剪模型:</i>
+          <b>{{ datasetsInfo.parameter_mid }}</b>
+        </section>
+        <section class="info">
+          <i>裁剪是否用缓存:</i>
+          <b>{{ datasetsInfo.parameter_cache }}</b>
+        </section>
+        <section class="info">
+          <i>裁剪采用颜色:</i>
+          <b>{{ datasetsInfo.parameter_gray }}</b>
+        </section>
+        <section class="info">
+          <i>裁剪采用大小:</i>
+          <b>{{ datasetsInfo.parameter_size }}</b>
+        </section>
+        <section class="info">
+          <i>细胞类型:</i>
+          <b>{{ datasetsInfo.types }}</b>
+        </section>
       </div>
     </el-card>
   </div>
@@ -53,12 +58,14 @@
 
 <script>
 import { taskStatus, typeStatus, taskType, createdBy } from '@/const/const'
+import { dateformat3 } from '@/utils/dateformat'
+
 export default {
   name: 'Card',
   components: {},
   filters: {
     filterCreated(value) {
-      return createdBy[value] || '普通用户'
+      return createdBy[value]
     },
     filtersTaskType(value) {
       return taskType[value]
@@ -68,22 +75,31 @@ export default {
     },
     filtersStatus(value) {
       return typeStatus[value]
+    },
+    filtersTime(value) {
+      return dateformat3(value)
     }
   },
   props: {
-    datalist: {
+    datasetsInfo: {
+      type: Object || String,
+      default: ''
+    },
+    datasetsList: {
       type: Array,
       default() {
         return []
       }
     }
   },
+  data() {
+    return {
+      datasets: 0
+    }
+  },
   methods: {
-    goDetailsTrain(v) {
-      localStorage.setItem('isPredict', v.type)
-      this.$router.push({
-        path: `/train/detailsTrain?id=${v.id}`
-      })
+    datasetsChange() {
+      this.$emit('datasetsChange', this.datasetsList[this.datasets])
     }
   }
 }
@@ -91,23 +107,33 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  .box-card {
-    width: 410px;
-    margin-right: 30px;
-    margin-bottom: 30px;
+  margin-top: 10px;
+  opacity: 0.9;
+  i {
+    color: #666;
+    font-style: normal;
+    font-size: 14px;
   }
-  .content {
-    align-items: flex-start;
+  b {
+    font-size: 14px;
+  }
+  .model-input {
+    width: 50%;
+  }
+  .card-header {
     justify-content: flex-start;
-    .info {
-      line-height: 26px;
+    .badge-item {
+      margin-right: 10px;
     }
-    .timeline {
-      padding: 0;
-      margin-left: 30px;
+  }
+  .model-info {
+    justify-content: space-around;
+    flex-wrap: wrap;
+    .info {
+      width: calc(100%/4);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 5px 0;
     }
   }
 }

@@ -3,7 +3,6 @@
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
         <el-select
-          v-if="predict === 'predict'"
           v-model="model"
           class="model-option"
           clearable
@@ -12,17 +11,6 @@
         >
           <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx" />
         </el-select>
-        <el-input
-          v-else
-          v-model="modelInfo.desc"
-          class="model-input"
-          type="text"
-          placeholder="请输入模型名称"
-          maxlength="30"
-          show-word-limit
-          @blur="emitDesc"
-          @keyup.enter.native="emitDesc"
-        />
         <b style="display:block;">{{ modelInfo.type | filterModelType }}</b>
         <div class="score flex">
           <section class="precision-info">
@@ -73,14 +61,6 @@
             <el-checkbox v-for="(v, i) in modelInfo.types" :key="i" :label="v | filtersCheckbox" :checked="i<=1" border />
           </el-checkbox-group>
         </section>
-        <!-- <section class="info">
-          <i>创建时间</i>
-          <b>{{modelInfo.created_at}}</b>
-        </section>
-        <section class="info">
-          <i>更新时间</i>
-          <b>{{modelInfo.updated_at}}</b>
-        </section> -->
       </div>
     </el-card>
   </div>
@@ -110,10 +90,6 @@ export default {
       default() {
         return []
       }
-    },
-    predict: {
-      type: String,
-      default: ''
     }
   },
   data() {

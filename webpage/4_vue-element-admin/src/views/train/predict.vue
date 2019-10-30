@@ -84,7 +84,7 @@ export default {
   },
   created() {
     this.getListmodel(10, 0)
-    this.getListdatasets(100, 0, 2)
+    this.getListdatasets(100, 0, 1)
   },
   methods: {
     getListmodel(limit, skip) {
@@ -95,8 +95,8 @@ export default {
         }
       })
     },
-    getListdatasets(limit, skip, type) {
-      listdatasets({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
+    getListdatasets(limit, skip, order) {
+      listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         this.datasetsList = res.data.data.datasets
         this.datasetsInfo = this.datasetsList[0]
       })

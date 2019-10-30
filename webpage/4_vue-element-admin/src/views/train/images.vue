@@ -26,7 +26,7 @@
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
-      <el-tabs v-loading="loading" tab-position="left" class="img-tabs" @tab-click="tabClick">
+      <el-tabs v-loading="loading" element-loading-text="拼命加载中" tab-position="left" class="img-tabs" @tab-click="tabClick">
         <el-tab-pane label="原图">
           <el-image
             v-for="(img,idx) in origin_imgs"
@@ -53,7 +53,7 @@
             </div>
           </el-image>
         </el-tab-pane>
-        <el-tab-pane label="细胞核图">
+        <!-- <el-tab-pane label="细胞核图">
           <el-image
             v-for="(img,idx) in cells_crop_masked"
             :key="idx"
@@ -65,7 +65,7 @@
               <i class="el-icon-picture-outline" />
             </div>
           </el-image>
-        </el-tab-pane>
+        </el-tab-pane> -->
         <el-tab-pane label="图片处理log">
           <el-input
             v-model="cLog"
@@ -94,10 +94,10 @@ export default {
       percentage: 0,
       loading: true,
       dir: 'dsEoM8RR/',
-      hosturlpath32: ImgServerUrl + '/unsafe/32x0/scratch/',
-      hosturlpath100: ImgServerUrl + '/unsafe/100x0/scratch/',
-      hosturlpath200: ImgServerUrl + '/unsafe/200x0/scratch/',
-      hosturlpath645: ImgServerUrl + '/unsafe/645x0/scratch/',
+      hosturlpath32: ImgServerUrl + '/unsafe/32x0/',
+      hosturlpath100: ImgServerUrl + '/unsafe/100x0/',
+      hosturlpath200: ImgServerUrl + '/unsafe/200x0/',
+      hosturlpath645: ImgServerUrl + '/unsafe/645x0/',
       tableData: [],
       objData: { 'name': '输入信息' },
       objData2: { 'name': '输出信息' },
@@ -121,7 +121,7 @@ export default {
         getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
           this.objData2 = Object.assign(this.objData2, res.data.data)
           this.tableData.push(this.objData, this.objData2)
-          this.origin_imgs = this.objData.origin_imgs
+          this.origin_imgs = this.objData2.origin_imgs
           localStorage.setItem('jobResult', JSON.stringify(this.objData2))
         })
       })
@@ -148,13 +148,13 @@ export default {
     tabClick(tab, evt) {
       switch (tab.index) {
         case '0':
-          this.origin_imgs = this.objData.origin_imgs
+          this.origin_imgs = this.objData2.origin_imgs
           break
         case '1':
-          this.cells_crop = this.objData.cells_crop
+          this.cells_crop = this.objData2.cells_crop
           break
         case '2':
-          this.cells_crop_masked = this.objData.cells_crop_masked
+          this.cells_crop_masked = this.objData2.cells_crop_masked
           break
       }
     },

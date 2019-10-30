@@ -1,0 +1,123 @@
+<template>
+  <div class="card">
+    <el-card class="box-card" shadow="hover">
+      <div slot="header" class="flex card-header">
+        <el-badge is-dot class="badge-item">选择模型</el-badge>
+        <el-select
+          v-model="model"
+          class="model-option"
+          style="width:240px"
+          placeholder="请选择"
+          size="mini"
+          @change="modelChange"
+        >
+          <el-option v-for="(item, idx) in modelList" :key="item.id" :label="item.desc" :value="idx" />
+        </el-select>
+      </div>
+      <div class="flex model-info">
+        <section class="info">
+          <i>准确率:</i>
+          <b>{{ modelInfo.precision }}%</b>
+        </section><section class="info">
+          <i>召回率:</i>
+          <b>{{ modelInfo.recall }}%</b>
+        </section>
+        <section class="info">
+          <i>损失值:</i>
+          <b>{{ modelInfo.loss }}</b>
+        </section>
+        <section class="info">
+          <i>类型:</i>
+          <b>{{ modelInfo.type }}</b>
+        </section>
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<script>
+import { modelType, cellsType } from '@/const/const'
+
+export default {
+  name: 'Card',
+  components: {},
+  filters: {
+    filterModelType(value) {
+      return modelType[value]
+    },
+    filtersCheckbox(val) {
+      return `${val} ${cellsType[val]}`
+    }
+  },
+  props: {
+    modelInfo: {
+      type: Object || String,
+      default: ''
+    },
+    modelList: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
+  data() {
+    return {
+      checkboxCell: [],
+      model: 0
+    }
+  },
+  created() {
+    this.changeCellTypes()
+  },
+  methods: {
+    modelChange() {
+      this.$emit('modelChange', this.modelList[this.model])
+    },
+    changeCellTypes() {
+      const postCelltypes = []
+      this.checkboxCell.map(v => {
+        v = parseInt(v.slice(0, 1))
+        postCelltypes.push(v)
+      })
+      this.$emit('changeCellTypes', postCelltypes)
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.card {
+  margin-top: 10px;
+  opacity: 0.9;
+  i {
+    color: #666;
+    font-style: normal;
+    margin-right: 5px;
+    font-size: 14px
+  }
+  b {
+    font-size: 14px;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  }
+  .model-input {
+    width: 50%;
+  }
+  .card-header {
+    justify-content: flex-start;
+    .badge-item {
+      margin-right: 10px;
+    }
+  }
+  .model-info {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .info {
+      width: calc(100%/4);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 5px 0;
+    }
+  }
+}
+</style>
