@@ -79,7 +79,7 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['Allocated Budget', 'Expected Spending', 'Actual Spending']
+          data: ['17P0603', 'redhouse', 'fujianfuyou', '20190523']
         },
         series: [{
           type: 'radar',
@@ -96,15 +96,19 @@ export default {
           data: [
             {
               value: [5000, 7000, 12000, 11000, 15000, 14000],
-              name: 'Allocated Budget'
+              name: '17P0603'
             },
             {
               value: [4000, 9000, 15000, 15000, 13000, 11000],
-              name: 'Expected Spending'
+              name: 'redhouse'
             },
             {
               value: [5500, 11000, 12000, 15000, 12000, 12000],
-              name: 'Actual Spending'
+              name: 'fujianfuyou'
+            },
+            {
+              value: [4500, 13000, 15000, 15000, 11000, 13000],
+              name: '20190523'
             }
           ],
           animationDuration: animationDuration

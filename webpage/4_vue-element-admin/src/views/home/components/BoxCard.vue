@@ -5,7 +5,7 @@
     </div>
     <div style="position:relative;">
       <pan-thumb :image="avatar" class="panThumb" />
-      <mallki class-name="mallki-text" text="technology stack" />
+      <mallki class-name="mallki-text" text="算法技术栈" />
       <div style="padding-top:35px;" class="progress-item">
         <span>DeepLearning</span>
         <el-progress :percentage="70" />
