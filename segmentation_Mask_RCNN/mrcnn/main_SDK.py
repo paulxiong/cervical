@@ -23,7 +23,7 @@ if __name__ == '__main__':
             w.woker_percent(4, 1800)
             ret = w.crop_images()
         except Exception as ex:
-            print(ex)
+            w.log.info(str(ex))
             ret = False
 
         if ret == True:

@@ -93,6 +93,7 @@ export default {
     return {
       percentage: 0,
       ETA: 1800,
+      status: 0,
       loadingtext: '正在执行',
       loading: true,
       dir: 'dsEoM8RR/',
@@ -133,7 +134,8 @@ export default {
       getPercent({ id: this.$route.query.id, type: 1 }).then(res => {
         this.percentage = res.data.data.percent
         this.ETA = res.data.data.ETA
-        if (this.percentage === 100) {
+        this.status = res.data.data.status
+        if ((this.percentage === 100) || (this.status === 3)) {
           this.loading = false
           clearInterval(timer)
         } else {
