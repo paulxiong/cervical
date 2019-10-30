@@ -266,17 +266,21 @@ class cells_detect_crop(worker):
         """
         #细胞定位时候才需要，如果按照标注裁剪不需要
         if self.datasetinfo['parameter_type'] == 0:
+            self.log.info("方式：图片直接送检测并切割出细胞")
             model_path = os.path.join(self.modules_dir, self.datasetinfo['modpath'])
             if self.model_path != model_path or self.detector is None:
                 self.detector =  cells_detector(model_path, self.wdir, self.debug)
+        elif self.datasetinfo['parameter_type'] == 1:
+            self.log.info("方式：按照标注切割出细胞")
 
         df_allcells = None
         df_imgs = pd.read_csv(self.dataset_lists)
         ts1 = int(time.time()*1000)
         for index, imginfo in df_imgs.iterrows():
             ts2 = int(time.time()*1000)
-            needtime = (ts2 - ts1) * (df_imgs.shape[0] - index)
+            needtime = 1800
             if index > 0:
+                needtime = (ts2 - ts1) * (df_imgs.shape[0] - index)
                 self.log.info("step %d / %d 预计还需要 %d秒" % (index, df_imgs.shape[0] -1, needtime/1000))
             else:
                 self.log.info("step %d / %d" % (index, df_imgs.shape[0] -1))
