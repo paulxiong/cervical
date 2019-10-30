@@ -41,6 +41,9 @@
           </el-image>
         </el-tab-pane>
         <el-tab-pane label="细胞图">
+          <el-link target="_blank" :href="downloadurl" :underline="false" style="margin-left:15px">
+            <el-button size="mini" type="warning">下载细胞</el-button>
+          </el-link>
           <el-image
             v-for="(img,idx) in cells_crop"
             :key="idx"
@@ -83,7 +86,7 @@
 
 <script>
 import { getjobresult, getPercent, getjoblog } from '@/api/cervical'
-import { ImgServerUrl } from '@/const/config'
+import { ImgServerUrl, APIUrl } from '@/const/config'
 let timer
 
 export default {
@@ -94,6 +97,7 @@ export default {
       percentage: 0,
       ETA: 1800,
       status: 0,
+      downloadurl: APIUrl + '/api1/zipdownload?id=' + this.$route.query.id,
       loadingtext: '正在执行',
       loading: true,
       dir: 'dsEoM8RR/',
