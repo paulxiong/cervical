@@ -137,7 +137,8 @@ export default {
       })
     },
     getjoblog() {
-      getjoblog({ id: this.$route.query.id, type: 'c' }).then(res => {
+      // type 0 未知 1 数据集处理 2 训练 3 预测
+      getjoblog({ id: this.$route.query.id, type: '1' }).then(res => {
         this.cLog = res.data.data
       })
     },
