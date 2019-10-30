@@ -9,8 +9,8 @@ class api():
     def post2webserver(self, path=None, payload=None):
         if path is None or payload is None:
             return None
-        if self.debug:
-            print(path, payload)
+        #if self.debug:
+        #    print(path, payload)
         api_url = self.apihost + path
         try:
             response = requests.post(api_url, json=payload, timeout=4)
@@ -19,11 +19,11 @@ class api():
         else:
             if 200 == response.status_code:
                 response.text.encode('utf-8')
-                if self.debug:
-                    print('post2webserver ssucceed ! ' + path)
-                    print(response.status_code)
-                    print(response.url)
-                    print(response.text.encode('utf-8'))
+                #if self.debug:
+                #    print('post2webserver ssucceed ! ' + path)
+                #    print(response.status_code)
+                #    print(response.url)
+                #    print(response.text.encode('utf-8'))
                 return response.text.encode('utf-8')
             else:
                 return None

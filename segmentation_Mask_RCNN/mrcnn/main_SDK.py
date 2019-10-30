@@ -16,8 +16,8 @@ if __name__ == '__main__':
         w.datasetinfo = w.load_info_json()
         w.log.info("读取数据集信息完成")
 
-        w.log.info("开始数据预处理")
-        w.woker_percent(4, 0)
+        w.log.info("开始数据预处理, 默认ETA=1800秒")
+        w.woker_percent(4, 1800)
         ret = w.crop_images()
 
         if ret == True:

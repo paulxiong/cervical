@@ -245,7 +245,7 @@ if __name__ == '__main__':
     #    w.log.info("读取训练信息完成")
 
     #    w.log.info("开始训练")
-    #    w.woker_percent(4, 0)
+    #    w.woker_percent(4, 1800)
     #    ret = w.train()
 
     #    if ret == True:
@@ -272,7 +272,7 @@ if __name__ == '__main__':
         w.log.info("读取训练信息完成")
 
         w.log.info("开始训练")
-        w.woker_percent(4, 0)
+        w.woker_percent(4, 1800)
         ret = w.predict()
         #ret = w.train()
 

@@ -109,15 +109,15 @@ class worker_api(api):
             wid, dirname = 0, None
         return wid, dirname
     def woker_percent(self, percent, ETA):
-        self.percent = percent
-        self.post_job_status(self.wid, self.status, self.wtype, self.percent, ETA)
+        self.percent, self.ETA = percent, ETA
+        self.post_job_status(self.wid, self.status, self.wtype, self.percent, self.ETA)
 
 class worker(worker_api, worker_fs):
     def __init__(self, wtype):
         self.wtype = wtype    #任务的类型
         self.debug, self.rootdir, self.apihost = get_environment()
         self.percent, self.status = 0, 0
-        self.ETA = 0 #预估还要多长时间结束
+        self.ETA = 1800 #预估还要多长时间结束,默认给个比较到的数值
 
         #API初始化
         worker_api.__init__(self, self.apihost, self.wtype)
