@@ -68,7 +68,7 @@ class cells_detector():
         return model
 
     # 从一张原图定位出细胞的坐标
-    def detect_image(self, image, gray=True):
+    def detect_image(self, image, gray=True, size=100):
         celltype = 100 #100表示类型未知
         predict_img = image
         if gray is True:
@@ -98,6 +98,8 @@ class cells_detector():
                 print2("%s drop roi, score=%f" % (filename, score))
                 continue
             y1, x1, y2, x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
+
+            x1, y1, x2, y2 = xy_x1y1x2y2((x2 + x1) / 2, (y2 + y1) / 2, size)
             _rois.append([x1, y1, x2, y2, celltype])
         return _rois
 
@@ -193,9 +195,13 @@ class cells_detect_crop(worker):
 
     def get_cells_posation(self, imginfo, image):
         cellsinfo = []
+        size = 100
+        if self.datasetinfo['parameter_size'] > 0:
+            size = self.datasetinfo['parameter_size']
+
         if self.datasetinfo['parameter_type'] == 0:
             gray = 1 if self.datasetinfo['parameter_gray'] ==0 else 0
-            cellsinfo = self.detector.detect_image(image, gray=gray)
+            cellsinfo = self.detector.detect_image(image, gray=gray, size=size)
         elif self.datasetinfo['parameter_type'] == 1:
             csvpath = os.path.join(self.csv_dir, str(imginfo['csvpath']))
             if not os.path.exists(csvpath):
@@ -204,9 +210,6 @@ class cells_detect_crop(worker):
             df_cells = pd.read_csv(csvpath)
             for index2, labelinfo in df_cells.iterrows():
                 #单个细胞的标注
-                size = 100
-                if self.datasetinfo['parameter_size'] > 0:
-                    size = self.datasetinfo['parameter_size']
                 x1, y1, x2, y2 = xy_x1y1x2y2(int(labelinfo['X']), int(labelinfo['Y']), size)
                 cellsinfo.append([x1, y1, x2, y2, int(labelinfo['Type'])])
             return cellsinfo, True
