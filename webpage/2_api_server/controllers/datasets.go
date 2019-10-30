@@ -666,23 +666,31 @@ func GetJobPercent(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Param id query string false "id, default 1, 被预测的数据集ID/被预测或训练的项目的ID"
+// @Param type query string false "type, default 1, 查询的对象 0 未知 1 数据集处理 2 训练 3 预测"
+// @Success 200 {string} json "{"data": "日志字符串",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/joblog [get]
 func GetJobLog(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
-	typeStr := c.DefaultQuery("type", "c") // c-- crop  t--train
+	typeStr := c.DefaultQuery("type", "1") // 0 未知 1 数据集处理 2 训练 3 预测
+	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 
-	d, _ := models.GetOneDatasetByID(int(id))
+	dirname := ""
 
-	j := f.GetLogContent(d, typeStr)
-
+	if _type == 1 {
+		d, _ := models.GetOneDatasetByID(int(id))
+		dirname = d.Dir
+	} else if _type == 2 || _type == 3 {
+		project, _ := models.GetOneProjectByID(int(id))
+		dirname = project.Dir
+	}
+	logstr := f.GetLogContent(dirname, int(_type))
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   j,
+		"data":   logstr,
 	})
-
 	return
 }
 

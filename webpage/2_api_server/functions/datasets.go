@@ -3,7 +3,6 @@ package function
 import (
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -76,12 +75,12 @@ func GetInfoJSONPath(d m.Dataset, isDone int64) string {
 }
 
 // GetLogContent 读取任务的日志文件
-func GetLogContent(d m.Dataset, _type string) string {
+func GetLogContent(dirname string, _type int) string {
 	logpath := ""
-	if _type == "c" {
-		logpath = scratchRoot + "/" + d.Dir + "/" + fmt.Sprintf("%d.log", d.ID)
+	if _type == 1 { // 0 未知 1 数据集处理 2 训练 3 预测
+		logpath = datasetsDir + "/" + dirname + "/log.txt"
 	} else {
-		logpath = scratchRoot + "/" + d.Dir + "/" + "log"
+		logpath = projectsDir + "/" + dirname + "/log.txt"
 	}
 	data, err := ioutil.ReadFile(logpath)
 	if err != nil {
