@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
-	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	"github.com/toolkits/file"
 )
@@ -116,7 +115,7 @@ func NewJSONFile(d models.Dataset, batchids []string, medicalids []string, cntn 
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
-func CreateDataset(imgs []models.ImagesByMedicalID, dt *m.Dataset) (n int, p int) {
+func CreateDataset(imgs []models.ImagesByMedicalID, dt *models.Dataset) (n int, p int) {
 	dirname := dt.Dir
 	err := os.MkdirAll(datasetsDir+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {

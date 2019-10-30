@@ -56,6 +56,8 @@ func Router() *gin.Engine {
 	// 任务
 	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
+	// 文件操作
+	api1.GET("/zipdownload", ctr.FileDownload)
 
 	api1.Use(ctr.CheckAuth)
 	{
