@@ -105,7 +105,7 @@ func UpdateProjectPercent(pid int64, percent int, ETA int) (e error) {
 	_p.Percent = percent
 	_p.ETA = ETA
 
-	ret := db.Model(&_p).Where("id=?", pid).Updates(_p)
+	ret := db.Model(&_p).Where("id=?", pid).Updates(map[string]interface{}{"process_percent": _p.Percent, "ETA": _p.ETA})
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

@@ -420,7 +420,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 	return ret2.Error
 }
 
-// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练 7开始训练 8训练出错 9训练完成 10 送去做预测 11 开始预测 12 预测出错 13 预测完成
+// UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在
 func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d := Dataset{}
 	ret2 := db.Model(&d).Where("id=?", did).First(&d)
@@ -436,6 +436,8 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	d.Status = status
 	if status == 2 {
 		d.ProcessTime = time.Now()
+	} else if status == 4 {
+		d.ProcessEnd = time.Now()
 	}
 
 	ret := db.Model(&d).Where("id=?", did).Updates(d)
@@ -458,7 +460,7 @@ func UpdateDatasetsPercent(did int64, percent int, ETA int) (e error) {
 		d.ETA = ETA
 	}
 
-	ret := db.Model(&d).Where("id=?", did).Updates(d)
+	ret := db.Model(&d).Where("id=?", did).Updates(map[string]interface{}{"process_percent": d.ProcessPercent, "ETA": d.ETA})
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
