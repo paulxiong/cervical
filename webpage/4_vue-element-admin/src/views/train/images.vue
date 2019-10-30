@@ -26,7 +26,7 @@
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
-      <el-tabs v-loading="loading" element-loading-text="拼命加载中" tab-position="left" class="img-tabs" @tab-click="tabClick">
+      <el-tabs v-loading="loading" :element-loading-text="loadingtext" tab-position="left" class="img-tabs" @tab-click="tabClick">
         <el-tab-pane label="原图">
           <el-image
             v-for="(img,idx) in origin_imgs"
@@ -92,6 +92,8 @@ export default {
   data() {
     return {
       percentage: 0,
+      ETA: 1800,
+      loadingtext: '正在执行',
       loading: true,
       dir: 'dsEoM8RR/',
       hosturlpath32: ImgServerUrl + '/unsafe/32x0/',
@@ -127,11 +129,15 @@ export default {
       })
     },
     getPercent() {
-      getPercent({ id: this.$route.query.id, job: 0 }).then(res => {
-        this.percentage = res.data.data
+      // type 0 未知 1 数据集处理 2 训练 3 预测
+      getPercent({ id: this.$route.query.id, type: 1 }).then(res => {
+        this.percentage = res.data.data.percent
+        this.ETA = res.data.data.ETA
         if (this.percentage === 100) {
           this.loading = false
           clearInterval(timer)
+        } else {
+          this.loadingtext = '正在执行，预计还需要' + this.ETA + '秒'
         }
         this.finishedImages()
       })

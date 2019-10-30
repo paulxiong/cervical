@@ -632,6 +632,12 @@ func GetJobResult(c *gin.Context) {
 	return
 }
 
+type datasetPercent struct {
+	Percent int `json:"percent" example:"50"` //进度50%
+	ETA     int `json:"ETA" example:"1800"`   //预测还有1800秒结束
+	Status  int `json:"status" example:"4"`   //当前任务状态
+}
+
 // GetJobPercent 获得任务进度（数据处理/训练/预测）
 // @Summary 获得任务进度（数据处理/训练/预测）
 // @Description 获得任务进度（数据处理/训练/预测）
@@ -639,17 +645,30 @@ func GetJobResult(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param id query string false "id, default 0, 数据集的ID"
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Param id query string false "id, default 1, 被预测的数据集ID/被预测或训练的项目的ID，即目标任务的ID"
+// @Param type query string false "type, default 1, 查询的对象 0 未知 1 数据集处理 2 训练 3 预测"
+// @Success 200 {object} controllers.datasetPercent
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobpercent [get]
 func GetJobPercent(c *gin.Context) {
-	idStr := c.DefaultQuery("id", "0")
+	idStr := c.DefaultQuery("id", "1")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
+	typeStr := c.DefaultQuery("type", "1") // 0 未知 1 数据集处理 2 训练 3 预测
+	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 
-	d, _ := models.GetOneDatasetByID(int(id))
+	percent := datasetPercent{}
 
-	percent := d.ProcessPercent
+	if _type == 1 {
+		d, _ := models.GetOneDatasetByID(int(id))
+		percent.Percent = d.ProcessPercent
+		percent.ETA = d.ETA
+		percent.Status = d.Status
+	} else if _type == 2 || _type == 3 {
+		p, _ := models.GetOneProjectByID(int(id))
+		percent.Percent = p.Percent
+		percent.ETA = p.ETA
+		percent.Status = p.Status
+	}
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
