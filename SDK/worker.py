@@ -8,6 +8,8 @@ def get_environment():
     debug = os.environ.get('DEBUG', False) #是否打印调试信息
     rootdir = os.environ.get('ROOTDIR', 'scratch/') #数据的根目录
     apihost = os.environ.get('WEBURL', 'http://192.168.1.100:9000')
+
+    rootdir = os.path.join(rootdir) #滤掉多余的字符
     return debug, rootdir, apihost
 
 class worker_fs():

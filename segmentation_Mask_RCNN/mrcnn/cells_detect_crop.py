@@ -223,14 +223,19 @@ class cells_detect_crop(worker):
         h, w, channels = image.shape[0], image.shape[1], image.shape[2]
         return image, w, h, channels
 
+    #从细胞列表csv文件取出原图/细胞图的集合，是相对路径
+    def get_image_list_from_csv(self, df, columename, rootdir):
+        imgs = []
+        for imgpath, df1 in df.groupby([columename]):
+            imgpath2 = imgpath[len(rootdir):]
+            imgs.append(imgpath2)
+        return imgs
+
     #裁剪完之后统计信息
     def update_info_json(self, df):
         job_info = self.load_info_json()
-        #job_info['origin_imgs']       = _get_filelist(job.origin_imgs, startdir, suffix=['.jpg', '.JPG', '.png'])
-        #job_info['cells_crop']        = _get_filelist(job.crop, startdir, suffix=['.jpg', '.JPG', '.png'])
-        #job_info['cells_crop_masked'] = _get_filelist(job.crop_masked, startdir, suffix=['.jpg', '.JPG', '.png'])
-        #job_info['cells_mask_npy']    = _get_filelist(job.mask_npy, startdir, suffix=['.npy'])
-        #job_info['cells_rois']        = _get_filelist(job.rois, startdir, suffix=['.csv'])
+        job_info['origin_imgs']       = self.get_image_list_from_csv(df, 'imgpath', self.rootdir)
+        job_info['cells_crop']        = self.get_image_list_from_csv(df, 'cellpath', self.rootdir)
         job_info['status'] = self.status
 
         #统计医生标注的信息
