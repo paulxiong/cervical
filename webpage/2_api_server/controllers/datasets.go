@@ -540,6 +540,12 @@ func SetJobResult(c *gin.Context) {
 	if w.Type == 1 {
 		models.UpdateDatasetsStatus(w.ID, w.Status)
 		models.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
+		if w.Status == 4 { //处理完成
+			done := 1 //处理完1 处理之前0
+			d, _ := models.GetOneDatasetByID(int(w.ID))
+			j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, int64(done)))
+			models.UpdateDatasetsCellTypes(w.ID, j.Types)
+		}
 	} else if w.Type == 2 || w.Type == 3 {
 		models.UpdateProjectStatus(w.ID, w.Status)
 		models.UpdateProjectPercent(w.ID, w.Percent, w.ETA)
@@ -582,12 +588,6 @@ func ListDatasets(c *gin.Context) {
 	if err != nil {
 		logger.Info.Println(err)
 	}
-	/*
-		for idx, v := range ds {
-			ds[idx].CreatedAtTs = v.CreatedAt.Unix() * 1000
-			ds[idx].StartTimeTs = v.StartTime.Unix() * 1000
-		}
-	*/
 
 	dts := listDatasets{}
 	dts.Datasets = ds
@@ -621,7 +621,7 @@ func GetJobResult(c *gin.Context) {
 
 	d, _ := models.GetOneDatasetByID(int(id))
 
-	j := f.LoadJSONFile(f.GetInfoJSONPath(d, done))
+	j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, done))
 	j.Status = d.Status
 
 	c.JSON(e.StatusReqOK, gin.H{

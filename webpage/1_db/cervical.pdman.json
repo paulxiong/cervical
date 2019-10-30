@@ -1058,6 +1058,12 @@
               "chnname": "是否使用裁剪过的cache"
             },
             {
+              "name": "types",
+              "type": "MiddleString",
+              "remark": "数组，被转成字符串存储",
+              "chnname": "当前数据集的所有细胞类型"
+            },
+            {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",

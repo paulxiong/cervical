@@ -6,6 +6,7 @@ import (
 	"time"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/jinzhu/gorm"
 )
@@ -365,6 +366,9 @@ type Dataset struct {
 
 	DatasetParameter
 
+	Types1 []int  `json:"types"          gorm:"-"`            //当前数据集的细胞分类, 数组(传递给前端，数据库没有这个字段)
+	Types2 string `json:"-"              gorm:"column:types"` //当前数据集的细胞分类, 字符串存储(存数据库，前端没有这个字段)
+
 	CreatedBy int64     `json:"created_by"      gorm:"column:created_by"` //创建者
 	CreatedAt time.Time `json:"created_at"      gorm:"column:created_at"` //创建时间
 	UpdatedAt time.Time `json:"updated_at"      gorm:"column:updated_at"` //更新时间
@@ -382,7 +386,57 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 		d.ProcessTime = time.Now()
 		d.ProcessEnd = time.Now()
 	}
+
+	str, err2 := u.Array2String(&d.Types1)
+	if err2 == nil {
+		d.Types2 = str
+	}
 	return nil
+}
+
+// AfterFind 把数据库里面存的字符串转成数组返回
+func (d *Dataset) AfterFind(scope *gorm.Scope) error {
+	if d.Types2 != "" {
+		arr, err := u.String2Array(d.Types2)
+		if err == nil {
+			d.Types1 = arr
+		}
+	}
+	return nil
+}
+
+//CellTypesinfo 细胞类型和对应的个数
+type CellTypesinfo struct {
+	CellType int `json:"celltype" example:"7"`   //细胞的类型
+	LabelCnt int `json:"labelcnt" example:"900"` //类型的个数
+}
+
+// UpdateDatasetsCellTypes 更新数据集的包含的细胞类型,在数据裁剪完之后更新
+func UpdateDatasetsCellTypes(did int64, cti []CellTypesinfo) (e error) {
+	d := Dataset{}
+	ret2 := db.Model(&d).Where("id=?", did).First(&d)
+	if ret2.Error != nil {
+		return ret2.Error
+	}
+
+	typearr := make([]int, 0)
+	for i := 0; i < len(cti); i++ {
+		typearr = append(typearr, cti[i].CellType)
+	}
+	if d.Status == 4 {
+		arr, err := u.Array2String(&typearr)
+		if err == nil {
+			d.Types2 = arr
+		}
+	} else {
+		return nil
+	}
+
+	ret := db.Model(&d).Where("id=?", did).Updates(d)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
 }
 
 // ListDataset 依次列出数据集
