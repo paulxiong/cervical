@@ -79,13 +79,12 @@ func UpdateProjectStatus(pid int64, status int) (e error) {
 		return ret2.Error
 	}
 
-	p.Status = status
-
-	if status == 2 {
+	if status == 2 && p.Status == 1 {
 		p.StartTime = time.Now()
-	} else if status == 4 {
+	} else if status == 4 && p.Status == 2 {
 		p.EndTime = time.Now()
 	}
+	p.Status = status
 
 	ret := db.Model(&p).Where("id=?", pid).Updates(p)
 	if ret.Error != nil {

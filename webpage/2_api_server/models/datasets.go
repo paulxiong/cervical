@@ -481,18 +481,13 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 	if ret2.Error != nil {
 		return ret2.Error
 	}
-	/*
-		logger.Info.Println(status, d.Status)
-		if d.Status >= status {
-			return ret2.Error
-		}
-	*/
-	d.Status = status
-	if status == 2 {
+
+	if status == 2 && d.Status == 1 {
 		d.ProcessTime = time.Now()
-	} else if status == 4 {
+	} else if status == 4 && d.Status == 2 {
 		d.ProcessEnd = time.Now()
 	}
+	d.Status = status
 
 	ret := db.Model(&d).Where("id=?", did).Updates(d)
 	if ret.Error != nil {
