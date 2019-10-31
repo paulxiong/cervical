@@ -28,7 +28,7 @@ func FileDownload(c *gin.Context) {
 
 	// GetOneDatasetByID 通过ID查找数据集
 	dt, err := models.GetOneDatasetByID(int(id))
-	if len(dt.Dir) < 1 || err != nil || dt.Status != 2 {
+	if len(dt.Dir) < 1 || err != nil || dt.Status != 4 {
 		c.JSON(e.StatusReqOK, gin.H{
 			"status": e.StatusSucceed,
 			"data":   "data not found or not ready",
