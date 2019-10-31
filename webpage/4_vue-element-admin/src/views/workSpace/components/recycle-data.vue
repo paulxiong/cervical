@@ -83,6 +83,15 @@
         label="状态"
         prop="status"
       />
+      <el-table-column
+        fixed="right"
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <el-button type="text" @click="goDetail(scope.row)">恢复</el-button>
+          <el-button type="text" style="color: #ff3c43;">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="page-box flex">
       <el-pagination

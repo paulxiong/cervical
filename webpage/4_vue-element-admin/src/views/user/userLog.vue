@@ -1,7 +1,7 @@
 <template>
   <div class="userLog">
     <el-table :data="userLog.accesslog" height="600" style="width: 100%">
-      <el-table-column prop="user_id" label="用户ID" width="100" />
+      <el-table-column prop="name" label="用户名" width="200" />
       <el-table-column prop="ip" label="IP" width="180" />
       <el-table-column prop="region.isp" label="运营商" width="100" />
       <el-table-column prop="region.city" label="城市" width="100" />
@@ -36,6 +36,14 @@
               <tr>
                 <td class="td-1">用户ID:</td>
                 <td>{{ scope.row.user_id }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">用户名:</td>
+                <td>{{ scope.row.name }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">电话:</td>
+                <td>{{ scope.row.mobile }}</td>
               </tr>
               <tr>
                 <td class="td-1">请求大小:</td>
@@ -120,10 +128,12 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
+        :page-sizes="[10, 50, 100, 200]"
         :page-size="10"
-        layout="prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </footer>
   </div>
@@ -152,6 +162,15 @@ export default {
     },
     handleCurrentChange(val) {
       this.getUserLog(10, (val - 1) * 10, 1)
+      console.log(`每页 ${val} 条`)
+    },
+    data() {
+      return {
+        currentPage1: 5,
+        currentPage2: 5,
+        currentPage3: 5,
+        currentPage4: 4
+      }
     },
     getUserLog(limit, skip, order) {
       getUserLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
