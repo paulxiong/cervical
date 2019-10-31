@@ -14,12 +14,12 @@ import (
 // FileDownload 细胞集合的zip下载
 // @Summary 细胞集合的zip下载
 // @Description 细胞集合的zip下载
-// @tags API1 模型（需要认证）
+// @tags API1 文件（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
 // @Param id query string false "id, default 0, 数据集的ID"
-// @Success 200 {object} controllers.listMods
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listmodel [get]
 func FileDownload(c *gin.Context) {

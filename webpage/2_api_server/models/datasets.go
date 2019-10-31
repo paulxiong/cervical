@@ -58,6 +58,19 @@ func ListImage(limit int, skip int) (totalNum int64, c []Image, e error) {
 	return total, _i, ret.Error
 }
 
+// ListImageOfMedicalID 根据批次号病例号查找所有的图片
+func ListImageOfMedicalID(bid string, mdcid string, limit int64, skip int64) (totalNum int, c []Image, e error) {
+	var _i []Image
+	var total int = 0
+
+	db.Model(&Image{}).Where("BATCHID=? AND MEDICALID=?", mdcid, bid).Count(&total)
+	ret := db.Model(&Image{}).Where("BATCHID=? AND MEDICALID=?", bid, mdcid).Limit(limit).Offset(skip).Find(&_i)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _i, ret.Error
+}
+
 // ListImageCntByLabelType 通过标注的类型来依次列出有这种标注类型的FOV图片
 func ListImageCntByLabelType(t int) (totalNum int64, e error) {
 	type res struct {
@@ -222,14 +235,16 @@ func ListImagesByMedicalID(medicalid string) (imgs []ImagesByMedicalID, e error)
 
 // Label 标注的信息
 type Label struct {
-	ID        int64     `json:"id"            gorm:"column:ID"`    //标注信息ID
-	Imgid     int64     `json:"imgid"         gorm:"column:IMGID"` //所属图片的ID
-	Type      int       `json:"type"          gorm:"column:TYPE"`  //类新
-	TypeOut   string    `json:"typeout"       gorm:"-"`            //类新，前端使用数据库没有
-	X         int       `json:"x"             gorm:"column:X"`     //X
-	Y         int       `json:"y"             gorm:"column:Y"`     //Y
-	W         int       `json:"w"             gorm:"column:W"`     //X
-	H         int       `json:"h"             gorm:"column:H"`     //Y     `
+	ID        int64     `json:"id"            gorm:"column:ID"`         //标注信息ID
+	Imgid     int64     `json:"imgid"         gorm:"column:IMGID"`      //所属图片的ID
+	Type      int       `json:"type"          gorm:"column:TYPE"`       //类新
+	TypeOut   string    `json:"typeout"       gorm:"-"`                 //类新，前端使用数据库没有
+	X         int       `json:"x"             gorm:"column:X"`          //X
+	Y         int       `json:"y"             gorm:"column:Y"`          //Y
+	W         int       `json:"w"             gorm:"column:W"`          //X
+	H         int       `json:"h"             gorm:"column:H"`          //Y
+	Status    int       `json:"status"        gorm:"column:status"`     //状态, 0 未审核 1 已审核 2 移除
+	CreatedBy int64     `json:"created_by"    gorm:"column:created_by"` //创建者
 	CreatedAt time.Time `json:"created_time"  gorm:"column:CREATED_TIME"`
 	UpdatedAt time.Time `json:"updated_time"  gorm:"column:UPDATED_TIME"`
 }

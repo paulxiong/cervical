@@ -124,7 +124,7 @@ func RegisterUser(c *gin.Context) {
 // @Description 获得当前用户信息 code: 200 用户信息获取成功  401 未登录
 // @Description status: 200 成功  其他: 未登录
 // @Summary 用户信息
-// @tags API1 用户
+// @tags API1 用户（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -173,7 +173,7 @@ func LoginUser(c *gin.Context) {
 // LogoutUser 用户注销
 // @Description 已经登录用户注销
 // @Summary 已经登录用户注销
-// @tags API1 用户
+// @tags API1 用户（需要认证）
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
@@ -268,7 +268,7 @@ type listOperationlog struct {
 // GetAccessLog 按数据库存储顺序依次获得用户访问记录
 // @Summary 按数据库存储顺序依次获得用户访问记录
 // @Description 按数据库存储顺序依次获得用户访问记录
-// @tags API1 数据/项目（需要认证）
+// @tags API1 用户（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth

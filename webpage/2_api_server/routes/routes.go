@@ -56,8 +56,6 @@ func Router() *gin.Engine {
 	// 任务
 	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
-	// 文件操作
-	api1.GET("/zipdownload", ctr.FileDownload)
 
 	api1.Use(ctr.CheckAuth)
 	{
@@ -71,8 +69,11 @@ func Router() *gin.Engine {
 		api1.POST("/imglistsofwanted", ctr.GetImgListOfWanted)
 		api1.GET("/imglistsonebyone", ctr.GetImgListOneByOne)
 		api1.GET("/getLabelbyimageid", ctr.GetLabelByImageID)
-		api1.POST("/createdataset", ctr.CreateDataset)
 		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalID)
+		api1.GET("/getimgbymid", ctr.GetImgListOfMedicalID)
+
+		// 数据集
+		api1.POST("/createdataset", ctr.CreateDataset)
 		api1.GET("/listdatasets", ctr.ListDatasets)
 
 		// 项目
@@ -90,6 +91,9 @@ func Router() *gin.Engine {
 		// 模型
 		api1.GET("/listmodel", ctr.GetModelLists)
 		api1.POST("/savemodel", ctr.SaveModelInfo)
+
+		// 文件操作
+		api1.GET("/zipdownload", ctr.FileDownload)
 	}
 	return r
 }

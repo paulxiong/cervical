@@ -38,7 +38,7 @@ type Statistics struct {
 // AllInfo 获得所有图片及标注的统计信息
 // @Summary 获得所有图片及标注的统计信息
 // @Description 获得所有图片及标注的统计信息
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -96,7 +96,7 @@ type BatchInfo struct {
 // GetBatchInfo 获得所有批次信息
 // @Summary 获得所有批次信息
 // @Description 获得所有批次信息
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -132,7 +132,7 @@ type MedicalIDInfo struct {
 // GetMedicalIDInfo 获得所有病例信息
 // @Summary 获得所有病例信息
 // @Description 获得所有病例信息
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -179,7 +179,7 @@ type CategorysInfo struct {
 // GetCategoryInfo 获得细胞分类信息
 // @Summary 获得细胞分类信息
 // @Description 获得细胞分类信息
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -224,7 +224,7 @@ type wanted2 struct {
 // GetImgListOfWanted 获得所选批/次病/细胞类型的图片
 // @Summary 获得所选批/次病/细胞类型的图片
 // @Description 获得所选批/次病/细胞类型的图片
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -265,7 +265,7 @@ type imageslists struct {
 // GetImgListOneByOne 按数据库存储的顺序依次得到图片的信息
 // @Summary 按数据库存储的顺序依次得到图片的信息
 // @Description 按数据库存储的顺序依次得到图片的信息
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -306,7 +306,7 @@ type Labelslists struct {
 // GetLabelByImageID 通过图片的ID获得对应的所有标注信息
 // @Summary 通过图片的ID获得对应的所有标注信息
 // @Description 通过图片的ID获得对应的所有标注信息
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -365,7 +365,7 @@ type imagesNPCount struct {
 // GetImagesNPTypeByMedicalID 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
 // @Summary 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
 // @Description 通过所选中的批次/病例/图片, 返回N/P图片的个数统计
-// @tags API1 数据/项目（需要认证）
+// @tags API1 数据（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -389,10 +389,10 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 	return
 }
 
-// CreateDataset 新建数据/项目
-// @Summary 新建数据/项目
-// @Description 新建数据/项目
-// @tags API1 数据/项目（需要认证）
+// CreateDataset 新建数据集
+// @Summary 新建数据集
+// @Description 新建数据集
+// @tags API1 数据集（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -563,10 +563,10 @@ type listDatasets struct {
 	Total    int64            `json:"total"`
 }
 
-// ListDatasets 按数据库存储顺序依次获得数据/项目信息
-// @Summary 按数据库存储顺序依次获得数据/项目信息
-// @Description 按数据库存储顺序依次获得数据/项目信息
-// @tags API1 数据/项目（需要认证）
+// ListDatasets 按数据库存储顺序依次获得数据集信息
+// @Summary 按数据库存储顺序依次获得数据集信息
+// @Description 按数据库存储顺序依次获得数据集信息
+// @tags API1 数据集（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
@@ -896,5 +896,66 @@ func GetPredictResult(c *gin.Context) {
 		"status": e.StatusSucceed,
 		"data":   str,
 	})
+	return
+}
+
+// ImageBase FOV图片基础信息
+type imgofmedical struct {
+	Imgpath string `json:"imgpath" example:"img/1.png"` //图片的半截URL
+	W       int    `json:"w"       example:"100"`       //图片宽
+	H       int    `json:"h"       example:"100"`       //图片高
+}
+
+type imgsofmedical struct {
+	Imgs  []*imgofmedical `json:"imgs"`                 //图片的数组
+	Total int             `json:"total"  example:"100"` //图片的个数
+}
+
+// GetImgListOfMedicalID 获得所选批/次病的所有图片
+// @Summary 获得所选批/次病的所有图片
+// @Description 获得所选批/次病的所有图片
+// @tags API1 数据（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param bid query string false "bid, default 空字符串, 批次号"
+// @Param mdcid query string false "mdcid, default 空字符串, 病历号"
+// @Param limit query string false "limit, default 100, 个数上限制"
+// @Param skip query string false "skip, default 0, 跳过的个数"
+// @Success 200 {object} controllers.imgsofmedical
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /api1/getimgbymid [get]
+func GetImgListOfMedicalID(c *gin.Context) {
+	MedicalID := c.DefaultQuery("mdcid", "")
+	BatchID := c.DefaultQuery("bid", "")
+	limitStr := c.DefaultQuery("limit", "100")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 32)
+	skip, _ := strconv.ParseInt(skipStr, 10, 32)
+
+	if len(MedicalID) < 1 || len(BatchID) < 1 {
+		ResString(c, "bad MedicalID or BatchID")
+		return
+	}
+
+	total, _imgs, err := models.ListImageOfMedicalID(BatchID, MedicalID, limit, skip)
+	if err != nil {
+		ResString(c, "not found images")
+		return
+	}
+	imgs := imgsofmedical{
+		Total: total,
+	}
+	imgs.Imgs = make([]*imgofmedical, 0)
+
+	for _, v := range _imgs {
+		imgs.Imgs = append(imgs.Imgs, &imgofmedical{
+			Imgpath: f.Imgpath(BatchID, MedicalID, v.Imgpath),
+			W:       v.W,
+			H:       v.H,
+		})
+	}
+
+	ResStruct(c, imgs)
 	return
 }
