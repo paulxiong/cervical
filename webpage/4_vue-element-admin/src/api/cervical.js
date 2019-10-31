@@ -168,6 +168,14 @@ export function createPredict(data) {
   })
 }
 
+export function createProject(data) {
+  return request({
+    url: '/api1/createproject',
+    method: 'post',
+    data
+  })
+}
+
 export function getPredictResult(query) {
   return request({
     url: '/api1/predictresult',

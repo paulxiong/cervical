@@ -52,18 +52,34 @@
           <b>{{ datasetsInfo.types }}</b>
         </section>
       </div>
+      <div class="cell-types">
+        <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox flex" @change="cellsTypeChange">
+          <el-checkbox
+            v-for="(v,i) in datasetsInfo.types"
+            v-show="v !== 100"
+            :key="i"
+            :label="v | filtersCheckbox"
+            min="2"
+            class="item-cell"
+            border
+          />
+        </el-checkbox-group>
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import { taskStatus, typeStatus, taskType, createdBy } from '@/const/const'
+import { taskStatus, typeStatus, taskType, createdBy, cellsType } from '@/const/const'
 import { dateformat3 } from '@/utils/dateformat'
 
 export default {
   name: 'Card',
   components: {},
   filters: {
+    filtersCheckbox(val) {
+      return cellsType[val]
+    },
     filterCreated(value) {
       return createdBy[value]
     },
@@ -94,12 +110,22 @@ export default {
   },
   data() {
     return {
-      datasets: 0
+      datasets: 0,
+      checkboxCell: []
     }
   },
   methods: {
     datasetsChange() {
+      this.checkboxCell = []
       this.$emit('datasetsChange', this.datasetsList[this.datasets])
+    },
+    cellsTypeChange() {
+      const cellsList = []
+      this.checkboxCell
+      this.checkboxCell.map(v => {
+        cellsList.push(parseInt(v.split(' ')[0]))
+      })
+      this.$emit('cellsTypeChange', cellsList)
     }
   }
 }
@@ -124,6 +150,14 @@ export default {
     justify-content: flex-start;
     .badge-item {
       margin-right: 10px;
+    }
+  }
+  .cell-checkbox {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    .item-cell {
+      margin-right: 0px;
     }
   }
   .model-info {

@@ -13,12 +13,9 @@
           :datasets-info="datasetsInfo"
           :datasets-list="datasetsList"
           @datasetsChange="datasetsChange"
+          @cellsTypeChange="cellsTypeChange"
         />
-        <modelCard
-          :model-info="modelInfo"
-          :model-list="modelList"
-          @modelChange="modelChange"
-        />
+        <modelCard :model-info="modelInfo" :model-list="modelList" @modelChange="modelChange" />
       </div>
       <div v-if="step===2" class="start-train">
         <h2 class="title flex">
@@ -29,16 +26,30 @@
             show-word-limit
             maxlength="30"
             class="input-name"
-            @keyup.enter.native="goDetail"
+            @keyup.enter.native="createProject"
           />
           <el-button
             class="start-btn"
             type="danger"
             :disabled="!inputName.length"
-            @click="goDetail"
+            @click="createProject"
           >开始处理</el-button>
         </h2>
         <div class="info flex">
+          <section class="param">
+            <h4>新建类型</h4>
+            <el-radio-group v-model="predictType">
+              <el-radio-button label="训练" />
+              <el-radio-button label="预测" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>预测方式</h4>
+            <el-radio-group v-model="predictWay">
+              <el-radio-button label="没标注的图" />
+              <el-radio-button label="有标注的图" />
+            </el-radio-group>
+          </section>
           <section class="param">
             <h4>裁剪大小(像素)</h4>
             <el-radio-group v-model="cutInput">
@@ -55,13 +66,6 @@
               <el-radio-button label="3000" />
             </el-radio-group>
           </section>
-          <section class="param">
-            <h4>预测方式</h4>
-            <el-radio-group v-model="predictWay">
-              <el-radio-button label="没标注的图" />
-              <el-radio-button label="有标注的图" />
-            </el-radio-group>
-          </section>
         </div>
       </div>
     </section>
@@ -71,7 +75,7 @@
 <script>
 import modelCard from './model-card'
 import datasetsCard from './datasets-card'
-import { listdatasets, getListmodel, createPredict } from '@/api/cervical'
+import { listdatasets, getListmodel, createProject } from '@/api/cervical'
 import { taskStatus, createdBy } from '@/const/const'
 
 export default {
@@ -80,11 +84,13 @@ export default {
   data() {
     return {
       step: 1,
-      useTime: '1800',
+      predictType: '训练',
       predictWay: '没标注的图',
       cutInput: 100,
+      useTime: '1800',
       inputName: '',
       modelList: [],
+      cellsList: [],
       modelInfo: {},
       datasetsInfo: {},
       datasetsList: [],
@@ -94,7 +100,7 @@ export default {
     }
   },
   created() {
-    this.getListmodel(10, 0)
+    this.getListmodel(10, 0, 1)
     this.getListdatasets(20, 0, 1)
   },
   methods: {
@@ -106,8 +112,8 @@ export default {
     stepBack() {
       this.step = 1
     },
-    getListmodel(limit, skip) {
-      getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
+    getListmodel(limit, skip, order) {
+      getListmodel({ 'limit': limit, 'skip': skip, order }).then(res => {
         if (res.data.data.total > 0) {
           this.modelList = res.data.data.models
           this.modelInfo = this.modelList[0]
@@ -128,22 +134,39 @@ export default {
         }
       })
     },
-    createPredict() {
-      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id, 'celltypes': this.postCelltypes }).then(res => {
-        this.$message({
-          message: res.data.data,
-          type: 'success'
+    createProject() {
+      const postData = this.predictType === '预测' ? {
+        celltypes: this.cellsList,
+        desc: this.inputName,
+        did: parseInt(this.datasetsInfo.id),
+        parameter_mid: parseInt(this.modelInfo.id),
+        parameter_resize: parseInt(this.cutInput),
+        parameter_time: parseInt(this.useTime),
+        parameter_type: this.predictWay === '没标注的图' ? 0 : 1,
+        type: this.predictType === '训练' ? 2 : 3
+      } : {
+        celltypes: this.cellsList,
+        desc: this.inputName,
+        did: parseInt(this.datasetsInfo.id),
+        parameter_resize: parseInt(this.cutInput),
+        parameter_time: parseInt(this.useTime),
+        parameter_type: this.predictWay === '没标注的图' ? 0 : 1,
+        type: this.predictType === '训练' ? 2 : 3
+      }
+      createProject(postData).then(res => {
+        this.$router.push({
+          path: `/train/detailsTrain?id=14`
         })
       })
     },
     datasetsChange(val) {
-      console.log(val, 'data')
+      this.datasetsInfo = val
+    },
+    cellsTypeChange(val) {
+      this.cellsList = val
     },
     modelChange(val) {
-      console.log(val, 'model')
-    },
-    goDetail() {
-      console.log(1)
+      this.modelInfo = val
     }
   }
 }

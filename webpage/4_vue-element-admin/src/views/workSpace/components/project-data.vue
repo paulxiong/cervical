@@ -116,8 +116,8 @@
     <el-dialog title="新建项目" :visible.sync="dialogFormVisible">
       <newProject ref="newProject" />
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="stepBack">上一步</el-button>
-        <el-button size="mini" type="primary" @click="stepNext">下一步</el-button>
+        <el-button v-show="step===2" size="mini" @click="stepBack">上一步</el-button>
+        <el-button v-show="step===1" size="mini" type="primary" @click="stepNext">下一步</el-button>
       </div>
     </el-dialog>
   </div>
@@ -137,6 +137,7 @@ export default {
       projectlist: undefined,
       total: undefined,
       dialogFormVisible: false,
+      step: 1,
       currentPage: 1,
       loading: false,
       listQuery: {
@@ -169,15 +170,22 @@ export default {
   methods: {
     stepNext() {
       this.$refs.newProject.stepNext()
+      this.step = this.$refs.newProject.step
     },
     stepBack() {
       this.$refs.newProject.stepBack()
+      this.step = this.$refs.newProject.step
     },
     filterSearch() {
       this.getListprojects(10, (this.currentPage - 1) * 10, 1)
     },
     handleCurrentChange(val) {
       this.getListprojects(10, (val - 1) * 10, 1)
+    },
+    goDetail(val) {
+      this.$router.push({
+        path: `/train/detailsTrain?id=14`
+      })
     },
     getListprojects(limit, skip, order) {
       this.loading = true
