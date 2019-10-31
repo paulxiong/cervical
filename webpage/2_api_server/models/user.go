@@ -99,13 +99,13 @@ func Getallusers() {
 }
 
 // FinduserbyID 通过用户ID查找用户
-func (u *User) FinduserbyID() (*User, error) {
-	user := &User{}
-	ret := db.Model(u).Where("id=?", u.ID).First(user)
+func FinduserbyID(uid int64) (*User, error) {
+	user := User{}
+	ret := db.Model(&user).Where("id=?", uid).First(&user)
 	if ret.Error != nil {
-		return user, ret.Error
+		return &user, ret.Error
 	}
-	return user, nil
+	return &user, nil
 }
 
 // FinduserbyMobile 通过手机号查找用户
@@ -225,7 +225,7 @@ func GetUserFromContext(c *gin.Context) (*User, bool) {
 
 // SaveUsertoContext 把用户信息存到请求上下文
 func SaveUsertoContext(c *gin.Context, u *User) {
-	user, err := u.FinduserbyID()
+	user, err := FinduserbyID(u.ID)
 	if err == nil {
 		user.Password = ""
 		c.Set("user", user)
