@@ -228,58 +228,51 @@ class cells_predict(_cells_train):
         _cells_train.__init__(self, wt.PREDICT.value)
         self.log.info("初始化一个预测的worker")
 
-if __name__ == '__main__':
-    #w = cells_train() #训练
-    #while 1:
-    #    wid, wdir = w.get_job()
-    #    if wdir == None:
-    #        exit()
-    #        time.sleep(5)
-    #        continue
-    #    w.log.info("获得一个训练任务%d 工作目录%s" % (wid, wdir))
+def worker_load(w):
+    w_str = "训练" if w.wtype == wt.TRAIN.value else "预测"
 
-    #    w.prepare(wid, wdir, wt.TRAIN.value)
-    #    w.log.info("初始化文件目录完成")
+    wid, wdir = w.get_job()
+    if wdir == None:
+        return
+    w.log.info("获得一个%s任务%d 工作目录%s" % (w_str, wid, wdir))
 
-    #    w.projectinfo = w.load_info_json()
-    #    w.log.info("读取训练信息完成")
-
-    #    w.log.info("开始训练")
-    #    w.woker_percent(4, 1800)
-    #    ret = w.train()
-
-    #    if ret == True:
-    #        w.done()
-    #        w.log.info("训练完成 %d 工作目录%s" % (wid, wdir))
-    #    else:
-    #        w.error()
-    #        w.log.info("训练出错 %d 工作目录%s" % (wid, wdir))
-    #    exit()
-
-    w = cells_predict()
-    while 1:
-        wid, wdir = w.get_job()
-        if wdir == None:
-            exit()
-            time.sleep(5)
-            continue
-        w.log.info("获得一个训练任务%d 工作目录%s" % (wid, wdir))
-
-        w.prepare(wid, wdir, wt.TRAIN.value)
-        w.log.info("初始化文件目录完成")
+    ret = True
+    try:
+        w.prepare(wid, wdir, w.wtype)
+        w.log.info("初始化%s文件目录完成" % w_str)
 
         w.projectinfo = w.load_info_json()
-        w.log.info("读取训练信息完成")
+        w.log.info("读取%s信息完成" % w_str)
 
-        w.log.info("开始训练")
+        w.log.info("开始%s" % w_str)
         w.woker_percent(4, 1800)
-        ret = w.predict()
-        #ret = w.train()
+        if w.wtype == wt.TRAIN.value:
+            ret = w.train()
+        elif w.wtype == wt.PREDICT.value:
+            ret = w.predict()
+    except Exception as ex:
+        w.log.info(str(ex))
+        ret = False
 
-        if ret == True:
-            w.done()
-            w.log.info("训练完成 %d 工作目录%s" % (wid, wdir))
-        else:
-            w.error()
-            w.log.info("训练出错 %d 工作目录%s" % (wid, wdir))
-        exit()
+    if ret == True:
+        w.done()
+        w.log.info("%s完成 %d 工作目录%s" % (w_str, wid, wdir))
+    else:
+        w.error()
+        w.log.info("%s出错 %d 工作目录%s" % (w_str, wid, wdir))
+    return
+
+if __name__ == '__main__':
+    tw = cells_train() #训练
+    pw = cells_predict()
+
+    while 1:
+        #训练
+        worker_load(tw)
+        time.sleep(5)
+
+        #预测
+        worker_load(pw)
+        time.sleep(5)
+
+
