@@ -149,7 +149,7 @@ type PredictInfo2 struct {
 
 // LoadPredictJSONFile 加载json文件内容成struct
 func LoadPredictJSONFile(dirname string) PredictInfo2 {
-	filename := scratchRoot + "/" + dirname + "/predict2.json"
+	filename := projectsDir + "/" + dirname + "/predict2.json"
 	j := PredictInfo2{}
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
