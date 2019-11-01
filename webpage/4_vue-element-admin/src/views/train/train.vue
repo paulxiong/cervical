@@ -80,7 +80,7 @@ export default {
         postCelltypes.push(v)
       })
       createTrain({
-        id: parseInt(this.$route.query.id),
+        id: parseInt(this.$route.query.pid),
         celltypes: postCelltypes
       }).then(res => {
         this.startedTrain = res.data.data
@@ -91,13 +91,13 @@ export default {
       })
     },
     getTrainresult() {
-      getTrainresult({ 'id': this.$route.query.id }).then(res => {
+      getTrainresult({ 'id': this.$route.query.pid }).then(res => {
         this.modelInfo = res.data.data
       })
     },
     getPercent() {
-      getPercent({ id: this.$route.query.id, job: 1 }).then(res => {
-        this.percentage = res.data.data
+      getPercent({ id: this.$route.query.pid, job: 1 }).then(res => {
+        this.percentage = res.data.data.percent
         if (this.percentage === 100) {
           clearInterval(timer)
         }

@@ -97,7 +97,7 @@ export default {
       percentage: 0,
       ETA: 1800,
       status: 0,
-      downloadurl: APIUrl + '/api1/zipdownload?id=' + this.$route.query.id,
+      downloadurl: APIUrl + '/api1/zipdownload?id=' + this.$route.query.did,
       loadingtext: '正在执行',
       loading: true,
       dir: 'dsEoM8RR/',
@@ -123,9 +123,9 @@ export default {
   methods: {
     getjobresult() {
       // 异步任务改为同步
-      getjobresult({ id: this.$route.query.id, done: '0' }).then(res => {
+      getjobresult({ id: this.$route.query.did, done: '0' }).then(res => {
         this.objData = Object.assign(this.objData, res.data.data)
-        getjobresult({ id: this.$route.query.id, done: '1' }).then(res => {
+        getjobresult({ id: this.$route.query.did, done: '1' }).then(res => {
           this.objData2 = Object.assign(this.objData2, res.data.data)
           this.tableData.push(this.objData, this.objData2)
           this.origin_imgs = this.objData2.origin_imgs
@@ -135,7 +135,7 @@ export default {
     },
     getPercent() {
       // type 0 未知 1 数据集处理 2 训练 3 预测
-      getPercent({ id: this.$route.query.id, type: 1 }).then(res => {
+      getPercent({ id: this.$route.query.did, type: 1 }).then(res => {
         this.percentage = res.data.data.percent
         this.ETA = res.data.data.ETA
         this.status = res.data.data.status
@@ -145,12 +145,11 @@ export default {
         } else {
           this.loadingtext = '正在执行，预计还需要' + this.ETA + '秒'
         }
-        this.finishedImages()
       })
     },
     getjoblog() {
       // type 0 未知 1 数据集处理 2 训练 3 预测
-      getjoblog({ id: this.$route.query.id, type: '1' }).then(res => {
+      getjoblog({ id: this.$route.query.did, type: '1' }).then(res => {
         this.cLog = res.data.data
       })
     },
@@ -169,12 +168,6 @@ export default {
           this.cells_crop_masked = this.objData2.cells_crop_masked
           break
       }
-    },
-    /**
-     * 父组件的图片状态更新为已完成
-     */
-    finishedImages() {
-      this.$emit('finished', this.percentage)
     },
     /**
      * 定时器轮训百分比

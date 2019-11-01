@@ -115,3 +115,71 @@ func ListProjects(c *gin.Context) {
 	})
 	return
 }
+
+// GetTrainResult 根据传递来的项目ID，获取训练结果及信息
+// @Summary 根据传递来的项目ID，获取训练结果及信息
+// @Description 根据传递来的项目ID，获取训练结果及信息
+// @Description status：
+// @Description 200 成功
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "项目的ID, default 0"
+// @Success 200 {object} models.Model
+// @Router /api1/trainresult [get]
+func GetTrainResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "1")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	d, err := models.GetOneProjectByID(int(id))
+	if err != nil || d.Status != 4 {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets trainning not finished or not found",
+		})
+		return
+	}
+
+	modinfo := f.LoadModJSONFile(d.Dir)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   modinfo,
+	})
+	return
+}
+
+// GetPredictResult 根据传递来的项目ID，返回预测的结果
+// @Summary 根据传递来的项目ID，返回预测的结果
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "id, default 0, 项目ID"
+// @Success 200 {object} function.PredictInfo2
+// @Router /api1/predictresult [get]
+func GetPredictResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "0")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+
+	dinfo, err := models.GetOneProjectByID(int(id))
+	if err != nil {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "datasets info not found",
+		})
+		return
+	}
+
+	str := f.LoadPredictJSONFile(dinfo.Dir)
+
+	c.JSON(e.StatusReqOK, gin.H{
+		"status": e.StatusSucceed,
+		"data":   str,
+	})
+	return
+}
