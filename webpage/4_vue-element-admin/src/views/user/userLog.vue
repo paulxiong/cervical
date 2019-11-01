@@ -1,5 +1,29 @@
 <template>
   <div class="userLog">
+    <div class="filter-box">
+      <el-input
+        v-model="listQuery.desc"
+        placeholder="请输入描述搜索"
+        style="width:200px;"
+        class="filter-input"
+        @keyup.enter.native="filterSearch"
+      />
+      <el-select
+        v-model="listQuery.type"
+        placeholder="类型"
+        clearable
+        class="filter-type"
+        style="width: 130px"
+      >
+        <el-option
+          v-for="item in typeOptions"
+          :key="item.key"
+          :label="item.name"
+          :value="item.key"
+        />
+      </el-select>
+      <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
+    </div>
     <el-table :data="userLog.accesslog" height="600" style="width: 100%">
       <el-table-column prop="name" label="用户名" width="200" />
       <el-table-column prop="ip" label="IP" width="180" />
@@ -128,7 +152,7 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-sizes="[10, 50, 100, 200]"
+        :page-sizes="[10, 20, 50, 100, 200]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
         :total="userLog.total"
@@ -149,7 +173,30 @@ export default {
   data() {
     return {
       currentPage: 1,
-      userLog: []
+      userLog: [],
+      loading: false,
+      listQuery: {
+        desc: undefined,
+        type: undefined
+      },
+      typeOptions: [
+        {
+          key: '0',
+          name: '用户名'
+        },
+        {
+          key: '1',
+          name: '城市'
+        },
+        {
+          key: '2',
+          name: '运营商'
+        },
+        {
+          key: '3',
+          name: '时间'
+        }
+      ]
     }
   },
   created() {
@@ -158,6 +205,9 @@ export default {
   methods: {
     handleClick(row) {
       console.log(row)
+    },
+    filterSearch() {
+      this.getUserLog(10, (this.currentPage - 1) * 10, 1)
     },
     handleCurrentChange(val) {
       this.getUserLog(10, (val - 1) * 10, 1)
@@ -172,14 +222,19 @@ export default {
       }
     },
     getUserLog(limit, skip, order) {
+      this.loading = true
       getUserLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.accesslog.map(v => {
           v.ua = new UA(v.ua)
           v.cost = (v.cost / 1000).toFixed(2)
           v.created_at = formatTime(v.created_at)
+          v.updated_at = formatTime(v.created_at)
+          v.processtime = formatTime(v.processtime)
+          v.processend = formatTime(v.processtime)
           v.region.city = v.region.city ? v.region.city : v.region.province ? v.region.province : v.region.country
         })
         this.userLog = res.data.data
+        this.loading = false
       })
     }
   }

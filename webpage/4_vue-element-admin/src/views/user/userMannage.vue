@@ -1,5 +1,28 @@
 <template>
   <div class="userList">
+    <div class="filter-box">
+      <el-input
+        v-model="listQuery.desc"
+        placeholder="请输入描述搜索"
+        style="width:200px;"
+        class="filter-input"
+        @keyup.enter.native="filterSearch"
+      />
+      <el-select
+        v-model="listQuery.type"
+        placeholder="类型"
+        clearable
+        class="filter-type"
+        style="width: 130px"
+      >
+        <el-option
+          v-for="item in typeOptions"
+          :key="item.key"
+          :label="item.name"
+          :value="item.key"
+        />
+      </el-select>
+    </div>
     <el-table :data="userList" height="600" style="width: 100%">
       <el-table-column prop="id" label="ID" width="100" />
       <el-table-column prop="user_id" label="用户ID" width="100" />
@@ -28,8 +51,9 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-size="100"
-        layout="prev, pager, next, jumper"
+        :page-sizes="[10, 20, 30, 50]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="1000"
         @current-change="handleCurrentChange"
       />
@@ -45,6 +69,25 @@ export default {
   data() {
     return {
       currentPage: 1,
+      loading: false,
+      listQuery: {
+        desc: undefined,
+        type: undefined
+      },
+      typeOptions: [
+        {
+          key: '0',
+          name: '类型'
+        },
+        {
+          key: '1',
+          name: '用户名'
+        },
+        {
+          key: '2',
+          name: '城市'
+        }
+      ],
       userList: [
         {
           'id': 0,
