@@ -205,7 +205,7 @@ export default {
     },
     goDetail(val) {
       this.$router.push({
-        path: `/train/detailsTrain?did=${val.id}`
+        path: `/workSpace/details?did=${val.id}`
       })
     },
     listdatasets(limit, skip, order) {

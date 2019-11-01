@@ -15,7 +15,38 @@
           @datasetsChange="datasetsChange"
           @cellsTypeChange="cellsTypeChange"
         />
-        <modelCard :model-info="modelInfo" :model-list="modelList" @modelChange="modelChange" />
+        <div class="info flex">
+          <section class="param">
+            <h4>新建类型</h4>
+            <el-radio-group v-model="predictType" size="mini">
+              <el-radio-button label="训练" />
+              <el-radio-button label="预测" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>预测方式</h4>
+            <el-radio-group v-model="predictWay" size="mini">
+              <el-radio-button label="没标注的图" />
+              <el-radio-button label="有标注的图" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>裁剪大小(像素)</h4>
+            <el-radio-group v-model="cutInput" size="mini">
+              <el-radio-button label="100" />
+              <el-radio-button label="120" />
+              <el-radio-button label="150" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>最长用时</h4>
+            <el-radio-group v-model="useTime" size="mini">
+              <el-radio-button label="1800" />
+              <el-radio-button label="2400" />
+              <el-radio-button label="3000" />
+            </el-radio-group>
+          </section>
+        </div>
       </div>
       <div v-if="step===2" class="start-train">
         <h2 class="title flex">
@@ -35,38 +66,7 @@
             @click="createProject"
           >开始处理</el-button>
         </h2>
-        <div class="info flex">
-          <section class="param">
-            <h4>新建类型</h4>
-            <el-radio-group v-model="predictType">
-              <el-radio-button label="训练" />
-              <el-radio-button label="预测" />
-            </el-radio-group>
-          </section>
-          <section class="param">
-            <h4>预测方式</h4>
-            <el-radio-group v-model="predictWay">
-              <el-radio-button label="没标注的图" />
-              <el-radio-button label="有标注的图" />
-            </el-radio-group>
-          </section>
-          <section class="param">
-            <h4>裁剪大小(像素)</h4>
-            <el-radio-group v-model="cutInput">
-              <el-radio-button label="100" />
-              <el-radio-button label="120" />
-              <el-radio-button label="150" />
-            </el-radio-group>
-          </section>
-          <section class="param">
-            <h4>最长用时</h4>
-            <el-radio-group v-model="useTime">
-              <el-radio-button label="1800" />
-              <el-radio-button label="2400" />
-              <el-radio-button label="3000" />
-            </el-radio-group>
-          </section>
-        </div>
+        <modelCard v-show="predictType === '预测'" :model-info="modelInfo" :model-list="modelList" @modelChange="modelChange" />
       </div>
     </section>
   </div>
@@ -155,7 +155,7 @@ export default {
       }
       createProject(postData).then(res => {
         this.$router.push({
-          path: `/train/detailsTrain?id=14`
+          path: `/workSpace/details?id=14`
         })
       })
     },
@@ -176,7 +176,10 @@ export default {
 .newProject {
   .info {
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: flex-start;
+    .param {
+      margin-right: 15px;
+    }
   }
 }
 </style>

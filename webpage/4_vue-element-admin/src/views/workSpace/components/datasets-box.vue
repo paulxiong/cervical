@@ -12,7 +12,7 @@
         <el-button
           style="float: right; padding: 3px 0"
           type="text"
-          @click="goDetailsTrain(v)"
+          @click="goDetails(v)"
         >查看详情</el-button>
       </div>
 
@@ -79,10 +79,10 @@ export default {
     }
   },
   methods: {
-    goDetailsTrain(v) {
+    goDetails(v) {
       localStorage.setItem('isPredict', v.type)
       this.$router.push({
-        path: `/train/detailsTrain?id=${v.id}`
+        path: `/workSpace/details?id=${v.id}`
       })
     }
   }

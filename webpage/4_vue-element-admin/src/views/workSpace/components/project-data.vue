@@ -185,7 +185,7 @@ export default {
     },
     goDetail(val) {
       this.$router.push({
-        path: `/train/detailsTrain?pid=${val.id}&did=${val.did}&type=${val.type}`
+        path: `/workSpace/details?pid=${val.id}&did=${val.did}&type=${val.type}`
       })
     },
     getListprojects(limit, skip, order) {

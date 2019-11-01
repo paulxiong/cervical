@@ -7,15 +7,25 @@
           <el-button size="mini" type="primary">预测</el-button>
         </div>
         <div class="btn-box-right">
-          <el-cascader class="cascader" size="mini" placeholder="请选择数据集" clearable :options="batchList" @change="changeBatchList">
+          <el-cascader
+            v-model="currentLabel"
+            class="cascader"
+            size="mini"
+            placeholder="请选择数据集"
+            clearable
+            :props="lazyProps"
+            :options="batchList"
+            :show-all-levels="false"
+            @change="changeBatchList"
+          >
             <template slot-scope="{ node, data }">
               <span>{{ data.label }}</span>
-              <span v-if="!node.isLeaf">({{ data.children.length }})</span>
+              <!-- <span v-if="!node.isLeaf">({{ data.children.length }})</span> -->
             </template>
           </el-cascader>
           <el-button-group>
-            <el-button size="mini" type="info" icon="el-icon-arrow-left">上一张</el-button>
-            <el-button size="mini" type="info">
+            <el-button size="mini" type="info" icon="el-icon-arrow-left" @click="previousImg">上一张</el-button>
+            <el-button size="mini" type="info" @click="nextImg">
               下一张
               <i class="el-icon-arrow-right el-icon--right" />
             </el-button>
@@ -46,23 +56,10 @@
           <el-badge is-dot class="badge-item">标注记录</el-badge>
         </el-divider>
         <div class="list">
-          <el-table
-            :data="labelLog"
-            style="width: 100%"
-          >
-            <el-table-column
-              prop="name"
-              label="用户"
-            />
-            <el-table-column
-              prop="log"
-              width="110"
-              label="操作"
-            />
-            <el-table-column
-              prop="date"
-              label="日期"
-            />
+          <el-table :data="labelLog" style="width: 100%">
+            <el-table-column prop="name" label="用户" />
+            <el-table-column prop="log" width="110" label="操作" />
+            <el-table-column prop="date" label="日期" />
           </el-table>
         </div>
       </div>
@@ -71,8 +68,7 @@
 </template>
 
 <script>
-import { getBatchInfo, getMedicalIdInfo } from '@/api/cervical'
-import { getLabelByImageId } from '@/api/cervical'
+import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 import { formatTime } from '@/utils/index'
@@ -87,10 +83,37 @@ export default {
       activeItem: 1,
       cellType: '1',
       batchList: [],
-      currentData: [],
+      currentLabel: [],
       labelLog: [],
       imgInfo: {},
-      fov_img: 'http://medical.raidcdn.cn:3001/unsafe/1000x0/img/17P0603/1904165B/Images/IMG017x001.JPG'
+      fov_img: 'http://medical.raidcdn.cn:3001/unsafe/1000x0/img/17P0603/1904165B/Images/IMG017x001.JPG',
+      lazyProps: {
+        lazy: true,
+        lazyLoad(node, resolve) {
+          const { label, level, parent } = node
+          if (level === 1) {
+            getMedicalIdInfo({ 'batchid': label }).then(res => {
+              const medicalids = []
+              res.data.data.medicalids.map(v => {
+                const obj = {}
+                obj['label'] = v
+                obj['value'] = v
+                medicalids.push(obj)
+              })
+              resolve(medicalids)
+            })
+          } else if (level === 2) {
+            getImgbymid({ 'bid': parent['label'], 'mdcid': label, 'limit': 100, 'skip': 0 }).then(res => {
+              res.data.data.imgs.map(v => {
+                v['label'] = v.imgpath
+                v['value'] = v.id
+                v['leaf'] = level >= 2
+              })
+              resolve(res.data.data.imgs)
+            })
+          }
+        }
+      }
     }
   },
   created() {
@@ -98,43 +121,24 @@ export default {
     this.getBatchInfo()
   },
   methods: {
+    previousImg() {
+      console.log(this.batchList)
+      this.currentLabel = ['17P0603', '1903779', 656]
+    },
+    nextImg() {
+      console.log(this.currentLabel)
+      this.currentLabel = ['17P0603', '1903779', 657]
+    },
     changeBatchList(val) {
-      this.currentData = val
+      this.currentLabel = val
     },
     getBatchInfo() {
-      getBatchInfo().then(res1 => {
-        const data1 = res1.data.data
-        data1.batchs.map(v => {
+      getBatchInfo().then(res => {
+        res.data.data.batchs.map(v => {
           const obj = {}
           obj['label'] = v
           obj['value'] = v
-          getMedicalIdInfo({ 'batchid': v }).then(res2 => {
-            const data2 = res2.data.data
-            const medicalids = []
-            data2.medicalids.map(item => {
-              item = {
-                'label': item,
-                'value': item,
-                'children': [
-                  {
-                    'label': '20190523.1807285.N.IMG002x011.JPG',
-                    'value': '20190523.1807285.N.IMG002x011.JPG'
-                  },
-                  {
-                    'label': '20190523.1807285.N.IMG002x012.JPG',
-                    'value': '20190523.1807285.N.IMG002x012.JPG'
-                  },
-                  {
-                    'label': '20190523.1807285.N.IMG002x013.JPG',
-                    'value': '20190523.1807285.N.IMG002x013.JPG'
-                  }
-                ]
-              }
-              medicalids.push(item)
-            })
-            obj['children'] = medicalids
-            this.batchList.push(obj)
-          })
+          this.batchList.push(obj)
         })
       })
     },
@@ -143,10 +147,10 @@ export default {
         this.imgInfo = res.data.data
         this.imgInfo.labels.map(v => {
           v.tag = `${v.imgid}-${v.type}`
-          v.tagName = this.cellsType[v.type]
+          v.tagName = v.type
           v.position = {
             x: parseFloat(v.x / this.imgInfo.imgw) * 100 + '%',
-            x1: parseFloat(v.x / this.imgInfo.imgw) * 100 + parseFloat(v.h / this.imgInfo.imgh) * 100 + '%',
+            x1: parseFloat(v.x / this.imgInfo.imgw) * 100 + parseFloat(v.w / this.imgInfo.imgw) * 100 + '%',
             y: parseFloat(v.y / this.imgInfo.imgh) * 100 + '%',
             y1: parseFloat(v.y / this.imgInfo.imgh) * 100 + parseFloat(v.h / this.imgInfo.imgh) * 100 + '%'
           }
@@ -159,7 +163,7 @@ export default {
     onDrawOne(data, currentMovement) {
       if (!this.readOnly) {
         this.$refs['aiPanel-editor'].getMarker().setTag({
-          tagName: this.cellsType[this.cellType],
+          tagName: this.cellType,
           tag: `5-${this.cellType}`
         })
       }

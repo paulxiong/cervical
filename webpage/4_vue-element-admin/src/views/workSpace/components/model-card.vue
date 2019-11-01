@@ -1,7 +1,26 @@
 <template>
   <div class="card">
     <el-card class="box-card" shadow="hover">
-      <div slot="header" class="flex card-header">
+      <div v-if="save === 'save'" slot="header" class="flex card-header">
+        <el-input
+          v-model="inputName"
+          autofocus
+          placeholder="输入模型描述"
+          show-word-limit
+          maxlength="30"
+          class="input-name"
+          @keyup.enter.native="saveModel"
+        />
+        <el-button
+          v-if="showSaveBtn"
+          type="danger"
+          size="small"
+          class="save-btn"
+          :disabled="!modelInfo.desc"
+          @click="saveModel"
+        >保存模型</el-button>
+      </div>
+      <div v-else slot="header" class="flex card-header">
         <el-badge is-dot class="badge-item">选择模型</el-badge>
         <el-select
           v-model="model"
@@ -17,7 +36,7 @@
       <div class="flex model-info">
         <section class="info">
           <i>准确率:</i>
-          <b>{{ modelInfo.precision }}%</b>
+          <b>{{ modelInfo.precision }}</b>
         </section><section class="info">
           <i>召回率:</i>
           <b>{{ modelInfo.recall }}%</b>
@@ -26,9 +45,25 @@
           <i>损失值:</i>
           <b>{{ modelInfo.loss }}</b>
         </section>
+        <section v-if="modelInfo.input_shape" class="info">
+          <i>尺寸:</i>
+          <b>{{ modelInfo.input_shape }}</b>
+        </section>
         <section class="info">
           <i>类型:</i>
-          <b>{{ modelInfo.type }}</b>
+          <b>{{ modelInfo.type | filterModelType }}</b>
+        </section>
+        <section class="info">
+          <i>训练用图数:</i>
+          <b>{{ modelInfo.n_train }}</b>
+        </section>
+        <section class="info">
+          <i>训练分类数:</i>
+          <b>{{ modelInfo.n_classes }}</b>
+        </section>
+        <section v-if="modelInfo.types.length" class="info" style="height: auto;overflow: auto;">
+          <i>细胞分类:</i>
+          <b>{{ modelInfo.types | filtersCellsType }}</b>
         </section>
       </div>
     </el-card>
@@ -36,6 +71,7 @@
 </template>
 
 <script>
+import { savemodel } from '@/api/cervical'
 import { modelType, cellsType } from '@/const/const'
 
 export default {
@@ -45,11 +81,20 @@ export default {
     filterModelType(value) {
       return modelType[value]
     },
-    filtersCheckbox(val) {
-      return `${val} ${cellsType[val]}`
+    filtersCellsType(val) {
+      const arr = []
+      val.map(v => {
+        v = cellsType[v]
+        arr.push(v)
+      })
+      return arr
     }
   },
   props: {
+    save: {
+      type: String,
+      default: ''
+    },
     modelInfo: {
       type: Object || String,
       default: ''
@@ -63,14 +108,29 @@ export default {
   },
   data() {
     return {
+      inputName: '',
       checkboxCell: [],
-      model: 0
+      model: 0,
+      showSaveBtn: true
     }
   },
   created() {
+    this.inputName = this.modelInfo.desc
     this.changeCellTypes()
   },
   methods: {
+    saveModel() {
+      savemodel({
+        'id': this.modelInfo.pid,
+        'desc': this.inputName
+      }).then(res => {
+        this.$message({
+          message: res.data.data,
+          type: 'success'
+        })
+        this.showSaveBtn = false
+      })
+    },
     modelChange() {
       this.$emit('modelChange', this.modelList[this.model])
     },

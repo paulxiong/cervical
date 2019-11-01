@@ -14,10 +14,9 @@
       <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
           <el-table-column prop="type" width="400" label="类型" />
-          <el-table-column prop="total_org" label="输入个数" />
           <el-table-column prop="total" label="实际预测个数" />
-          <el-table-column prop="count_false" label="错误个数" />
-          <el-table-column prop="count_right" label="正确个数" />
+          <el-table-column prop="falseCnt" label="错误个数" />
+          <el-table-column prop="correct" label="正确个数" />
         </el-table>
       </section>
       <section class="img-list">
@@ -50,14 +49,13 @@ export default {
   data() {
     return {
       percentage: 0,
-      predict: 'predict',
       startPredict: false,
       modelList: [],
       modelInfo: {},
       datasetsInfo: {},
       datasetsList: [],
       postCelltypes: [],
-      hosturlpath64: ImgServerUrl + '/unsafe/64x0/scratch/',
+      hosturlpath64: ImgServerUrl + '/unsafe/64x0/',
       predictResult: {},
       rightCellsList: [],
       falseCellsList: []
@@ -73,19 +71,18 @@ export default {
     getPredictResult() {
       getPredictResult({ 'id': this.$route.query.pid }).then(res => {
         if (typeof res.data.data !== 'string') {
-          this.predictResult = res.data.data
-          this.predictResult.result.map(v => {
-            v.type = cellsType[v.type]
-            v.count_right = v.total - v.count_false
+          res.data.data.result.map(v => {
+            v.falseCnt = v.total - v.correct
           })
+          this.predictResult = res.data.data
           this.predictResult.crop_cells.map(v => {
-            v.type = cellsType[v.type]
-            v.predict = cellsType[v.predict]
             if (v.type === v.predict) {
               this.rightCellsList.push(v)
             } else {
               this.falseCellsList.push(v)
             }
+            v.type = cellsType[v.type]
+            v.predict = cellsType[v.predict]
           })
         }
       })

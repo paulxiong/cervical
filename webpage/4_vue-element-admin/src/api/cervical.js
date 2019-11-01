@@ -24,6 +24,14 @@ export function getListprojects(query) {
   })
 }
 
+export function getImgbymid(query) {
+  return request({
+    url: '/api1/getimgbymid',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getBatchInfo(query) {
   return request({
     url: '/api1/batchinfo',

@@ -82,25 +82,20 @@ export const constantRoutes = [
   {
     path: '/workSpace',
     component: Layout,
-    redirect: '/workSpace',
+    redirect: '/workSpace/workSpace',
+    name: '概览',
+    meta: { title: '概览', icon: 'component' },
     children: [
       {
         path: 'workSpace',
         component: () => import('@/views/workSpace/index'),
         name: '工作台',
         meta: { title: '工作台', icon: 'component', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/train',
-    component: Layout,
-    redirect: '/train',
-    hidden: true,
-    children: [
+      },
       {
-        path: 'detailsTrain',
-        component: () => import('@/views/train/detailsTrain'),
+        path: 'details',
+        component: () => import('@/views/workSpace/details'),
+        hidden: true,
         name: '详情',
         meta: { title: '详情', affix: true }
       }
@@ -135,11 +130,11 @@ export const constantRoutes = [
   {
     path: '/authManage',
     component: Layout,
-    redirect: '/authManage',
+    redirect: '/authManage/userManage',
     name: '权限管理',
     meta: {
       title: '权限管理',
-      icon: 'people'
+      icon: 'peoples'
     },
     children: [
       {

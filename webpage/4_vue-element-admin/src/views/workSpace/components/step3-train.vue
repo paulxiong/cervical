@@ -71,10 +71,10 @@
             <i>是否使用缓存</i>
             <b>{{ modelInfo.cache }}</b>
           </section>
-          <section class="model-info">
+          <!-- <section class="model-info">
             <i>损失</i>
             <b>{{ modelInfo.model.loss }}</b>
-          </section>
+          </section> -->
           <section class="model-info">
             <i>背景色</i>
             <b>{{ modelInfo.imgColor }}</b>
@@ -83,14 +83,14 @@
             <i>裁剪大小</i>
             <b>{{ modelInfo.cutSize }}</b>
           </section>
-          <section class="model-info">
+          <!-- <section class="model-info">
             <i>Precision</i>
             <b>{{ modelInfo.model.precision }}</b>
           </section>
           <section class="model-info">
             <i>Recall</i>
             <b>{{ modelInfo.model.recall }}</b>
-          </section>
+          </section> -->
           <section class="model-info">
             <i>最后更新时间</i>
             <b>{{ modelInfo.model.updated_at | filterDate }}</b>
@@ -137,7 +137,7 @@ export default {
       this.postData['parameter_type'] = parseInt(this.modelInfo.type.slice(0, 1))
       createdataset(this.postData).then(res => {
         this.$router.push({
-          path: `/train/detailsTrain?id=${res.data.data}`
+          path: `/workSpace/details?id=${res.data.data}`
         })
         this.loading = false
       })
