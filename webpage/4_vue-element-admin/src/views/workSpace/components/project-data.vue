@@ -78,7 +78,7 @@
       <el-table-column label="描述" prop="desc" />
       <el-table-column label="数据集 ID" prop="did" />
       <el-table-column label="创建者" prop="created_by" />
-      <el-table-column label="类型" prop="type" />
+      <el-table-column label="类型" prop="projectType" />
       <el-table-column
         label="状态/剩余时间(秒)"
         prop="statusTime"
@@ -184,7 +184,7 @@ export default {
     },
     goDetail(val) {
       this.$router.push({
-        path: `/train/detailsTrain?id=14`
+        path: `/train/detailsTrain?pid=${val.id}&did=${val.did}&type=${val.type}`
       })
     },
     getListprojects(limit, skip, order) {
@@ -199,7 +199,7 @@ export default {
           v.statusType = taskType[v.status]
           v.status = taskStatus[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
-          v.type = projectType[v.type]
+          v.projectType = projectType[v.type]
         })
         this.projectlist = res.data.data.projects
         this.total = res.data.data.total

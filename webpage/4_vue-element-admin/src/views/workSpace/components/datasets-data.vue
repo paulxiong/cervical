@@ -204,7 +204,7 @@ export default {
     },
     goDetail(val) {
       this.$router.push({
-        path: `/train/detailsTrain?id=${val.id}`
+        path: `/train/detailsTrain?did=${val.id}`
       })
     },
     listdatasets(limit, skip, order) {

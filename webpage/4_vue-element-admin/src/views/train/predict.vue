@@ -9,25 +9,8 @@
         class="progress"
         status="success"
       />
-      <el-button type="danger" class="predict-btn" @click="createPredict">开始预测</el-button>
     </section>
-    <section v-if="!startPredict" class="content">
-      <section v-if="modelList.length" class="model-info">
-        <el-badge is-dot class="badge">模型信息</el-badge>
-        <modelCard
-          :model-info="modelInfo"
-          :predict="predict"
-          :model-list="modelList"
-          @changeCellTypes="changeCellTypes"
-        />
-      </section>
-      <!-- v-if="datasetsList.length" -->
-      <section v-if="datasetsList.length" class="datasets-info">
-        <el-badge is-dot class="badge">数据信息</el-badge>
-        <datasetsCard :datasets-info="datasetsInfo" :predict="predict" :datasets-list="datasetsList" />
-      </section>
-    </section>
-    <section v-else class="results">
+    <section class="results">
       <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
           <el-table-column prop="type" width="400" label="类型" />
@@ -56,16 +39,14 @@
 </template>
 
 <script>
-import modelCard from './components/model-card'
-import datasetsCard from './components/datasets-card'
 import { ImgServerUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { listdatasets, getListmodel, createPredict, getPercent, getPredictResult } from '@/api/cervical'
+import { getPercent, getPredictResult } from '@/api/cervical'
 let timer
 
 export default {
   name: 'Predict',
-  components: { modelCard, datasetsCard },
+  components: {},
   data() {
     return {
       percentage: 0,
@@ -83,31 +64,15 @@ export default {
     }
   },
   created() {
-    this.getListmodel(10, 0)
-    this.getListdatasets(100, 0, 1)
+    this.getPredictResult()
+  },
+  beforedestroy() {
+    clearInterval(timer)
   },
   methods: {
-    getListmodel(limit, skip) {
-      getListmodel({ 'limit': limit, 'skip': skip }).then(res => {
-        if (res.data.data.total > 0) {
-          this.modelList = res.data.data.models
-          this.modelInfo = this.modelList[0]
-        }
-      })
-    },
-    getListdatasets(limit, skip, order) {
-      listdatasets({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        this.datasetsList = res.data.data.datasets
-        this.datasetsInfo = this.datasetsList[0]
-      })
-    },
-    createPredict() {
-      createPredict({ 'did': this.datasetsInfo.id, 'mid': this.modelInfo.id, 'celltypes': this.postCelltypes }).then(res => {
-        this.$message({
-          message: res.data.data,
-          type: 'success'
-        })
-        getPredictResult({ 'id': this.datasetsInfo.id }).then(res => {
+    getPredictResult() {
+      getPredictResult({ 'id': this.$route.query.pid }).then(res => {
+        if (typeof res.data.data !== 'string') {
           this.predictResult = res.data.data
           this.predictResult.result.map(v => {
             v.type = cellsType[v.type]
@@ -122,13 +87,11 @@ export default {
               this.falseCellsList.push(v)
             }
           })
-        })
-        this.startPredict = true
-        this.loopGetPercent()
+        }
       })
     },
     getPercent() {
-      getPercent({ id: this.$route.query.id, job: 2 }).then(res => {
+      getPercent({ id: this.$route.query.pid, job: 2 }).then(res => {
         this.percentage = res.data.data
         if (this.percentage === 100) {
           clearInterval(timer)
@@ -150,9 +113,6 @@ export default {
     changeCellTypes(val) {
       this.postCelltypes = val
     }
-  },
-  beforedestroy() {
-    clearInterval(timer)
   }
 }
 </script>
