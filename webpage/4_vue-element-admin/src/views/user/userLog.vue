@@ -133,7 +133,6 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
       />
     </footer>
   </div>
