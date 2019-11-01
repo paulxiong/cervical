@@ -5,6 +5,7 @@ import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 from sklearn.metrics import classification_report
+from keras.utils.vis_utils import plot_model
 
 NUM_EPOCHS = 20
 INIT_LR = 1e-1
@@ -25,7 +26,8 @@ testGen_cross_domain = valAug.flow_from_directory(
 	batch_size=BS)
 
 model=load_model("mala.h5")
-
+# 保存模型结构图
+plot_model(model, to_file='model1.png',show_shapes=True)
 # reset the testGen_cross_domain generator and then use our trained model to
 # make predictions on the data
 print("[INFO] evaluating network ...(testGen_cross_domain)")
