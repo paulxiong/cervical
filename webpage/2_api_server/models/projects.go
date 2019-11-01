@@ -25,8 +25,7 @@ type Project struct {
 	ParameterTime   int       `json:"parameter_time"   gorm:"column:parameter_time"`   //训练使用的最长时间
 	ParameterResize int       `json:"parameter_resize" gorm:"column:parameter_resize"` //训练之前统一的尺寸
 	ParameterMID    int       `json:"parameter_mid"    gorm:"column:parameter_mid"`    //预测使用的模型的id,只有预测时候需要
-	ParameterType   int       `json:"parameter_type"   gorm:"column:parameter_type"`   //预测使用的模型的id,只有预测时候需要
-
+	ParameterType   int       `json:"parameter_type"   gorm:"column:parameter_type"`   //预测方式,0没标注的图1有标注的图
 }
 
 // BeforeCreate insert 之前的hook
