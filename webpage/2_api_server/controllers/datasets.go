@@ -901,6 +901,7 @@ func GetPredictResult(c *gin.Context) {
 
 // ImageBase FOV图片基础信息
 type imgofmedical struct {
+	ID      int64    `json:"id"      example:"100"`       //图片的ID
 	Imgpath string `json:"imgpath" example:"img/1.png"` //图片的半截URL
 	W       int    `json:"w"       example:"100"`       //图片宽
 	H       int    `json:"h"       example:"100"`       //图片高
@@ -950,6 +951,7 @@ func GetImgListOfMedicalID(c *gin.Context) {
 
 	for _, v := range _imgs {
 		imgs.Imgs = append(imgs.Imgs, &imgofmedical{
+			ID:      v.ID,
 			Imgpath: f.Imgpath(BatchID, MedicalID, v.Imgpath),
 			W:       v.W,
 			H:       v.H,
