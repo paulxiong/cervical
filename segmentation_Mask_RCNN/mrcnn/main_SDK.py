@@ -23,7 +23,7 @@ if __name__ == '__main__':
             w.woker_percent(4, 1800)
             ret = w.crop_images()
         except Exception as ex:
-            w.log.info(str(ex))
+            w.log.error(str(ex))
             ret = False
 
         if ret == True:
@@ -31,4 +31,4 @@ if __name__ == '__main__':
             w.log.info("数据集预处理完成 %d 工作目录%s" % (wid, wdir))
         else:
             w.error()
-            w.log.info("数据集预处理出错 %d 工作目录%s" % (wid, wdir))
+            w.warning.info("数据集预处理出错 %d 工作目录%s" % (wid, wdir))

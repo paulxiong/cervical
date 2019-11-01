@@ -180,6 +180,28 @@ class _cells_train(worker):
 
         return True
 
+    #统计预测结果
+    def result_predict(self, df):
+        result = {"result": [], "crop_cells": []}
+
+        #统计每个分类的信息
+        for true_label, df1 in df.groupby(['true_label']):
+            print(true_label, df1.shape)
+            df_correct = df1[df1["correct"] == 1]
+            result["result"].append({"type": true_label, "total": df1.shape[0], "correct": df_correct.shape[0]})
+
+        #统计crop_cells
+        for index, row in df.iterrows():
+            cellpath = row["cellpath"][len(self.rootdir):]
+            one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath}
+            result["crop_cells"].append(one)
+        #写入文件
+        predict_info = self.load_info_json()
+        predict_info['crop_cells'] = result['crop_cells']
+        predict_info['result'] = result['result']
+        self.save_info_json(predict_info, self.predict2_json)
+        return True
+
     def predict(self):
         ret = self.mkdatasets()
         if ret is False:
@@ -215,7 +237,10 @@ class _cells_train(worker):
                 correct = 0
             result.append([cellpath, celltype, str(y[0]), correct])
 
+        #结果统计给前端展示
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'correct'])
+        #df_result.to_csv('111.csv', quoting = 1, mode = 'w', index = False, header = True)
+        self.result_predict(df_result)
         return True
 
 class cells_train(_cells_train):
@@ -251,7 +276,7 @@ def worker_load(w):
         elif w.wtype == wt.PREDICT.value:
             ret = w.predict()
     except Exception as ex:
-        w.log.info(str(ex))
+        w.log.error(str(ex))
         ret = False
 
     if ret == True:
@@ -259,7 +284,7 @@ def worker_load(w):
         w.log.info("%s完成 %d 工作目录%s" % (w_str, wid, wdir))
     else:
         w.error()
-        w.log.info("%s出错 %d 工作目录%s" % (w_str, wid, wdir))
+        w.log.warning("%s出错 %d 工作目录%s" % (w_str, wid, wdir))
     return
 
 if __name__ == '__main__':

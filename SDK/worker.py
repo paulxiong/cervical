@@ -44,6 +44,7 @@ class worker_fs():
         elif self.wtype == wt.PREDICT.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.info_json = os.path.join(self.project_dir, 'info.json')
+            self.predict2_json = os.path.join(self.project_dir, 'predict2.json')
             self.project_predict_dir = os.path.join(self.project_dir, 'predict')
             self.project_resize_predict_dir = os.path.join(self.project_dir, 'resize_predict')
             self.project_predict_error_data_dir = os.path.join(self.project_dir, 'predict_error_data')
