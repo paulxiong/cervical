@@ -115,11 +115,7 @@
       />
     </div>
     <el-dialog title="新建项目" :visible.sync="dialogFormVisible">
-      <newProject ref="newProject" />
-      <div slot="footer" class="dialog-footer">
-        <el-button v-show="step===2" size="mini" @click="stepBack">上一步</el-button>
-        <el-button v-show="step===1" size="mini" type="primary" @click="stepNext">下一步</el-button>
-      </div>
+      <newProject ref="newProject" style="margin-top:-40px;" />
     </el-dialog>
   </div>
 </template>

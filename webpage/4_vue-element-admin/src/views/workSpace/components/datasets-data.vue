@@ -135,7 +135,7 @@
       />
     </div>
     <el-dialog title="新建数据集" :visible.sync="dialogFormVisible">
-      <newDatasets ref="newDatasets" />
+      <newDatasets ref="newDatasets" style="margin-top:-30px;" />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
         <el-button v-show="step===1 || step===2" size="mini" type="primary" @click="stepNext">下一步</el-button>

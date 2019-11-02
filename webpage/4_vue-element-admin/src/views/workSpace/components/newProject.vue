@@ -1,54 +1,7 @@
 <template>
   <div class="newProject">
-    <section class="step">
-      <el-steps :active="step">
-        <el-step title="选择数据集/模型" icon="el-icon-set-up" />
-        <el-step title="确认信息" icon="el-icon-cpu" />
-      </el-steps>
-    </section>
-
     <section class="main">
-      <div v-if="step===1" class="data-model">
-        <datasetsCard
-          :datasets-info="datasetsInfo"
-          :datasets-list="datasetsList"
-          @datasetsChange="datasetsChange"
-          @cellsTypeChange="cellsTypeChange"
-        />
-        <div class="info flex">
-          <section class="param">
-            <h4>新建类型</h4>
-            <el-radio-group v-model="predictType" size="mini">
-              <el-radio-button label="训练" />
-              <el-radio-button label="预测" />
-            </el-radio-group>
-          </section>
-          <section class="param">
-            <h4>预测方式</h4>
-            <el-radio-group v-model="predictWay" size="mini">
-              <el-radio-button label="没标注的图" />
-              <el-radio-button label="有标注的图" />
-            </el-radio-group>
-          </section>
-          <section class="param">
-            <h4>裁剪大小(像素)</h4>
-            <el-radio-group v-model="cutInput" size="mini">
-              <el-radio-button label="100" />
-              <el-radio-button label="120" />
-              <el-radio-button label="150" />
-            </el-radio-group>
-          </section>
-          <section class="param">
-            <h4>最长用时</h4>
-            <el-radio-group v-model="useTime" size="mini">
-              <el-radio-button label="1800" />
-              <el-radio-button label="2400" />
-              <el-radio-button label="3000" />
-            </el-radio-group>
-          </section>
-        </div>
-      </div>
-      <div v-if="step===2" class="start-train">
+      <div class="start-train">
         <h2 class="title flex">
           <el-input
             v-model="inputName"
@@ -66,7 +19,52 @@
             @click="createProject"
           >开始处理</el-button>
         </h2>
-        <modelCard v-show="predictType === '预测'" :model-info="modelInfo" :model-list="modelList" @modelChange="modelChange" />
+      </div>
+      <div class="data-model">
+        <div class="info flex">
+          <section class="param">
+            <h4>新建类型</h4>
+            <el-radio-group v-model="predictType" size="mini">
+              <el-radio-button label="训练" />
+              <el-radio-button label="预测" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>是否有标注</h4>
+            <el-radio-group v-model="predictWay" size="mini">
+              <el-radio-button label="没标注的图" />
+              <el-radio-button label="有标注的图" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>裁剪大小(像素)</h4>
+            <el-radio-group v-model="cutInput" size="mini">
+              <el-radio-button label="100" />
+              <el-radio-button label="120" />
+              <el-radio-button label="150" />
+            </el-radio-group>
+          </section>
+          <section class="param">
+            <h4>最长用时(秒)</h4>
+            <el-radio-group v-model="useTime" size="mini">
+              <el-radio-button label="1800" />
+              <el-radio-button label="2400" />
+              <el-radio-button label="3000" />
+            </el-radio-group>
+          </section>
+        </div>
+        <datasetsCard
+          :datasets-info="datasetsInfo"
+          :datasets-list="datasetsList"
+          @datasetsChange="datasetsChange"
+          @cellsTypeChange="cellsTypeChange"
+        />
+        <modelCard
+          v-show="predictType === '预测'"
+          :model-info="modelInfo"
+          :model-list="modelList"
+          @modelChange="modelChange"
+        />
       </div>
     </section>
   </div>
@@ -83,7 +81,6 @@ export default {
   components: { modelCard, datasetsCard },
   data() {
     return {
-      step: 1,
       predictType: '训练',
       predictWay: '没标注的图',
       cutInput: 100,
@@ -104,14 +101,6 @@ export default {
     this.getListdatasets(20, 0, 1)
   },
   methods: {
-    stepNext() {
-      if (this.step++ > 1) {
-        this.step = 2
-      }
-    },
-    stepBack() {
-      this.step = 1
-    },
     getListmodel(limit, skip, type) {
       getListmodel({ 'limit': limit, 'skip': skip, 'type': 5 }).then(res => {
         if (res.data.data.total > 0) {
@@ -179,6 +168,9 @@ export default {
     justify-content: flex-start;
     .param {
       margin-right: 15px;
+      h4 {
+        margin: 5px 0;
+      }
     }
   }
 }
