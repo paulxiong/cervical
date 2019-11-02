@@ -21,7 +21,7 @@ import (
 // @Param id query string false "id, default 0, 数据集的ID"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/listmodel [get]
+// @Router /api1/zipdownload [get]
 func FileDownload(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
