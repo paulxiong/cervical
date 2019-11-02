@@ -143,7 +143,7 @@ export default {
         parameter_resize: parseInt(this.cutInput),
         parameter_time: parseInt(this.useTime),
         parameter_type: this.predictWay === '没标注的图' ? 0 : 1,
-        type: this.predictType === '训练' ? 2 : 3
+        type: 3
       } : {
         celltypes: this.cellsList,
         desc: this.inputName,
@@ -151,7 +151,7 @@ export default {
         parameter_resize: parseInt(this.cutInput),
         parameter_time: parseInt(this.useTime),
         parameter_type: this.predictWay === '没标注的图' ? 0 : 1,
-        type: this.predictType === '训练' ? 2 : 3
+        type: 2
       }
       createProject(postData).then(res => {
         this.$router.push({

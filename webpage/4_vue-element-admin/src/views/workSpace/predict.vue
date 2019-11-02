@@ -31,6 +31,16 @@
               <img class="img-item img-right" :src="hosturlpath64+v.url">
             </el-tooltip>
           </el-tab-pane>
+          <el-tab-pane label="预测log">
+            <el-input
+              v-model="cLog"
+              type="textarea"
+              :rows="2"
+              placeholder="预测log"
+              :autosize="{ minRows: 2, maxRows: 16}"
+              readonly
+            >1</el-input>
+          </el-tab-pane>
         </el-tabs>
       </section>
     </section>
@@ -40,7 +50,7 @@
 <script>
 import { ImgServerUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { getPercent, getPredictResult } from '@/api/cervical'
+import { getPercent, getPredictResult, getjoblog } from '@/api/cervical'
 let timer
 
 export default {
@@ -55,6 +65,7 @@ export default {
       datasetsInfo: {},
       datasetsList: [],
       postCelltypes: [],
+      cLog: '',
       hosturlpath64: ImgServerUrl + '/unsafe/64x0/',
       predictResult: {},
       rightCellsList: [],
@@ -63,6 +74,7 @@ export default {
   },
   created() {
     this.getPredictResult()
+    this.getjoblog()
   },
   beforedestroy() {
     clearInterval(timer)
@@ -85,6 +97,12 @@ export default {
             v.predict = cellsType[v.predict]
           })
         }
+      })
+    },
+    getjoblog() {
+      // type 0 未知 1 数据集处理 2 训练 3 预测
+      getjoblog({ id: this.$route.query.pid, type: '3' }).then(res => {
+        this.cLog = res.data.data
       })
     },
     getPercent() {

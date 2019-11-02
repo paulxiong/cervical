@@ -39,7 +39,7 @@
           <b>{{ modelInfo.precision }}</b>
         </section><section class="info">
           <i>召回率:</i>
-          <b>{{ modelInfo.recall }}%</b>
+          <b>{{ modelInfo.recall }}</b>
         </section>
         <section class="info">
           <i>损失值:</i>
@@ -61,7 +61,7 @@
           <i>训练分类数:</i>
           <b>{{ modelInfo.n_classes }}</b>
         </section>
-        <section v-if="modelInfo.types.length" class="info" style="height: auto;overflow: auto;">
+        <section v-if="modelInfo.types" class="info" style="height: auto;overflow: auto;">
           <i>细胞分类:</i>
           <b>{{ modelInfo.types | filtersCellsType }}</b>
         </section>
