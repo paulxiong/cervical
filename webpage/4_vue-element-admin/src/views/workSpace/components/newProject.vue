@@ -112,8 +112,8 @@ export default {
     stepBack() {
       this.step = 1
     },
-    getListmodel(limit, skip, order) {
-      getListmodel({ 'limit': limit, 'skip': skip, order }).then(res => {
+    getListmodel(limit, skip, type) {
+      getListmodel({ 'limit': limit, 'skip': skip, 'type': 5 }).then(res => {
         if (res.data.data.total > 0) {
           this.modelList = res.data.data.models
           this.modelInfo = this.modelList[0]
