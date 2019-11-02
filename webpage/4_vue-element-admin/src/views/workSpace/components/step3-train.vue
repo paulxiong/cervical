@@ -137,7 +137,7 @@ export default {
       this.postData['parameter_type'] = parseInt(this.modelInfo.type.slice(0, 1))
       createdataset(this.postData).then(res => {
         this.$router.push({
-          path: `/workSpace/details?id=${res.data.data}`
+          path: `/workSpace/details?did=${res.data.data}`
         })
         this.loading = false
       })
