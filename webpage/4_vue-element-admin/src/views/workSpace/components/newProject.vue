@@ -15,7 +15,7 @@
           <el-button
             class="start-btn"
             type="danger"
-            :disabled="!inputName.length"
+            :disabled="!inputName.length || !cellsList.length"
             @click="createProject"
           >开始处理</el-button>
         </h2>

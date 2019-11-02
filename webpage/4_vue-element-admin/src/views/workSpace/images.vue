@@ -26,7 +26,13 @@
           <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
         </el-table>
       </section>
-      <el-tabs v-loading="loading" :element-loading-text="loadingtext" tab-position="left" class="img-tabs" @tab-click="tabClick">
+      <el-tabs
+        v-loading="loading"
+        :element-loading-text="loadingtext"
+        tab-position="left"
+        class="img-tabs"
+        @tab-click="tabClick"
+      >
         <el-tab-pane label="原图">
           <el-image
             v-for="(img,idx) in origin_imgs"
@@ -40,10 +46,12 @@
             </div>
           </el-image>
         </el-tab-pane>
-        <el-tab-pane label="细胞图">
-          <el-link target="_blank" :href="downloadurl" :underline="false" style="margin-left:15px">
-            <el-button size="mini" type="warning">下载细胞</el-button>
-          </el-link>
+        <el-tab-pane>
+          <span slot="label">
+            细胞图
+            <i v-if="downloadLoading" class="el-icon-loading" />
+            <svg-icon v-else class="download" icon-class="download" @click="downloadImgs" />
+          </span>
           <el-image
             v-for="(img,idx) in cells_crop"
             :key="idx"
@@ -68,7 +76,7 @@
               <i class="el-icon-picture-outline" />
             </div>
           </el-image>
-        </el-tab-pane> -->
+        </el-tab-pane>-->
         <el-tab-pane label="图片处理log">
           <el-input
             v-model="cLog"
@@ -85,8 +93,8 @@
 </template>
 
 <script>
-import { getjobresult, getPercent, getjoblog } from '@/api/cervical'
-import { ImgServerUrl, APIUrl } from '@/const/config'
+import { getjobresult, getPercent, getjoblog, downloadImgs } from '@/api/cervical'
+import { ImgServerUrl } from '@/const/config'
 let timer
 
 export default {
@@ -97,7 +105,6 @@ export default {
       percentage: 0,
       ETA: 1800,
       status: 0,
-      downloadurl: APIUrl + '/api1/zipdownload?id=' + this.$route.query.did,
       loadingtext: '正在执行',
       loading: true,
       dir: 'dsEoM8RR/',
@@ -111,6 +118,7 @@ export default {
       cLog: '',
       origin_imgs: [],
       cells_crop: [],
+      downloadLoading: false,
       cells_crop_masked: []
     }
   },
@@ -121,6 +129,31 @@ export default {
     this.loopGetPercent()
   },
   methods: {
+    downloadImgs() {
+      this.downloadLoading = true
+      downloadImgs({ 'id': this.$route.query.did }).then(res => {
+        console.log(res)
+        const blob = new Blob([res.data])
+        if (window.navigator.msSaveOrOpenBlob) {
+          navigator.msSaveBlob(blob, 'nb')
+        } else {
+          const link = document.createElement('a')
+          const evt = document.createEvent('HTMLEvents')
+          evt.initEvent('click', false, false)
+          link.href = URL.createObjectURL(blob)
+          link.download = '细胞图.zip'
+          link.style.display = 'none'
+          document.body.appendChild(link)
+          link.click()
+          window.URL.revokeObjectURL(link.href)
+        }
+        this.$message({
+          message: '下载成功',
+          type: 'success'
+        })
+        this.downloadLoading = false
+      })
+    },
     getjobresult() {
       // 异步任务改为同步
       getjobresult({ id: this.$route.query.did, done: '0' }).then(res => {
@@ -194,6 +227,12 @@ export default {
 .images {
   margin-bottom: 100px;
 }
+.download {
+  color: #000;
+  :hover {
+    color: #00c764;
+  }
+}
 .time-info {
   margin-left: 30px;
 }
@@ -222,23 +261,23 @@ export default {
   }
 }
 .header {
-    border: 1px solid #ccc;
-    background: #304155;
-    width: 100%;
-    justify-content: flex-end;
-    position: fixed;
-    bottom: -1px;
-    right: -1px;
-    padding: 10px 0;
-    z-index: 999;
-    .badge {
-      color: #fff;
-    }
-    .progress {
-      width: 75%;
-      margin: 0 30px 0 10px;
-    }
+  border: 1px solid #ccc;
+  background: #304155;
+  width: 100%;
+  justify-content: flex-end;
+  position: fixed;
+  bottom: -1px;
+  right: -1px;
+  padding: 10px 0;
+  z-index: 999;
+  .badge {
+    color: #fff;
   }
+  .progress {
+    width: 75%;
+    margin: 0 30px 0 10px;
+  }
+}
 .main {
   padding: 0 30px;
   position: relative;

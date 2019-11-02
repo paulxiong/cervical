@@ -24,6 +24,16 @@ export function getListprojects(query) {
   })
 }
 
+export function downloadImgs(query) {
+  return request({
+    timeout: 1e5,
+    url: '/api1/zipdownload',
+    method: 'get',
+    responseType: 'blob',
+    params: query
+  })
+}
+
 export function getImgbymid(query) {
   return request({
     url: '/api1/getimgbymid',
