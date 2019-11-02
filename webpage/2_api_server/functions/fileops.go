@@ -8,6 +8,12 @@ import (
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
 
+// NewDir 递归创建目录
+func NewDir(dirname string) error {
+	err := os.MkdirAll(dirname, os.ModePerm)
+	return err
+}
+
 // ZipCompress 创建zip压缩文件
 func ZipCompress(dirname string, dest string) error {
 	cellslist := datasetsDir + "/" + dirname + "/cellslist.csv"

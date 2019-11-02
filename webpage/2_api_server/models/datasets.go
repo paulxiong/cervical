@@ -20,19 +20,43 @@ type Image struct {
 	H         int       `json:"h"            gorm:"column:H"` //Y
 	Batchid   string    `json:"batchid"      gorm:"column:BATCHID"`
 	Medicalid string    `json:"medicalid"    gorm:"column:MEDICALID"`
+	CreatedBy int64     `json:"created_by"   gorm:"column:created_by"` //创建者
+	Status    int       `json:"status"       gorm:"column:status"`     //0删除1正常
+	Type      int       `json:"type"         gorm:"column:type"`       //0系统默认自带1用户上传
 	CreatedAt time.Time `json:"created_time" gorm:"column:CREATED_TIME"`
 	UpdatedAt time.Time `json:"updated_time" gorm:"column:UPDATED_TIME"`
 }
 
 // BeforeCreate insert之前的hook
-func (u *Image) BeforeCreate(scope *gorm.Scope) error {
-	if u.CreatedAt.IsZero() {
-		u.CreatedAt = time.Now()
+func (i *Image) BeforeCreate(scope *gorm.Scope) error {
+	if i.CreatedAt.IsZero() {
+		i.CreatedAt = time.Now()
 	}
-	if u.UpdatedAt.IsZero() {
-		u.UpdatedAt = time.Now()
+	if i.UpdatedAt.IsZero() {
+		i.UpdatedAt = time.Now()
 	}
 	return nil
+}
+
+// CreateImage 新建一个图片信息到数据库
+func (i *Image) CreateImage() (e error) {
+	i.ID = 0
+	img := Image{}
+	ret1 := db.Model(&img).Where("BATCHID=? AND MEDICALID=? AND IMGPATH=?", img.Batchid, img.Medicalid, img.Imgpath).First(&img)
+	if ret1.Error == nil && len(img.Imgpath) > 0 {
+		return nil
+	}
+
+	ret := db.Model(i).Save(&i)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+
+	ret2 := db.Model(i).Where("BATCHID=? AND MEDICALID=? AND IMGPATH=?", i.Batchid, i.Medicalid, i.Imgpath).First(&i)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+	return ret2.Error
 }
 
 // GetImageByID 通过图片ID查找图片信息

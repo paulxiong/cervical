@@ -1199,6 +1199,30 @@
               "relationNoShow": false
             },
             {
+              "name": "created_by",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "创建者",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "status",
+              "type": "Integer",
+              "remark": "0删除1正常",
+              "chnname": "状态",
+              "defaultValue": "1",
+              "notNull": true
+            },
+            {
+              "name": "type",
+              "type": "Integer",
+              "remark": "0系统默认自带1用户上传",
+              "chnname": "类型",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
               "name": "CREATED_TIME",
               "type": "DateTime",
               "remark": "",

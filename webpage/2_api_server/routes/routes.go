@@ -92,6 +92,8 @@ func Router() *gin.Engine {
 
 		// 文件操作
 		api1.GET("/zipdownload", ctr.FileDownload)
+		api1.POST("/uploads", ctr.UploadsHandler)
+		api1.POST("/upload", ctr.UploadDatasetHandler)
 	}
 	return r
 }
