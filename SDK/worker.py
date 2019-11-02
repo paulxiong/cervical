@@ -31,6 +31,7 @@ class worker_fs():
             self.dataset_cellslists = os.path.join(self.dataset_dir, 'cellslist.csv')
         elif self.wtype == wt.TRAIN.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
+            self.logfile = os.path.join(self.project_dir, 'log.txt')
             self.info_json = os.path.join(self.project_dir, 'info.json')
             self.project_mod_json = os.path.join(self.project_dir, 'mod.json')
             self.project_train_dir = os.path.join(self.project_dir, 'train')
@@ -43,6 +44,7 @@ class worker_fs():
             self.project_tmp_dir = os.path.join(self.project_dir, 'autokeras')
         elif self.wtype == wt.PREDICT.value:
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
+            self.logfile = os.path.join(self.project_dir, 'log.txt')
             self.info_json = os.path.join(self.project_dir, 'info.json')
             self.predict2_json = os.path.join(self.project_dir, 'predict2.json')
             self.project_predict_dir = os.path.join(self.project_dir, 'predict')
@@ -141,6 +143,7 @@ class worker(worker_api, worker_fs):
         self.checkdir()
 
         #初始化日志到工作目录
+        del self.log
         self.log = logger(self.logfile)
 
         self.log.info("worker run wid=%d wdir=%s wtype=%d" % (workerid, workerdir, wtype))

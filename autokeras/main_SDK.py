@@ -22,7 +22,7 @@ class _cells_train(worker):
         self.log.info("初始化一个训练的worker")
 
     def get_all_cells_list(self):
-        #获得需要训练的分类
+        #获得需要训练/预测的分类
         types = self.projectinfo['types']
         if len(types) < 2 and self.wtype == wt.TRAIN.value:
             self.log.error("less then 2 labels to train")
@@ -100,6 +100,7 @@ class _cells_train(worker):
         #获得所选数据集的细胞列表信息
         df = self.get_all_cells_list()
         if df is None or df.shape[0] < 1:
+            self.log.info("获得数据集的细胞列表信息失败")
             return False
         #组织训练的目录结构
         if self.wtype == wt.PREDICT.value:
@@ -186,7 +187,6 @@ class _cells_train(worker):
 
         #统计每个分类的信息
         for true_label, df1 in df.groupby(['true_label']):
-            print(true_label, df1.shape)
             df_correct = df1[df1["correct"] == 1]
             result["result"].append({"type": true_label, "total": df1.shape[0], "correct": df_correct.shape[0]})
 
@@ -205,6 +205,7 @@ class _cells_train(worker):
     def predict(self):
         ret = self.mkdatasets()
         if ret is False:
+            self.log.info("生成数据失败")
             return False
         model = pickle_from_file(self.projectinfo['modpath'])
         self.woker_percent(10, 1800) #默认设置ETA为30分钟
