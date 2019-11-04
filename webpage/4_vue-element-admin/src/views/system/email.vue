@@ -73,7 +73,7 @@ export default {
 }
 .writing1 {
   color: black;
-  font-size: 80px;
+  font-size: 60px;
   font-weight: bold;
 }
 .middle1 {
@@ -100,7 +100,7 @@ export default {
   margin-right: 40px;
 }
 .item:first-of-type {
-  font-size: 80px;
+  font-size: 60px;
   color: blueviolet;
 }
 .writing3 {
