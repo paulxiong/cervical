@@ -21,20 +21,26 @@
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="predictResult.parameter_type" :label="`错误细胞 ${falseCellsList.length}`">
-            <el-tooltip v-for="v in falseCellsList" :key="v.url" :content="`实际${v.type} - 预测${v.predict}`" effect="dark" class="item" placement="bottom">
-              <img class="img-item img-false" :src="hosturlpath64+v.url">
-            </el-tooltip>
+          <el-tab-pane v-if="predictResult.parameter_type" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
+            <div v-for="v in falseCellsList" :key="v.url" class="item-box">
+              <el-badge :value="`${v.type}>${v.predict}`" type="info" class="item">
+                <img class="img-item img-false" :src="hosturlpath64 + v.url">
+              </el-badge>
+            </div>
           </el-tab-pane>
-          <el-tab-pane v-if="predictResult.parameter_type" :label="`正确细胞 ${rightCellsList.length}`">
-            <el-tooltip v-for="v in rightCellsList" :key="v.url" :content="v.type" effect="dark" class="item" placement="bottom">
-              <img class="img-item img-right" :src="hosturlpath64+v.url">
-            </el-tooltip>
+          <el-tab-pane v-if="predictResult.parameter_type" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
+            <div v-for="v in rightCellsList" :key="v.url" class="item-box">
+              <el-badge :value="v.type" class="item">
+                <img class="img-item img-right" :src="hosturlpath64 + v.url">
+              </el-badge>
+            </div>
           </el-tab-pane>
-          <el-tab-pane v-if="!predictResult.parameter_type" :label="`细胞图 ${rightCellsList.length}`">
-            <el-tooltip v-for="v in rightCellsList" :key="v.url" :content="v.type" effect="dark" class="item" placement="bottom">
-              <img class="img-item img-right" :src="hosturlpath64+v.url">
-            </el-tooltip>
+          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${rightCellsList.length}`" class="img-tab flex">
+            <div v-for="v in rightCellsList" :key="v.url" class="item-box">
+              <el-badge :value="v.type" :type="v.type === '50' ? 'warning': 'info'" class="item">
+                <img class="img-item img-right" :src="hosturlpath64 + v.url">
+              </el-badge>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="预测log">
             <el-input
@@ -100,7 +106,6 @@ export default {
             } else {
               this.falseCellsList.push(v)
             }
-            v.predict = cellsType[v.predict]
           })
         }
       })
@@ -141,6 +146,13 @@ export default {
 <style lang="scss" scoped>
 .predict {
   margin-bottom: 100px;
+  .img-tab {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    .item-box {
+      margin: 10px;
+    }
+  }
   .badge {
     font-weight: bold;
   }
@@ -181,8 +193,8 @@ export default {
   .results {
     padding: 30px;
     .img-item {
-      margin-right: 10px;
-      margin-bottom: 10px;
+      // margin-right: 10px;
+      // margin-bottom: 10px;
     }
     .img-right {
       border: 2px solid #27cc6a;
