@@ -1,5 +1,15 @@
 from enum import Enum
 
+# models type
+class mt(Enum):
+    UNKNOWN   = 0 #0未知
+    UNET      = 1 #1UNET
+    GAN       = 2 #2GAN
+    SVM       = 3 #3SVM
+    MASKRCNN  = 4 #4MASKRCNN
+    AUTOKERAS = 5 #5AUTOKERAS
+    MALA      = 6 #MALA
+
 # worker type
 class wt(Enum):
     UNKNOWN  = 0 #0未知

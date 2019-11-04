@@ -13,7 +13,7 @@ if __name__ == '__main__':
         try:
             w.log.info("获得一个数据集预处理任务%d 工作目录%s" % (wid, wdir))
 
-            w.prepare(wid, wdir, 1)
+            w.prepare(wid, wdir, 1, w.mtype)
             w.log.info("初始化文件目录完成")
 
             w.datasetinfo = w.load_info_json()

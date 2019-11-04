@@ -1,7 +1,7 @@
 import os, time, cv2
 import pandas as pd
 from SDK.worker import worker
-from SDK.const.const import wt
+from SDK.const.const import wt, mt
 from config import Config
 import model as modellib
 
@@ -141,6 +141,7 @@ class cells_detect_crop(worker):
         self.model_path = ""
         self.detector =  None
         self.log.info("初始化一个数据预处理的worker")
+        self.mtype = mt.MASKRCNN.value
 
     def cell_name(self, imginfo, x1, y1, x2, y2, celltype):
         batchid, medicalid, imgname = str(imginfo['batchid']), str(imginfo['medicalid']), str(imginfo['imgname'])

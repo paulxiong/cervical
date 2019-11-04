@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from shutil import copyfile, rmtree
 from SDK.worker import worker
-from SDK.const.const import wt
+from SDK.const.const import wt, mt
 from sklearn.model_selection import train_test_split
 from autokeras.image.image_supervised import load_image_dataset, ImageClassifier
 from autokeras.utils import pickle_from_file
@@ -265,11 +265,13 @@ class cells_train(_cells_train):
     def __init__(self):
         _cells_train.__init__(self, wt.TRAIN.value)
         self.log.info("初始化一个训练的worker")
+        self.mtype = mt.AUTOKERAS.value
 
 class cells_predict(_cells_train):
     def __init__(self):
         _cells_train.__init__(self, wt.PREDICT.value)
         self.log.info("初始化一个预测的worker")
+        self.mtype = mt.AUTOKERAS.value
 
 def worker_load(w):
     w_str = "训练" if w.wtype == wt.TRAIN.value else "预测"
@@ -281,7 +283,7 @@ def worker_load(w):
 
     ret = True
     try:
-        w.prepare(wid, wdir, w.wtype)
+        w.prepare(wid, wdir, w.wtype, w.mtype)
         w.log.info("初始化%s文件目录完成" % w_str)
 
         w.projectinfo = w.load_info_json()

@@ -1,5 +1,5 @@
 import os, time, json
-from .const.const import wt, dt, ds
+from .const.const import wt, dt, ds, mt
 from .utilslib.logger import logger
 from .utilslib.api import api
 from .utilslib.fileops import load_json_file
@@ -108,7 +108,7 @@ class worker_api(api):
         wid, dirname = 0, None
         _status = ds.READY4PROCESS.value
 
-        wid, status, dirname = self.get_one_job(_status, self.wtype)
+        wid, status, dirname = self.get_one_job(_status, self.wtype, self.mtype)
         #检查得到的任务是不是想要的
         if status != _status or dirname is None:
             wid, dirname = 0, None
@@ -134,7 +134,8 @@ class worker(worker_api, worker_fs):
         #初始化完成
         self.log.info("worker initialized %d" % time.time())
 
-    def prepare(self, workerid, workerdir, wtype):
+    def prepare(self, workerid, workerdir, wtype, mtype):
+        self.mtype = mtype
         self.wid = workerid   #任务id，处理数据表示数据集id，训练/预测表示项目id
         self.wdir = workerdir #任务执行的目录，处理数据表示数据集目录，训练/预测表示项目目录
 

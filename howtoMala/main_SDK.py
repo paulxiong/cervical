@@ -8,7 +8,7 @@ from keras.models import load_model
 from sklearn.metrics import classification_report
 #from keras.utils.vis_utils import plot_model
 from SDK.worker import worker
-from SDK.const.const import wt
+from SDK.const.const import wt, mt
 
 #传入文件的路径，返回路径，文件名字，文件后缀
 def get_filePath_fileName_fileExt(filename):
@@ -20,7 +20,8 @@ class mala_predict(worker):
     def __init__(self, workertype):
         #初始化一个dataset的worker
         worker.__init__(self, workertype)
-        self.log.info("初始化一个训练的worker")
+        self.log.info("初始化一个预测的worker")
+        self.mtype = mt.MALA.value
 
         self.BS = 100
         #totalTest_cross_domain = len(list(paths.list_images(config.TEST_PATH_CROSS_DOMAIN)))
@@ -229,7 +230,7 @@ class mala_predict(worker):
         	shuffle=False,
         	batch_size=self.BS)
 
-        model=load_model("mala.h5")
+        model=load_model(self.projectinfo['modpath'])
         # 保存模型结构图
         #plot_model(model, to_file='model1.png',show_shapes=True)
         # reset the testGen_cross_domain generator and then use our trained model to
@@ -271,7 +272,7 @@ def worker_load(w):
     w.log.info("获得一个%s任务%d 工作目录%s" % (w_str, wid, wdir))
 
     ret = True
-    w.prepare(wid, wdir, w.wtype)
+    w.prepare(wid, wdir, w.wtype, w.mtype)
     w.log.info("初始化%s文件目录完成" % w_str)
 
     w.projectinfo = w.load_info_json()

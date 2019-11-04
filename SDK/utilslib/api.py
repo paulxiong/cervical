@@ -31,8 +31,8 @@ class api():
     def post_api_job(self, payload):
         return self.post2webserver('/api1/job', payload)
 
-    def get_one_job(self, status, _type):
-        payload = {'id': 0, 'status': status, 'type': _type}
+    def get_one_job(self, status, _type, mtype):
+        payload = {'id': 0, 'status': status, 'type': _type, 'mtype': mtype}
         job = self.post_api_job(payload)
         if job is None:
             return None, None, None
