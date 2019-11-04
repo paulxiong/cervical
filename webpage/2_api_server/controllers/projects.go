@@ -60,12 +60,15 @@ func CreateProject(c *gin.Context) {
 		ParameterType:   np.ParameterType,
 	}
 
+	_mod, _ := models.FindModelInfoByID(p.ParameterMID)
+	p.ParameterMType = _mod.Type
+
 	logger.Info.Println(np.Desc)
 	logger.Info.Println(np.DID)
 
 	p.CreateProject()
 
-	f.NewProjectJSONFile(p, np.Celltypes)
+	f.NewProjectJSONFile(p, np.Celltypes, _mod)
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,

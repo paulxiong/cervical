@@ -25,6 +25,7 @@ type Project struct {
 	ParameterTime   int       `json:"parameter_time"   gorm:"column:parameter_time"`   //训练使用的最长时间
 	ParameterResize int       `json:"parameter_resize" gorm:"column:parameter_resize"` //训练之前统一的尺寸
 	ParameterMID    int       `json:"parameter_mid"    gorm:"column:parameter_mid"`    //预测使用的模型的id,只有预测时候需要
+	ParameterMType  int       `json:"parameter_mtype"  gorm:"column:parameter_mtype"`  //模型的类型,不是前端传递,创建项目时候根据parameter_mid得到
 	ParameterType   int       `json:"parameter_type"   gorm:"column:parameter_type"`   //预测方式,0没标注的图1有标注的图
 }
 
@@ -42,6 +43,13 @@ func (p *Project) BeforeCreate(scope *gorm.Scope) error {
 	if p.EndTime.IsZero() {
 		p.EndTime = time.Now()
 	}
+	if p.Type == 2 {
+		_mod, _ := FindModelInfoByID(p.ParameterMID)
+		p.ParameterMType = _mod.Type
+	} else if p.Type == 1 {
+		p.ParameterMType = 5 //0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
+	}
+
 	return nil
 }
 
@@ -61,12 +69,24 @@ func (p *Project) CreateProject() (e error) {
 }
 
 // GetOneProjectToProcess 请求一个指定状态和类型的工程去处理
-func GetOneProjectToProcess(status int, _type int) (p Project, e error) {
+func GetOneProjectToProcess(status int, _type int, mtype int) (p Project, e error) {
 	_p := Project{}
+
+	//预测
+	if _type == 3 {
+		ret2 := db.Model(&_p).Where("status=? AND type=? AND parameter_mtype=?", status, _type, mtype).First(&_p)
+		if ret2.Error != nil {
+			return _p, ret2.Error
+		}
+		return _p, ret2.Error
+	}
+
+	//训练
 	ret2 := db.Model(&_p).Where("status=? AND type=?", status, _type).First(&_p)
 	if ret2.Error != nil {
 		return _p, ret2.Error
 	}
+
 	return _p, ret2.Error
 }
 
