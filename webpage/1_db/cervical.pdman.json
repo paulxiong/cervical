@@ -1534,7 +1534,7 @@
             {
               "name": "type",
               "type": "Integer",
-              "remark": "0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA",
+              "remark": "0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS",
               "chnname": "类型",
               "notNull": true,
               "relationNoShow": true
@@ -1807,13 +1807,6 @@
               "type": "Integer",
               "remark": "只有预测时候需要",
               "chnname": "预测使用的模型的id",
-              "defaultValue": "0"
-            },
-            {
-              "name": "parameter_mtype",
-              "type": "Integer",
-              "remark": "只有预测时候需要,不是前端传递,后端计算得到",
-              "chnname": "预测使用的模型的类型",
               "defaultValue": "0"
             },
             {

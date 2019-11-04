@@ -459,7 +459,6 @@ type jobResult struct {
 	ID      int64 `json:"id"`
 	Type    int   `json:"type"`   //0未知 1数据处理 2训练 3预测
 	Status  int   `json:"status"` //0初始化 1送去处理 2开始处理 3处理出错 4处理完成
-	MType   int   `json:"mtype"`  //目前预测时候有用,表示使用哪种模型,0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
 	ETA     int   `json:"ETA"`
 	Percent int   `json:"percent"` // 完成百分比
 }
@@ -498,7 +497,7 @@ func GetOneJob(c *gin.Context) {
 			"data":   dt,
 		})
 	} else if w.Type == 2 || w.Type == 3 {
-		project, err := models.GetOneProjectToProcess(w.Status, w.Type, w.MType)
+		project, err := models.GetOneProjectToProcess(w.Status, w.Type)
 		if err != nil {
 			c.JSON(e.StatusReqOK, gin.H{
 				"status": e.StatusSucceed,
