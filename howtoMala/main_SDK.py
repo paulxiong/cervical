@@ -272,18 +272,22 @@ def worker_load(w):
     w.log.info("获得一个%s任务%d 工作目录%s" % (w_str, wid, wdir))
 
     ret = True
-    w.prepare(wid, wdir, w.wtype, w.mtype)
-    w.log.info("初始化%s文件目录完成" % w_str)
+    try:
+        w.prepare(wid, wdir, w.wtype, w.mtype)
+        w.log.info("初始化%s文件目录完成" % w_str)
 
-    w.projectinfo = w.load_info_json()
-    w.log.info("读取%s信息完成" % w_str)
+        w.projectinfo = w.load_info_json()
+        w.log.info("读取%s信息完成" % w_str)
 
-    w.log.info("开始%s" % w_str)
-    w.woker_percent(4, 1800)
-    if w.wtype == wt.TRAIN.value:
-        ret = w.train()
-    elif w.wtype == wt.PREDICT.value:
-        ret = w.predict()
+        w.log.info("开始%s" % w_str)
+        w.woker_percent(4, 1800)
+        if w.wtype == wt.TRAIN.value:
+            ret = w.train()
+        elif w.wtype == wt.PREDICT.value:
+            ret = w.predict()
+    except Exception as ex:
+        w.log.error(str(ex))
+        ret = False
 
     if ret == True:
         w.done()
