@@ -14,19 +14,24 @@
       <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
           <el-table-column prop="type" width="400" label="类型" />
-          <el-table-column prop="total" label="实际预测个数" />
-          <el-table-column prop="falseCnt" label="错误个数" />
-          <el-table-column prop="correct" label="正确个数" />
+          <el-table-column prop="total" label="预测个数" />
+          <el-table-column v-if="predictResult.parameter_type" prop="falseCnt" label="错误个数" />
+          <el-table-column v-if="predictResult.parameter_type" prop="correct" label="正确个数" />
         </el-table>
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane :label="`错误细胞 ${falseCellsList.length}`">
+          <el-tab-pane v-if="predictResult.parameter_type" :label="`错误细胞 ${falseCellsList.length}`">
             <el-tooltip v-for="v in falseCellsList" :key="v.url" :content="`实际${v.type} - 预测${v.predict}`" effect="dark" class="item" placement="bottom">
               <img class="img-item img-false" :src="hosturlpath64+v.url">
             </el-tooltip>
           </el-tab-pane>
-          <el-tab-pane :label="`正确细胞 ${rightCellsList.length}`">
+          <el-tab-pane v-if="predictResult.parameter_type" :label="`正确细胞 ${rightCellsList.length}`">
+            <el-tooltip v-for="v in rightCellsList" :key="v.url" :content="v.type" effect="dark" class="item" placement="bottom">
+              <img class="img-item img-right" :src="hosturlpath64+v.url">
+            </el-tooltip>
+          </el-tab-pane>
+          <el-tab-pane v-if="!predictResult.parameter_type" :label="`细胞图 ${rightCellsList.length}`">
             <el-tooltip v-for="v in rightCellsList" :key="v.url" :content="v.type" effect="dark" class="item" placement="bottom">
               <img class="img-item img-right" :src="hosturlpath64+v.url">
             </el-tooltip>
@@ -86,6 +91,7 @@ export default {
         if (typeof res.data.data !== 'string') {
           res.data.data.result.map(v => {
             v.falseCnt = v.total - v.correct
+            v.type = cellsType[v.type]
           })
           this.predictResult = res.data.data
           this.predictResult.crop_cells.map(v => {
@@ -94,7 +100,6 @@ export default {
             } else {
               this.falseCellsList.push(v)
             }
-            v.type = cellsType[v.type]
             v.predict = cellsType[v.predict]
           })
         }
