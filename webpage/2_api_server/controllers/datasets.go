@@ -423,10 +423,12 @@ func CreateDataset(c *gin.Context) {
 	dt.ParameterCache = w.ParameterCache
 
 	dt.CreateDatasets()
+	logger.Info.Println(w.Medicalids)
 
-	medicalids := make([]models.ImagesByMedicalID, 0)
+	//根据病历号取出所有的图片
+	medicalids := make([]models.Image, 0)
 	for _, v := range w.Medicalids {
-		_imgs, _ := models.ListImagesByMedicalID(v)
+		_, _imgs, _ := models.ListImagesByMedicalID2(v)
 		for _, v2 := range _imgs {
 			medicalids = append(medicalids, v2)
 		}
@@ -766,7 +768,7 @@ func GetImgListOfMedicalID(c *gin.Context) {
 	for _, v := range _imgs {
 		imgs.Imgs = append(imgs.Imgs, &imgofmedical{
 			ID:      v.ID,
-			Imgpath: f.Imgpath(BatchID, MedicalID, v.Imgpath),
+			Imgpath: f.Imgpath(BatchID, MedicalID, v.Imgpath, v.Type),
 			W:       v.W,
 			H:       v.H,
 		})

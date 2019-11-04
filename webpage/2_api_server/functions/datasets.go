@@ -13,13 +13,6 @@ import (
 	"github.com/toolkits/file"
 )
 
-const (
-	inputDatasets = "origin_imgs"
-	scratchRoot   = "scratch"
-	datasetsDir   = "datasets"
-	projectsDir   = "projects"
-)
-
 // JobInfo 存在硬盘的JSON文件，描述每个任务的属性，info.json是初始化时候，info2.json是裁剪结束之后
 type JobInfo struct {
 	ID              int64                  `json:"id"                example:"1"`             //任务ID
@@ -115,14 +108,14 @@ func NewJSONFile(d models.Dataset, batchids []string, medicalids []string, cntn 
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
-func CreateDataset(imgs []models.ImagesByMedicalID, dt *models.Dataset) (n int, p int) {
+func CreateDataset(imgs []models.Image, dt *models.Dataset) (n int, p int) {
 	dirname := dt.Dir
 	err := os.MkdirAll(datasetsDir+"/"+dirname, os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)
 	}
 
-	filelist := datasetsDir + "/" + dirname + "/filelist.csv"
+	filelist := FileListCSVPath(dirname)
 	fd, err1 := os.OpenFile(filelist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)
@@ -135,9 +128,9 @@ func CreateDataset(imgs []models.ImagesByMedicalID, dt *models.Dataset) (n int, 
 	w.Flush()
 
 	for _, v := range imgs {
-		imgpath := v.Batchid + "/" + v.Medicalid + "/Images/" + v.Imgpath
-		csvpath := v.Csvpath
-		w.Write([]string{imgpath, csvpath, strconv.Itoa(v.P1N0), v.Batchid, v.Medicalid, v.Imgpath})
+		imgpath := Imgpath(v.Batchid, v.Medicalid, v.Imgpath, v.Type)
+		csvpath := csvPath(v.Csvpath)
+		w.Write([]string{imgpath, csvpath, strconv.Itoa(0), v.Batchid, v.Medicalid, v.Imgpath})
 		w.Flush()
 	}
 	fd.Close()

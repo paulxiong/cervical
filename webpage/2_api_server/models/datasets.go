@@ -225,6 +225,7 @@ func ListImagesNPTypeByMedicalID(medicalids []string) (countN int, countP int, e
 
 // ImagesByMedicalID 某一病例下图片的信息
 type ImagesByMedicalID struct {
+	Type      int    `json:"type"`
 	Csvpath   string `json:"csvpath"`
 	Imgpath   string `json:"imgpath"`
 	Batchid   string `json:"batchid"`
@@ -234,7 +235,7 @@ type ImagesByMedicalID struct {
 
 // ListImagesByMedicalID 查找出MedicalId下图片所有图片，按照n/p分开
 func ListImagesByMedicalID(medicalid string) (imgs []ImagesByMedicalID, e error) {
-	selector1 := "SELECT c_image.CSVPATH as csvpath, c_image.MEDICALID as medicalid, c_image.BATCHID as batchid, c_image.IMGPATH as imgpath from c_label,c_image,c_category where c_image.MEDICALID=? AND c_label.IMGID=c_image.ID AND c_label.TYPE=c_category.ID AND c_category.P1N0=? GROUP BY c_image.CSVPATH;"
+	selector1 := "SELECT c_image.type as type, c_image.CSVPATH as csvpath, c_image.MEDICALID as medicalid, c_image.BATCHID as batchid, c_image.IMGPATH as imgpath from c_label,c_image,c_category where c_image.MEDICALID=? AND c_label.IMGID=c_image.ID AND c_label.TYPE=c_category.ID AND c_category.P1N0=? GROUP BY c_image.CSVPATH;"
 	ressN := []ImagesByMedicalID{}
 	ressP := []ImagesByMedicalID{}
 	ressAll := make([]ImagesByMedicalID, 0)
@@ -255,6 +256,17 @@ func ListImagesByMedicalID(medicalid string) (imgs []ImagesByMedicalID, e error)
 		ressAll = append(ressAll, v2)
 	}
 	return ressAll, ret2.Error
+}
+
+// ListImagesByMedicalID2 查找出MedicalId下图片所有图片，不管有没有标注
+func ListImagesByMedicalID2(medicalid string) (totalnum int, imgs []Image, e error) {
+	var _i []Image
+	var total int = 0
+
+	db.Model(&Image{}).Where("MEDICALID=?", medicalid).Count(&total)
+	ret := db.Model(&Image{}).Where("MEDICALID=?", medicalid).Find(&_i)
+
+	return total, _i, ret.Error
 }
 
 // Label 标注的信息
