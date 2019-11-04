@@ -71,7 +71,8 @@ export const cellsType = {
   12: '12 T滴虫',
   13: '13 M霉菌',
   14: '14 HSV疱疹',
-  15: '15 X1线索细胞'
+  15: '15 X1线索细胞',
+  100: '100 未知细胞'
 }
 
 export const projectType = {
