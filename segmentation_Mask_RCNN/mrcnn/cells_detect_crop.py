@@ -169,7 +169,7 @@ class cells_detect_crop(worker):
             cellpath = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells', _cell_name)
             if (x2 - x1) != (y2 - y1):
                 self.log.info("not square!")
-            image_path = os.path.join(self.img_dir, imginfo['imgpath'])
+            image_path = os.path.join(self.rootdir, imginfo['imgpath'])
 
             _cellsinfo2 = []
             _cellsinfo2.append(str(imginfo['batchid']))
@@ -295,7 +295,8 @@ class cells_detect_crop(worker):
             ts1 = ts2
 
             #向服务器报告任务进度,这里占95%
-            self.woker_percent(int(95 * (index + 1) / (df_imgs.shape[0] -1)), needtime/1000)
+            if df_imgs.shape[0] > 1:
+                self.woker_percent(int(95 * (index + 1) / (df_imgs.shape[0] -1)), needtime/1000)
 
             #创建缓存切割细胞的目录
             cache_dir = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells')
@@ -303,7 +304,7 @@ class cells_detect_crop(worker):
                 os.makedirs(cache_dir)
 
             #读取原图
-            image_path = os.path.join(self.img_dir, imginfo['imgpath'])
+            image_path = os.path.join(self.rootdir, imginfo['imgpath'])
             image, imginfo['w'], imginfo['h'], imginfo['channels'] = self.load_image(image_path)
 
             #获得一张图片里面所有细胞坐标，如果有医生标注直接从csv读取，没有的用maskrcnn定位
