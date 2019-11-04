@@ -31,4 +31,4 @@ if __name__ == '__main__':
             w.log.info("数据集预处理完成 %d 工作目录%s" % (wid, wdir))
         else:
             w.error()
-            w.warning.info("数据集预处理出错 %d 工作目录%s" % (wid, wdir))
+            w.log.warning("数据集预处理出错 %d 工作目录%s" % (wid, wdir))
