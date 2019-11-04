@@ -75,8 +75,9 @@ export default {
   created() {
     this.getPredictResult()
     this.getjoblog()
+    this.loopGetPercent()
   },
-  beforedestroy() {
+  destroyed() {
     clearInterval(timer)
   },
   methods: {
@@ -107,7 +108,7 @@ export default {
     },
     getPercent() {
       getPercent({ id: this.$route.query.pid, job: 2 }).then(res => {
-        this.percentage = res.data.data
+        this.percentage = res.data.data.percent
         if (this.percentage === 100) {
           clearInterval(timer)
         }

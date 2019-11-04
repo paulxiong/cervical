@@ -56,7 +56,6 @@
         <el-checkbox-group v-model="checkboxCell" size="mini" class="cell-checkbox flex" @change="cellsTypeChange">
           <el-checkbox
             v-for="(v,i) in datasetsInfo.types"
-            v-show="v !== 100"
             :key="i"
             :label="v | filtersCheckbox"
             min="2"
