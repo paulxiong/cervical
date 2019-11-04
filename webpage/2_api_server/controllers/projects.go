@@ -69,7 +69,7 @@ func CreateProject(c *gin.Context) {
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
-		"data":   "ok",
+		"data":   p.ID,
 	})
 	return
 }
