@@ -33,13 +33,17 @@
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-edit"
-        @click="dialogFormVisible = true"
+        @click="newData"
       >新增数据集</el-button>
+      <el-button
+        class="filter-btn"
+        style="margin-left: 10px;"
+        type="success"
+        icon="el-icon-upload"
+        @click="uploadImgs"
+      >上传</el-button>
     </div>
-    <el-table
-      :data="datasetsList"
-      style="width: 100%"
-    >
+    <el-table :data="datasetsList" style="width: 100%">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
@@ -82,41 +86,16 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column
-        label="ID"
-        width="60"
-        prop="id"
-      />
-      <el-table-column
-        label="描述"
-        prop="desc"
-      />
-      <el-table-column
-        label="创建者"
-        prop="created_by"
-      />
-      <el-table-column
-        label="裁剪模型"
-        prop="parameter_mid"
-      />
-      <el-table-column
-        label="状态/剩余时间(秒)"
-        prop="statusTime"
-      >
+      <el-table-column label="ID" width="60" prop="id" />
+      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="创建者" prop="created_by" />
+      <el-table-column label="裁剪模型" prop="parameter_mid" />
+      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.statusType"
-            effect="dark"
-          >
-            {{ scope.row.statusTime }}
-          </el-tag>
+          <el-tag :type="scope.row.statusType" effect="dark">{{ scope.row.statusTime }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        fixed="right"
-        label="操作"
-        width="100"
-      >
+      <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-button type="text" @click="goDetail(scope.row)">查看</el-button>
           <el-button type="text" style="color: #ff3c43;">删除</el-button>
@@ -134,8 +113,8 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog title="新建数据集" :visible.sync="dialogFormVisible">
-      <newDatasets ref="newDatasets" style="margin-top:-30px;" />
+    <el-dialog :title="upload ? '上传数据' : '新建数据集'" :visible.sync="dialogFormVisible">
+      <newDatasets ref="newDatasets" :upload="upload" style="margin-top:-30px;" />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
         <el-button v-show="step===1 || step===2" size="mini" type="primary" @click="stepNext">下一步</el-button>
@@ -159,6 +138,7 @@ export default {
       step: 1,
       total: undefined,
       dialogFormVisible: false,
+      upload: false,
       currentPage: 1,
       loading: false,
       listQuery: {
@@ -189,6 +169,14 @@ export default {
     this.listdatasets(10, 0, 1)
   },
   methods: {
+    uploadImgs() {
+      this.dialogFormVisible = true
+      this.upload = true
+    },
+    newData() {
+      this.dialogFormVisible = true
+      this.upload = false
+    },
     stepNext() {
       this.$refs.newDatasets.stepNext()
       this.step = this.$refs.newDatasets.step
@@ -246,7 +234,7 @@ export default {
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: calc(100%/4);
+    width: calc(100% / 4);
   }
 }
 </style>
