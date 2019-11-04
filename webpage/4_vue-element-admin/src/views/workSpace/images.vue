@@ -15,8 +15,12 @@
         <el-table :data="tableData" stripe border style="width: 100%">
           <el-table-column prop="name" label="类型" />
           <el-table-column prop="dir" label="目录" />
-          <el-table-column prop="batchids" label="批次" />
-          <el-table-column prop="medicalids" label="病例" width="180" />
+          <el-table-column label="批次" width="180">
+            <template slot-scope="scope">{{ scope.row.batchids }}</template>
+          </el-table-column>
+          <el-table-column label="病例" width="180">
+            <template slot-scope="scope">{{ scope.row.medicalids }}</template>
+          </el-table-column>
           <el-table-column prop="fovcnt" label="图片总数" />
           <el-table-column prop="fovncnt" label="fov-n个数" />
           <el-table-column prop="fovpcnt" label="fov-p个数" />
@@ -155,11 +159,15 @@ export default {
       })
     },
     getjobresult() {
-      // 异步任务改为同步
+      // 异步任务改为同步,数组去重复
       getjobresult({ id: this.$route.query.did, done: '0' }).then(res => {
         this.objData = Object.assign(this.objData, res.data.data)
+        this.objData.batchids = Array.from(new Set(this.objData.batchids))
+        this.objData.medicalids = Array.from(new Set(this.objData.medicalids))
         getjobresult({ id: this.$route.query.did, done: '1' }).then(res => {
           this.objData2 = Object.assign(this.objData2, res.data.data)
+          this.objData2.batchids = Array.from(new Set(this.objData2.batchids))
+          this.objData2.medicalids = Array.from(new Set(this.objData2.medicalids))
           this.tableData.push(this.objData, this.objData2)
           this.origin_imgs = this.objData2.origin_imgs
           localStorage.setItem('jobResult', JSON.stringify(this.objData2))
