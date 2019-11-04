@@ -4,6 +4,7 @@
       <el-row>
         <el-button type="text" class="writing1">注册验证码</el-button>
         <el-button type="info" icon="el-icon-message" circle />
+        <!-- <el-tag type="success">收件箱</el-tag> -->
       </el-row>
     </div>
     <div class="middle">
@@ -18,8 +19,8 @@
         发送至
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item disabled>自己</el-dropdown-item>
-          <el-dropdown-item>管理员</el-dropdown-item>
-          <el-dropdown-item>客服</el-dropdown-item>
+          <el-dropdown-item>管理人员</el-dropdown-item>
+          <el-dropdown-item>客服人员</el-dropdown-item>
           <el-dropdown-item>其他人员</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -59,7 +60,7 @@ export default {
   },
   methods: {
     handleClick() {
-      alert('button click')
+      alert('发送成功！')
     }
   }
 }
@@ -99,7 +100,7 @@ export default {
   margin-right: 40px;
 }
 .item:first-of-type {
-  font-size: 100px;
+  font-size: 80px;
   color: blueviolet;
 }
 .writing3 {
