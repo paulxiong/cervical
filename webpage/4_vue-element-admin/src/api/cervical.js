@@ -34,6 +34,15 @@ export function downloadImgs(query) {
   })
 }
 
+export function uploadImgs(query) {
+  return request({
+    timeout: 1e4,
+    url: '/api1/upload',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getImgbymid(query) {
   return request({
     url: '/api1/getimgbymid',

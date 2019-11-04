@@ -151,9 +151,6 @@ export default {
   .title {
     justify-content: flex-start;
   }
-  .input-name {
-    width: 500px;
-  }
   .badge {
     font-size: 20px;
     font-weight: bold;
@@ -164,13 +161,6 @@ export default {
   }
   .link {
     line-height: 20px;
-  }
-  .errInfo-btn {
-    font-size: 12px;
-    margin-left: 10px;
-  }
-  .start-btn {
-    margin-left: 10px;
   }
   .info-header {
     justify-content: flex-start;

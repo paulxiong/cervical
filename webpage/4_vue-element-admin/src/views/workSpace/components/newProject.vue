@@ -3,19 +3,21 @@
     <section class="main">
       <div class="start-train">
         <h2 class="title flex">
-          <el-input
-            v-model="inputName"
-            autofocus
-            placeholder="输入描述"
-            show-word-limit
-            maxlength="30"
-            class="input-name"
-            @keyup.enter.native="createProject"
-          />
+          <el-tooltip class="item" effect="dark" content="" placement="left">
+            <el-input
+              v-model="inputName"
+              autofocus
+              placeholder="输入描述"
+              show-word-limit
+              maxlength="30"
+              class="input-name"
+              @keyup.enter.native="createProject"
+            />
+          </el-tooltip>
           <el-button
             class="start-btn"
             type="danger"
-            :disabled="!inputName.length || !cellsList.length"
+            :disabled="!inputName.length || (predictType === '预测' && !cellsList.length)"
             @click="createProject"
           >开始处理</el-button>
         </h2>
