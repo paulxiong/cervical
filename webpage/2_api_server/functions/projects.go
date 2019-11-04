@@ -27,10 +27,8 @@ type ProjectInfo struct {
 }
 
 // NewProjectJSONFile 创建项目
-func NewProjectJSONFile(project models.Project, types []int) {
+func NewProjectJSONFile(project models.Project, types []int, _mod *models.Model) {
 	dt, _ := m.GetOneDatasetByID(int(project.DID))
-
-	_mod, _ := m.FindModelInfoByID(project.ParameterMID)
 
 	p := ProjectInfo{
 		ID:              project.ID,
