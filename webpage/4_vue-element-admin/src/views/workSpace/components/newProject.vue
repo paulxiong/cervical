@@ -117,9 +117,11 @@ export default {
             v.status = taskStatus[v.status]
             v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
             v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
-            this.datasetsList = res.data.data.datasets
-            this.datasetsInfo = this.datasetsList[0]
+            if (v.status === '完成') {
+              this.datasetsList.push(v)
+            }
           })
+          this.datasetsInfo = this.datasetsList[0]
         }
       })
     },
