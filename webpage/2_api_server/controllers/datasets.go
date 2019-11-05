@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -726,5 +727,56 @@ func GetImgListOfMedicalID(c *gin.Context) {
 	}
 
 	ResStruct(c, imgs)
+	return
+}
+
+type treeNode struct {
+	Value    string      `json:"value"      example:"100"` // 节点值
+	Label    string      `json:"label"      example:"100"` // 节点名字
+	Children []*treeNode `json:"children"`                 //子节点
+}
+
+// GetImgTree 获得所批次/病例/图片的树状结构
+// @Summary 获得所批次/病例/图片的树状结构
+// @Description 获得所批次/病例/图片的树状结构
+// @tags API1 数据（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} controllers.imgsofmedical
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /api1/getimgtree [get]
+func GetImgTree(c *gin.Context) {
+	_, bs, err := models.ListBatch(100, 0)
+	if err != nil {
+		c.JSON(e.StatusReqOK, gin.H{
+			"status": e.StatusSucceed,
+			"data":   "",
+		})
+		return
+	}
+
+	trees := make([]treeNode, 0)
+
+	// 批次ID
+	for _, v := range bs {
+		tree1 := treeNode{Value: v, Label: v}
+		_, _ms, _ := models.ListMedicalIDByBatchID(10000, 0, v)
+		tree1.Children = make([]*treeNode, 0)
+		for _, mdicalid := range _ms {
+			tree2 := &treeNode{Value: mdicalid, Label: mdicalid}
+			_, imgs, _ := models.ListImageOfMedicalID(v, mdicalid, 10000, 0)
+			tree2.Children = make([]*treeNode, 0)
+			for _, _img := range imgs {
+				tree3 := &treeNode{Value: fmt.Sprintf("%d", _img.ID), Label: f.Imgpath(v, mdicalid, _img.Imgpath, _img.Type)}
+				tree2.Children = append(tree2.Children, tree3)
+			}
+
+			tree1.Children = append(tree1.Children, tree2)
+		}
+
+		trees = append(trees, tree1)
+	}
+	ResStruct(c, trees)
 	return
 }
