@@ -157,6 +157,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </footer>
   </div>
@@ -210,15 +211,21 @@ export default {
       this.getUserLog(10, (this.currentPage - 1) * 10, 1)
     },
     handleCurrentChange(val) {
-      this.getUserLog(10, (val - 1) * 10, 1)
-      console.log(`每页 ${val} 条`)
+      this.currentSkip = (val - 1) * this.currentPageSize
+      this.getUserLog(this.currentPageSize, this.currentSkip, 1)
+      // console.log(`这是第 ${val} 页 `)
+    },
+    handleSizeChange(val) {
+      if (val >= 10) {
+        this.currentPageSize = val
+      }
+      this.getUserLog(val, (val - 1) * 10, 1)
+      // console.log(`每页 ${val} 条`)
     },
     data() {
       return {
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4
+        currentSkip: 0, // 当前记录的位置
+        currentPageSize: 10 // 每页显示多少条
       }
     },
     getUserLog(limit, skip, order) {
