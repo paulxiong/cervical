@@ -1349,13 +1349,15 @@
               "name": "status",
               "type": "Integer",
               "remark": "0 未审核 1 已审核 2 移除",
-              "chnname": "状态"
+              "chnname": "状态",
+              "defaultValue": "0"
             },
             {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",
-              "chnname": "创建者"
+              "chnname": "创建者",
+              "defaultValue": "0"
             },
             {
               "name": "CREATED_TIME",

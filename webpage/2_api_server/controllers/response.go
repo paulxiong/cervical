@@ -14,3 +14,8 @@ func ResString(c *gin.Context, v string) {
 func ResStruct(c *gin.Context, v interface{}) {
 	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed, "data": v})
 }
+
+// ResStructTotal 响应一个struct和总数
+func ResStructTotal(c *gin.Context, v interface{}, t int) {
+	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed, "data": v, "total": t})
+}

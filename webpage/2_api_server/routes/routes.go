@@ -68,9 +68,12 @@ func Router() *gin.Engine {
 		api1.GET("/categoryinfo", ctr.GetCategoryInfo)
 		api1.POST("/imglistsofwanted", ctr.GetImgListOfWanted)
 		api1.GET("/imglistsonebyone", ctr.GetImgListOneByOne)
-		api1.GET("/getLabelbyimageid", ctr.GetLabelByImageID)
 		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalID)
 		api1.GET("/getimgbymid", ctr.GetImgListOfMedicalID)
+
+		// 标注
+		api1.POST("/updatelabelsofimage", ctr.UpdateLabelsOfImage)
+		api1.GET("/getLabelbyimageid", ctr.GetLabelByImageID)
 
 		// 数据集
 		api1.POST("/createdataset", ctr.CreateDataset)

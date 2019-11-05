@@ -296,56 +296,6 @@ func GetImgListOneByOne(c *gin.Context) {
 	return
 }
 
-// Labelslists 标注信息
-type Labelslists struct {
-	Labels []models.Label `json:"labels"`
-	W      int            `json:"imgw"`
-	H      int            `json:"imgh"`
-}
-
-// GetLabelByImageID 通过图片的ID获得对应的所有标注信息
-// @Summary 通过图片的ID获得对应的所有标注信息
-// @Description 通过图片的ID获得对应的所有标注信息
-// @tags API1 数据（需要认证）
-// @Accept  json
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
-// @Router /api1/imglistsonebyone [get]
-func GetLabelByImageID(c *gin.Context) {
-	limitStr := c.DefaultQuery("limit", "1")
-	skipStr := c.DefaultQuery("skip", "0")
-	imgidStr := c.DefaultQuery("imgid", "1")
-	imgid, _ := strconv.ParseInt(imgidStr, 10, 64)
-	limit, _ := strconv.ParseInt(limitStr, 10, 64)
-	skip, _ := strconv.ParseInt(skipStr, 10, 64)
-
-	labels := Labelslists{}
-	labels.Labels = make([]models.Label, 0)
-
-	img, err := models.GetImageByID(imgid)
-	if err == nil {
-		labels.W = img.W
-		labels.H = img.H
-	}
-
-	total, _labels, _ := models.ListLabelByImageID(int(limit), int(skip), int(imgid))
-	for _, v := range _labels {
-		_c, _ := models.GetCategoryByID(v.Type)
-		v.TypeOut = _c.Name
-		labels.Labels = append(labels.Labels, v)
-	}
-
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   labels,
-		"total":  total,
-	})
-
-	return
-}
-
 // imagesNPTypeByMedicalID 选中的批次、病例的传入参数
 type imagesNPTypeByMedicalID struct {
 	Batchids       []string `json:"batchids"   example:"redhouse"`          //批次号数组
