@@ -24,7 +24,7 @@
       </el-select>
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div>
-    <el-table :data="userLog.accesslog" height="600" style="width: 100%">
+    <el-table :data="userLog.accesslog" height="850px" style="width: 100%">
       <el-table-column prop="name" label="用户名" width="200" />
       <el-table-column prop="ip" label="IP" width="180" />
       <el-table-column prop="region.isp" label="运营商" width="100" />
