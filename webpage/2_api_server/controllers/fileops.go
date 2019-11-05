@@ -19,6 +19,7 @@ import (
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
 
 // FileDownload 细胞集合的zip下载
@@ -116,7 +117,7 @@ func UploadDatasetHandler(c *gin.Context) {
 	// 新建批次病例目录
 	dirpath := f.NewMedicalDir(_bid, _mid)
 	f.NewDir(dirpath)
-	filename := header.Filename
+	filename := u.URLEncodeFileName(header.Filename)
 	filepath := path.Join(dirpath, header.Filename)
 
 	out, err := os.Create(filepath)
