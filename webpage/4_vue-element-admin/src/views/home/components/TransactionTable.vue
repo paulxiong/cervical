@@ -1,6 +1,6 @@
 <template>
   <el-table :data="list" style="width: 100%;padding-top: 15px;">
-    <el-table-column label="项目编号" min-width="200">
+    <el-table-column label="任务编号" min-width="200">
       <template slot-scope="scope">
         {{ scope.row.order_no | orderNoFilter }}
       </template>

@@ -5,21 +5,21 @@
     </div>
     <div style="position:relative;">
       <pan-thumb :image="avatar" class="panThumb" />
-      <mallki class-name="mallki-text" text="算法技术栈" />
+      <mallki class-name="mallki-text" text="医疗人工智能解决方案" />
       <div style="padding-top:35px;" class="progress-item">
-        <span>DeepLearning</span>
-        <el-progress :percentage="70" />
+        <span>医疗单据智能辅助系统</span>
+        <el-progress :percentage="99" />
       </div>
       <div class="progress-item">
-        <span>Machine Learning</span>
-        <el-progress :percentage="18" />
+        <span>医疗大数据处理及分析</span>
+        <el-progress :percentage="99" />
       </div>
       <div class="progress-item">
-        <span>BigData</span>
-        <el-progress :percentage="12" />
+        <span>机器视觉融合AI医疗</span>
+        <el-progress :percentage="100" status="success" />
       </div>
       <div class="progress-item">
-        <span>AutoKeras</span>
+        <span>AI筛查宫颈癌细胞</span>
         <el-progress :percentage="100" status="success" />
       </div>
     </div>
