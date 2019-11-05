@@ -18,7 +18,7 @@
       <div class="el-upload__text">将文件拖到此处</div>
       <div slot="tip" class="el-upload__tip">只能上传png/jpg/png文件</div>
       <el-button
-        style="margin-left: 10px;"
+        style="margin: 10px 0 0 20px;"
         size="mini"
         type="success"
         @click.stop="submitUpload"
@@ -51,6 +51,7 @@ export default {
   },
   methods: {
     submitUpload() {
+      this.$emit('checkUpload', true)
       const y = new Date().getFullYear()
       const m = new Date().getMonth() + 1
       const d = new Date().getDate()
@@ -63,7 +64,6 @@ export default {
       this.postData.batchids = [this.args.bid]
       this.postData.medicalids.push(this.args.mid)
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
-      console.log(this.args)
       setTimeout(() => {
         this.$refs.upload.submit()
       }, 500)

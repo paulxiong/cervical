@@ -24,8 +24,8 @@
             </template>
           </el-cascader>
           <el-button-group>
-            <el-button size="mini" type="info" icon="el-icon-arrow-left" @click="previousImg">上一张</el-button>
-            <el-button size="mini" type="info" @click="nextImg">
+            <el-button size="mini" type="info" :disabled="!currentLabel.length" icon="el-icon-arrow-left" @click="previousImg">上一张</el-button>
+            <el-button size="mini" type="info" :disabled="!currentLabel.length" @click="nextImg">
               下一张
               <i class="el-icon-arrow-right el-icon--right" />
             </el-button>
@@ -33,7 +33,9 @@
         </div>
       </section>
       <section class="label-img">
+        <div v-if="!currentLabel.length" style="text-align:center;margin-top:200px;">请选择数据集</div>
         <AIMarker
+          v-else
           ref="aiPanel-editor"
           class="ai-observer"
           :read="readOnly"
@@ -71,6 +73,7 @@
 import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
+import { ImgServerUrl } from '@/const/config'
 import { formatTime } from '@/utils/index'
 
 export default {
@@ -86,7 +89,8 @@ export default {
       currentLabel: [],
       labelLog: [],
       imgInfo: {},
-      fov_img: 'http://medical.raidcdn.cn:3001/unsafe/1000x0/img/17P0603/1904165B/Images/IMG017x001.JPG',
+      fov_img: '',
+      url: ImgServerUrl + '/unsafe/1000x0/',
       lazyProps: {
         lazy: true,
         lazyLoad(node, resolve) {
@@ -104,9 +108,9 @@ export default {
             })
           } else if (level === 2) {
             getImgbymid({ 'bid': parent['label'], 'mdcid': label, 'limit': 100, 'skip': 0 }).then(res => {
-              res.data.data.imgs.map(v => {
+              res.data.data.imgs.map((v, i) => {
                 v['label'] = v.imgpath
-                v['value'] = v.id
+                v['value'] = `${i}-${v.imgpath}`
                 v['leaf'] = level >= 2
               })
               resolve(res.data.data.imgs)
@@ -117,20 +121,37 @@ export default {
     }
   },
   created() {
-    this.getLabelByImageId()
     this.getBatchInfo()
   },
   methods: {
     previousImg() {
-      console.log(this.batchList)
-      this.currentLabel = ['17P0603', '1903779', 656]
+      this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0])
     },
     nextImg() {
-      console.log(this.currentLabel)
-      this.currentLabel = ['17P0603', '1903779', 657]
+      this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
     },
     changeBatchList(val) {
-      this.currentLabel = val
+      this.fov_img = this.url + this.currentLabel[2].split('-')[1]
+      this.getLabelByImageId()
+    },
+    getImgs(bid, mdcid, img, next) {
+      getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
+        const imgs = res.data.data.imgs
+        /**
+         * 索引查找并替换当前标注图片
+         */
+        if (next) {
+          const idx = parseInt(img) + 1
+          if (idx === imgs.length) return
+          this.fov_img = this.url + imgs[idx].imgpath
+          this.currentLabel = [bid, mdcid, idx + '-' + imgs[idx].imgpath]
+        } else {
+          const idx = parseInt(img) - 1
+          if (idx < 0) return
+          this.fov_img = this.url + imgs[idx].imgpath
+          this.currentLabel = [bid, mdcid, idx + '-' + imgs[idx].imgpath]
+        }
+      })
     },
     getBatchInfo() {
       getBatchInfo().then(res => {

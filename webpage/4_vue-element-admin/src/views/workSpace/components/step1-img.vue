@@ -79,6 +79,7 @@ export default {
       })
     },
     getimgnptypebymids(val) {
+      this.$emit('checkImg', true)
       const postData = {
         'batchids': [],
         'medicalids': []

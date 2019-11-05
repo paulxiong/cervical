@@ -146,7 +146,7 @@ export default {
       }
       createProject(postData).then(res => {
         this.$router.push({
-          path: `/workSpace/details?pid=${res.data.data}&did=${this.datasetsInfo.did}&type=${this.predictType === '预测' ? 3 : 2}`
+          path: `/workSpace/details?pid=${res.data.data}&did=${this.datasetsInfo.id}&type=${this.predictType === '预测' ? 3 : 2}`
         })
       })
     },

@@ -9,8 +9,8 @@
     </section>
 
     <section class="main">
-      <uploadImg v-if="upload && step===1" />
-      <checkImg v-if="!upload && step===1" />
+      <uploadImg v-if="upload && step===1" @checkUpload="checkUpload" />
+      <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
       <checkModel v-if="step===2" ref="checkModel" />
       <startTrain v-if="step===3" />
     </section>
@@ -38,6 +38,12 @@ export default {
     }
   },
   methods: {
+    checkUpload(val) {
+      this.$emit('checkUpload', val)
+    },
+    checkImg(val) {
+      this.$emit('checkImg', val)
+    },
     stepNext() {
       if (this.step === 2) {
         this.$refs.checkModel.saveModelInfo()

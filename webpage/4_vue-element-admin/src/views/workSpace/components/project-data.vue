@@ -22,7 +22,12 @@
           :value="item.key"
         />
       </el-select>
-      <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
+      <el-button
+        class="filter-btn"
+        type="primary"
+        :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
+        @click="filterSearch"
+      >刷新</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
@@ -31,7 +36,12 @@
         @click="dialogFormVisible = true"
       >新增项目</el-button>
     </div>
-    <el-table :data="projectlist" style="width: 100%">
+    <el-table
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      :data="projectlist"
+      style="width: 100%"
+    >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
@@ -79,24 +89,12 @@
       <el-table-column label="数据集 ID" prop="did" />
       <el-table-column label="创建者" prop="created_by" />
       <el-table-column label="类型" prop="projectType" />
-      <el-table-column
-        label="状态/剩余时间(秒)"
-        prop="statusTime"
-      >
+      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.statusType"
-            effect="dark"
-          >
-            {{ scope.row.statusTime }}
-          </el-tag>
+          <el-tag :type="scope.row.statusType" effect="dark">{{ scope.row.statusTime }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        fixed="right"
-        label="操作"
-        width="100"
-      >
+      <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-button type="text" @click="goDetail(scope.row)">查看</el-button>
           <el-button type="text" style="color: #ff3c43;">删除</el-button>

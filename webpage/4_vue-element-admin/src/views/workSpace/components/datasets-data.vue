@@ -43,7 +43,12 @@
         @click="uploadImgs"
       >上传</el-button>
     </div>
-    <el-table :data="datasetsList" style="width: 100%">
+    <el-table
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      :data="datasetsList"
+      style="width: 100%"
+    >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
@@ -113,11 +118,27 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog :title="upload ? '上传数据' : '新建数据集'" :visible.sync="dialogFormVisible">
-      <newDatasets ref="newDatasets" :upload="upload" style="margin-top:-30px;" />
+    <el-dialog
+      :title="upload ? '上传数据' : '新建数据集'"
+      :visible.sync="dialogFormVisible"
+      @closed="closedDialog"
+    >
+      <newDatasets
+        ref="newDatasets"
+        :upload="upload"
+        style="margin-top:-30px;"
+        @checkUpload="checkUpload"
+        @checkImg="checkImg"
+      />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
-        <el-button v-show="step===1 || step===2" size="mini" type="primary" @click="stepNext">下一步</el-button>
+        <el-button
+          v-show="step===1 || step===2"
+          size="mini"
+          :disabled="!uploadServer && !imgChecked"
+          type="primary"
+          @click="stepNext"
+        >下一步</el-button>
       </div>
     </el-dialog>
   </div>
@@ -139,6 +160,8 @@ export default {
       total: undefined,
       dialogFormVisible: false,
       upload: false,
+      uploadServer: false,
+      imgChecked: false,
       currentPage: 1,
       loading: false,
       listQuery: {
@@ -184,6 +207,15 @@ export default {
     stepBack() {
       this.$refs.newDatasets.stepBack()
       this.step = this.$refs.newDatasets.step
+    },
+    closedDialog() {
+      this.$refs.newDatasets.step = 1
+    },
+    checkUpload(val) {
+      this.uploadServer = val
+    },
+    checkImg(val) {
+      this.imgChecked = val
     },
     filterSearch() {
       this.listdatasets(10, (this.currentPage - 1) * 10, 1)
