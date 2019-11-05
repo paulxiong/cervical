@@ -126,8 +126,9 @@ export default {
       })
     },
     createProject() {
+      console.log(this.cellsList)
       const postData = this.predictType === '预测' ? {
-        celltypes: this.cellsList,
+        celltypes: this.cellsList.length ? this.cellsList : this.datasetsInfo.types,
         desc: this.inputName,
         did: parseInt(this.datasetsInfo.id),
         parameter_mid: parseInt(this.modelInfo.id),
@@ -136,7 +137,7 @@ export default {
         parameter_type: this.predictWay === '没标注的图' ? 0 : 1,
         type: 3
       } : {
-        celltypes: this.cellsList,
+        celltypes: this.cellsList.length ? this.cellsList : this.datasetsInfo.types,
         desc: this.inputName,
         did: parseInt(this.datasetsInfo.id),
         parameter_resize: parseInt(this.cutInput),

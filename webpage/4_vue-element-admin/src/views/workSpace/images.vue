@@ -107,7 +107,7 @@ export default {
   data() {
     return {
       percentage: 0,
-      ETA: 1800,
+      ETA: 10,
       status: 0,
       loadingtext: '正在执行',
       loading: true,
@@ -168,6 +168,7 @@ export default {
           this.objData2 = Object.assign(this.objData2, res.data.data)
           this.objData2.batchids = Array.from(new Set(this.objData2.batchids))
           this.objData2.medicalids = Array.from(new Set(this.objData2.medicalids))
+          this.tableData = []
           this.tableData.push(this.objData, this.objData2)
           this.origin_imgs = this.objData2.origin_imgs
           localStorage.setItem('jobResult', JSON.stringify(this.objData2))
@@ -180,11 +181,13 @@ export default {
         this.percentage = res.data.data.percent
         this.ETA = res.data.data.ETA
         this.status = res.data.data.status
-        if ((this.percentage === 100) || (this.status === 3)) {
+        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
           this.loading = false
+          this.getjobresult()
+          this.getjoblog()
           clearInterval(timer)
         } else {
-          this.loadingtext = '正在执行，预计还需要' + this.ETA + '秒'
+          this.loadingtext = '预计还需要' + this.ETA + '秒'
         }
       })
     },
@@ -216,14 +219,14 @@ export default {
     loopGetPercent() {
       timer = setInterval(() => {
         this.getPercent()
-        if (this.percentage === 100) {
+        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
           this.getjobresult()
           this.getPercent()
           this.getjoblog()
           location.reload()
           clearInterval(timer)
         }
-      }, 1e4)
+      }, 5000)
     }
   },
   beforedestroy() {

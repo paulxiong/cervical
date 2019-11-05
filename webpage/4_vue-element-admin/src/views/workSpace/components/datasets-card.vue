@@ -58,6 +58,7 @@
             v-for="(v,i) in datasetsInfo.types"
             :key="i"
             :label="v | filtersCheckbox"
+            checked
             min="2"
             class="item-cell"
             border
@@ -120,7 +121,6 @@ export default {
     },
     cellsTypeChange() {
       const cellsList = []
-      this.checkboxCell
       this.checkboxCell.map(v => {
         cellsList.push(parseInt(v.split(' ')[0]))
       })

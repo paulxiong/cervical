@@ -10,7 +10,7 @@
         status="success"
       />
     </section>
-    <section class="results">
+    <section v-loading="loading" :element-loading-text="loadingtext" class="results">
       <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
           <el-table-column prop="type" width="400" label="类型" />
@@ -75,6 +75,10 @@ export default {
       modelInfo: {},
       datasetsInfo: {},
       datasetsList: [],
+      loading: true,
+      ETA: 10,
+      status: 0,
+      loadingtext: '正在执行',
       postCelltypes: [],
       cLog: '',
       hosturlpath64: ImgServerUrl + '/unsafe/64x0/',
@@ -85,6 +89,7 @@ export default {
   },
   created() {
     this.getPredictResult()
+    this.getPercent()
     this.getjoblog()
     this.loopGetPercent()
   },
@@ -95,18 +100,22 @@ export default {
     getPredictResult() {
       getPredictResult({ 'id': this.$route.query.pid }).then(res => {
         if (typeof res.data.data !== 'string') {
-          res.data.data.result.map(v => {
-            v.falseCnt = v.total - v.correct
-            v.type = cellsType[v.type]
-          })
+          if (res.data.data.result) {
+            res.data.data.result.map(v => {
+              v.falseCnt = v.total - v.correct
+              v.type = cellsType[v.type]
+            })
+          }
           this.predictResult = res.data.data
-          this.predictResult.crop_cells.map(v => {
-            if (v.type === v.predict) {
-              this.rightCellsList.push(v)
-            } else {
-              this.falseCellsList.push(v)
-            }
-          })
+          if (res.data.data.crop_cells) {
+            this.predictResult.crop_cells.map(v => {
+              if (v.type === v.predict) {
+                this.rightCellsList.push(v)
+              } else {
+                this.falseCellsList.push(v)
+              }
+            })
+          }
         }
       })
     },
@@ -117,10 +126,16 @@ export default {
       })
     },
     getPercent() {
-      getPercent({ id: this.$route.query.pid, job: 2 }).then(res => {
+      // type 0 未知 1 数据集处理 2 训练 3 预测
+      getPercent({ id: this.$route.query.pid, type: 3 }).then(res => {
         this.percentage = res.data.data.percent
-        if (this.percentage === 100) {
+        this.status = res.data.data.status
+        this.ETA = res.data.data.ETA
+        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
+          this.loading = false
           clearInterval(timer)
+        } else {
+          this.loadingtext = '预计还需要' + this.ETA + '秒'
         }
       })
     },
@@ -129,12 +144,13 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
-        this.getPercent()
-        if (this.percentage === 100) {
+        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
           this.getPercent()
+          this.getjoblog()
+          location.reload()
           clearInterval(timer)
         }
-      }, 1e4)
+      }, 5000)
     },
     changeCellTypes(val) {
       this.postCelltypes = val

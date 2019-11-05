@@ -10,7 +10,7 @@
         status="success"
       />
     </section>
-    <section class="model-info">
+    <section v-loading="loading" :element-loading-text="loadingtext" class="model-info">
       <div v-if="modelInfo.path" class="model-box">
         <el-badge is-dot class="badge">模型信息</el-badge>
         <modelCard :model-info="modelInfo" :save="save" />
@@ -38,11 +38,17 @@ export default {
       percentage: 0,
       save: 'save',
       modelInfo: {},
-      startedTrain: ''
+      startedTrain: '',
+      loading: true,
+      ETA: 10,
+      status: 0,
+      loadingtext: '正在执行'
     }
   },
   created() {
+    this.getPercent()
     this.getTrainresult()
+    this.loopGetPercent()
   },
   methods: {
     getTrainresult() {
@@ -51,10 +57,16 @@ export default {
       })
     },
     getPercent() {
-      getPercent({ id: this.$route.query.pid, job: 1 }).then(res => {
+      // type 0 未知 1 数据集处理 2 训练 3 预测
+      getPercent({ id: this.$route.query.pid, type: 2 }).then(res => {
         this.percentage = res.data.data.percent
-        if (this.percentage === 100) {
+        this.status = res.data.data.status
+        this.ETA = res.data.data.ETA
+        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
+          this.loading = false
           clearInterval(timer)
+        } else {
+          this.loadingtext = '预计还需要' + this.ETA + '秒'
         }
       })
     },
@@ -63,13 +75,13 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
-        this.getPercent()
-        if (this.percentage === 100) {
+        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
           this.getTrainresult()
           this.getPercent()
+          location.reload()
           clearInterval(timer)
         }
-      }, 1e4)
+      }, 5000)
     }
   },
   beforedestroy() {
@@ -109,6 +121,7 @@ export default {
   .model-info {
     padding: 0 30px;
     margin-top: 20px;
+    height: 500px;
     .cell-checkbox {
       margin-top: 5px;
       margin-bottom: 20px;
