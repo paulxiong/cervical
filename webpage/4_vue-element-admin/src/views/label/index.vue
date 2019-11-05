@@ -110,7 +110,7 @@ export default {
             getImgbymid({ 'bid': parent['label'], 'mdcid': label, 'limit': 100, 'skip': 0 }).then(res => {
               res.data.data.imgs.map((v, i) => {
                 v['label'] = v.imgpath
-                v['value'] = `${i}-${v.imgpath}`
+                v['value'] = `${i}-${v.id}-${v.imgpath}`
                 v['leaf'] = level >= 2
               })
               resolve(res.data.data.imgs)
@@ -126,13 +126,18 @@ export default {
   methods: {
     previousImg() {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0])
+      const imgid = this.currentLabel[2].split('-')[1]
+      this.getLabelByImageId(imgid)
     },
     nextImg() {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
+      const imgid = this.currentLabel[2].split('-')[1]
+      this.getLabelByImageId(imgid)
     },
     changeBatchList(val) {
-      this.fov_img = this.url + this.currentLabel[2].split('-')[1]
-      this.getLabelByImageId()
+      this.fov_img = this.url + this.currentLabel[2].split('-')[2]
+      const imgid = this.currentLabel[2].split('-')[1]
+      this.getLabelByImageId(imgid)
     },
     getImgs(bid, mdcid, img, next) {
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
@@ -144,12 +149,14 @@ export default {
           const idx = parseInt(img) + 1
           if (idx === imgs.length) return
           this.fov_img = this.url + imgs[idx].imgpath
-          this.currentLabel = [bid, mdcid, idx + '-' + imgs[idx].imgpath]
+          const id = imgs[idx].id
+          this.currentLabel = [bid, mdcid, idx + '-' + id + '-' + imgs[idx].imgpath]
         } else {
           const idx = parseInt(img) - 1
           if (idx < 0) return
           this.fov_img = this.url + imgs[idx].imgpath
-          this.currentLabel = [bid, mdcid, idx + '-' + imgs[idx].imgpath]
+          const id = imgs[idx].id
+          this.currentLabel = [bid, mdcid, idx + '-' + id + '-' + imgs[idx].imgpath]
         }
       })
     },
@@ -163,8 +170,8 @@ export default {
         })
       })
     },
-    getLabelByImageId() {
-      getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': 5 }).then(res => {
+    getLabelByImageId(id) {
+      getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': id }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.labels.map(v => {
           v.tag = `${v.imgid}-${v.type}`
@@ -197,6 +204,7 @@ export default {
       this.labelLog.unshift(log)
     },
     renderLabel() {
+      this.$refs['aiPanel-editor'].getMarker().clearData()
       this.$refs['aiPanel-editor'].getMarker().renderData(this.imgInfo.labels)
     }
   }
