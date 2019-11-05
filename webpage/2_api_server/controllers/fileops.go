@@ -118,7 +118,7 @@ func UploadDatasetHandler(c *gin.Context) {
 	dirpath := f.NewMedicalDir(_bid, _mid)
 	f.NewDir(dirpath)
 	filename := u.URLEncodeFileName(header.Filename)
-	filepath := path.Join(dirpath, header.Filename)
+	filepath := path.Join(dirpath, filename)
 
 	out, err := os.Create(filepath)
 	if err != nil {
