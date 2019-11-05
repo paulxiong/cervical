@@ -15,7 +15,7 @@
       :auto-upload="false"
     >
       <i class="el-icon-upload" />
-      <div class="el-upload__text">将文件拖到此处</div>
+      <div class="el-upload__text">将多张/单张图片文件拖到此处</div>
       <div slot="tip" class="el-upload__tip">只能上传png/jpg/png文件</div>
       <el-button
         style="margin: 10px 0 0 20px;"
