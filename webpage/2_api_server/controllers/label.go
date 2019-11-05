@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
-	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 )
 
@@ -98,27 +97,32 @@ func UpdateLabelsOfImage(c *gin.Context) {
 	}
 
 	for _, v := range lr.Labels {
-		logger.Info.Println(v)
-		if v.Op == 0 || v.Op > 3 {
+		if v.Op == 0 || v.Op > 3 || v.ImgID < 1 || ((v.Op == 2 || v.Op == 3) && v.LabelID < 1) {
 			ResString(c, "invalied labels 2")
 			return
-		} else if v.Op == 1 {
-			ladd := &models.Label{
-				ID:     0,
-				Imgid:  v.ImgID,
-				Type:   v.TypeID,
-				X:      v.X1,
-				Y:      v.Y1,
-				W:      v.X2,
-				H:      v.Y2,
-				Status: 0,
-			}
-			ladd.InsertLabel()
-			logger.Info.Println("add")
+		}
+
+		newl := &models.Label{
+			ID:     v.LabelID,
+			Imgid:  v.ImgID,
+			Type:   v.TypeID,
+			X:      int((v.X2 - v.X1) / 2),
+			Y:      int((v.Y2 - v.Y1) / 2),
+			W:      v.X2 - v.X1,
+			H:      v.Y2 - v.Y1,
+			Status: 0,
+		}
+		if newl.X < 0 || newl.Y < 0 || newl.W <= 0 || newl.H <= 0 {
+			ResString(c, "invalied labels 3")
+			return
+		}
+
+		if v.Op == 1 {
+			newl.InsertLabel()
 		} else if v.Op == 2 {
-			logger.Info.Println("remove")
+			newl.RemoveLabel()
 		} else if v.Op == 3 {
-			logger.Info.Println("update")
+			newl.UpdateLabel()
 		}
 	}
 

@@ -41,7 +41,7 @@ func (l *Label) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-// InsertLabel 依次列出标注信息
+// InsertLabel 新建标注信息
 func (l *Label) InsertLabel() (e error) {
 	_l := Label{}
 	ret := db.Model(l).Where("X=? AND Y=? AND W=? AND H=? AND TYPE=?", l.X, l.Y, l.W, l.H, l.Type).First(&_l)
@@ -51,7 +51,39 @@ func (l *Label) InsertLabel() (e error) {
 
 	l.ID = 0
 	//ret2 := db.Debug().Model(l).Save(l)
-	ret2 := db.Save(&l)
+	ret2 := db.Model(l).Save(l)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+
+	return ret2.Error
+}
+
+// RemoveLabel 删除标注信息
+func (l *Label) RemoveLabel() (e error) {
+	_l := Label{}
+	ret := db.Model(l).Where("X=? AND Y=? AND W=? AND H=? AND TYPE=?", l.X, l.Y, l.W, l.H, l.Type).First(&_l)
+	if ret.Error != nil {
+		return ret.Error
+	}
+
+	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"status": 2})
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+
+	return ret2.Error
+}
+
+// UpdateLabel 更新标注信息
+func (l *Label) UpdateLabel() (e error) {
+	_l := Label{}
+	ret := db.Model(l).Where("X=? AND Y=? AND W=? AND H=? AND TYPE=?", l.X, l.Y, l.W, l.H, l.Type).First(&_l)
+	if ret.Error != nil {
+		return ret.Error
+	}
+
+	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"X": l.X, "Y": l.Y, "W": l.W, "H": l.H, "TYPE": l.Type})
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}
