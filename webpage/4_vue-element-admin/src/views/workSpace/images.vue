@@ -220,6 +220,7 @@ export default {
           this.getjobresult()
           this.getPercent()
           this.getjoblog()
+          location.reload()
           clearInterval(timer)
         }
       }, 1e4)

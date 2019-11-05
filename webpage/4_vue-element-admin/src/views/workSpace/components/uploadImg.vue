@@ -51,7 +51,6 @@ export default {
   },
   methods: {
     submitUpload() {
-      this.$emit('checkUpload', true)
       const y = new Date().getFullYear()
       const m = new Date().getMonth() + 1
       const d = new Date().getDate()
@@ -66,6 +65,7 @@ export default {
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
       setTimeout(() => {
         this.$refs.upload.submit()
+        this.$emit('checkUpload', true)
       }, 500)
     },
     abortUpload() {
