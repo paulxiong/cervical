@@ -1,16 +1,21 @@
 <template>
   <el-table :data="list" style="width: 100%;padding-top: 15px;">
-    <el-table-column label="任务编号" min-width="200">
+    <el-table-column label="近期项目ID" min-width="150">
       <template slot-scope="scope">
         {{ scope.row.order_no | orderNoFilter }}
       </template>
     </el-table-column>
-    <el-table-column label="剩余时间" width="195" align="center">
+    <el-table-column label="描述" width="150" align="center">
       <template slot-scope="scope">
-        {{ scope.row.price | toThousandFilter }}(分钟)
+        {{ scope.row.describe |describeFilter }}
       </template>
     </el-table-column>
-    <el-table-column label="状态" width="100" align="center">
+    <el-table-column label="数据集ID" width="150" align="center">
+      <template slot-scope="scope">
+        {{ scope.row.data | dataIDFilter }}
+      </template>
+    </el-table-column>
+    <el-table-column label="状态" width="150" align="center">
       <template slot-scope="{row}">
         <el-tag :type="row.status | statusFilter">
           {{ row.status }}
@@ -33,6 +38,12 @@ export default {
     },
     orderNoFilter(str) {
       return str.substring(0, 30)
+    },
+    dataIDFilter(str) {
+      return str.substring(0, 50)
+    },
+    describeFilter(str) {
+      return str.substring(0, 100)
     }
   },
   data() {
@@ -47,44 +58,52 @@ export default {
     fetchData() {
       this.list = [
         {
-          order_no: '201910011200',
-          price: '30',
-          status: 'success'
+          order_no: '36',
+          data: '47',
+          describe: '123ad',
+          status: '送去处理'
         },
         {
-          order_no: '201910051100',
-          price: '60',
-          status: 'success'
+          order_no: '35',
+          data: '47',
+          describe: 'bh',
+          status: '送去处理'
         },
         {
-          order_no: '201910101400',
-          price: '90',
-          status: 'pending'
+          order_no: '34',
+          data: '47',
+          describe: 'sdfx',
+          status: '送去处理'
         },
         {
-          order_no: '201910150200',
-          price: '120',
-          status: 'success'
+          order_no: '33',
+          data: '47',
+          describe: '31231',
+          status: '送去处理'
         },
         {
-          order_no: '201910200100',
-          price: '150',
-          status: 'pending'
+          order_no: '32',
+          data: '47',
+          describe: '123',
+          status: '送去处理'
         },
         {
-          order_no: '201910220400',
-          price: '180',
-          status: 'pending'
+          order_no: '31',
+          data: '47',
+          describe: '4',
+          status: '送去处理'
         },
         {
-          order_no: '201910250800',
-          price: '210',
-          status: 'success'
+          order_no: '23',
+          data: '42',
+          describe: '1234',
+          status: '开始(0s)'
         },
         {
-          order_no: '201910300000',
-          price: '240',
-          status: 'pending'
+          order_no: '30',
+          data: '47',
+          describe: '123ad',
+          status: '完成'
         }
       ]
     }

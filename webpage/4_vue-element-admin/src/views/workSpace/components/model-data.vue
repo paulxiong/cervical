@@ -49,11 +49,8 @@
             <el-form-item label="描述">
               <span>{{ props.row.desc }}</span>
             </el-form-item>
-            <el-form-item label="创建者">
-              <span>{{ props.row.created_by }}</span>
-            </el-form-item>
-            <el-form-item label="模型 ID">
-              <span>{{ props.row.model_id }}</span>
+            <el-form-item label="类型">
+              <span>{{ props.row.type }}</span>
             </el-form-item>
             <el-form-item label="数据集 ID">
               <span>{{ props.row.datasets_id }}</span>
@@ -115,78 +112,7 @@ export default {
       step: 1,
       currentPage: 1,
       total: undefined,
-      modelList: [
-        {
-          'id': '1',
-          'desc': '第一个项目',
-          'created_by': '用户六',
-          'score': '98.6',
-          'status': '已完成',
-          'created_at': '2019-10-25T17:53:13Z',
-          'model_id': '2',
-          'datasets_id': '3'
-        },
-        {
-          'id': '2',
-          'desc': '第二个项目',
-          'created_by': '用户一',
-          'status': '已完成',
-          'score': '98.6',
-          'created_at': '2019-10-25T17:00:13Z',
-          'model_id': '1',
-          'datasets_id': '1'
-        },
-        {
-          'id': '3',
-          'desc': '第三个项目',
-          'created_by': '管理员',
-          'status': '已完成',
-          'score': '94.0',
-          'created_at': '2019-10-25T11:03:13Z',
-          'model_id': '2',
-          'datasets_id': '2'
-        },
-        {
-          'id': '4',
-          'desc': '第四个项目',
-          'created_by': '用户二',
-          'status': '未完成',
-          'score': '0',
-          'created_at': '2019-10-25T06:00:00Z',
-          'model_id': '7',
-          'datasets_id': '2'
-        },
-        {
-          'id': '5',
-          'desc': '第五个项目',
-          'created_by': '用户三',
-          'status': '已完成',
-          'score': '99.0',
-          'created_at': '2019-10-25T11:00:13Z',
-          'model_id': '1',
-          'datasets_id': '1'
-        },
-        {
-          'id': '6',
-          'desc': '第六个项目',
-          'created_by': '用户四',
-          'status': '未完成',
-          'score': '0',
-          'created_at': '2019-10-25T12:00:13Z',
-          'model_id': '3',
-          'datasets_id': '4'
-        },
-        {
-          'id': '7',
-          'desc': '第七个项目',
-          'created_by': '用户五',
-          'status': '已完成',
-          'score': '98.1',
-          'created_at': '2019-10-25T14:53:13Z',
-          'model_id': '2',
-          'datasets_id': '3'
-        }
-      ],
+      modelList: [],
       dialogFormVisible: false,
       listQuery: {
         desc: undefined,
@@ -209,7 +135,7 @@ export default {
     }
   },
   created() {
-    this.getListmodel(10, 0, 1)
+    this.getListmodel(10, 0, 4)
   },
   methods: {
     filterSearch() {
@@ -221,10 +147,12 @@ export default {
     handleCurrentChange(val) {
       console.log(val)
     },
-    getListmodel(limit, skip, order) {
-      getListmodel({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        this.modellist = res.data.data.model
+    getListmodel(limit, skip, type) {
+      // 裁剪是4,预测是5
+      getListmodel({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
+        this.modellist = res.data.data.models
         this.total = res.data.data.total
+        console.log(this.modellist, '123')
       })
     }
   }

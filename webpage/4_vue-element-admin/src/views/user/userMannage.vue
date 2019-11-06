@@ -24,21 +24,19 @@
       </el-select>
     </div>
     <el-table :data="userList" height="850px" style="width: 100%">
-      <el-table-column prop="id" label="ID" width="100" />
-      <el-table-column prop="user_id" label="用户ID" width="100" />
+      <el-table-column prop="id" label="用户ID" width="100" />
       <el-table-column prop="name" label="用户名" width="180" />
-      <el-table-column prop="type" label="类型" width="100" />
+      <el-table-column prop="type_id" label="用户类型" width="100" />
       <el-table-column prop="city" label="城市" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" trigger="click">
             <div>
               <table class="tftable" border="1">
-                <tr><th class="td-1">ID:</th><th>{{ scope.row.id }}</th></tr>
-                <tr><td class="td-1">用户ID:</td><td>{{ scope.row.user_id }}</td></tr>
-                <tr><td class="td-1">城市:</td><td>{{ scope.row.city }}</td></tr>
+                <tr><td class="td-1">用户ID:</td><td>{{ scope.row.id }}</td></tr>
                 <tr><td class="td-1">用户名:</td><td>{{ scope.row.name }}</td></tr>
-                <tr><td class="td-1">类型:</td><td>{{ scope.row.type }}</td></tr>
+                <tr><td class="td-1">类型:</td><td>{{ scope.row.type_id }}</td></tr>
+                <tr><td class="td-1">邮箱:</td><td>{{ scope.row.email }}</td></tr>
               </table>
             </div>
             <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
@@ -62,6 +60,7 @@
 </template>
 
 <script>
+import { getUserLists } from '@/api/user'
 
 export default {
   name: 'UserList',
@@ -88,47 +87,39 @@ export default {
           name: '城市'
         }
       ],
-      userList: [
-        {
-          'id': 0,
-          'user_id': 12,
-          'name': 'github_cy@163.com',
-          'type': '管理员',
-          'city': '昆明市'
-        },
-        {
-          'id': 1,
-          'user_id': 13,
-          'name': 'ggxxde@163.com',
-          'type': '管理员',
-          'city': '昆明市'
-        },
-        {
-          'id': 2,
-          'user_id': 14,
-          'name': '717138552@qq.com',
-          'type': '管理员',
-          'city': '昆明市'
-        },
-        {
-          'id': 3,
-          'user_id': 15,
-          'name': 'paulxiong_2007@gmail.com',
-          'type': '管理员',
-          'city': '加利福利亚'
-        }
-      ]
+      userList: []
     }
+  },
+  created() {
+    this.getUserLists(10, 0, 1)
   },
   methods: {
     handleClick(row) {
       console.log(row)
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      if (val >= 10) {
+        this.currentPageSize = val
+      }
+      this.getUserLists(val, (val - 1) * 10, 1)
+      // console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
-      console.log(val)
+      this.currentSkip = (val - 1) * this.currentPageSize
+      this.getUserLists(this.currentPageSize, this.currentSkip, 1)
+      // console.log(val)
+    },
+    data() {
+      return {
+        currentSkip: 0,
+        currentPageSize: 10
+      }
+    },
+    getUserLists(limit, skip, order) {
+      getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        this.userList = res.data.data
+        console.log(res.data.data)
+      })
     }
   }
 }

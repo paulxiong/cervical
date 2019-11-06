@@ -16,6 +16,14 @@ export function getUserInfo(query) {
   })
 }
 
+export function getUserLists(query) {
+  return request({
+    url: '/user/lists',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getUserLog(query) {
   return request({
     url: '/user/accesslog',
