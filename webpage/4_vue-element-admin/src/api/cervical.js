@@ -131,6 +131,14 @@ export function jobresult(data) {
   })
 }
 
+export function updateLabel(data) {
+  return request({
+    url: '/api1/updatelabelsofimage',
+    method: 'post',
+    data
+  })
+}
+
 export function getjobresult(query) {
   return request({
     url: '/api1/jobresult',

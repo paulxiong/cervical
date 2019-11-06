@@ -24,7 +24,13 @@
             </template>
           </el-cascader>
           <el-button-group>
-            <el-button size="mini" type="info" :disabled="!currentLabel.length" icon="el-icon-arrow-left" @click="previousImg">上一张</el-button>
+            <el-button
+              size="mini"
+              type="info"
+              :disabled="!currentLabel.length"
+              icon="el-icon-arrow-left"
+              @click="previousImg"
+            >上一张</el-button>
             <el-button size="mini" type="info" :disabled="!currentLabel.length" @click="nextImg">
               下一张
               <i class="el-icon-arrow-right el-icon--right" />
@@ -41,6 +47,7 @@
           :read="readOnly"
           :img="fov_img"
           @vmarker:onDrawOne="onDrawOne"
+          @vmarker:onSelect="onSelect"
         />
       </section>
     </section>
@@ -70,7 +77,7 @@
 </template>
 
 <script>
-import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid } from '@/api/cervical'
+import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid, updateLabel } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 import { ImgServerUrl } from '@/const/config'
@@ -90,6 +97,7 @@ export default {
       labelLog: [],
       imgInfo: {},
       fov_img: '',
+      imgid: undefined,
       url: ImgServerUrl + '/unsafe/1000x0/',
       lazyProps: {
         lazy: true,
@@ -132,8 +140,8 @@ export default {
     },
     changeBatchList(val) {
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
-      const imgid = this.currentLabel[2].split('-')[1]
-      this.getLabelByImageId(imgid)
+      this.imgid = this.currentLabel[2].split('-')[1]
+      this.getLabelByImageId(this.imgid)
     },
     getImgs(bid, mdcid, img, next) {
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
@@ -145,16 +153,16 @@ export default {
           const idx = parseInt(img) + 1
           if (idx === imgs.length) return
           this.fov_img = this.url + imgs[idx].imgpath
-          const id = imgs[idx].id
-          this.currentLabel = [bid, mdcid, idx + '-' + id + '-' + imgs[idx].imgpath]
-          this.getLabelByImageId(id)
+          this.imgid = imgs[idx].id
+          this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
+          this.getLabelByImageId(this.imgid)
         } else {
           const idx = parseInt(img) - 1
           if (idx < 0) return
           this.fov_img = this.url + imgs[idx].imgpath
-          const id = imgs[idx].id
-          this.currentLabel = [bid, mdcid, idx + '-' + id + '-' + imgs[idx].imgpath]
-          this.getLabelByImageId(id)
+          this.imgid = imgs[idx].id
+          this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
+          this.getLabelByImageId(this.imgid)
         }
       })
     },
@@ -186,11 +194,29 @@ export default {
         this.readOnly = false
       })
     },
-    onDrawOne(data, currentMovement) {
+    onDrawOne(data) {
       if (!this.readOnly) {
         this.$refs['aiPanel-editor'].getMarker().setTag({
-          tagName: this.cellType,
-          tag: `5-${this.cellType}`
+          'tagName': this.cellType,
+          'tag': `${this.imgid}-${this.cellType}`
+        })
+        /**
+         * 新增标注
+         */
+        updateLabel({
+          'labels': [
+            {
+              'imgid': parseInt(this.imgid),
+              'op': 1,
+              'typeid': parseInt(this.cellType),
+              'x1': parseInt((this.imgInfo.imgw * parseFloat(data.position.x)) / 100),
+              'x2': parseInt((this.imgInfo.imgw * parseFloat(data.position.x1)) / 100),
+              'y1': parseInt((this.imgInfo.imgh * parseFloat(data.position.y)) / 100),
+              'y2': parseInt((this.imgInfo.imgh * parseFloat(data.position.y1)) / 100)
+            }
+          ]
+        }).then(res => {
+          console.log(res.data.data)
         })
       }
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
@@ -200,6 +226,9 @@ export default {
         date: formatTime(dataList[dataList.length - 1].updated_time || new Date())
       }
       this.labelLog.unshift(log)
+    },
+    onSelect(data) {
+      console.log(data, 'select')
     },
     renderLabel() {
       this.$refs['aiPanel-editor'].getMarker().clearData()
@@ -227,13 +256,12 @@ export default {
       // height: calc(100vh - 90px);
       // overflow: hidden;
       .ai-observer {
-        height: calc(100vh - 100px);
+        height: calc(100vh - 150px);
       }
     }
   }
   .info {
     width: 20%;
-    height: 100%;
     .cells-type {
       border: 2px solid #ccc;
       height: 50%;
