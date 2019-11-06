@@ -183,10 +183,10 @@ export default {
           v.tag = `${v.imgid}-${v.type}`
           v.tagName = v.type
           v.position = {
-            x: parseFloat(v.x / this.imgInfo.imgw) * 100 + '%',
-            x1: parseFloat(v.x / this.imgInfo.imgw) * 100 + parseFloat(v.w / this.imgInfo.imgw) * 100 + '%',
-            y: parseFloat(v.y / this.imgInfo.imgh) * 100 + '%',
-            y1: parseFloat(v.y / this.imgInfo.imgh) * 100 + parseFloat(v.h / this.imgInfo.imgh) * 100 + '%'
+            x: parseFloat(v.x1 / this.imgInfo.imgw) * 100 + '%',
+            x1: parseFloat(v.x2 / this.imgInfo.imgw) * 100 + '%',
+            y: parseFloat(v.y1 / this.imgInfo.imgh) * 100 + '%',
+            y1: parseFloat(v.y2 / this.imgInfo.imgh) * 100 + '%'
           }
           v.uuid = v.id
         })

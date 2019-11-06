@@ -14,10 +14,10 @@ type Label struct {
 	Imgid     int64     `json:"imgid"         gorm:"column:IMGID"           example:"2"`    //所属图片的ID
 	Type      int       `json:"type"          gorm:"column:TYPE"            example:"1"`    //标注的细胞的类型
 	TypeOut   string    `json:"typeout"       gorm:"-"                      example:"Norm"` //类型字符串，前端使用数据库没有
-	X         int       `json:"x"             gorm:"column:X"               example:"320"`  //X中心
-	Y         int       `json:"y"             gorm:"column:Y"               example:"480"`  //Y中心
-	W         int       `json:"w"             gorm:"column:W"               example:"100"`  //宽
-	H         int       `json:"h"             gorm:"column:H"               example:"100"`  //高
+	X1        int       `json:"x1"            gorm:"column:x1"              example:"0"`    //左上角X
+	Y1        int       `json:"y1"            gorm:"column:y1"              example:"0"`    //左上角Y
+	X2        int       `json:"x2"            gorm:"column:x2"              example:"320"`  //右下角X
+	Y2        int       `json:"y2"            gorm:"column:y2"              example:"320"`  //右下角Y
 	Status    int       `json:"status"        gorm:"column:status"          example:"1"`    //状态, 0 未审核 1 已审核 2 移除
 	CreatedBy int64     `json:"created_by"    gorm:"column:created_by"`                     //创建者
 	CreatedAt time.Time `json:"created_time"  gorm:"column:CREATED_TIME"`
@@ -44,8 +44,8 @@ func (l *Label) BeforeCreate(scope *gorm.Scope) error {
 // InsertLabel 新建标注信息
 func (l *Label) InsertLabel() (e error) {
 	_l := Label{}
-	ret := db.Model(l).Where("X=? AND Y=? AND W=? AND H=? AND TYPE=?", l.X, l.Y, l.W, l.H, l.Type).First(&_l)
-	if ret.Error == nil && _l.W > 0 {
+	ret := db.Model(l).Where("IMGID=? AND TYPE=? AND x1=? AND y1=?", l.Imgid, l.Type, l.X1, l.Y1).First(&_l)
+	if ret.Error == nil && _l.X2 > 0 {
 		return nil
 	}
 
@@ -61,12 +61,6 @@ func (l *Label) InsertLabel() (e error) {
 
 // RemoveLabel 删除标注信息
 func (l *Label) RemoveLabel() (e error) {
-	_l := Label{}
-	ret := db.Model(l).Where("X=? AND Y=? AND W=? AND H=? AND TYPE=?", l.X, l.Y, l.W, l.H, l.Type).First(&_l)
-	if ret.Error != nil {
-		return ret.Error
-	}
-
 	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"status": 2})
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
@@ -77,13 +71,7 @@ func (l *Label) RemoveLabel() (e error) {
 
 // UpdateLabel 更新标注信息
 func (l *Label) UpdateLabel() (e error) {
-	_l := Label{}
-	ret := db.Model(l).Where("X=? AND Y=? AND W=? AND H=? AND TYPE=?", l.X, l.Y, l.W, l.H, l.Type).First(&_l)
-	if ret.Error != nil {
-		return ret.Error
-	}
-
-	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"X": l.X, "Y": l.Y, "W": l.W, "H": l.H, "TYPE": l.Type})
+	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"x1": l.X1, "y1": l.Y1, "x2": l.X2, "y2": l.Y2, "TYPE": l.Type})
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}

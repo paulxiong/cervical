@@ -1314,36 +1314,40 @@
               "notNull": true
             },
             {
-              "name": "X",
+              "name": "x1",
               "type": "Integer",
-              "remark": "",
-              "chnname": "X坐标",
-              "notNull": true
+              "remark": "单位是像素",
+              "chnname": "左上角X坐标",
+              "notNull": true,
+              "defaultValue": "0"
             },
             {
-              "name": "Y",
+              "name": "y1",
               "type": "Integer",
-              "remark": "",
-              "chnname": "Y坐标",
-              "notNull": true
+              "remark": "单位是像素",
+              "chnname": "左上角Y坐标",
+              "notNull": true,
+              "defaultValue": "0"
             },
             {
-              "name": "W",
+              "name": "x2",
               "type": "Integer",
-              "remark": "",
-              "chnname": "宽度",
+              "remark": "单位是像素",
+              "chnname": "右下角X坐标",
               "pk": false,
               "notNull": true,
-              "relationNoShow": false
+              "relationNoShow": false,
+              "defaultValue": "0"
             },
             {
-              "name": "H",
+              "name": "y2",
               "type": "Integer",
-              "remark": "",
-              "chnname": "长度",
+              "remark": "单位是像素",
+              "chnname": "右下角Y坐标",
               "pk": false,
               "notNull": true,
-              "relationNoShow": false
+              "relationNoShow": false,
+              "defaultValue": "0"
             },
             {
               "name": "status",

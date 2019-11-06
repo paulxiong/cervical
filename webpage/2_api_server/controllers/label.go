@@ -106,13 +106,13 @@ func UpdateLabelsOfImage(c *gin.Context) {
 			ID:     v.LabelID,
 			Imgid:  v.ImgID,
 			Type:   v.TypeID,
-			X:      int((v.X2 + v.X1) / 2),
-			Y:      int((v.Y2 + v.Y1) / 2),
-			W:      v.X2 - v.X1,
-			H:      v.Y2 - v.Y1,
+			X1:     v.X1,
+			Y1:     v.Y1,
+			X2:     v.X2,
+			Y2:     v.Y2,
 			Status: 0,
 		}
-		if newl.X < 0 || newl.Y < 0 || newl.W <= 0 || newl.H <= 0 {
+		if newl.X1 < 0 || newl.Y1 < 0 || newl.X2 <= newl.X1 || newl.Y2 <= newl.Y1 {
 			ResString(c, "invalied labels 3")
 			return
 		}
