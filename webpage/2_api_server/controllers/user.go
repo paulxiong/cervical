@@ -307,3 +307,77 @@ func GetAccessLog(c *gin.Context) {
 	})
 	return
 }
+
+// GetUserLists 按数据库存储顺序依次获得所有用户信息
+// @Summary 按数据库存储顺序依次获得所有用户信息
+// @Description 按数据库存储顺序依次获得所有用户信息
+// @tags API1 用户（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 100"
+// @Param skip query string false "skip, default 0"
+// @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
+// @Success 200 {object} models.Operationlog
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /user/lists [get]
+func GetUserLists(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "100")
+	skipStr := c.DefaultQuery("skip", "0")
+	orderStr := c.DefaultQuery("order", "1")
+	limit, _ := strconv.ParseInt(limitStr, 10, 32)
+	skip, _ := strconv.ParseInt(skipStr, 10, 32)
+	_order, _ := strconv.ParseInt(orderStr, 10, 32)
+
+	users, total, err := m.UserLists(int(limit), int(skip), int(_order))
+	if err != nil {
+		logger.Info.Println(err)
+	}
+	ResStructTotal(c, users, total)
+	return
+}
+
+// updateUser 修改用户信息
+type updateUser struct {
+	Mobile string `json:"mobile" example:"111222222"`                                                 //手机号
+	Email  string `json:"email"  example:"mail@163.com"`                                              //邮箱
+	Name   string `json:"name"   example:"username"`                                                  //用户名
+	Image  string `json:"image"  example:"http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"` //用户头像
+}
+
+// UpdateUserInfo 修改当前用户信息
+// @Summary 修改当前用户信息
+// @Description 修改当前用户信息
+// @tags API1 用户（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param Register body controllers.updateUser true "修改当前用户信息"
+// @Success 200 {string} json “{"status": 200, "data": "ok"}"
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /user/updateinfo [post]
+func UpdateUserInfo(c *gin.Context) {
+	uu := updateUser{}
+	err := c.ShouldBindJSON(&uu)
+	u, _ := m.GetUserFromContext(c)
+	if err != nil || u.ID < 1 {
+		ResString(c, "invalied user update")
+		return
+	}
+
+	userinfo := &m.User{
+		ID:     u.ID,
+		Mobile: uu.Mobile,
+		Email:  uu.Email,
+		Name:   uu.Name,
+		Image:  uu.Image,
+	}
+
+	err2 := userinfo.UpdateUserInfo()
+	if err2 != nil {
+		ResString(c, "update user info failed")
+	}
+
+	ResString(c, "ok")
+	return
+}

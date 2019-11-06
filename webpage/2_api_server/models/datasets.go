@@ -13,7 +13,7 @@ import (
 
 // Image FOV图片信息
 type Image struct {
-	ID        int64     `json:"id"           gorm:"column:ID"`
+	ID        int64     `json:"id"           gorm:"column:ID; primary_key"`
 	Csvpath   string    `json:"csvpath"      gorm:"column:CSVPATH"`
 	Imgpath   string    `json:"imgpath"      gorm:"column:IMGPATH"`
 	W         int       `json:"w"            gorm:"column:W"` //X
@@ -47,16 +47,12 @@ func (i *Image) CreateImage() (e error) {
 		return nil
 	}
 
-	ret := db.Model(i).Save(&i)
+	ret := db.Model(i).Save(i)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
 
-	ret2 := db.Model(i).Where("BATCHID=? AND MEDICALID=? AND IMGPATH=?", i.Batchid, i.Medicalid, i.Imgpath).First(&i)
-	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
-	}
-	return ret2.Error
+	return ret.Error
 }
 
 // GetImageByID 通过图片ID查找图片信息
@@ -325,7 +321,7 @@ type DatasetParameter struct {
 
 // Dataset 数据集的信息
 type Dataset struct {
-	ID             int64     `json:"id"              gorm:"column:id"`              //ID
+	ID             int64     `json:"id"              gorm:"column:id; primary_key"` //ID
 	Desc           string    `json:"desc"            gorm:"column:description"`     //描述
 	Status         int       `json:"status"          gorm:"column:status"`          //状态 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在
 	Dir            string    `json:"dir"             gorm:"column:dir"`             //文件夹名称
@@ -435,16 +431,11 @@ func ListDataset(limit int, skip int, order int) (totalNum int64, c []Dataset, e
 // CreateDatasets 新建一个数据集
 func (d *Dataset) CreateDatasets() (e error) {
 	d.ID = 0
-	ret := db.Model(d).Save(&d)
+	ret := db.Model(d).Save(d)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
-
-	ret2 := db.Model(d).Where("dir=?", d.Dir).First(&d)
-	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
-	}
-	return ret2.Error
+	return ret.Error
 }
 
 // UpdateDatasetsStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在

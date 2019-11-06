@@ -49,6 +49,8 @@ func Router() *gin.Engine {
 		user.GET("/logout", ctr.LogoutUser)
 		user.GET("/userinfo", ctr.GetUser)
 		user.GET("/accesslog", ctr.GetAccessLog)
+		user.GET("/lists", ctr.GetUserLists)
+		user.POST("/updateinfo", ctr.UpdateUserInfo)
 	}
 
 	api1 := r.Group("/api1")

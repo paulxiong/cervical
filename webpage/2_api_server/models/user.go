@@ -61,15 +61,15 @@ func UserTypeInit() error {
 
 // User 用户信息
 type User struct {
-	ID        int64     `json:"id"                 gorm:"column:id"`         //ID
-	Mobile    string    `json:"mobile"             gorm:"column:mobile"`     //手机号
-	Email     string    `json:"email"              gorm:"column:email"`      //邮箱
-	Name      string    `json:"name"               gorm:"column:name"`       //用户名
-	Image     string    `json:"image"              gorm:"column:image"`      //用户头像
-	TypeID    int       `json:"type_id"            gorm:"column:type_id"`    //用户类型
-	Password  string    `json:"-"                  gorm:"column:password"`   //密码
-	CreatedAt time.Time `json:"created_at"         gorm:"column:created_at"` //创建时间
-	UpdatedAt time.Time `json:"updated_at"         gorm:"column:updated_at"` //更新时间
+	ID        int64     `json:"id"         gorm:"column:id"`         //ID
+	Mobile    string    `json:"mobile"     gorm:"column:mobile"`     //手机号
+	Email     string    `json:"email"      gorm:"column:email"`      //邮箱
+	Name      string    `json:"name"       gorm:"column:name"`       //用户名
+	Image     string    `json:"image"      gorm:"column:image"`      //用户头像
+	TypeID    int       `json:"type_id"    gorm:"column:type_id"`    //用户类型
+	Password  string    `json:"-"          gorm:"column:password"`   //密码
+	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"` //创建时间
+	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"` //更新时间
 }
 
 // BeforeCreate insert之前的hook
@@ -86,16 +86,6 @@ func (u *User) BeforeCreate(scope *gorm.Scope) error {
 	}
 	u.Password = string(hash)
 	return nil
-}
-
-// Getallusers 列出所有的用户
-func Getallusers() {
-	var limit int = 10
-	var users []User
-	ret := db.Order("id desc").Limit(limit).Find(&users)
-	if ret.Error != nil {
-		logger.Info.Println(users)
-	}
 }
 
 // FinduserbyID 通过用户ID查找用户
@@ -234,10 +224,48 @@ func SaveUsertoContext(c *gin.Context, u *User) {
 	}
 }
 
-// UserHistory 用户访问记录的信息
-type UserHistory struct {
-	ID        int64     `json:"id"           gorm:"column:id"`         //ID
-	UserID    int64     `json:"uid"          gorm:"column:uid"`        //用户ID
-	Path      string    `json:"path"         gorm:"column:path"`       //访问的页面路径
-	CreatedAt time.Time `json:"created_at"   gorm:"column:updated_at"` //创建时间
+// UserLists 按顺序列出所有用户的信息
+func UserLists(limit int, skip int, order int) (users []User, t int, err error) {
+	var us []User
+	var total int = 0
+	db.Model(&User{}).Count(&total)
+
+	orderStr := "created_at DESC"
+	if order == 0 { //order, default 1, 1倒序，0顺序
+		orderStr = "created_at ASC"
+	}
+	ret := db.Model(&User{}).Order(orderStr).Limit(limit).Find(&us)
+	if ret.Error != nil {
+		logger.Info.Println(users)
+	}
+	return us, total, ret.Error
+}
+
+// UpdateUserInfo 按顺序列出所有用户的信息
+func (u *User) UpdateUserInfo() (err error) {
+
+	var updateu map[string]interface{}
+
+	if u.Mobile != "" {
+		updateu["mobile"] = u.Mobile
+	}
+	if u.Email != "" {
+		updateu["email"] = u.Email
+	}
+	if u.Name != "" {
+		updateu["name"] = u.Name
+	}
+	if u.Image != "" {
+		updateu["image"] = u.Image
+	}
+	if len(updateu) < 1 {
+		return nil
+	}
+
+	ret := db.Model(u).Where("id=?", u.ID).Updates(updateu)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+
+	return ret.Error
 }
