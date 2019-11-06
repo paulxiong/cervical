@@ -48,7 +48,7 @@ func FileListCSVPath(dirname string) string {
 
 // csvPath 返回csv的相对路径
 func csvPath(csvpath string) string {
-	_csvpath := fmt.Sprintf("%s", csvpath)
+	_csvpath := fmt.Sprintf("%s/%s", csvRoot, csvpath)
 	ret, err := PathExists(_csvpath)
 	if ret != true || err != nil {
 		logger.Info.Println("not found ", _csvpath)

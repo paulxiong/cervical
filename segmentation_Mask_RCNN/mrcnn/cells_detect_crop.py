@@ -204,7 +204,7 @@ class cells_detect_crop(worker):
             gray = 1 if self.datasetinfo['parameter_gray'] ==0 else 0
             cellsinfo = self.detector.detect_image(image, gray=gray, size=size)
         elif self.datasetinfo['parameter_type'] == 1:
-            csvpath = os.path.join(self.csv_dir, str(imginfo['csvpath']))
+            csvpath = os.path.join(self.rootdir, str(imginfo['csvpath']))
             if not os.path.exists(csvpath):
                 self.log.info("not found csv: %s" % csvpath)
                 return cellsinfo, False
