@@ -44,6 +44,7 @@
           v-else
           ref="aiPanel-editor"
           class="ai-observer"
+          :style="{width: imgInfo.imgw < 1000 ? imgInfo.imgw + 'px' : 1000 + 'px',height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}"
           :read="readOnly"
           :img="fov_img"
           @vmarker:onDrawOne="onDrawOne"
@@ -139,11 +140,13 @@ export default {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
     },
     changeBatchList(val) {
+      this.readOnly = true
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
       this.imgid = this.currentLabel[2].split('-')[1]
       this.getLabelByImageId(this.imgid)
     },
     getImgs(bid, mdcid, img, next) {
+      this.readOnly = true
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
         const imgs = res.data.data.imgs
         /**
@@ -244,20 +247,25 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   .main {
+    position: relative;
+    width: 80%;
     .tools {
+      position: absolute;
+      top: 0;
       justify-content: space-between;
       padding: 0 5px;
       margin: 5px 0;
       .cascader {
-        width: 400px;
+        width: 420px;
+        margin-left: 20px;
       }
     }
     .label-img {
+      position: absolute;
+      top: 50px;
+      left: 10px;
       // height: calc(100vh - 90px);
       // overflow: hidden;
-      .ai-observer {
-        height: calc(100vh - 150px);
-      }
     }
   }
   .info {

@@ -198,7 +198,6 @@ $opImageWidth: 600px;
 $gulp: 10px;
 .vmr-ai-panel {
   background: #3e3e3e;
-  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
