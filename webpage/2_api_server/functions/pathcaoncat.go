@@ -56,3 +56,14 @@ func csvPath(csvpath string) string {
 	}
 	return _csvpath
 }
+
+// HeaderImgPath 用户头像的相对路径
+func HeaderImgPath(filename string) string {
+	_imgpath := fmt.Sprintf("%s/%s/%s", scratchRoot, "static", filename)
+	ret, err := PathExists(_imgpath)
+	if ret != true || err != nil {
+		NewDir(_imgpath)
+		return _imgpath
+	}
+	return _imgpath
+}

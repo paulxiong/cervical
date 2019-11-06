@@ -100,6 +100,7 @@ func Router() *gin.Engine {
 		api1.GET("/zipdownload", ctr.FileDownload)
 		api1.POST("/uploads", ctr.UploadsHandler)
 		api1.POST("/upload", ctr.UploadDatasetHandler)
+		api1.POST("/uploadimg", ctr.UploadImgHandler)
 	}
 	return r
 }

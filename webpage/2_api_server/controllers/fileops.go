@@ -166,3 +166,41 @@ func UploadDatasetHandler(c *gin.Context) {
 	ResString(c, "ok")
 	return
 }
+
+// UploadImgHandler 上传一张头像图片，不记录到数据库
+// @Summary 上传一张头像图片，不记录到数据库
+// @Description 上传一张头像图片，不记录到数据库
+// @tags API1 文件（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Router /api1/uploadimg [post]
+func UploadImgHandler(c *gin.Context) {
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		ResString(c, fmt.Sprintf("file err : %s", err.Error()))
+		return
+	}
+
+	filename := u.URLEncodeFileName(header.Filename)
+	filepath := f.HeaderImgPath(filename)
+
+	out, err := os.Create(filepath)
+	if err != nil {
+		logger.Info.Println(err)
+		ResString(c, fmt.Sprintf("Create %s failed, %s", filepath, err.Error()))
+		return
+	}
+	defer out.Close()
+	_, err = io.Copy(out, file)
+	if err != nil {
+		logger.Info.Println(err)
+		ResString(c, fmt.Sprintf("Create %s failed, %s", filepath, err.Error()))
+		return
+	}
+
+	ResString(c, filepath)
+	return
+}
