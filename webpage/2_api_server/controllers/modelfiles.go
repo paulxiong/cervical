@@ -23,7 +23,7 @@ type listMods struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 10"
 // @Param skip query string false "skip, default 0"
-// @Param type query string false "type, 模型类型，裁剪是4 预测是5, 默认是4"
+// @Param type query string false "type, default 52, 模型类型，0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型"
 // @Success 200 {object} controllers.listMods
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listmodel [get]
@@ -35,11 +35,10 @@ func GetModelLists(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 
+	lm := listMods{}
 	total, mods, _ := models.ListModel(int(limit), int(skip), int(_type))
-	lm := listMods{
-		Models: mods,
-		Total:  total,
-	}
+	lm.Models = mods
+	lm.Total = total
 
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": e.StatusSucceed,
