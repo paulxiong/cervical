@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -730,6 +729,7 @@ func GetImgListOfMedicalID(c *gin.Context) {
 	return
 }
 
+/*
 type treeNode struct {
 	Value    string      `json:"value"      example:"100"` // 节点值
 	Label    string      `json:"label"      example:"100"` // 节点名字
@@ -780,3 +780,4 @@ func GetImgTree(c *gin.Context) {
 	ResStruct(c, trees)
 	return
 }
+*/

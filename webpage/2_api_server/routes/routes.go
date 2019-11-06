@@ -57,8 +57,6 @@ func Router() *gin.Engine {
 	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
 
-	api1.GET("/getimgtree", ctr.GetImgTree)
-
 	api1.Use(ctr.CheckAuth)
 	{
 		api1.GET("/refresh_token", ctr.AuthMiddleware.RefreshHandler) // Refresh time can be longer than token timeout
@@ -72,6 +70,7 @@ func Router() *gin.Engine {
 		api1.GET("/imglistsonebyone", ctr.GetImgListOneByOne)
 		api1.POST("/getimgnptypebymids", ctr.GetImagesNPTypeByMedicalID)
 		api1.GET("/getimgbymid", ctr.GetImgListOfMedicalID)
+		// api1.GET("/getimgtree", ctr.GetImgTree)
 
 		// 标注
 		api1.POST("/updatelabelsofimage", ctr.UpdateLabelsOfImage)

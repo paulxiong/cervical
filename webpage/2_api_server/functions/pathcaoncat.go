@@ -3,6 +3,8 @@ package function
 import (
 	"fmt"
 	"os"
+
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 )
 
 const (
@@ -46,9 +48,10 @@ func FileListCSVPath(dirname string) string {
 
 // csvPath 返回csv的相对路径
 func csvPath(csvpath string) string {
-	_csvpath := fmt.Sprintf("%s/%s", csvRoot, csvpath)
+	_csvpath := fmt.Sprintf("%s", csvpath)
 	ret, err := PathExists(_csvpath)
 	if ret != true || err != nil {
+		logger.Info.Println("not found ", _csvpath)
 		return ""
 	}
 	return _csvpath
