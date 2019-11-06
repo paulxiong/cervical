@@ -126,13 +126,9 @@ export default {
   methods: {
     previousImg() {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0])
-      const imgid = this.currentLabel[2].split('-')[1]
-      this.getLabelByImageId(imgid)
     },
     nextImg() {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
-      const imgid = this.currentLabel[2].split('-')[1]
-      this.getLabelByImageId(imgid)
     },
     changeBatchList(val) {
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
@@ -151,12 +147,14 @@ export default {
           this.fov_img = this.url + imgs[idx].imgpath
           const id = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + id + '-' + imgs[idx].imgpath]
+          this.getLabelByImageId(id)
         } else {
           const idx = parseInt(img) - 1
           if (idx < 0) return
           this.fov_img = this.url + imgs[idx].imgpath
           const id = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + id + '-' + imgs[idx].imgpath]
+          this.getLabelByImageId(id)
         }
       })
     },
@@ -217,7 +215,6 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   .main {
-    width: 80%;
     .tools {
       justify-content: space-between;
       padding: 0 5px;
@@ -227,10 +224,10 @@ export default {
       }
     }
     .label-img {
-      height: calc(100vh - 90px);
-      overflow: hidden;
+      // height: calc(100vh - 90px);
+      // overflow: hidden;
       .ai-observer {
-        height: calc(100vh - 90px);
+        height: calc(100vh - 100px);
       }
     }
   }
@@ -256,7 +253,7 @@ export default {
       padding-top: 5px;
       .list {
         margin-top: 5px;
-        max-height: calc(100vh - 485px);
+        max-height: calc(100vh - 550px);
         overflow: auto;
         .item {
           border-top: 1px solid #000;
