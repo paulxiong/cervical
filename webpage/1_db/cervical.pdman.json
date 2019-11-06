@@ -1540,7 +1540,7 @@
             {
               "name": "type",
               "type": "Integer",
-              "remark": "0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA",
+              "remark": "0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型 51全部的分类模型 52全部模型",
               "chnname": "类型",
               "notNull": true,
               "relationNoShow": true
