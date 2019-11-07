@@ -241,13 +241,16 @@ class mala_predict(worker):
         	steps=(self.totalTest_cross_domain // self.BS+1),verbose=1)
 
         classes = list(np.argmax(predIdxs, axis=1))
+        classes_scores = []
+        for i in range(len(predIdxs)):
+            classes_scores.append(max(predIdxs[i]))
         filenames = testGen_cross_domain.filenames
         result = []
-        for f in zip(filenames, classes):
+        for f in zip(filenames, classes, classes_scores):
            cellpath = os.path.join(self.project_resize_predict_dir, f[0])
            #FIXME: mala这个模型暂时按照预测阴性/阳性来显示结果
            predict_label = str(int(f[1]) + 50)
-           result.append([cellpath, predict_label, predict_label, 1])
+           result.append([cellpath, predict_label, predict_label, f[2], 1])
 
         # for each image in the testing set we need to find the index of the
         # label with corresponding largest predicted probability
