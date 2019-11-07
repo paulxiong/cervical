@@ -260,7 +260,7 @@ class mala_predict(worker):
         #print('\n',classification_report(testGen_cross_domain.classes, predIdxs,
         #	target_names=testGen_cross_domain.class_indices.keys()))
 
-        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'correct'])
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct'])
 
         #预测结果统计
         self.result_predict(df_result)
