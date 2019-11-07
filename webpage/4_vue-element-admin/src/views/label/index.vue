@@ -139,7 +139,7 @@ export default {
       this.readOnly = true
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
       this.imgid = this.currentLabel[2].split('-')[1]
-      this.getLabelByImageId(this.imgid)
+      this.getLabelByImageId(this.imgid, 10)
     },
     getImgs(bid, mdcid, img, next) {
       this.readOnly = true
@@ -154,14 +154,14 @@ export default {
           this.fov_img = this.url + imgs[idx].imgpath
           this.imgid = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
-          this.getLabelByImageId(this.imgid)
+          this.getLabelByImageId(this.imgid, 10)
         } else {
           const idx = parseInt(img) - 1
           if (idx < 0) return
           this.fov_img = this.url + imgs[idx].imgpath
           this.imgid = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
-          this.getLabelByImageId(this.imgid)
+          this.getLabelByImageId(this.imgid, 10)
         }
       })
     },
@@ -175,8 +175,8 @@ export default {
         })
       })
     },
-    getLabelByImageId(id) {
-      getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': id }).then(res => {
+    getLabelByImageId(id, status) {
+      getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.labels.map(v => {
           v.tag = `${v.imgid}-${v.type}`
@@ -219,6 +219,7 @@ export default {
             message: '保存成功',
             type: 'success'
           })
+          this.readOnly = false
         })
       }
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
@@ -230,7 +231,6 @@ export default {
       this.labelLog.unshift(log)
     },
     onSelect(data) {
-      console.log(data)
       /**
        * 修改标注
        */
@@ -239,7 +239,7 @@ export default {
           {
             'imgid': parseInt(this.imgid),
             'labelid': parseInt(data.id),
-            'op': 2, // 0未知 1增加 2删除 3修改
+            'op': 3, // 0未知 1增加 2删除 3修改
             'typeid': parseInt(this.cellType),
             'x1': parseInt((this.imgInfo.imgw * parseFloat(data.position.x)) / 100),
             'x2': parseInt((this.imgInfo.imgw * parseFloat(data.position.x1)) / 100),
@@ -249,7 +249,7 @@ export default {
         ]
       }).then(res => {
         this.$message({
-          message: '删除成功',
+          message: '修改成功',
           type: 'success'
         })
       })

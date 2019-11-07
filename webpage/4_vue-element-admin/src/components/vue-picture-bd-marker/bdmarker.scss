@@ -15,17 +15,21 @@
 .selected {
   .g-image-op {
     visibility: visible;
-    overflow: auto;
-    bottom: -20px;
+    // overflow: auto;
+    bottom: 0px;
     cursor: auto;
     position: absolute;
     width: 200px;
   }
   .g-image-op-content{
-    font-size: 12px;
+    font-size: 18px;
   }
   .g-image-op-del {
+    position: absolute;
+    top: -30px;
+    left: 32px;
     cursor: pointer;
+    color: #ff3c43;
   }
 }
 .hidden{

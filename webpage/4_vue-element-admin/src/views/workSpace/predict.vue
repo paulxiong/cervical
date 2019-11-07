@@ -30,14 +30,14 @@
           </el-tab-pane>
           <el-tab-pane v-if="predictResult.parameter_type" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
             <div v-for="v in rightCellsList" :key="v.url" class="item-box">
-              <el-badge :value="v.type" class="item">
+              <el-badge :value="`${v.type}-${v.score}`" class="item">
                 <img class="img-item img-right" :src="hosturlpath64 + v.url">
               </el-badge>
             </div>
           </el-tab-pane>
           <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${rightCellsList.length}`" class="img-tab flex">
             <div v-for="v in rightCellsList" :key="v.url" class="item-box">
-              <el-badge :value="v.type" :type="v.type === '50' ? 'warning': 'info'" class="item">
+              <el-badge :value="`${v.type}-${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
                 <img class="img-item img-right" :src="hosturlpath64 + v.url">
               </el-badge>
             </div>
