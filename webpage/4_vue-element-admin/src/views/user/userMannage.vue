@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       currentPage: 1,
+      currentPageSize: 10,
       loading: false,
       listQuery: {
         desc: undefined,
@@ -98,15 +99,13 @@ export default {
       console.log(row)
     },
     handleSizeChange(val) {
-      if (val >= 10) {
-        this.currentPageSize = val
-      }
-      this.getUserLists(val, (val - 1) * 10, 1)
+      this.currentPageSize = val
+      this.getUserLists(val, (this.currentPage - 1) * val, 1)
       // console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
       this.currentSkip = (val - 1) * this.currentPageSize
-      this.getUserLists(this.currentPageSize, this.currentSkip, 1)
+      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * val, 1)
       // console.log(val)
     },
     data() {
