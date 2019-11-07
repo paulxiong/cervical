@@ -3,31 +3,32 @@ package models
 import (
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 )
 
 //Operationlog 用户历史记录
 type Operationlog struct {
-	ID         int64     `json:"id"         gorm:"column:id"`         //ID
-	UserID     int64     `json:"user_id"    gorm:"column:user_id"`    //用户ID
-	UserName   string    `json:"name"       gorm:"-"`                 //用户名字
-	UserEmail  string    `json:"email"      gorm:"-"`                 //用户邮箱
-	UserMobile string    `json:"mobile"     gorm:"-"`                 //用户手机号
-	Path       string    `json:"path"       gorm:"column:path"`       //访问路径
-	Query      string    `json:"query"      gorm:"column:query"`      //query string
-	Method     string    `json:"method"     gorm:"column:method"`     //请求方式
-	IP         string    `json:"ip"         gorm:"column:ip"`         //客户端IP
-	RegionID   string    `json:"region_id"  gorm:"column:region_id"`  //客户端IP所在地理位置的ID
-	Region     Region    `json:"region"     gorm:"column:-"`          //客户端IP所在地理位置
-	ISP        string    `json:"-"          gorm:"column:isp"`        //运营商
-	Input      string    `json:"input"      gorm:"column:input"`      //post输入
-	UA         string    `json:"ua"         gorm:"column:ua"`         //UserAgent
-	Code       int       `json:"code"       gorm:"column:code"`       //请求的状态码
-	BodySize   int       `json:"bodysize"   gorm:"column:bodysize"`   //bodysize
-	Cost       int64     `json:"cost"       gorm:"column:cost"`       //请求花费了多少微秒
-	Referer    string    `json:"referer"    gorm:"column:referer"`    //Referer
-	CreatedAt  time.Time `json:"created_at" gorm:"column:created_at"` //创建时间
+	ID         int64     `json:"id"         gorm:"column:id; primary_key"` //ID
+	UserID     int64     `json:"user_id"    gorm:"column:user_id"`         //用户ID
+	UserName   string    `json:"name"       gorm:"-"`                      //用户名字
+	UserEmail  string    `json:"email"      gorm:"-"`                      //用户邮箱
+	UserMobile string    `json:"mobile"     gorm:"-"`                      //用户手机号
+	Path       string    `json:"path"       gorm:"column:path"`            //访问路径
+	Query      string    `json:"query"      gorm:"column:query"`           //query string
+	Method     string    `json:"method"     gorm:"column:method"`          //请求方式
+	IP         string    `json:"ip"         gorm:"column:ip"`              //客户端IP
+	RegionID   string    `json:"region_id"  gorm:"column:region_id"`       //客户端IP所在地理位置的ID
+	Region     Region    `json:"region"     gorm:"column:-"`               //客户端IP所在地理位置
+	ISP        string    `json:"-"          gorm:"column:isp"`             //运营商
+	Input      string    `json:"input"      gorm:"column:input"`           //post输入
+	UA         string    `json:"ua"         gorm:"column:ua"`              //UserAgent
+	Code       int       `json:"code"       gorm:"column:code"`            //请求的状态码
+	BodySize   int       `json:"bodysize"   gorm:"column:bodysize"`        //bodysize
+	Cost       int64     `json:"cost"       gorm:"column:cost"`            //请求花费了多少微秒
+	Referer    string    `json:"referer"    gorm:"column:referer"`         //Referer
+	CreatedAt  time.Time `json:"created_at" gorm:"column:created_at"`      //创建时间
 }
 
 // BeforeCreate insert之前的hook
@@ -85,4 +86,19 @@ func ListOperationlog(limit int, skip int, order int) (totalNum int64, c []Opera
 		logger.Info.Println(ret.Error)
 	}
 	return total, _o, ret.Error
+}
+
+// GetOperationlogIDFromContext 从请求上下文获得操作日志的ID
+func GetOperationlogIDFromContext(c *gin.Context) (int64, bool) {
+	_opid, exists := c.Get("opid")
+	if exists == true && _opid != nil {
+		opid := _opid.(int64)
+		return opid, exists
+	}
+	return 0, exists
+}
+
+// SaveOperationlogIDtoContext 把操作日志的ID存到请求上下文
+func SaveOperationlogIDtoContext(c *gin.Context, opid int64) {
+	c.Set("opid", opid)
 }

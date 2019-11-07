@@ -37,7 +37,6 @@ func (l *Label) BeforeCreate(scope *gorm.Scope) error {
 	if l.UpdatedAt.IsZero() {
 		l.UpdatedAt = time.Now()
 	}
-	logger.Info.Println(l.ID)
 	return nil
 }
 

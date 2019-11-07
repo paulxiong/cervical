@@ -10,14 +10,14 @@ import (
 
 //Region 城市信息
 type Region struct {
-	ID        string    `json:"id"         gorm:"column:id"`       //记录ID
-	CityID    int64     `json:"cityid"     gorm:"column:cityid"`   //city唯一对应的ID
-	Country   string    `json:"country"    gorm:"column:country"`  //国家
-	Region    string    `json:"region"     gorm:"column:region"`   //地区
-	Province  string    `json:"province"   gorm:"column:province"` //省/州
-	City      string    `json:"city"       gorm:"column:city"`     //城市
-	ISP       string    `json:"isp"        gorm:"column:isp"`      //运营商
-	CreatedAt time.Time `json:"-" gorm:"column:created_at"`        //创建时间
+	ID        string    `json:"id"         gorm:"column:id; primary_key"` //记录ID
+	CityID    int64     `json:"cityid"     gorm:"column:cityid"`          //city唯一对应的ID
+	Country   string    `json:"country"    gorm:"column:country"`         //国家
+	Region    string    `json:"region"     gorm:"column:region"`          //地区
+	Province  string    `json:"province"   gorm:"column:province"`        //省/州
+	City      string    `json:"city"       gorm:"column:city"`            //城市
+	ISP       string    `json:"isp"        gorm:"column:isp"`             //运营商
+	CreatedAt time.Time `json:"-" gorm:"column:created_at"`               //创建时间
 }
 
 // BeforeCreate insert之前的hook
@@ -31,12 +31,7 @@ func (r *Region) BeforeCreate(scope *gorm.Scope) error {
 // NewRegion 新建地区信息
 func (r *Region) NewRegion() error {
 	r.MD5RegionID()
-	_, err := r.FindRegionbyID()
-	if err == nil {
-		return nil
-	}
-
-	ret := db.Create(r)
+	ret := db.FirstOrCreate(r, Region{ID: r.ID})
 	if ret.Error != nil {
 		return ret.Error
 	}

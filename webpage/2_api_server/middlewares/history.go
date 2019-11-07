@@ -39,9 +39,6 @@ func History() gin.HandlerFunc {
 		start := time.Now().UnixNano()
 		raw := c.Request.URL.RawQuery
 
-		// Process request
-		c.Next()
-
 		clientIP := c.ClientIP()
 		method := c.Request.Method
 		statusCode := c.Writer.Status()
@@ -84,5 +81,9 @@ func History() gin.HandlerFunc {
 		if err3 != nil {
 			logger.Info.Println(err3)
 		}
+		m.SaveOperationlogIDtoContext(c, operationlog.ID)
+
+		// Process request
+		c.Next()
 	}
 }

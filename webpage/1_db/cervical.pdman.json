@@ -2009,6 +2009,126 @@
           }
         }
       ]
+    },
+    {
+      "name": "SYSTEM",
+      "chnname": "系统",
+      "entities": [
+        {
+          "title": "errorlog",
+          "fields": [
+            {
+              "name": "id",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "ID",
+              "pk": true,
+              "notNull": true,
+              "autoIncrement": true
+            },
+            {
+              "name": "type",
+              "type": "Integer",
+              "remark": "0前端",
+              "chnname": "类型",
+              "notNull": false,
+              "relationNoShow": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "opid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "operationlog的ID",
+              "defaultValue": "0"
+            },
+            {
+              "name": "errlog",
+              "type": "LongText",
+              "remark": "",
+              "chnname": "出错内容,字符串"
+            },
+            {
+              "name": "created_by",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "创建人",
+              "relationNoShow": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "created_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "创建时间",
+              "notNull": true,
+              "relationNoShow": true
+            },
+            {
+              "name": "updated_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "更新时间",
+              "notNull": true,
+              "relationNoShow": true
+            }
+          ],
+          "indexs": [],
+          "headers": [
+            {
+              "fieldName": "chnname",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "name",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "type",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "dataType",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "remark",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "pk",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "notNull",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "autoIncrement",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "defaultValue",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "relationNoShow",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
+            }
+          ],
+          "chnname": "errorlog",
+          "remark": "前端出错的信息"
+        }
+      ],
+      "graphCanvas": {
+        "edges": [],
+        "nodes": []
+      },
+      "associations": []
     }
   ],
   "dataTypeDomains": {
