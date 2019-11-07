@@ -197,7 +197,7 @@ class mala_predict(worker):
             #统计crop_cells
             for index, row in df.iterrows():
                 cellpath = row["cellpath"][len(self.rootdir):]
-                one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath}
+                one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath, "score":row["score"]}
                 result["crop_cells"].append(one)
         elif predict_info['parameter_type'] == 0:
             #统计每个分类的信息
@@ -206,7 +206,7 @@ class mala_predict(worker):
             #统计crop_cells
             for index, row in df.iterrows():
                 cellpath = row["cellpath"][len(self.rootdir):]
-                one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath}
+                one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath, "score":row["score"]}
                 result["crop_cells"].append(one)
 
         #写入文件
@@ -243,7 +243,7 @@ class mala_predict(worker):
         classes = list(np.argmax(predIdxs, axis=1))
         classes_scores = []
         for i in range(len(predIdxs)):
-            classes_scores.append(max(predIdxs[i]))
+            classes_scores.append(float('%.2f'%(max(predIdxs[i]))))
         filenames = testGen_cross_domain.filenames
         result = []
         for f in zip(filenames, classes, classes_scores):
