@@ -116,6 +116,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </div>
     <el-dialog
@@ -163,6 +164,7 @@ export default {
       uploadServer: false,
       imgChecked: false,
       currentPage: 1,
+      currentPageSize: 10,
       loading: false,
       listQuery: {
         desc: undefined,
@@ -218,10 +220,14 @@ export default {
       this.imgChecked = val
     },
     filterSearch() {
-      this.listdatasets(10, (this.currentPage - 1) * 10, 1)
+      this.listdatasets(10, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
-      this.listdatasets(10, (val - 1) * 10, 1)
+      this.listdatasets(this.currentPageSize, (this.currentPage - 1) * val, 1)
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this.listdatasets(val, (this.currentPage - 1) * val, 1)
     },
     goDetail(val) {
       this.$router.push({

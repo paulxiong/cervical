@@ -110,6 +110,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </div>
     <el-dialog title="新建项目" :visible.sync="dialogFormVisible">
@@ -129,11 +130,12 @@ export default {
   components: { newProject },
   data() {
     return {
-      projectlist: undefined,
+      projectlist: [],
       total: undefined,
       dialogFormVisible: false,
-      step: 1,
+      // step: 1,
       currentPage: 1,
+      currentPageSize: 10,
       loading: false,
       listQuery: {
         desc: undefined,
@@ -163,24 +165,37 @@ export default {
     this.getListprojects(10, 0, 1)
   },
   methods: {
-    stepNext() {
-      this.$refs.newProject.stepNext()
-      this.step = this.$refs.newProject.step
+    handleClick(row) {
+      console.log(row)
     },
-    stepBack() {
-      this.$refs.newProject.stepBack()
-      this.step = this.$refs.newProject.step
-    },
+    // stepNext() {
+    //   this.$refs.newProject.stepNext()
+    //   this.step = this.$refs.newProject.step
+    // },
+    // stepBack() {
+    //   this.$refs.newProject.stepBack()
+    //   this.step = this.$refs.newProject.step
+    // },
     filterSearch() {
-      this.getListprojects(10, (this.currentPage - 1) * 10, 1)
+      this.getListprojects(10, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
-      this.getListprojects(10, (val - 1) * 10, 1)
+      this.getListprojects(this.currentPageSize, (this.currentPage - 1) * val, 1)
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this.getListprojects(val, (this.currentPage - 1) * val, 1)
     },
     goDetail(val) {
       this.$router.push({
         path: `/workSpace/details?pid=${val.id}&did=${val.did}&type=${val.type}`
       })
+    },
+    data() {
+      return {
+        currentSkip: 0,
+        currentPageSize: 10
+      }
     },
     getListprojects(limit, skip, order) {
       this.loading = true
@@ -188,8 +203,8 @@ export default {
         res.data.data.projects.map(v => {
           v.created_at = parseTime(v.created_at)
           v.updated_at = parseTime(v.updated_at)
-          v.processtime = parseTime(v.processtime)
-          v.processend = parseTime(v.processend)
+          v.starttime = parseTime(v.starttime)
+          v.endtime = parseTime(v.endtime)
           v.created_by = createdBy[v.created_by] || '普通用户'
           v.statusType = taskType[v.status]
           v.status = taskStatus[v.status]

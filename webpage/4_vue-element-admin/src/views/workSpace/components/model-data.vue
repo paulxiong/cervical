@@ -37,7 +37,7 @@
       >新增模型</el-button>
     </div>
     <el-table
-      :data="modelList"
+      :data="modelLists"
       style="width: 100%"
     >
       <el-table-column type="expand">
@@ -97,6 +97,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
       />
     </div>
   </div>
@@ -104,6 +105,9 @@
 
 <script>
 import { getListmodel } from '@/api/cervical'
+import { taskStatus, createdBy, taskType, modelType } from '@/const/const'
+import { parseTime } from '@/utils/index'
+
 export default {
   name: 'ModelData',
   components: {},
@@ -111,8 +115,9 @@ export default {
     return {
       step: 1,
       currentPage: 1,
+      currentPageSize: 10,
       total: undefined,
-      modelList: [],
+      modelLists: [],
       dialogFormVisible: false,
       listQuery: {
         desc: undefined,
@@ -140,19 +145,33 @@ export default {
   methods: {
     filterSearch() {
       console.log(1)
+      this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     createModel() {
       console.log(2)
     },
     handleCurrentChange(val) {
       console.log(val)
+      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * val, 1)
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this.getListmodel(val, (this.currentPage - 1) * val, 1)
     },
     getListmodel(limit, skip, type) {
       // 裁剪是4,预测是5
       getListmodel({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
-        this.modellist = res.data.data.models
+        res.data.data.models.map(v => {
+          v.created_at = parseTime(v.created_at)
+          v.created_by = createdBy[v.created_by] || '普通用户'
+          v.statusType = taskType[v.status]
+          v.status = taskStatus[v.status]
+          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+          v.modelType = modelType[v.type]
+        })
+        this.modelLists = res.data.data.models
         this.total = res.data.data.total
-        console.log(this.modellist, '123')
+        console.log(this.modelLists, '123')
       })
     }
   }
