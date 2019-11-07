@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 )
 
@@ -25,6 +24,7 @@ type Labelslists struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 10"
 // @Param skip query string false "skip, default 0"
+// @Param status query string false "status, default 10, 0 未审核 1 已审核 2 移除 10 审核+未审核的"
 // @Param imgid query string false "imgid, default 1， 表示图片的ID"
 // @Success 200 {object} controllers.Labelslists
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
@@ -33,9 +33,11 @@ func GetLabelByImageID(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	skipStr := c.DefaultQuery("skip", "0")
 	imgidStr := c.DefaultQuery("imgid", "1")
+	statusStr := c.DefaultQuery("status", "10")
 	imgid, _ := strconv.ParseInt(imgidStr, 10, 32)
 	limit, _ := strconv.ParseInt(limitStr, 10, 32)
 	skip, _ := strconv.ParseInt(skipStr, 10, 32)
+	_status, _ := strconv.ParseInt(statusStr, 10, 32)
 
 	labels := Labelslists{}
 	labels.Labels = make([]models.Label, 0)
@@ -48,16 +50,16 @@ func GetLabelByImageID(c *gin.Context) {
 
 	total, _labels, _ := models.ListLabelByImageID(int(limit), int(skip), int(imgid))
 	for _, v := range _labels {
+		if _status == 10 && v.Status != 0 && v.Status != 1 {
+			continue
+		} else if int(_status) != v.Status {
+			continue
+		}
 		_c, _ := models.GetCategoryByID(v.Type)
 		v.TypeOut = _c.Name
 		labels.Labels = append(labels.Labels, v)
 	}
-
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   labels,
-		"total":  total,
-	})
+	ResStructTotal(c, labels, int(total))
 
 	return
 }
