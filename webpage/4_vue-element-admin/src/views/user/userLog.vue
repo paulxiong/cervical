@@ -98,10 +98,6 @@
                 <td>{{ scope.row.path }}</td>
               </tr>
               <tr>
-                <td class="td-1">参数:</td>
-                <td style="width:250px;">{{ scope.row.query }}</td>
-              </tr>
-              <tr>
                 <td class="td-1">来源:</td>
                 <td>{{ scope.row.referer }}</td>
               </tr>
