@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     getListmodel(limit, skip, type) {
-      getListmodel({ 'limit': limit, 'skip': skip, 'type': 5 }).then(res => {
+      getListmodel({ 'limit': limit, 'skip': skip, 'type': 51 }).then(res => {
         if (res.data.data.total > 0) {
           this.modelList = res.data.data.models
           this.modelInfo = this.modelList[0]
