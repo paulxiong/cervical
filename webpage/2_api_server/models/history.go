@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 )
@@ -88,17 +87,9 @@ func ListOperationlog(limit int, skip int, order int) (totalNum int64, c []Opera
 	return total, _o, ret.Error
 }
 
-// GetOperationlogIDFromContext 从请求上下文获得操作日志的ID
-func GetOperationlogIDFromContext(c *gin.Context) (int64, bool) {
-	_opid, exists := c.Get("opid")
-	if exists == true && _opid != nil {
-		opid := _opid.(int64)
-		return opid, exists
-	}
-	return 0, exists
-}
-
-// SaveOperationlogIDtoContext 把操作日志的ID存到请求上下文
-func SaveOperationlogIDtoContext(c *gin.Context, opid int64) {
-	c.Set("opid", opid)
+// FindOperationByID 通过ID查找浏览记录
+func FindOperationByID(id int64) (o Operationlog, e error) {
+	var _o Operationlog
+	ret := db.Model(&_o).Where("id=?", id).First(&_o)
+	return _o, ret.Error
 }

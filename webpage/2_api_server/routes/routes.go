@@ -101,6 +101,10 @@ func Router() *gin.Engine {
 		api1.POST("/uploads", ctr.UploadsHandler)
 		api1.POST("/upload", ctr.UploadDatasetHandler)
 		api1.POST("/uploadimg", ctr.UploadImgHandler)
+
+		// 系统
+		api1.POST("/errorlog", ctr.CreateErrorLog)
+		api1.GET("/errorlog", ctr.GetErrorLog)
 	}
 	return r
 }

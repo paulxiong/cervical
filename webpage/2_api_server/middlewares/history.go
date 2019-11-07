@@ -39,6 +39,9 @@ func History() gin.HandlerFunc {
 		start := time.Now().UnixNano()
 		raw := c.Request.URL.RawQuery
 
+		// Process request
+		c.Next()
+
 		clientIP := c.ClientIP()
 		method := c.Request.Method
 		statusCode := c.Writer.Status()
@@ -46,7 +49,6 @@ func History() gin.HandlerFunc {
 		end := time.Now().UnixNano()
 
 		u, _ := m.GetUserFromContext(c)
-
 		operationlog := m.Operationlog{
 			ID:       0,
 			UserID:   u.ID,
@@ -81,9 +83,11 @@ func History() gin.HandlerFunc {
 		if err3 != nil {
 			logger.Info.Println(err3)
 		}
-		m.SaveOperationlogIDtoContext(c, operationlog.ID)
 
-		// Process request
-		c.Next()
+		// 注意： 这里只有记录错误日志的时候需要
+		if path == "/api1/errorlog" && method == "POST" {
+			elid, _ := m.GetErrorlogIDFromContext(c)
+			m.UpdateErrorlog(elid, operationlog.ID)
+		}
 	}
 }

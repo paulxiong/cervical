@@ -241,7 +241,7 @@ func UserLists(limit int, skip int, order int) (users []User, t int, err error) 
 	return us, total, ret.Error
 }
 
-// UpdateUserInfo 按顺序列出所有用户的信息
+// UpdateUserInfo 更新用户的信息
 func (u *User) UpdateUserInfo() (err error) {
 
 	var updateu map[string]interface{}
