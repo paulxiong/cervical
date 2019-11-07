@@ -50,8 +50,10 @@ func GetLabelByImageID(c *gin.Context) {
 
 	total, _labels, _ := models.ListLabelByImageID(int(limit), int(skip), int(imgid))
 	for _, v := range _labels {
-		if _status == 10 && v.Status != 0 && v.Status != 1 {
-			continue
+		if _status == 10 {
+			if v.Status != 0 && v.Status != 1 {
+				continue
+			}
 		} else if int(_status) != v.Status {
 			continue
 		}

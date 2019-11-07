@@ -126,9 +126,10 @@ type PredictRsult struct {
 
 // PredictCell 预测的细胞的信息
 type PredictCell struct {
-	URL     string `json:"url"     example:"任务目录"` //细胞路径用来拼接出URL
-	Type    string `json:"type"    example:"1"`    //细胞类型
-	Predict string `json:"predict" example:"1"`    //细胞预测为什么类型
+	URL     string  `json:"url"     example:"abc.png"` //细胞路径用来拼接出URL
+	Type    string  `json:"type"    example:"1"`       //细胞类型
+	Predict string  `json:"predict" example:"1"`       //细胞预测为什么类型
+	Score   float32 `json:"score"   example:"0.99"`    //得分
 }
 
 // PredictInfo2 存在硬盘的JSON文件，描述预测数据集和模型以及预测结果
