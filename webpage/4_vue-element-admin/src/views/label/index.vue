@@ -2,10 +2,6 @@
   <div class="label flex">
     <section class="main">
       <section class="tools flex">
-        <div class="btn-box-left">
-          <el-button size="mini" type="primary">训练</el-button>
-          <el-button size="mini" type="primary">预测</el-button>
-        </div>
         <div class="btn-box-right">
           <el-cascader
             v-model="currentLabel"
@@ -210,7 +206,7 @@ export default {
           'labels': [
             {
               'imgid': parseInt(this.imgid),
-              'op': 1,
+              'op': 1, // 0未知 1增加 2删除 3修改
               'typeid': parseInt(this.cellType),
               'x1': parseInt((this.imgInfo.imgw * parseFloat(data.position.x)) / 100),
               'x2': parseInt((this.imgInfo.imgw * parseFloat(data.position.x1)) / 100),
@@ -219,7 +215,10 @@ export default {
             }
           ]
         }).then(res => {
-          console.log(res.data.data)
+          this.$message({
+            message: '保存成功',
+            type: 'success'
+          })
         })
       }
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
@@ -231,7 +230,29 @@ export default {
       this.labelLog.unshift(log)
     },
     onSelect(data) {
-      console.log(data, 'select')
+      console.log(data)
+      /**
+       * 修改标注
+       */
+      updateLabel({
+        'labels': [
+          {
+            'imgid': parseInt(this.imgid),
+            'labelid': parseInt(data.id),
+            'op': 2, // 0未知 1增加 2删除 3修改
+            'typeid': parseInt(this.cellType),
+            'x1': parseInt((this.imgInfo.imgw * parseFloat(data.position.x)) / 100),
+            'x2': parseInt((this.imgInfo.imgw * parseFloat(data.position.x1)) / 100),
+            'y1': parseInt((this.imgInfo.imgh * parseFloat(data.position.y)) / 100),
+            'y2': parseInt((this.imgInfo.imgh * parseFloat(data.position.y1)) / 100)
+          }
+        ]
+      }).then(res => {
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+      })
     },
     renderLabel() {
       this.$refs['aiPanel-editor'].getMarker().clearData()
@@ -247,25 +268,18 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   .main {
-    position: relative;
     width: 80%;
+    margin-left: 10px;
     .tools {
-      position: absolute;
-      top: 0;
       justify-content: space-between;
-      padding: 0 5px;
       margin: 5px 0;
       .cascader {
-        width: 420px;
-        margin-left: 20px;
+        width: 400px;
       }
     }
     .label-img {
-      position: absolute;
-      top: 50px;
-      left: 10px;
       // height: calc(100vh - 90px);
-      // overflow: hidden;
+      overflow: hidden;
     }
   }
   .info {
