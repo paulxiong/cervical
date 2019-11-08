@@ -63,7 +63,6 @@
           :read="readOnly"
           :img="fov_img"
           @vmarker:onDrawOne="onDrawOne"
-          @vmarker:onSelect="onSelect"
           @vmarker:onUpdated="onUpdate"
         />
       </section>
@@ -114,6 +113,7 @@ export default {
       imgInfo: {},
       selectLabel: {},
       labelType: 10,
+      postData: [],
       typeOptions: [
         {
           key: 0,
@@ -182,32 +182,75 @@ export default {
       this.getLabelByImageId(this.imgid, 10)
     },
     saveAll() {
-      console.log(this.postData, this.imgInfo.labels)
-      // if (this.postData.length < this.imgInfo.labels.length) {
-      //   const postData = this.mapPostData(2)
-      //   this.updateLabel(postData, '删除')
-      // } else {
-      //   const postData = this.mapPostData(3)
-      //   this.updateLabel(postData, '修改')
-      // }
-      // this.getLabelByImageId(this.imgid, 10)
-    },
-    mapPostData(op) {
-      const postData = []
-      this.postData.map(v => {
-        const obj = {
-          'imgid': parseInt(this.imgid),
-          'labelid': parseInt(v.id),
-          'op': op, // 0未知 1增加 2删除 3修改
-          'typeid': parseInt(this.cellType),
-          'x1': parseInt((this.imgInfo.imgw * parseFloat(v.position.x)) / 100),
-          'x2': parseInt((this.imgInfo.imgw * parseFloat(v.position.x1)) / 100),
-          'y1': parseInt((this.imgInfo.imgh * parseFloat(v.position.y)) / 100),
-          'y2': parseInt((this.imgInfo.imgh * parseFloat(v.position.y1)) / 100)
+      const addArr = []
+      const delArr = []
+      const changeArr = []
+      this.postData.map(v1 => {
+        if (!v1.id) {
+          const obj = {
+            'imgid': parseInt(this.imgid),
+            'op': 1, // 0未知 1增加 2删除 3修改
+            'typeid': parseInt(this.cellType),
+            'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+            'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+            'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+            'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+          }
+          addArr.push(obj)
         }
-        postData.push(obj)
+        this.imgInfo.labels.map(v2 => {
+          if (v2.id !== v1.id) {
+            const obj = {
+              'imgid': parseInt(this.imgid),
+              'labelid': parseInt(v2.id),
+              'op': 2, // 0未知 1增加 2删除 3修改
+              'typeid': parseInt(this.cellType),
+              'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
+              'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
+              'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
+              'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
+            }
+            delArr.push(obj)
+          } else if (v2.id === v1.id && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
+            const obj = {
+              'imgid': parseInt(this.imgid),
+              'labelid': parseInt(v1.id),
+              'op': 3, // 0未知 1增加 2删除 3修改
+              'typeid': parseInt(this.cellType),
+              'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+              'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+              'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+              'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+            }
+            changeArr.push(obj)
+          }
+        })
       })
-      return postData
+      for (let i = 0; i < delArr.length; i++) {
+        for (let j = i + 1; j < delArr.length; j++) {
+          if (delArr[i]['id'] === delArr[j]['id']) {
+            delArr.splice(j, 1)
+            j = j - 1
+          }
+        }
+      }
+      if (addArr.length) {
+        this.updateLabel({
+          'lables': addArr
+        })
+      } else if (delArr.length) {
+        this.updateLabel({
+          'lables': delArr
+        })
+      } else if (changeArr.length) {
+        this.updateLabel({
+          'lables': changeArr
+        })
+      }
+      this.$message({
+        message: '保存成功',
+        type: 'success'
+      })
     },
     getImgs(bid, mdcid, img, next) {
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
@@ -267,18 +310,6 @@ export default {
         tagName: this.cellType,
         tag: `${this.imgid}-${this.cellType}`
       })
-      const postData = [
-        {
-          'imgid': parseInt(this.imgid),
-          'op': 1, // 0未知 1增加 2删除 3修改
-          'typeid': parseInt(this.cellType),
-          'x1': parseInt((this.imgInfo.imgw * parseFloat(data.position.x)) / 100),
-          'x2': parseInt((this.imgInfo.imgw * parseFloat(data.position.x1)) / 100),
-          'y1': parseInt((this.imgInfo.imgh * parseFloat(data.position.y)) / 100),
-          'y2': parseInt((this.imgInfo.imgh * parseFloat(data.position.y1)) / 100)
-        }
-      ]
-      this.updateLabel(postData, '新增')
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
       const log = {
         name: JSON.parse(localStorage.getItem('USER_INFO')).name,
@@ -294,15 +325,7 @@ export default {
     updateLabel(postData, msg) {
       updateLabel({
         'labels': postData
-      }).then(res => {
-        this.$message({
-          message: `${msg}保存成功`,
-          type: 'success'
-        })
       })
-    },
-    onSelect(data) {
-      this.postData.push(data)
     },
     renderLabel() {
       this.$refs['aiPanel-editor'].getMarker().clearData()
