@@ -185,6 +185,10 @@ export default {
       const addArr = []
       const delArr = []
       const changeArr = []
+      const idArr = []
+      this.postData.map(v => {
+        idArr.push(v.id)
+      })
       this.postData.map(v1 => {
         if (!v1.id) {
           const obj = {
@@ -199,7 +203,7 @@ export default {
           addArr.push(obj)
         }
         this.imgInfo.labels.map(v2 => {
-          if (v2.id !== v1.id) {
+          if (!idArr.includes(v2.id)) {
             const obj = {
               'imgid': parseInt(this.imgid),
               'labelid': parseInt(v2.id),
@@ -211,7 +215,7 @@ export default {
               'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
             }
             delArr.push(obj)
-          } else if (v2.id === v1.id && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
+          } else if (idArr.includes(v2.id) && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
             const obj = {
               'imgid': parseInt(this.imgid),
               'labelid': parseInt(v1.id),
