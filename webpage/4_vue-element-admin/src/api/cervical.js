@@ -123,6 +123,14 @@ export function getCategoryInfo(query) {
   })
 }
 
+export function getErrLog(query) {
+  return request({
+    url: '/api1/errorlog',
+    method: 'get',
+    params: query
+  })
+}
+
 export function jobresult(data) {
   return request({
     url: '/api1/jobresult',

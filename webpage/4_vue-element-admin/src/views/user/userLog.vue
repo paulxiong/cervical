@@ -163,7 +163,6 @@
 import { getUserLog } from '@/api/user'
 import { formatTime } from '@/utils/index'
 import UA from 'ua-device'
-
 export default {
   name: 'UserLog',
   components: {},
