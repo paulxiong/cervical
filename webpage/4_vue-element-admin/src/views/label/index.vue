@@ -80,14 +80,13 @@ import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 import { ImgServerUrl } from '@/const/config'
 import { formatTime } from '@/utils/index'
-
 export default {
   name: 'Label',
   components: { AIMarker },
   data() {
     return {
       cellsType: cellsType,
-      readOnly: false,
+      readOnly: true,
       activeItem: 1,
       cellType: '1',
       batchList: [],
@@ -96,7 +95,6 @@ export default {
       imgInfo: {},
       selectLabel: {},
       fov_img: '',
-      imgid: undefined,
       url: ImgServerUrl + '/unsafe/1000x0/',
       lazyProps: {
         lazy: true,
@@ -138,13 +136,11 @@ export default {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
     },
     changeBatchList(val) {
-      this.readOnly = true
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
       this.imgid = this.currentLabel[2].split('-')[1]
       this.getLabelByImageId(this.imgid, 10)
     },
     getImgs(bid, mdcid, img, next) {
-      this.readOnly = true
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
         const imgs = res.data.data.imgs
         /**
@@ -165,6 +161,7 @@ export default {
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
           this.getLabelByImageId(this.imgid, 10)
         }
+        this.readOnly = false
       })
     },
     getBatchInfo() {
@@ -178,7 +175,7 @@ export default {
       })
     },
     getLabelByImageId(id, status) {
-      getLabelByImageId({ 'limit': 100, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
+      getLabelByImageId({ 'limit': 999, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.labels.map(v => {
           v.tag = `${v.imgid}-${v.type}`
@@ -199,8 +196,8 @@ export default {
     onDrawOne(data) {
       if (!this.readOnly) {
         this.$refs['aiPanel-editor'].getMarker().setTag({
-          'tagName': this.cellType,
-          'tag': `${this.imgid}-${this.cellType}`
+          tagName: this.cellType,
+          tag: `${this.imgid}-${this.cellType}`
         })
         /**
          * 新增标注
@@ -219,27 +216,28 @@ export default {
           ]
         }).then(res => {
           this.$message({
-            message: '保存成功',
+            message: '新增保存成功',
             type: 'success'
           })
+          this.getLabelByImageId(this.imgid, 10)
         })
       }
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
       const log = {
         name: JSON.parse(localStorage.getItem('USER_INFO')).name,
         log: `${dataList[dataList.length - 1].tag}(${parseFloat(dataList[dataList.length - 1].position.x).toFixed(1)},${parseFloat(dataList[dataList.length - 1].position.y).toFixed(1)})`,
-        date: formatTime(dataList[dataList.length - 1].updated_time || formatTime(new Date()))
+        date: formatTime(dataList[dataList.length - 1].updated_time || new Date())
       }
       this.labelLog.unshift(log)
-    },
-    onSelect(data) {
-      this.selectLabel = data
     },
     onUpdate(data) {
       if (!this.readOnly) {
         console.log(this.selectLabel, data.length, this.imgInfo.labels.length)
         if (data.length < this.imgInfo.labels.length) {
           console.log('del')
+          /**
+           * 删除标注
+           */
           // updateLabel({
           //   'labels': [
           //     {
@@ -261,27 +259,33 @@ export default {
           // })
         } else {
           console.log('change')
-          updateLabel({
-            'labels': [
-              {
-                'imgid': parseInt(this.imgid),
-                'labelid': parseInt(this.selectLabel.id),
-                'op': 3, // 0未知 1增加 2删除 3修改
-                'typeid': parseInt(this.cellType),
-                'x1': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x)) / 100),
-                'x2': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x1)) / 100),
-                'y1': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y)) / 100),
-                'y2': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y1)) / 100)
-              }
-            ]
-          }).then(res => {
-            this.$message({
-              message: '修改保存成功',
-              type: 'success'
-            })
-          })
+          /**
+           * 修改标注
+           */
+          // updateLabel({
+          //   'labels': [
+          //     {
+          //       'imgid': parseInt(this.imgid),
+          //       'labelid': parseInt(this.selectLabel.id),
+          //       'op': 3, // 0未知 1增加 2删除 3修改
+          //       'typeid': parseInt(this.cellType),
+          //       'x1': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x)) / 100),
+          //       'x2': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x1)) / 100),
+          //       'y1': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y)) / 100),
+          //       'y2': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y1)) / 100)
+          //     }
+          //   ]
+          // }).then(res => {
+          //   this.$message({
+          //     message: '修改保存成功',
+          //     type: 'success'
+          //   })
+          // })
         }
       }
+    },
+    onSelect(data) {
+      this.selectLabel = data
     },
     renderLabel() {
       this.$refs['aiPanel-editor'].getMarker().clearData()
@@ -297,10 +301,9 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   .main {
-    width: 80%;
-    margin-left: 10px;
     .tools {
       justify-content: space-between;
+      padding: 0 5px;
       margin: 5px 0;
       .cascader {
         width: 400px;
@@ -308,11 +311,15 @@ export default {
     }
     .label-img {
       // height: calc(100vh - 90px);
-      overflow: hidden;
+      // overflow: hidden;
+      .ai-observer {
+        height: calc(100vh - 100px);
+      }
     }
   }
   .info {
     width: 20%;
+    height: 100%;
     .cells-type {
       border: 2px solid #ccc;
       height: 50%;
