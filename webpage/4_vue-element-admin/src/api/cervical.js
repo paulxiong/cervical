@@ -75,6 +75,14 @@ export function getImgListOfWanted(data) {
   })
 }
 
+export function postErrlog(data) {
+  return request({
+    url: '/api1/errorlog',
+    method: 'post',
+    data
+  })
+}
+
 export function getImgListOneByOne(query) {
   return request({
     url: '/api1/imglistsonebyone',

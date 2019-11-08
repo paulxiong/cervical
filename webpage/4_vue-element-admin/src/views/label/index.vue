@@ -2,6 +2,25 @@
   <div class="label flex">
     <section class="main">
       <section class="tools flex">
+        <div class="btn-box-left" style="margin-right:20px;">
+          <el-select
+            v-model="labelType"
+            placeholder="类型"
+            clearable
+            size="mini"
+            class="filter-type"
+            style="width: 100px"
+          >
+            <el-option
+              v-for="item in typeOptions"
+              :key="item.key"
+              :label="item.name"
+              :value="item.key"
+            />
+          </el-select>
+          <el-button type="primary" size="mini" icon="el-icon-refresh-left" @click="getAll">刷新</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-finished" @click="saveAll">保存</el-button>
+        </div>
         <div class="btn-box-right">
           <el-cascader
             v-model="currentLabel"
@@ -44,7 +63,6 @@
           :read="readOnly"
           :img="fov_img"
           @vmarker:onDrawOne="onDrawOne"
-          @vmarker:onSelect="onSelect"
           @vmarker:onUpdated="onUpdate"
         />
       </section>
@@ -94,6 +112,26 @@ export default {
       labelLog: [],
       imgInfo: {},
       selectLabel: {},
+      labelType: 10,
+      postData: [],
+      typeOptions: [
+        {
+          key: 0,
+          name: '未审核'
+        },
+        {
+          key: 1,
+          name: '已审核'
+        },
+        {
+          key: 2,
+          name: '移除'
+        },
+        {
+          key: 10,
+          name: '全部'
+        }
+      ],
       fov_img: '',
       url: ImgServerUrl + '/unsafe/1000x0/',
       lazyProps: {
@@ -139,6 +177,78 @@ export default {
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
       this.imgid = this.currentLabel[2].split('-')[1]
       this.getLabelByImageId(this.imgid, 10)
+    },
+    getAll() {
+      this.getLabelByImageId(this.imgid, 10)
+    },
+    saveAll() {
+      const addArr = []
+      const delArr = []
+      const changeArr = []
+      const idArr = []
+      this.postData.map(v => {
+        idArr.push(v.id)
+      })
+      this.postData.map(v1 => {
+        if (!v1.id) {
+          const obj = {
+            'imgid': parseInt(this.imgid),
+            'op': 1, // 0未知 1增加 2删除 3修改
+            'typeid': parseInt(this.cellType),
+            'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+            'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+            'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+            'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+          }
+          addArr.push(obj)
+        }
+        this.imgInfo.labels.map(v2 => {
+          if (!idArr.includes(v2.id)) {
+            const obj = {
+              'imgid': parseInt(this.imgid),
+              'labelid': parseInt(v2.id),
+              'op': 2, // 0未知 1增加 2删除 3修改
+              'typeid': parseInt(this.cellType),
+              'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
+              'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
+              'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
+              'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
+            }
+            delArr.push(obj)
+          } else if (idArr.includes(v2.id) && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
+            const obj = {
+              'imgid': parseInt(this.imgid),
+              'labelid': parseInt(v1.id),
+              'op': 3, // 0未知 1增加 2删除 3修改
+              'typeid': parseInt(this.cellType),
+              'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+              'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+              'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+              'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+            }
+            changeArr.push(obj)
+          }
+        })
+      })
+      for (let i = 0; i < delArr.length; i++) {
+        for (let j = i + 1; j < delArr.length; j++) {
+          if (delArr[i]['id'] === delArr[j]['id']) {
+            delArr.splice(j, 1)
+            j = j - 1
+          }
+        }
+      }
+      if (addArr.length) {
+        this.updateLabel(addArr)
+      } else if (delArr.length) {
+        this.updateLabel(delArr)
+      } else if (changeArr.length) {
+        this.updateLabel(changeArr)
+      }
+      this.$message({
+        message: '保存成功',
+        type: 'success'
+      })
     },
     getImgs(bid, mdcid, img, next) {
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
@@ -188,40 +298,16 @@ export default {
           }
           v.uuid = v.id
         })
-        this.selectLabel = this.imgInfo.labels[this.imgInfo.labels.length - 1]
         this.renderLabel()
         this.readOnly = false
       })
     },
     onDrawOne(data) {
-      if (!this.readOnly) {
-        this.$refs['aiPanel-editor'].getMarker().setTag({
-          tagName: this.cellType,
-          tag: `${this.imgid}-${this.cellType}`
-        })
-        /**
-         * 新增标注
-         */
-        updateLabel({
-          'labels': [
-            {
-              'imgid': parseInt(this.imgid),
-              'op': 1, // 0未知 1增加 2删除 3修改
-              'typeid': parseInt(this.cellType),
-              'x1': parseInt((this.imgInfo.imgw * parseFloat(data.position.x)) / 100),
-              'x2': parseInt((this.imgInfo.imgw * parseFloat(data.position.x1)) / 100),
-              'y1': parseInt((this.imgInfo.imgh * parseFloat(data.position.y)) / 100),
-              'y2': parseInt((this.imgInfo.imgh * parseFloat(data.position.y1)) / 100)
-            }
-          ]
-        }).then(res => {
-          this.$message({
-            message: '新增保存成功',
-            type: 'success'
-          })
-          this.getLabelByImageId(this.imgid, 10)
-        })
-      }
+      if (this.readOnly) return
+      this.$refs['aiPanel-editor'].getMarker().setTag({
+        tagName: this.cellType,
+        tag: `${this.imgid}-${this.cellType}`
+      })
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
       const log = {
         name: JSON.parse(localStorage.getItem('USER_INFO')).name,
@@ -231,61 +317,13 @@ export default {
       this.labelLog.unshift(log)
     },
     onUpdate(data) {
-      if (!this.readOnly) {
-        console.log(this.selectLabel, data.length, this.imgInfo.labels.length)
-        if (data.length < this.imgInfo.labels.length) {
-          console.log('del')
-          /**
-           * 删除标注
-           */
-          // updateLabel({
-          //   'labels': [
-          //     {
-          //       'imgid': parseInt(this.imgid),
-          //       'labelid': parseInt(this.selectLabel.id),
-          //       'op': 2, // 0未知 1增加 2删除 3修改
-          //       'typeid': parseInt(this.cellType),
-          //       'x1': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x)) / 100),
-          //       'x2': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x1)) / 100),
-          //       'y1': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y)) / 100),
-          //       'y2': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y1)) / 100)
-          //     }
-          //   ]
-          // }).then(res => {
-          //   this.$message({
-          //     message: '删除保存成功',
-          //     type: 'success'
-          //   })
-          // })
-        } else {
-          console.log('change')
-          /**
-           * 修改标注
-           */
-          // updateLabel({
-          //   'labels': [
-          //     {
-          //       'imgid': parseInt(this.imgid),
-          //       'labelid': parseInt(this.selectLabel.id),
-          //       'op': 3, // 0未知 1增加 2删除 3修改
-          //       'typeid': parseInt(this.cellType),
-          //       'x1': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x)) / 100),
-          //       'x2': parseInt((this.imgInfo.imgw * parseFloat(this.selectLabel.position.x1)) / 100),
-          //       'y1': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y)) / 100),
-          //       'y2': parseInt((this.imgInfo.imgh * parseFloat(this.selectLabel.position.y1)) / 100)
-          //     }
-          //   ]
-          // }).then(res => {
-          //   this.$message({
-          //     message: '修改保存成功',
-          //     type: 'success'
-          //   })
-          // })
-        }
-      }
+      if (this.readOnly) return
+      this.postData = data
     },
-    onSelect(data) {
-      this.selectLabel = data
+    updateLabel(postData, msg) {
+      updateLabel({
+        'labels': postData
+      })
     },
     renderLabel() {
       this.$refs['aiPanel-editor'].getMarker().clearData()

@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { postErrlog } from '@/api/cervical'
+
 export default {
   name: 'ErrorLog',
   data() {
@@ -67,6 +69,11 @@ export default {
         }
         errList.push(obj)
       })
+      if (errList.length > 0) {
+        postErrlog({
+          'errlog': JSON.stringify(errList)
+        })
+      }
       // console.log('错误捕获输出String：', JSON.stringify(errList))
       return this.$store.getters.errorLogs
     }
