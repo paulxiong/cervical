@@ -107,6 +107,18 @@ class mala_predict(worker):
         size = self.projectinfo['parameter_resize']
         #获得所选数据集的细胞列表信息
         df = self.get_all_cells_list()
+        
+        #获取预测数据信息，输出到前端log
+        temp_np = np.array(df['celltype'])
+        key = np.unique(temp_np)
+        result = {}
+        for k in key:
+            mask = (temp_np == k)
+            temp_np_new = temp_np[mask]
+            v = temp_np_new.size
+            result[k] = v
+        self.log.info("预测数据信息：%s"%result)
+        
         if df is None or df.shape[0] < 1:
             return False
         #组织训练的目录结构
@@ -185,6 +197,13 @@ class mala_predict(worker):
             self.log.info("统计:图片直接检测并切割出细胞")
         elif predict_info['parameter_type'] == 1:
             self.log.info("统计:按照标注csv切割细胞")
+        
+        #计算每个类别的recall/precision/f1，输出到前端log
+        true_label = np.array(df["true_label"])
+        predict_label = np.array(df["predict_label"])
+        key = np.unique(true_label)
+        self.log.info("统计:recall/precision/f1")
+        self.log.info('\n%s'%classification_report(true_label, predict_label, key))
 
         result = {"result": [], "crop_cells": []}
 
