@@ -235,17 +235,11 @@ export default {
         }
       }
       if (addArr.length) {
-        this.updateLabel({
-          'lables': addArr
-        })
+        this.updateLabel(addArr)
       } else if (delArr.length) {
-        this.updateLabel({
-          'lables': delArr
-        })
+        this.updateLabel(delArr)
       } else if (changeArr.length) {
-        this.updateLabel({
-          'lables': changeArr
-        })
+        this.updateLabel(changeArr)
       }
       this.$message({
         message: '保存成功',
