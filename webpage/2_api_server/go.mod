@@ -9,6 +9,7 @@ require (
 	github.com/chanxuehong/session v0.0.0-20141231161243-62053c2ee975
 	github.com/chanxuehong/sid v0.0.0-20151130051504-1426da3b0352
 	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916
+	github.com/disintegration/gift v1.2.0
 	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/gzip v0.0.1
@@ -18,6 +19,7 @@ require (
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/lionsoul2014/ip2region v1.8.0-release
 	github.com/mattn/go-isatty v0.0.9 // indirect
+	github.com/pierrre/imageserver v0.0.0-20190609201707-8c89cbc7ecdb
 	github.com/pkg/errors v0.8.1
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect

@@ -106,5 +106,9 @@ func Router() *gin.Engine {
 		api1.POST("/errorlog", ctr.CreateErrorLog)
 		api1.GET("/errorlog", ctr.GetErrorLog)
 	}
+
+	// 图片服务器API
+	r.GET("/imgs/*any", gin.WrapH(http.StripPrefix("/imgs", ctr.ImageAPI())))
+
 	return r
 }
