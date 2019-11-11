@@ -6,38 +6,37 @@
   background: rgba(0, 0, 0, 0.1);
 }
 .selected{
-  border: 2px solid rgb(255, 255, 0);
+  border: 2px solid rgb(255, 0, 255);
   background: rgba(255, 255, 255, 0.1);
 }
-.g-image-op {
-  visibility: hidden;
+.selected .g-image-op-content {
+  color: rgb(255, 0, 255);
 }
-.selected {
-  .g-image-op {
-    visibility: visible;
-    overflow: auto;
-    bottom: 0px;
-    cursor: auto;
-    position: absolute;
-    width: 200px;
-  }
-  .g-image-op-content{
-    font-size: 18px;
-  }
-  .g-image-op-del {
-    cursor: pointer;
-    color: #ff3c43;
-  }
+.g-image-op {
+  overflow: auto;
+  bottom: 0px;
+  cursor: auto;
+  position: absolute;
+  width: 200px;
+}
+.g-image-op-content{
+  font-size: 12px;
+  color: rgb(0, 255, 17);
+}
+.g-image-op-del {
+  font-size: 14px;
+  cursor: pointer;
+  color: rgb(0, 0, 0);
 }
 .hidden{
   display: none;
 }
 .resize-dot {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background: rgb(223, 219, 219);
+  background: rgb(0, 0, 0);
   box-sizing: border-box;
 
   &-n {

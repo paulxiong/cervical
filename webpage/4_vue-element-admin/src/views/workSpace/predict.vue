@@ -166,7 +166,7 @@ export default {
     justify-content: flex-start;
     flex-wrap: wrap;
     .item-box {
-      margin: 10px;
+      margin: 10px 20px;
     }
   }
   .badge {

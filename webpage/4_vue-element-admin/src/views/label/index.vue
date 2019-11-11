@@ -10,6 +10,7 @@
             size="mini"
             class="filter-type"
             style="width: 100px"
+            @change="changeLabeltype"
           >
             <el-option
               v-for="item in typeOptions"
@@ -70,9 +71,9 @@
     <section class="info">
       <div class="cells-type">
         <el-divider content-position="left">
-          <el-badge is-dot class="badge-item">请选择细胞标记类型</el-badge>
+          <el-badge is-dot class="badge-item">请先选择细胞标记类型</el-badge>
         </el-divider>
-        <el-radio-group v-model="cellType" size="mini" class="list">
+        <el-radio-group v-model="cellType" size="mini" class="list" @change="changeCelltype">
           <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
         </el-radio-group>
       </div>
@@ -106,7 +107,7 @@ export default {
       cellsType: cellsType,
       readOnly: true,
       activeItem: 1,
-      cellType: '1',
+      cellType: undefined,
       batchList: [],
       currentLabel: [],
       labelLog: [],
@@ -174,12 +175,20 @@ export default {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
     },
     changeBatchList(val) {
+      this.cellType = undefined
+      this.readOnly = true
       this.fov_img = this.url + this.currentLabel[2].split('-')[2]
       this.imgid = this.currentLabel[2].split('-')[1]
-      this.getLabelByImageId(this.imgid, 10)
+      this.getLabelByImageId(this.imgid, this.labelType)
+    },
+    changeLabeltype() {
+      this.getLabelByImageId(this.imgid, this.labelType)
+    },
+    changeCelltype() {
+      this.readOnly = false
     },
     getAll() {
-      this.getLabelByImageId(this.imgid, 10)
+      this.getLabelByImageId(this.imgid, this.labelType)
     },
     saveAll() {
       const addArr = []
@@ -251,6 +260,8 @@ export default {
       })
     },
     getImgs(bid, mdcid, img, next) {
+      this.cellType = undefined
+      this.readOnly = true
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
         const imgs = res.data.data.imgs
         /**
@@ -262,16 +273,15 @@ export default {
           this.fov_img = this.url + imgs[idx].imgpath
           this.imgid = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
-          this.getLabelByImageId(this.imgid, 10)
+          this.getLabelByImageId(this.imgid, this.labelType)
         } else {
           const idx = parseInt(img) - 1
           if (idx < 0) return
           this.fov_img = this.url + imgs[idx].imgpath
           this.imgid = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
-          this.getLabelByImageId(this.imgid, 10)
+          this.getLabelByImageId(this.imgid, this.labelType)
         }
-        this.readOnly = false
       })
     },
     getBatchInfo() {
@@ -299,15 +309,15 @@ export default {
           v.uuid = v.id
         })
         this.renderLabel()
-        this.readOnly = false
       })
     },
     onDrawOne(data) {
-      if (this.readOnly) return
-      this.$refs['aiPanel-editor'].getMarker().setTag({
-        tagName: this.cellType,
-        tag: `${this.imgid}-${this.cellType}`
-      })
+      if (!this.readOnly) {
+        this.$refs['aiPanel-editor'].getMarker().setTag({
+          tagName: this.cellType,
+          tag: `${this.imgid}-${this.cellType}`
+        })
+      }
       const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
       const log = {
         name: JSON.parse(localStorage.getItem('USER_INFO')).name,
