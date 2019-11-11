@@ -42,7 +42,7 @@
             v-for="(img,idx) in origin_imgs"
             :key="idx"
             class="img"
-            :src="hosturlpath100 + img"
+            :src="hosturlpath100 + img + '?width=100'"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -60,7 +60,7 @@
             v-for="(img,idx) in cells_crop"
             :key="idx"
             class="img"
-            :src="hosturlpath32 + img"
+            :src="hosturlpath32 + img + '?width=32'"
             lazy
           >
             <div slot="error" class="image-slot">
@@ -98,7 +98,7 @@
 
 <script>
 import { getjobresult, getPercent, getjoblog, downloadImgs } from '@/api/cervical'
-import { ImgServerUrl } from '@/const/config'
+import { APIUrl } from '@/const/config'
 let timer
 
 export default {
@@ -112,10 +112,8 @@ export default {
       loadingtext: '正在执行',
       loading: true,
       dir: 'dsEoM8RR/',
-      hosturlpath32: ImgServerUrl + '/unsafe/32x0/',
-      hosturlpath100: ImgServerUrl + '/unsafe/100x0/',
-      hosturlpath200: ImgServerUrl + '/unsafe/200x0/',
-      hosturlpath645: ImgServerUrl + '/unsafe/645x0/',
+      hosturlpath32: APIUrl + '/imgs/',
+      hosturlpath100: APIUrl + '/imgs/',
       tableData: [],
       objData: { 'name': '输入信息' },
       objData2: { 'name': '输出信息' },

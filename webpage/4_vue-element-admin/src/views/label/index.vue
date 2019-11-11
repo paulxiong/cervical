@@ -97,7 +97,7 @@
 import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid, updateLabel } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
-import { ImgServerUrl } from '@/const/config'
+import { APIUrl } from '@/const/config'
 import { formatTime } from '@/utils/index'
 export default {
   name: 'Label',
@@ -134,7 +134,7 @@ export default {
         }
       ],
       fov_img: '',
-      url: ImgServerUrl + '/unsafe/1000x0/',
+      url: APIUrl + '/imgs/',
       lazyProps: {
         lazy: true,
         lazyLoad(node, resolve) {
@@ -177,7 +177,7 @@ export default {
     changeBatchList(val) {
       this.cellType = undefined
       this.readOnly = true
-      this.fov_img = this.url + this.currentLabel[2].split('-')[2]
+      this.fov_img = this.url + this.currentLabel[2].split('-')[2] + '?width=1000'
       this.imgid = this.currentLabel[2].split('-')[1]
       this.getLabelByImageId(this.imgid, this.labelType)
     },
@@ -270,14 +270,14 @@ export default {
         if (next) {
           const idx = parseInt(img) + 1
           if (idx === imgs.length) return
-          this.fov_img = this.url + imgs[idx].imgpath
+          this.fov_img = this.url + imgs[idx].imgpath + '?width=1000'
           this.imgid = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
           this.getLabelByImageId(this.imgid, this.labelType)
         } else {
           const idx = parseInt(img) - 1
           if (idx < 0) return
-          this.fov_img = this.url + imgs[idx].imgpath
+          this.fov_img = this.url + imgs[idx].imgpath + '?width=1000'
           this.imgid = imgs[idx].id
           this.currentLabel = [bid, mdcid, idx + '-' + this.imgid + '-' + imgs[idx].imgpath]
           this.getLabelByImageId(this.imgid, this.labelType)
