@@ -264,6 +264,7 @@ cluster_seg_1105
 #### C模型测试数据
 ### temp_data_1021_torun
 ```
+说明：基于数据集data_all_1010_new，并作了一定的删减
 链接：https://pan.baidu.com/s/1KpnRmtZl5e19ZwozMcxryQ&shfl=sharepset 
 提取码：qgpu
 ```
