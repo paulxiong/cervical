@@ -27,7 +27,7 @@
     <el-table :data="errLog" height="850px" style="width: 100%">
       <el-table-column prop="operationlog.name" label="用户" />
       <el-table-column prop="created_time" label="操作时间" width="150" />
-      <el-table-column prop="errlog" label="错误日志" width="1000" />
+      <el-table-column prop="errlog" label="错误日志" width="800" />
       <el-table-column prop="operationlog.referer" label="访问域名" />
       <el-table-column prop="operationlog.path" label="错误路径" />
       <el-table-column fixed="right" label="操作" width="100">
@@ -132,7 +132,7 @@
         :page-sizes="[10, 20, 50, 100, 200]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="4"
+        :total="total"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
@@ -152,7 +152,7 @@ export default {
       currentPage: 1,
       currentPageSize: 10,
       errLog: [],
-      total: undefined,
+      total: 1,
       loading: false,
       listQuery: {
         desc: undefined,
@@ -217,7 +217,7 @@ export default {
           // v.region.city = v.region.city ? v.region.city : v.region.province ? v.region.province : v.region.country
         })
         this.errLog = res.data.data
-        this.total = res.data.data.total
+        this.total = res.data.total
         this.loading = false
       })
     }
