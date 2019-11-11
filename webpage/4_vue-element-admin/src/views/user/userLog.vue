@@ -200,27 +200,22 @@ export default {
     this.getUserLog(10, 0, 1)
   },
   methods: {
+    refreshData() {
+      this.getUserLog(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+    },
+    filterSearch() {
+      this.refreshData()
+    },
     handleClick(row) {
       console.log(row)
     },
-    filterSearch() {
-      this.getUserLog(10, (this.currentPage - 1) * this.currentPageSize, 1)
-    },
     handleCurrentChange(val) {
-      // this.currentSkip = (val - 1) * this.currentPageSize
-      this.getUserLog(this.currentPageSize, (this.currentPage - 1) * val, 1)
-      // console.log(`这是第 ${val} 页 `)
+      this.currentPage = val
+      this.refreshData()
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getUserLog(val, (this.currentPage - 1) * val, 1)
-      // console.log(`每页 ${val} 条`)
-    },
-    data() {
-      return {
-        currentSkip: 0, // 当前记录的位置
-        currentPageSize: 10 // 每页显示多少条
-      }
+      this.refreshData()
     },
     getUserLog(limit, skip, order) {
       this.loading = true
