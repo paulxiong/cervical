@@ -108,7 +108,7 @@ func Router() *gin.Engine {
 	}
 
 	// 图片服务器API
-	r.GET("/imgs/*any", gin.WrapH(http.StripPrefix("/imgs", ctr.ImageAPI())))
+	r.GET("/imgs/*any", ctr.ImageAPI)
 
 	return r
 }
