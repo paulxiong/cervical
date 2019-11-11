@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   cervical_api:
-    image: lambdazhang/cervical:81cdf0a
+    image: lambdazhang/cervical:0088918
     container_name: "cervical"
     #restart: always
     environment:
@@ -19,12 +19,27 @@ services:
       MYSQL_DB: 'datasets'
       MYSQL_USR: 'mysql'
       MYSQL_PASSWD: '123456'
+      MYSQL_PREFIX: "c_"
+      EMAIL_ENABLE: 'enable'
+      EMAIL_USER: 'notify@youzhadahuo.com'
+      EMAIL_PASSWD: 'b14e9665H60855cb'
+      EMAIL_HOST: 'smtp.qiye.aliyun.com'
+      EMAIL_PORT: '465'
+      ZONEINFO: '/data/zoneinfo.zip'
     command: sh -c "./main.exe"
     ports:
       - 9002:80
+    volumes:
+      - /data/km/cervical/thumbor/data/loader/scratch:/data/scratch
+      - /data/km/cervical/thumbor/data/loader/datasets:/data/datasets
+      - /data/km/cervical/thumbor/data/loader/projects:/data/projects
+      - /data/km/cervical/thumbor/data/loader/csv:/data/csv
+      - /data/km/cervical/thumbor/data/loader/img:/data/img
+      - /data/km/cervical/thumbor/data/loader/cache:/data/cache
+      - ./ip2region.db:/data/ip2region.db:ro
+      - ./zoneinfo.zip:/data/zoneinfo.zip:ro
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "10"
-

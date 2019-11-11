@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,18 +22,28 @@ func History() gin.HandlerFunc {
 			"/api1/job",
 			"/api1/jobresult",
 			"/api1/jobpercent",
+			"/imgs",
+		}
+		skippath2 := [...]string{
+			"/imgs",
 		}
 		var skip map[string]struct{}
 
 		if length := len(skippath); length > 0 {
 			skip = make(map[string]struct{}, length)
-			for _, path := range skippath {
-				skip[path] = struct{}{}
+			for _, _path := range skippath {
+				skip[_path] = struct{}{}
 			}
 		}
-		//判断哪些API访问不记录
+		//判断哪些API访问不记录,固定路由
 		if _, ok := skip[path]; ok {
 			return
+		}
+		//判断哪些API访问不记录,动态路由
+		for _, _path := range skippath2 {
+			if strings.HasPrefix(path, _path) {
+				return
+			}
 		}
 
 		// Start timer

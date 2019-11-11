@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/disintegration/gift"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	"github.com/pierrre/imageserver"
 
 	imageserver_cache "github.com/pierrre/imageserver/cache"
@@ -165,7 +166,9 @@ func ImageServer(cfg *ImageServerSettings) http.Handler {
 			&imageserver_http_image.QualityParser{},
 			&imageserver_http_gamma.CorrectionParser{},
 		}),
-
+		ErrorFunc: func(err error, req *http.Request) {
+			logger.Info.Println(err)
+		},
 		Server:   newServer(cfg.ImgDir, cfg.Cachedir, cfg.MemCacheSize, cfg.MaxWidth, cfg.MaxHeight),
 		ETagFunc: imageserver_http.NewParamsHashETagFunc(sha256.New),
 	}

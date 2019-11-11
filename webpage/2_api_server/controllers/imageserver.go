@@ -25,7 +25,7 @@ func ImageAPI(c *gin.Context) {
 	cfg := f.ImageServerSettings{
 		MaxWidth:     4096,
 		MaxHeight:    4096,
-		ImgDir:       "upload",
+		ImgDir:       ".",
 		Cachedir:     "cache",
 		MemCacheSize: int64(128 * (1 << 20)), //128M
 		HTTPExpires:  7 * 24 * time.Hour,
