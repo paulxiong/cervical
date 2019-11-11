@@ -24,21 +24,21 @@
           <el-tab-pane v-if="predictResult.parameter_type" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
             <div v-for="v in falseCellsList" :key="v.url" class="item-box">
               <el-badge :value="`${v.type}>${v.predict}`" type="info" class="item">
-                <img class="img-item img-false" :src="hosturlpath64 + v.url">
+                <img class="img-item img-false" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
           <el-tab-pane v-if="predictResult.parameter_type" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
             <div v-for="v in rightCellsList" :key="v.url" class="item-box">
               <el-badge :value="`${v.type}-${v.score}`" class="item">
-                <img class="img-item img-right" :src="hosturlpath64 + v.url">
+                <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
           <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${rightCellsList.length}`" class="img-tab flex">
             <div v-for="v in rightCellsList" :key="v.url" class="item-box">
               <el-badge :value="`${v.type}-${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
-                <img class="img-item img-right" :src="hosturlpath64 + v.url">
+                <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { ImgServerUrl } from '@/const/config'
+import { APIUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
 import { getPercent, getPredictResult, getjoblog } from '@/api/cervical'
 let timer
@@ -81,7 +81,7 @@ export default {
       loadingtext: '正在执行',
       postCelltypes: [],
       cLog: '',
-      hosturlpath64: ImgServerUrl + '/unsafe/64x0/',
+      hosturlpath64: APIUrl + '/imgs/',
       predictResult: {},
       rightCellsList: [],
       falseCellsList: []
