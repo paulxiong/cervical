@@ -261,6 +261,20 @@ cluster_seg_1105
     ├── good_cluster(33)
     └── one(4637)
 ```
+### cluster_seg_1111
+```
+链接：https://pan.baidu.com/s/1CdqKO2cosWh1mvvMP7r1eA
+提取玛：wmwj
+说明：2019年11月5日截至到2019年11月11日，基于医生标注过的bianpingFOV原图作出的细胞团数据，如目录结构，cluster为阳性数据，
+其中cluster_clusters为阳性细胞团数据，expectone中细胞图含有2～4个细胞，one中细胞图含有一个细胞的数据。
+目录结构：(括号内为细胞图数量)
+cluster_seg_1111
+├── cluster
+    ├── cluster_clusters(557)
+    ├── expectone(1496)
+    └── one(1208)
+
+```
 #### C模型测试数据
 ### temp_data_1021_torun
 ```
