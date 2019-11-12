@@ -88,7 +88,7 @@
         prop="status"
       />
     </el-table>
-    <div class="page-box flex">
+    <div class="tools flex">
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
@@ -140,26 +140,24 @@ export default {
     }
   },
   created() {
-    this.getListmodel(10, 0, 4)
+    this.getListmodel(10, 0, 52)
   },
   methods: {
     filterSearch() {
-      console.log(1)
-      this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     createModel() {
       console.log(2)
     },
     handleCurrentChange(val) {
-      console.log(val)
-      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * val, 1)
+      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * val, 52)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListmodel(val, (this.currentPage - 1) * val, 1)
+      this.getListmodel(val, (this.currentPage - 1) * val, 52)
     },
     getListmodel(limit, skip, type) {
-      // 裁剪是4,预测是5
+      // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型
       getListmodel({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
         res.data.data.models.map(v => {
           v.created_at = parseTime(v.created_at)
@@ -171,7 +169,6 @@ export default {
         })
         this.modelLists = res.data.data.models
         this.total = res.data.data.total
-        console.log(this.modelLists, '123')
       })
     }
   }
@@ -180,6 +177,18 @@ export default {
 
 <style lang="scss" scoped>
 .modelData {
+  overflow: auto;
+  height: 100%;
+  .tools {
+    background: #fff;
+    justify-content: space-around;
+    bottom: 0px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
   .table-expand {
     font-size: 0;
   }

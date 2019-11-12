@@ -107,7 +107,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="page-box flex">
+    <div class="tools flex">
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
@@ -262,6 +262,18 @@ export default {
 
 <style lang="scss" scoped>
 .datasetsData {
+  overflow: auto;
+  height: 100%;
+  .tools {
+    background: #fff;
+    justify-content: space-around;
+    bottom: 0px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
   .table-expand {
     font-size: 0;
   }
