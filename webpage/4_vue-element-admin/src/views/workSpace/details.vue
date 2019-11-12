@@ -59,7 +59,7 @@ export default {
 
 <style lang="scss" scoped>
 .step {
-  margin-top: 20px;
+  margin-top: 7px;
   padding: 10px 0;
   background: #f5f7fa;
   justify-content: space-around;

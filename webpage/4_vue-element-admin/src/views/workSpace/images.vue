@@ -1,6 +1,6 @@
 <template>
   <div class="images">
-    <section class="header flex">
+    <!-- <section class="header flex">
       <el-badge is-dot class="badge">裁剪进度</el-badge>
       <el-progress
         class="progress"
@@ -9,7 +9,7 @@
         :percentage="percentage"
         status="success"
       />
-    </section>
+    </section> -->
     <section class="main">
       <section class="info-box">
         <el-table :data="tableData" stripe border style="width: 100%">
@@ -235,7 +235,6 @@ export default {
 
 <style lang="scss" scoped>
 .images {
-  margin-bottom: 100px;
 }
 .download {
   color: #000;
@@ -253,7 +252,7 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
-  margin: 20px 0;
+  margin: 7px 0;
   .info-list {
     justify-content: flex-start;
     flex-wrap: wrap;

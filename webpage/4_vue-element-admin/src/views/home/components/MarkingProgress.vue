@@ -18,7 +18,7 @@ export default {
 <style lang="scss" scoped>
 .markingProgress {
     width: 100%;
-    height: 296px;
+    height: 336px;
     background: #fff;
     padding-top: 7px;
 }

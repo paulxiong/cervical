@@ -1,6 +1,6 @@
 <template>
   <div class="predict">
-    <section class="header flex">
+    <!-- <section class="header flex">
       <el-badge is-dot class="badge">预测进度</el-badge>
       <el-progress
         :text-inside="true"
@@ -9,16 +9,16 @@
         class="progress"
         status="success"
       />
-    </section>
+    </section> -->
     <section v-loading="loading" :element-loading-text="loadingtext" class="results">
-      <section class="info-box">
+      <!-- <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
           <el-table-column prop="type" width="400" label="类型" />
           <el-table-column prop="total" label="预测个数" />
           <el-table-column v-if="predictResult.parameter_type" prop="falseCnt" label="错误个数" />
           <el-table-column v-if="predictResult.parameter_type" prop="correct" label="正确个数" />
         </el-table>
-      </section>
+      </section> -->
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
           <el-tab-pane v-if="predictResult.parameter_type" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
@@ -36,11 +36,27 @@
             </div>
           </el-tab-pane>
           <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${rightCellsList.length}`" class="img-tab flex">
-            <div v-for="v in rightCellsList" :key="v.url" class="item-box">
-              <el-badge :value="`${v.type}-${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
-                <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
-              </el-badge>
-            </div>
+            <section class="label-img flex">
+              <AIMarker
+                ref="aiPanel-editor"
+                class="ai-observer"
+                :style="{width: imgInfo.imgw < 1000 ? imgInfo.imgw + 'px' : 1000 + 'px',height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}"
+                :read="readOnly"
+                :img="fov_img"
+              />
+              <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
+                <div v-for="v in rightCellsList" :key="v.url" class="item-box">
+                  <el-badge :value="`score:${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
+                    <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
+                  </el-badge>
+                  <el-radio-group v-model="v.type" size="mini">
+                    <el-radio-button label="51">阴性</el-radio-button>
+                    <el-radio-button label="50">阳性</el-radio-button>
+                    <el-radio-button label="100">不确定</el-radio-button>
+                  </el-radio-group>
+                </div>
+              </div>
+            </section>
           </el-tab-pane>
           <el-tab-pane label="预测log">
             <el-input
@@ -61,16 +77,22 @@
 <script>
 import { APIUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { getPercent, getPredictResult, getjoblog } from '@/api/cervical'
+import { getPercent, getPredictResult, getjoblog, getLabelByImageId } from '@/api/cervical'
+import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
+
 let timer
 
 export default {
   name: 'Predict',
-  components: {},
+  components: { AIMarker },
   data() {
     return {
       percentage: 0,
       startPredict: false,
+      readOnly: true,
+      url: APIUrl + '/imgs/',
+      fov_img: 'img/20190523/1807178/Images/IMG001x014.JPG?width=1000',
+      imgInfo: {},
       modelList: [],
       modelInfo: {},
       datasetsInfo: {},
@@ -92,6 +114,8 @@ export default {
     this.getPercent()
     this.getjoblog()
     this.loopGetPercent()
+    this.fov_img = this.url + this.fov_img
+    this.getLabelByImageId(1909, 10)
   },
   destroyed() {
     clearInterval(timer)
@@ -139,6 +163,23 @@ export default {
         }
       })
     },
+    getLabelByImageId(id, status) {
+      getLabelByImageId({ 'limit': 999, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
+        this.imgInfo = res.data.data
+        this.imgInfo.labels.map(v => {
+          v.tag = `${v.imgid}-${v.type}`
+          v.tagName = v.type
+          v.position = {
+            x: parseFloat(v.x1 / this.imgInfo.imgw) * 100 + '%',
+            x1: parseFloat(v.x2 / this.imgInfo.imgw) * 100 + '%',
+            y: parseFloat(v.y1 / this.imgInfo.imgh) * 100 + '%',
+            y1: parseFloat(v.y2 / this.imgInfo.imgh) * 100 + '%'
+          }
+          v.uuid = v.id
+        })
+        this.renderLabel()
+      })
+    },
     /**
      * 定时器轮训百分比
      */
@@ -154,6 +195,10 @@ export default {
     },
     changeCellTypes(val) {
       this.postCelltypes = val
+    },
+    renderLabel() {
+      this.$refs['aiPanel-editor'].getMarker().clearData()
+      this.$refs['aiPanel-editor'].getMarker().renderData(this.imgInfo.labels)
     }
   }
 }
@@ -161,12 +206,12 @@ export default {
 
 <style lang="scss" scoped>
 .predict {
-  margin-bottom: 100px;
   .img-tab {
     justify-content: flex-start;
     flex-wrap: wrap;
     .item-box {
-      margin: 10px 20px;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
     }
   }
   .badge {
@@ -204,10 +249,16 @@ export default {
     display: block;
   }
   .info-box {
-    margin-bottom: 20px;
+    margin-bottom: 7px;
+  }
+  .check-box {
+    overflow: auto;
+    width: 220px;
+    border: 1px dashed #ccc;
+    margin-left: 7px;
   }
   .results {
-    padding: 30px;
+    padding: 7px 30px;
     .img-item {
       // margin-right: 10px;
       // margin-bottom: 10px;

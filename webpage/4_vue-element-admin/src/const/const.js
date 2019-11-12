@@ -74,7 +74,7 @@ export const cellsType = {
   15: '15 X1线索细胞',
   50: '50 阳性细胞',
   51: '51 阴性细胞',
-  100: '100 未知细胞'
+  100: '100 未知类型'
 }
 
 export const projectType = {

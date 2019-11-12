@@ -2,11 +2,11 @@
 
 .annotation {
   cursor: move;
-  border: 2px solid rgb(0, 255, 17);
+  border: 1px solid rgb(0, 255, 81);
   background: rgba(0, 0, 0, 0.1);
 }
 .selected{
-  border: 2px solid rgb(255, 0, 255);
+  border: 1px solid rgb(255, 0, 255);
   background: rgba(255, 255, 255, 0.1);
 }
 .selected .g-image-op-content {
@@ -14,14 +14,14 @@
 }
 .g-image-op {
   overflow: auto;
-  bottom: 0px;
+  top: 0px;
   cursor: auto;
   position: absolute;
   width: 200px;
 }
 .g-image-op-content{
   font-size: 12px;
-  color: rgb(0, 255, 17);
+  color: rgb(0, 255, 81);
 }
 .g-image-op-del {
   font-size: 14px;

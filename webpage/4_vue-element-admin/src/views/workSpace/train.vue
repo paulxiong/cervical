@@ -1,6 +1,6 @@
 <template>
   <div class="train">
-    <section class="header flex">
+    <!-- <section class="header flex">
       <el-badge is-dot class="badge">训练进度</el-badge>
       <el-progress
         :text-inside="true"
@@ -9,7 +9,7 @@
         class="progress"
         status="success"
       />
-    </section>
+    </section> -->
     <section v-loading="loading" :element-loading-text="loadingtext" class="model-info">
       <div v-if="modelInfo.path" class="model-box">
         <el-badge is-dot class="badge">模型信息</el-badge>
@@ -92,7 +92,6 @@ export default {
 
 <style lang="scss" scoped>
 .train {
-  margin-bottom: 100px;
   .badge {
     font-weight: bold;
   }
@@ -120,7 +119,7 @@ export default {
   }
   .model-info {
     padding: 0 30px;
-    margin-top: 20px;
+    margin-top: 7px;
     height: 500px;
     .cell-checkbox {
       margin-top: 5px;

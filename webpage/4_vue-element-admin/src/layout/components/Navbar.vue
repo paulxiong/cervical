@@ -12,9 +12,7 @@
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
-        <el-tooltip content="全局尺寸" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        <cell-type id="size-select" class="right-menu-item hover-effect" />
 
       </template>
 
@@ -43,7 +41,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
+import CellType from '@/components/CellType'
 import Search from '@/components/HeaderSearch'
 
 export default {
@@ -52,7 +50,7 @@ export default {
     Hamburger,
     ErrorLog,
     Screenfull,
-    SizeSelect,
+    CellType,
     Search
   },
   data() {
