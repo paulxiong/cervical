@@ -245,7 +245,7 @@ export default {
       })
       for (let i = 0; i < delArr.length; i++) {
         for (let j = i + 1; j < delArr.length; j++) {
-          if (delArr[i]['id'] === delArr[j]['id']) {
+          if (delArr[i]['labelid'] === delArr[j]['labelid']) {
             delArr.splice(j, 1)
             j = j - 1
           }
@@ -331,7 +331,7 @@ export default {
       this.labelLog.unshift(log)
     },
     onUpdate(data) {
-      if (this.readOnly) return
+      if ((this.readOnly) && (data.length === this.postData.length)) return
       this.postData = data
     },
     updateLabel(postData, msg) {
