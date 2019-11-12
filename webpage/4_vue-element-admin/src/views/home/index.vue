@@ -7,13 +7,13 @@
         <transaction-table />
       </el-col>
       <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
-        <transaction-table />
+        <marking-progress />
       </el-col>
       <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:20px;margin-bottom:30px;">
         <best-model />
       </el-col>
       <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
-        <best-model />
+        <medical-report />
       </el-col>
     </el-row>
   </div>
@@ -23,13 +23,17 @@
 import PanelGroup from './components/PanelGroup'
 import TransactionTable from './components/TransactionTable'
 import BestModel from './components/bestModel'
+import MarkingProgress from './components/MarkingProgress'
+import medicalReport from './components/medicalReport'
 
 export default {
   name: 'DashboardAdmin',
   components: {
     PanelGroup,
     TransactionTable,
-    BestModel
+    BestModel,
+    MarkingProgress,
+    medicalReport
   }
 }
 </script>

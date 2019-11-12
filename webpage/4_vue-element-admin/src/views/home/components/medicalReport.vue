@@ -1,14 +1,14 @@
 <template>
-  <div class="bestModel">{{ value }}</div>
+  <div class="medicalReport">{{ value }}</div>
 </template>
 
 <script>
 export default {
-  name: 'BestModel',
+  name: 'MedicalReport',
   components: {},
   data() {
     return {
-      value: 'bestModel'
+      value: 'medicalReport'
     }
   },
   methods: {}
@@ -16,7 +16,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.bestModel {
+.medicalReport {
     width: 100%;
     height: 341px;
     background: #fff;

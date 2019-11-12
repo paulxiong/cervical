@@ -2,7 +2,7 @@
   <el-row :gutter="40" class="panel-group">
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-people">
+        <div class="card-panel-icon-wrapper icon-peoples">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
@@ -15,7 +15,7 @@
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-message">
+        <div class="card-panel-icon-wrapper icon-data">
           <svg-icon icon-class="data" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
@@ -28,7 +28,7 @@
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-money">
+        <div class="card-panel-icon-wrapper icon-complete">
           <svg-icon icon-class="complete" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
@@ -41,7 +41,7 @@
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel">
-        <div class="card-panel-icon-wrapper icon-shopping">
+        <div class="card-panel-icon-wrapper icon-report">
           <svg-icon icon-class="report" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
@@ -89,37 +89,37 @@ export default {
         color: #fff;
       }
 
-      .icon-people {
+      .icon-peoples {
         background: #40c9c6;
       }
 
-      .icon-message {
+      .icon-data {
         background: #36a3f7;
       }
 
-      .icon-money {
+      .icon-complete {
         background: #f4516c;
       }
 
-      .icon-shopping {
-        background: #34bfa3
+      .icon-report {
+        background: #074d86;
       }
     }
 
-    .icon-people {
+    .icon-peoples {
       color: #40c9c6;
     }
 
-    .icon-message {
+    .icon-data {
       color: #36a3f7;
     }
 
-    .icon-money {
+    .icon-complete {
       color: #f4516c;
     }
 
-    .icon-shopping {
-      color: #34bfa3
+    .icon-report {
+      color: #6c940f;
     }
 
     .card-panel-icon-wrapper {
