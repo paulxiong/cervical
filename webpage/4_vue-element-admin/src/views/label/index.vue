@@ -165,6 +165,10 @@ export default {
     }
   },
   created() {
+<<<<<<< Updated upstream
+=======
+    this.getLabelByImageId()
+>>>>>>> Stashed changes
     this.getBatchInfo()
   },
   methods: {
