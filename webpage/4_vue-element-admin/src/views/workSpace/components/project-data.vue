@@ -224,6 +224,7 @@ export default {
 .projectData {
   overflow: auto;
   height: 100%;
+  padding-bottom: 30px;
   .tools {
     background: #fff;
     justify-content: space-around;
