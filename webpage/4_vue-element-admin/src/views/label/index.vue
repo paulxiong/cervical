@@ -77,18 +77,6 @@
           <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
         </el-radio-group>
       </div>
-      <div class="data-info">
-        <el-divider content-position="left">
-          <el-badge is-dot class="badge-item">标注记录</el-badge>
-        </el-divider>
-        <div class="list">
-          <el-table :data="labelLog" style="width: 100%">
-            <el-table-column prop="name" label="用户" />
-            <el-table-column prop="log" width="110" label="操作" />
-            <el-table-column prop="date" label="日期" />
-          </el-table>
-        </div>
-      </div>
     </section>
   </div>
 </template>
@@ -98,7 +86,7 @@ import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid, updateL
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 import { APIUrl } from '@/const/config'
-import { formatTime } from '@/utils/index'
+
 export default {
   name: 'Label',
   components: { AIMarker },
@@ -110,7 +98,6 @@ export default {
       cellType: undefined,
       batchList: [],
       currentLabel: [],
-      labelLog: [],
       imgInfo: {},
       selectLabel: {},
       labelType: 10,
@@ -165,10 +152,6 @@ export default {
     }
   },
   created() {
-<<<<<<< Updated upstream
-=======
-    this.getLabelByImageId()
->>>>>>> Stashed changes
     this.getBatchInfo()
   },
   methods: {
@@ -195,54 +178,72 @@ export default {
       this.getLabelByImageId(this.imgid, this.labelType)
     },
     saveAll() {
-      const addArr = []
-      const delArr = []
-      const changeArr = []
       const idArr = []
       this.postData.map(v => {
         idArr.push(v.id)
       })
-      this.postData.map(v1 => {
-        if (!v1.id) {
+      const addArr = []
+      const delArr = []
+      const changeArr = []
+      console.log(this.postData)
+      if (this.postData.length === 0 && this.imgInfo.labels.length > 0) {
+        this.imgInfo.labels.map(v => {
           const obj = {
             'imgid': parseInt(this.imgid),
-            'op': 1, // 0未知 1增加 2删除 3修改
+            'labelid': parseInt(v.id),
+            'op': 2, // 0未知 1增加 2删除 3修改
             'typeid': parseInt(this.cellType),
-            'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
-            'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
-            'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
-            'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+            'x1': parseInt((this.imgInfo.imgw * parseFloat(v.position.x)) / 100),
+            'x2': parseInt((this.imgInfo.imgw * parseFloat(v.position.x1)) / 100),
+            'y1': parseInt((this.imgInfo.imgh * parseFloat(v.position.y)) / 100),
+            'y2': parseInt((this.imgInfo.imgh * parseFloat(v.position.y1)) / 100)
           }
-          addArr.push(obj)
-        }
-        this.imgInfo.labels.map(v2 => {
-          if (!idArr.includes(v2.id)) {
+          delArr.push(obj)
+        })
+      } else {
+        this.postData.map(v1 => {
+          if (!v1.id) {
             const obj = {
               'imgid': parseInt(this.imgid),
-              'labelid': parseInt(v2.id),
-              'op': 2, // 0未知 1增加 2删除 3修改
-              'typeid': parseInt(this.cellType),
-              'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
-              'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
-              'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
-              'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
-            }
-            delArr.push(obj)
-          } else if (idArr.includes(v2.id) && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
-            const obj = {
-              'imgid': parseInt(this.imgid),
-              'labelid': parseInt(v1.id),
-              'op': 3, // 0未知 1增加 2删除 3修改
+              'op': 1, // 0未知 1增加 2删除 3修改
               'typeid': parseInt(this.cellType),
               'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
               'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
               'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
               'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
             }
-            changeArr.push(obj)
+            addArr.push(obj)
           }
+          this.imgInfo.labels.map(v2 => {
+            console.log(idArr.includes(v2.id))
+            if (!idArr.includes(v2.id)) {
+              const obj = {
+                'imgid': parseInt(this.imgid),
+                'labelid': parseInt(v2.id),
+                'op': 2, // 0未知 1增加 2删除 3修改
+                'typeid': parseInt(this.cellType),
+                'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
+                'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
+                'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
+                'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
+              }
+              delArr.push(obj)
+            } else if (idArr.includes(v2.id) && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
+              const obj = {
+                'imgid': parseInt(this.imgid),
+                'labelid': parseInt(v1.id),
+                'op': 3, // 0未知 1增加 2删除 3修改
+                'typeid': parseInt(this.cellType),
+                'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+                'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+                'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+                'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+              }
+              changeArr.push(obj)
+            }
+          })
         })
-      })
+      }
       for (let i = 0; i < delArr.length; i++) {
         for (let j = i + 1; j < delArr.length; j++) {
           if (delArr[i]['labelid'] === delArr[j]['labelid']) {
@@ -302,7 +303,6 @@ export default {
       getLabelByImageId({ 'limit': 999, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.labels.map(v => {
-          v.tag = `${v.imgid}-${v.type}`
           v.tagName = v.type
           v.position = {
             x: parseFloat(v.x1 / this.imgInfo.imgw) * 100 + '%',
@@ -322,13 +322,6 @@ export default {
           tag: `${this.imgid}-${this.cellType}`
         })
       }
-      const dataList = this.$refs['aiPanel-editor'].getMarker().getData()
-      const log = {
-        name: JSON.parse(localStorage.getItem('USER_INFO')).name,
-        log: `${dataList[dataList.length - 1].tag}(${parseFloat(dataList[dataList.length - 1].position.x).toFixed(1)},${parseFloat(dataList[dataList.length - 1].position.y).toFixed(1)})`,
-        date: formatTime(dataList[dataList.length - 1].updated_time || new Date())
-      }
-      this.labelLog.unshift(log)
     },
     onUpdate(data) {
       if ((this.readOnly) && (data.length === this.postData.length)) return

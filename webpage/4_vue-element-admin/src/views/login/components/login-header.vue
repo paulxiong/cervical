@@ -1,7 +1,7 @@
 <template>
   <el-header class="login-header flex">
     <img class="logo" src="../../../assets/logo.png" alt="xd-logo">
-    <p class="p">{{ value }}</p>
+    <p class="p">{{ value }}<span>{{ version }}</span></p>
   </el-header>
 </template>
 
@@ -11,7 +11,8 @@ export default {
   components: {},
   data() {
     return {
-      value: '讯动科技'
+      value: '讯动科技',
+      version: 'v0.3.1'
     }
   },
   methods: {}
@@ -32,6 +33,9 @@ export default {
   }
   .p {
     color: #ccc;
+    span {
+      font-size: 12px;
+    }
   }
 }
 </style>
