@@ -86,7 +86,6 @@ import { getBatchInfo, getMedicalIdInfo, getLabelByImageId, getImgbymid, updateL
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 import { cellsType } from '@/const/const'
 import { APIUrl } from '@/const/config'
-
 export default {
   name: 'Label',
   components: { AIMarker },
