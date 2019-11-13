@@ -10,7 +10,7 @@
   background: rgba(255, 255, 255, 0.1);
 }
 .selected .g-image-op-content {
-  color: rgb(255, 0, 255);
+  background: rgba(255, 0, 255, 0.7);
 }
 .g-image-op {
   overflow: auto;
@@ -21,12 +21,14 @@
 }
 .g-image-op-content{
   font-size: 12px;
-  color: rgb(0, 255, 81);
+  background: rgba(0, 255, 81, 0.7);
+  padding-left: 2px;
+  width: 24px;
 }
 .g-image-op-del {
   font-size: 14px;
   cursor: pointer;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
 }
 .hidden{
   display: none;

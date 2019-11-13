@@ -43,10 +43,11 @@
                 :style="{width: imgInfo.imgw < 1000 ? imgInfo.imgw + 'px' : 1000 + 'px',height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}"
                 :read="readOnly"
                 :img="fov_img"
+                @vmarker:onSelect="onSelect"
               />
               <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
-                <div v-for="v in rightCellsList" :key="v.url" class="item-box">
-                  <el-badge :value="`score:${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
+                <div v-for="(v, idx) in rightCellsList" :id="`anchor-${idx}`" :key="v.url" class="item-box" @click="changeLabel(v, idx)">
+                  <el-badge :value="`score=${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
                     <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
                   </el-badge>
                   <el-radio-group v-model="v.type" size="mini">
@@ -106,7 +107,8 @@ export default {
       hosturlpath64: APIUrl + '/imgs/',
       predictResult: {},
       rightCellsList: [],
-      falseCellsList: []
+      falseCellsList: [],
+      select: {}
     }
   },
   created() {
@@ -121,6 +123,21 @@ export default {
     clearInterval(timer)
   },
   methods: {
+    changeLabel(item, idx) {
+      this.select = this.imgInfo.labels[idx]
+      const labels = this.imgInfo.labels
+      labels.map((v, i) => {
+        if (this.select.id === v.id) {
+          labels.splice(i, 1)
+        }
+      })
+      labels.push(this.select)
+      this.renderLabel(labels)
+    },
+    onSelect(data) {
+      this.select = data
+      document.querySelector(`#anchor-${parseInt(Math.random() * 10) + 10}`).scrollIntoView(true)
+    },
     getPredictResult() {
       getPredictResult({ 'id': this.$route.query.pid }).then(res => {
         if (typeof res.data.data !== 'string') {
@@ -177,7 +194,8 @@ export default {
           }
           v.uuid = v.id
         })
-        this.renderLabel()
+        this.select = this.imgInfo.labels[5]
+        this.renderLabel(this.imgInfo.labels)
       })
     },
     /**
@@ -196,9 +214,9 @@ export default {
     changeCellTypes(val) {
       this.postCelltypes = val
     },
-    renderLabel() {
+    renderLabel(lables) {
       this.$refs['aiPanel-editor'].getMarker().clearData()
-      this.$refs['aiPanel-editor'].getMarker().renderData(this.imgInfo.labels)
+      this.$refs['aiPanel-editor'].getMarker().renderData(lables)
     }
   }
 }
@@ -210,7 +228,7 @@ export default {
     justify-content: flex-start;
     flex-wrap: wrap;
     .item-box {
-      padding: 10px 20px;
+      padding: 10px 10px;
       border-bottom: 1px solid #ccc;
     }
   }
@@ -253,7 +271,7 @@ export default {
   }
   .check-box {
     overflow: auto;
-    width: 220px;
+    width: 200px;
     border: 1px dashed #ccc;
     margin-left: 7px;
   }
