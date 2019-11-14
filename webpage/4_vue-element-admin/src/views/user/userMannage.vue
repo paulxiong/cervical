@@ -104,15 +104,8 @@ export default {
       // console.log(`每页 ${val} 条`)
     },
     handleCurrentChange(val) {
-      this.currentSkip = (val - 1) * this.currentPageSize
       this.getUserLists(this.currentPageSize, (this.currentPage - 1) * val, 1)
       // console.log(val)
-    },
-    data() {
-      return {
-        currentSkip: 0,
-        currentPageSize: 10
-      }
     },
     getUserLists(limit, skip, order) {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {

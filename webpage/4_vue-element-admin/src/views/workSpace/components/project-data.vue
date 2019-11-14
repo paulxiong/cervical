@@ -191,12 +191,6 @@ export default {
         path: `/workSpace/details?pid=${val.id}&did=${val.did}&type=${val.type}`
       })
     },
-    data() {
-      return {
-        currentSkip: 0,
-        currentPageSize: 10
-      }
-    },
     getListprojects(limit, skip, order) {
       this.loading = true
       getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
