@@ -28,7 +28,7 @@
       <el-table-column prop="operationlog.name" label="用户" width="200px" />
       <el-table-column prop="created_time" label="操作时间" width="200" />
       <el-table-column prop="version" label="版本" width="100" />
-      <el-table-column prop="operationlog.referer" label="访问域名" width="200" />
+      <el-table-column prop="operationlog.referer" label="访问域名" width="260" />
       <el-table-column prop="err" label="错误日志" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">

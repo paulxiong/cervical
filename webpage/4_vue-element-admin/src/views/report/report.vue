@@ -160,31 +160,31 @@ export default {
     }
   },
   created() {
-    this.getListreport(10, 0, 1)
+    this.getListreport(10, 0, 101, 1)
   },
   methods: {
     handleClick(row) {
       console.log(row)
     },
     filterSearch() {
-      this.getListreport(10, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getListreport(10, (this.currentPage - 1) * this.currentPageSize, 101, 1)
     },
     handleCurrentChange(val) {
-      this.currentPage = val
-      this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getListreport(this.currentPageSize, (this.currentPage - 1) * val, 101, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListreport(val, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getListreport(val, (this.currentPage - 1) * val, 101, 1)
     },
     goDetail(val) {
       this.$router.push({
-        path: '/'
+        path: '/report'
       })
     },
-    getListreport(limit, skip, order) {
+    getListreport(limit, skip, status, order) {
       this.loading = true
-      getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+      // status 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100 全部 101 送去审核以及核完成的预测结果
+      getListprojects({ 'limit': limit, 'skip': skip, 'status': status, 'order': order }).then(res => {
         res.data.data.projects.map(v => {
           v.created_at = parseTime(v.created_at)
           v.updated_at = parseTime(v.updated_at)

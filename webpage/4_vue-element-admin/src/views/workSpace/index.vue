@@ -32,9 +32,13 @@ export default {
       activeName: 'project'
     }
   },
+  mounted() {
+    this.activeName = localStorage.getItem('TAB') || 'project'
+  },
   methods: {
     handleClick(tab, event) {
       // console.log(tab, event)
+      localStorage.setItem('TAB', this.activeName)
     }
   }
 }

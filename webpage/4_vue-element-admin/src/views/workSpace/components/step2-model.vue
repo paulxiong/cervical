@@ -38,7 +38,7 @@
         <h4>切割类型</h4>
         <el-radio-group v-model="type">
           <el-radio-button label="0-图片直接检测并切割出细胞" />
-          <el-radio-button label="1-按照标注csv切割细胞" />
+          <el-radio-button v-if="!upload" label="1-按照标注csv切割细胞" />
           <!-- <el-radio-button label="2-mask-rcnn检测细胞和csv交集的切割" /> -->
         </el-radio-group>
       </section>
@@ -51,6 +51,12 @@ import { getListmodel } from '@/api/cervical'
 export default {
   name: 'CheckModel',
   components: {},
+  props: {
+    upload: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       cache: '是',

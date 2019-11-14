@@ -205,6 +205,7 @@ export default {
     stepNext() {
       this.$refs.newDatasets.stepNext()
       this.step = this.$refs.newDatasets.step
+      this.uploadServer = false
     },
     stepBack() {
       this.$refs.newDatasets.stepBack()

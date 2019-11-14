@@ -5,15 +5,8 @@ export const taskStatus = {
   2: '开始',
   3: '出错',
   4: '完成',
-  5: '目录不存在',
-  6: '送去训练',
-  7: '开始',
-  8: '出错',
-  9: '完成',
-  10: '送去预测',
-  11: '开始',
-  12: '出错',
-  13: '完成'
+  5: '送去审核',
+  6: '审核完成'
 }
 
 export const taskType = {
@@ -22,15 +15,8 @@ export const taskType = {
   2: 'warning',
   3: 'danger',
   4: 'success',
-  5: 'danger',
-  6: 'warning',
-  7: 'warning',
-  8: 'danger',
-  9: 'success',
-  10: 'warning',
-  11: 'warning',
-  12: 'danger',
-  13: 'success'
+  5: 'warning',
+  6: 'success'
 }
 
 // 训练类型
@@ -52,7 +38,8 @@ export const modelType = {
   2: 'GAN',
   3: 'SVM',
   4: 'MASKRCNN',
-  5: 'AUTOKERAS'
+  5: 'AUTOKERAS',
+  6: 'HOWTOMALA'
 }
 
 // 细胞分类

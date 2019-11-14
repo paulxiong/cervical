@@ -11,7 +11,7 @@
     <section class="main">
       <uploadImg v-if="upload && step===1" @checkUpload="checkUpload" />
       <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
-      <checkModel v-if="step===2" ref="checkModel" />
+      <checkModel v-if="step===2" ref="checkModel" :upload="upload" />
       <startTrain v-if="step===3" />
     </section>
   </div>

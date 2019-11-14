@@ -43,23 +43,26 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="项目 ID">
-              <span>{{ props.row.id }}</span>
-            </el-form-item>
             <el-form-item label="描述">
               <span>{{ props.row.desc }}</span>
             </el-form-item>
             <el-form-item label="类型">
-              <span>{{ props.row.type }}</span>
+              <span>{{ props.row.modelType }}</span>
             </el-form-item>
-            <el-form-item label="数据集 ID">
-              <span>{{ props.row.datasets_id }}</span>
+            <el-form-item label="准确度">
+              <span>{{ props.row.precision }}</span>
             </el-form-item>
-            <el-form-item label="状态">
-              <span>{{ props.row.status }}</span>
+            <el-form-item label="召回率">
+              <span>{{ props.row.recall }}</span>
             </el-form-item>
-            <el-form-item label="得分">
-              <span>{{ props.row.score }}</span>
+            <el-form-item label="损失">
+              <span>{{ props.row.loss }}</span>
+            </el-form-item>
+            <el-form-item label="训练用图数">
+              <span>{{ props.row.n_train }}张</span>
+            </el-form-item>
+            <el-form-item label="类型">
+              <span>{{ props.row.types }}</span>
             </el-form-item>
             <el-form-item label="创建时间">
               <span>{{ props.row.created_at }}</span>
@@ -70,22 +73,19 @@
       <el-table-column
         label="项目 ID"
         prop="id"
+        width="100"
       />
       <el-table-column
         label="描述"
         prop="desc"
       />
       <el-table-column
-        label="创建者"
-        prop="created_by"
+        label="类型"
+        prop="modelType"
       />
       <el-table-column
-        label="得分"
-        prop="score"
-      />
-      <el-table-column
-        label="状态"
-        prop="status"
+        label="准确度"
+        prop="precision"
       />
     </el-table>
     <div class="tools flex">
