@@ -22,6 +22,7 @@
           :value="item.key"
         />
       </el-select>
+      <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div>
     <el-table :data="userList" height="850px" style="width: 100%">
       <el-table-column prop="id" label="用户ID" width="100" />
@@ -95,6 +96,9 @@ export default {
     this.getUserLists(10, 0, 1)
   },
   methods: {
+    filterSearch() {
+      this.getUserLists(10, (this.currentPage - 1) * this.currentPageSize, 1)
+    },
     handleClick(row) {
       console.log(row)
     },
