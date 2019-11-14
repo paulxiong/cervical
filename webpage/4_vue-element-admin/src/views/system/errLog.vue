@@ -186,14 +186,12 @@ export default {
       this.getErrLog(10, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
-      // this.currentSkip = (val - 1) * this.currentPageSize
-      this.getErrLog(this.currentPageSize, (this.currentPage - 1) * val, 1)
-      // console.log(`这是第 ${val} 页 `)
+      this.currentPage = val
+      this.getErrLog(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getErrLog(val, (this.currentPage - 1) * val, 1)
-      // console.log(`每页 ${val} 条`)
+      this.getErrLog(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     data() {
       return {
@@ -225,10 +223,16 @@ export default {
 .errLog {
   overflow: auto;
   height: 100%;
-  padding: 20px;
+  padding: 30px;
   .tools {
     background: #fff;
     justify-content: space-around;
+    bottom: 0px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 table.tftable {

@@ -150,11 +150,12 @@ export default {
       console.log(2)
     },
     handleCurrentChange(val) {
-      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * val, 52)
+      this.currentPage = val
+      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListmodel(val, (this.currentPage - 1) * val, 52)
+      this.getListmodel(val, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     getListmodel(limit, skip, type) {
       // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型
@@ -180,12 +181,7 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  margin-top: 30px;
   .filter-box {
-    position: fixed;
-    float: auto;
-    z-index: 10;
-    margin-top: -40px;
   }
   .tools {
     background: #fff;

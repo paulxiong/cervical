@@ -104,12 +104,11 @@ export default {
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getUserLists(val, (this.currentPage - 1) * val, 1)
-      // console.log(`每页 ${val} 条`)
+      this.getUserLists(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
-      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * val, 1)
-      // console.log(val)
+      this.currentPage = val
+      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     getUserLists(limit, skip, order) {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
@@ -123,9 +122,18 @@ export default {
 
 <style lang="scss" scoped>
 .userList {
+  overflow: auto;
+  height: 100%;
+  padding: 30px;
   .tools {
     background: #fff;
     justify-content: space-around;
+    bottom: 0px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 table.tftable {

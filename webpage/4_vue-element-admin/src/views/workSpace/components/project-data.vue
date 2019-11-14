@@ -180,11 +180,12 @@ export default {
       this.getListprojects(10, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
-      this.getListprojects(this.currentPageSize, (this.currentPage - 1) * val, 1)
+      this.currentPage = val
+      this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListprojects(val, (this.currentPage - 1) * val, 1)
+      this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     goDetail(val) {
       this.$router.push({
@@ -219,12 +220,7 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  margin-top: 30px;
   .filter-box {
-    position: fixed;
-    float: auto;
-    z-index: 10;
-    margin-top: -40px;
   }
   .tools {
     background: #fff;

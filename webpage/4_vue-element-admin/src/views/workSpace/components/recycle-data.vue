@@ -225,12 +225,12 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  margin-top: 30px;
+  // margin-top: 30px;
   .filter-box {
-    position: fixed;
-    float: auto;
-    z-index: 10;
-    margin-top: -40px;
+    // position: fixed;
+    // float: auto;
+    // z-index: 10;
+    // margin-top: -40px;
   }
   .tools {
     background: #fff;
