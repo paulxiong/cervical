@@ -156,20 +156,9 @@ class detector():
         cropped = img[y1:y2,x1:x2,:]
         cells_crop_file_path = os.path.join(cells_path, '{}_{}_{}_{}_{}_{}_{}.png'.format(filename, fov_type, str(cell_type), x1, y1, x2, y2))
         cv2.imwrite(cells_crop_file_path, cropped)
-        segmentate = np.tile(np.expand_dims(npy, axis=2),(1,1,3))
-        img_masked = cropped*segmentate
-        size_x, size_y = img_masked.shape[0], img_masked.shape[1]
-        for n in range(size_x):
-            for m in range(size_y):
-                if img_masked[n,m,1] == 0:
-                    img_masked[n,m,0] = 255
-                    img_masked[n,m,1] = 255
-                    img_masked[n,m,2] = 255
-        cells_masked_crop_file_path = os.path.join(cells_mask_path, 'crop_masked', '{}_{}_{}_{}_{}_{}_{}masked.png'.format(filename, fov_type, cell_type, x1, y1, x2, y2))
-        cv2.imwrite(cells_masked_crop_file_path, img_masked)
         return
 
-    def detect_image(self, gray=False, print2=None, sign = '1'): # sign == 1为训练， sign == 2为预测
+    def detect_image(self, gray=False, print2=None, sign = '2'): # sign == 1为训练， sign == 2为预测
         pathList = self.get_image_lists()
         if print2 is None:
             print2 = print
@@ -217,19 +206,11 @@ class detector():
                 if int(threshold*100) > int(score*100):
                     print2("%s drop roi, score=%f" % (filename, score))
                     continue
-
-                mask_npy = pred_masks[:,:,i]
                 y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
                 mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, mask_npy, 50)
-                _mask_npy = mask_npy[y1:y2, x1:x2]
-
-                if _mask_npy.shape[1] != _mask_npy.shape[0]:
-                    continue
-                mask_cell_npy.append(_mask_npy)
+                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, original_image, 50) # 细胞裁剪尺寸已被固定
                 _rois.append([y1, x1, y2, x2])
 
-            mask_npy = np.array(mask_cell_npy)
             cell_points = np.array(_rois)
             if sign == '1': # 训练
                 org_csv_path = image_path[:-4] + '.csv' # 拼原始csv路径
@@ -254,7 +235,7 @@ class detector():
                     cell_point = cell_points[n,:]
                     cell_type = str(100)
                     fov_type = str(100)
-                    self.crop_fov(original_image, cell_point, mask_cell_npy[n], cells_path, cells_mask_path, filename, fov_type, cell_type)
+                    self.crop_fov(original_image, cell_point,None, cells_path, cells_mask_path, filename, fov_type, cell_type)
 
             if self.debug:
                 visualize.display_instances(original_image, filename, r['rois'], r['masks'], r['class_ids'], r['scores'])
