@@ -191,57 +191,103 @@ export default {
       this.getLabelByImageId(this.imgid, this.labelType)
     },
     saveAll() {
+      const orgIdArr = [] // 原始标注数组
+      const orgIdTree = {} // 原始标注json
+      this.imgInfo.labels.map(v => {
+        orgIdArr.push('' + v.id)
+        orgIdTree['' + v.id] = v
+      })
+      const idArr = [] // 现在的标注数组
+      const idTree = {} // 现在的标注json
+      this.postData.map(v => {
+        if (!v.id) { // 新增
+          idArr.push('' + v.uuid)
+          idTree['' + v.uuid] = v
+        } else {
+          idArr.push('' + v.id)
+          idTree['' + v.id] = v
+        }
+      })
+
+      // 新增
+      var newarr = idArr.filter(function(v) {
+        return orgIdArr.indexOf(v) === -1
+      })
+      // 删除
+      var delarr = orgIdArr.filter(function(v) {
+        return idArr.indexOf(v) === -1
+      })
+      // 没变或者更新
+      var updatearr = idArr.filter(function(v) {
+        return orgIdArr.indexOf(v) !== -1
+      })
+      console.log('新增 ', newarr)
+      console.log('删除 ', delarr)
+
       const addArr = []
       const delArr = []
       const changeArr = []
-      const idArr = []
-      this.postData.map(v => {
-        idArr.push(v.id)
+      // 新增
+      newarr.map(v => {
+        const v1 = idTree[v]
+        const obj = {
+          'imgid': parseInt(this.imgid),
+          'labelid': 0,
+          'op': 1, // 0未知 1增加 2删除 3修改
+          'typeid': parseInt(v1.tagName),
+          'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+          'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+          'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+          'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+        }
+        if (obj.typeid === 0) {
+          obj.typeid === 100 // 未知类型
+        }
+        addArr.push(obj)
       })
-      this.postData.map(v1 => {
-        if (!v1.id) {
+
+      // 删除
+      delarr.map(v => {
+        const v1 = orgIdTree[v]
+        const obj = {
+          'imgid': parseInt(this.imgid),
+          'op': 2, // 0未知 1增加 2删除 3修改
+          'labelid': parseInt(v1.id),
+          'typeid': parseInt(v1.type),
+          'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+          'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+          'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+          'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+        }
+        delArr.push(obj)
+      })
+
+      // 更新
+      updatearr.map(v => {
+        const v1 = orgIdTree[v]
+        const v2 = idTree[v]
+        if (v1.position.x1 !== v2.position.x1 || v1.position.y1 !== v2.position.y1 ||
+        v1.position.x2 !== v2.position.x2 || v1.position.y2 !== v2.position.y2 || v1.type !== v2.type) {
           const obj = {
             'imgid': parseInt(this.imgid),
-            'op': 1, // 0未知 1增加 2删除 3修改
-            'typeid': parseInt(this.cellType),
-            'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
-            'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
-            'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
-            'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+            'op': 3, // 0未知 1增加 2删除 3修改
+            'labelid': parseInt(v2.id),
+            'typeid': parseInt(v2.type),
+            'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
+            'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
+            'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
+            'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
           }
-          addArr.push(obj)
+          if (obj.typeid === 0) {
+            obj.typeid === 100 // 未知类型
+          }
+          changeArr.push(obj)
         }
-        this.imgInfo.labels.map(v2 => {
-          if (!idArr.includes(v2.id)) {
-            const obj = {
-              'imgid': parseInt(this.imgid),
-              'labelid': parseInt(v2.id),
-              'op': 2, // 0未知 1增加 2删除 3修改
-              'typeid': parseInt(this.cellType),
-              'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
-              'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
-              'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
-              'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
-            }
-            delArr.push(obj)
-          } else if (idArr.includes(v2.id) && (v2.tagName !== v1.tagName || v2.position.x !== v1.position.x || v2.position.x1 !== v1.position.x1 || v2.position.y !== v1.position.y || v2.position.y1 !== v1.position.y1)) {
-            const obj = {
-              'imgid': parseInt(this.imgid),
-              'labelid': parseInt(v1.id),
-              'op': 3, // 0未知 1增加 2删除 3修改
-              'typeid': parseInt(this.cellType),
-              'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
-              'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
-              'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
-              'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
-            }
-            changeArr.push(obj)
-          }
-        })
       })
+
       for (let i = 0; i < delArr.length; i++) {
         for (let j = i + 1; j < delArr.length; j++) {
-          if (delArr[i]['id'] === delArr[j]['id']) {
+          if (delArr[i]['labelid'] === delArr[j]['labelid']) {
             delArr.splice(j, 1)
             j = j - 1
           }
@@ -327,8 +373,6 @@ export default {
       this.labelLog.unshift(log)
     },
     onUpdate(data) {
-      if (!this.readOnly) return
-      console.log(data)
       this.postData = data
     },
     updateLabel(postData, msg) {
