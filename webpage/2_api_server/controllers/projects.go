@@ -91,6 +91,7 @@ type listProjectsData struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
+// @Param status query string false "status, default 100, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100全部"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {object} controllers.listProjectsData
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
@@ -99,11 +100,13 @@ func ListProjects(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
 	orderStr := c.DefaultQuery("order", "1")
+	statusStr := c.DefaultQuery("status", "100")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	_order, _ := strconv.ParseInt(orderStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
 
-	total, p, err := models.ListProject(int(limit), int(skip), int(_order))
+	total, p, err := models.ListProject(int(limit), int(skip), int(_order), int(status))
 	if err != nil {
 		logger.Info.Println(err)
 	}

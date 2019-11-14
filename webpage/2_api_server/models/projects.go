@@ -131,10 +131,9 @@ func UpdateProjectPercent(pid int64, percent int, ETA int) (e error) {
 }
 
 // ListProject 依次列出项目
-func ListProject(limit int, skip int, order int) (totalNum int64, c []Project, e error) {
+func ListProject(limit int, skip int, order int, status int) (totalNum int64, c []Project, e error) {
 	var _p []Project
 	var total int64 = 0
-	ret := db.Model(&Project{}).Count(&total)
 
 	orderStr := "created_at DESC"
 	//order, default 1, 1倒序，0顺序
@@ -142,7 +141,18 @@ func ListProject(limit int, skip int, order int) (totalNum int64, c []Project, e
 		orderStr = "created_at ASC"
 	}
 
-	ret = db.Model(&Project{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
+	// 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100全部
+	if status == 100 {
+		ret := db.Model(&Project{}).Count(&total)
+		ret = db.Model(&Project{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		return total, _p, ret.Error
+	}
+
+	ret := db.Model(&Project{}).Where("status=?", status).Count(&total)
+	ret = db.Model(&Project{}).Where("status=?", status).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
