@@ -17,7 +17,7 @@ export default {
   props: {
     read: {
       type: Boolean,
-      default: false
+      default: true
     },
     img: {
       type: String,
@@ -33,7 +33,7 @@ export default {
     },
     ratio: {
       type: Number,
-      default: 16
+      default: 16 / 9
     }
   },
   data() {
@@ -114,7 +114,6 @@ export default {
       if (!root) {
         return
       }
-
       let width = this.width
       if (!this.width) {
         width = '100%'

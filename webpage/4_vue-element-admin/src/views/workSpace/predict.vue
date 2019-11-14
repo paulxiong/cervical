@@ -46,9 +46,9 @@
                 @vmarker:onSelect="onSelect"
               />
               <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
-                <div v-for="(v, idx) in rightCellsList" :id="`anchor-${idx}`" :key="v.url" class="item-box" @click="changeLabel(v, idx)">
+                <div v-for="(v, idx) in rightCellsList" :id="`anchor-${idx}`" :key="v.url" class="item-box">
                   <el-badge :value="`score=${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
-                    <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
+                    <img class="img-item" :class="idx === 0 ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.url + '?width=64'" @click="changeLabel(v, idx)">
                   </el-badge>
                   <el-radio-group v-model="v.type" size="mini">
                     <el-radio-button label="51">阴性</el-radio-button>
@@ -135,6 +135,7 @@ export default {
       this.renderLabel(labels)
     },
     onSelect(data) {
+      console.log(data)
       this.select = data
       document.querySelector(`#anchor-${parseInt(Math.random() * 10) + 10}`).scrollIntoView(true)
     },
@@ -271,7 +272,6 @@ export default {
   }
   .check-box {
     overflow: auto;
-    width: 200px;
     border: 1px dashed #ccc;
     margin-left: 7px;
   }
@@ -281,12 +281,15 @@ export default {
       // margin-right: 10px;
       // margin-bottom: 10px;
     }
+    .img-select {
+      border: 2px solid rgb(255, 0, 255);
+    }
     .img-right {
-      border: 2px solid #27cc6a;
+      border: 2px solid rgb(0, 255, 81);
       border-radius: 5px;
     }
     .img-false {
-      border: 2px solid #fd6e70;
+      border: 2px solid rgb(255, 0, 255);
       border-radius: 5px;
     }
   }

@@ -6,13 +6,14 @@
 </template>
 
 <script>
+const config = require('../../../../version.config')
 export default {
   name: 'Loginheader',
   components: {},
   data() {
     return {
       value: '讯动科技',
-      version: 'v0.3.1'
+      version: config.version
     }
   },
   methods: {}
