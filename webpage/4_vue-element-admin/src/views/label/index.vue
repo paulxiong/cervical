@@ -107,7 +107,7 @@ export default {
       cellsType: cellsType,
       readOnly: true,
       activeItem: 1,
-      cellType: undefined,
+      cellType: '1',
       batchList: [],
       currentLabel: [],
       labelLog: [],
@@ -175,7 +175,6 @@ export default {
       this.getImgs(this.currentLabel[0], this.currentLabel[1], this.currentLabel[2].split('-')[0], 1)
     },
     changeBatchList(val) {
-      this.cellType = undefined
       this.readOnly = true
       this.fov_img = this.url + this.currentLabel[2].split('-')[2] + '?width=1000'
       this.imgid = this.currentLabel[2].split('-')[1]
@@ -185,7 +184,7 @@ export default {
       this.getLabelByImageId(this.imgid, this.labelType)
     },
     changeCelltype() {
-      this.readOnly = false
+      console.log(this.cellType)
     },
     getAll() {
       this.getLabelByImageId(this.imgid, this.labelType)
@@ -210,15 +209,15 @@ export default {
       })
 
       // 新增
-      var newarr = idArr.filter(function(v) {
+      const newarr = idArr.filter(function(v) {
         return orgIdArr.indexOf(v) === -1
       })
       // 删除
-      var delarr = orgIdArr.filter(function(v) {
+      const delarr = orgIdArr.filter(function(v) {
         return idArr.indexOf(v) === -1
       })
       // 没变或者更新
-      var updatearr = idArr.filter(function(v) {
+      const updatearr = idArr.filter(function(v) {
         return orgIdArr.indexOf(v) !== -1
       })
       console.log('新增 ', newarr)
@@ -306,7 +305,6 @@ export default {
       })
     },
     getImgs(bid, mdcid, img, next) {
-      this.cellType = undefined
       this.readOnly = true
       getImgbymid({ 'bid': bid, 'mdcid': mdcid, 'limit': 100, 'skip': 0 }).then(res => {
         const imgs = res.data.data.imgs

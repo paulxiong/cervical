@@ -1,5 +1,7 @@
 build/*.js
 src/assets
 src/components
+version.js
+version.config.js
 public
 dist

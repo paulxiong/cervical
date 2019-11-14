@@ -1,7 +1,7 @@
 <template>
   <el-header class="login-header flex">
     <img class="logo" src="../../../assets/logo.png" alt="xd-logo">
-    <p class="p">{{ value }}<span>{{ version }}</span></p>
+    <p class="p">{{ version }}<span>-{{ subversion }}</span></p>
   </el-header>
 </template>
 
@@ -12,8 +12,8 @@ export default {
   components: {},
   data() {
     return {
-      value: '讯动科技',
-      version: config.version
+      version: config.version,
+      subversion: config.subversion
     }
   },
   methods: {}

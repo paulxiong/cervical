@@ -48,6 +48,7 @@
 
 <script>
 import { postErrlog } from '@/api/cervical'
+const config = require('../../../version.config')
 
 export default {
   name: 'ErrorLog',
@@ -65,7 +66,8 @@ export default {
           'err': v.err.message,
           'stack': v.err.stack,
           'info': v.info,
-          'url': v.url
+          'url': v.url,
+          'version': config.subversion
         }
         errList.push(obj)
       })

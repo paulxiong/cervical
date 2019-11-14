@@ -25,11 +25,11 @@
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div>
     <el-table :data="errLog" height="850px" style="width: 100%">
-      <el-table-column prop="operationlog.name" label="用户" />
-      <el-table-column prop="created_time" label="操作时间" width="150" />
-      <el-table-column prop="errlog" label="错误日志" width="800" />
-      <el-table-column prop="operationlog.referer" label="访问域名" />
-      <el-table-column prop="operationlog.path" label="错误路径" />
+      <el-table-column prop="operationlog.name" label="用户" width="200px" />
+      <el-table-column prop="created_time" label="操作时间" width="200" />
+      <el-table-column prop="version" label="版本" width="100" />
+      <el-table-column prop="operationlog.referer" label="访问域名" width="200" />
+      <el-table-column prop="err" label="错误日志" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" trigger="click">
@@ -83,10 +83,6 @@
                 <td>{{ scope.row.operationlog.referer }}</td>
               </tr>
               <tr>
-                <td class="td-1">地域ID:</td>
-                <td>{{ scope.row.operationlog.region_id }}</td>
-              </tr>
-              <tr>
                 <td class="td-1">国家:</td>
                 <td>{{ scope.row.operationlog.region.country }}</td>
               </tr>
@@ -103,12 +99,12 @@
                 <td>{{ scope.row.operationlog.region.isp }}</td>
               </tr>
               <tr>
-                <td class="td-1">操作ID:</td>
-                <td>{{ scope.row.opid }}</td>
+                <td class="td-1">操作系统:</td>
+                <td>{{ scope.row.ua.os.name }}</td>
               </tr>
               <tr>
-                <td class="td-1">操作者:</td>
-                <td>{{ scope.row.created_by }}</td>
+                <td class="td-1">浏览器:</td>
+                <td>{{ scope.row.ua.browser.name }}</td>
               </tr>
               <tr>
                 <td class="td-1">邮箱:</td>
@@ -142,8 +138,9 @@
 
 <script>
 import { getErrLog } from '@/api/cervical'
-// import { formatTime } from '@/utils/index'
-// import UA from 'ua-device'
+import { parseTime } from '@/utils/index'
+import UA from 'ua-device'
+
 export default {
   name: 'ErrLog',
   components: {},
@@ -208,13 +205,12 @@ export default {
       this.loading = true
       getErrLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.map(v => {
-          // v.ua = new UA(v.ua)
-          // v.cost = (v.cost / 1000).toFixed(2)
-          // v.created_at = formatTime(v.created_at)
-          // v.updated_at = formatTime(v.created_at)
-          // v.processtime = formatTime(v.processtime)
-          // v.processend = formatTime(v.processtime)
-          // v.region.city = v.region.city ? v.region.city : v.region.province ? v.region.province : v.region.country
+          v.operationlog.cost = (v.cost / 1000).toFixed(2)
+          v.created_time = parseTime(v.created_time)
+          v.operationlog.created_at = parseTime(v.operationlog.created_at)
+          v.ua = new UA(v.operationlog.ua)
+          v.err = JSON.parse(v.errlog)[0].err || ''
+          v.version = JSON.parse(v.errlog)[0].version || ''
         })
         this.errLog = res.data.data
         this.total = res.data.total
@@ -229,6 +225,7 @@ export default {
 .errLog {
   overflow: auto;
   height: 100%;
+  padding: 20px;
   .tools {
     background: #fff;
     justify-content: space-around;

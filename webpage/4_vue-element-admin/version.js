@@ -28,9 +28,9 @@ obj = {
 }
 
 strobj = 'module.exports = {\n'
-strobj = strobj + '    \'version\': ' + '\'' + version + '\',\n'
-strobj = strobj + '    \'subversion\': ' + '\'' + subversion + '\',\n'
-strobj = strobj + '    \'ts\': ' + '\'' + ts + '\'\n'
+strobj = strobj + '\t\'version\': ' + '\'' + version + '\',\n'
+strobj = strobj + '\t\'subversion\': ' + '\'' + subversion + '\',\n'
+strobj = strobj + '\t\'ts\': ' + '\'' + ts + '\'\n'
 strobj = strobj + '}\n'
 
 fs.writeFileSync('version.config.js', strobj)
