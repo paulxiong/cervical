@@ -105,10 +105,12 @@ func Router() *gin.Engine {
 		// 系统
 		api1.POST("/errorlog", ctr.CreateErrorLog)
 		api1.GET("/errorlog", ctr.GetErrorLog)
+
+		// 医疗报告
+		api1.GET("/predictresult2", ctr.GetPredictResult2)
 	}
 
 	// 图片服务器API
 	r.GET("/imgs/*any", ctr.ImageAPI)
-
 	return r
 }

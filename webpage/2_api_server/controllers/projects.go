@@ -91,7 +91,7 @@ type listProjectsData struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
-// @Param status query string false "status, default 100, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100全部"
+// @Param status query string false "status, default 100, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100 全部 101 送去审核以及核完成的预测结果"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {object} controllers.listProjectsData
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"

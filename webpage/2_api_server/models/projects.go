@@ -141,10 +141,17 @@ func ListProject(limit int, skip int, order int, status int) (totalNum int64, c 
 		orderStr = "created_at ASC"
 	}
 
-	// 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100全部
+	// 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100 全部 101 送去审核以及核完成的预测结果
 	if status == 100 {
 		ret := db.Model(&Project{}).Count(&total)
 		ret = db.Model(&Project{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		return total, _p, ret.Error
+	} else if status == 101 {
+		ret := db.Model(&Project{}).Where("status=? OR status=?", 5, 6).Count(&total)
+		ret = db.Model(&Project{}).Where("status=? OR status=?", 5, 6).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 		if ret.Error != nil {
 			logger.Info.Println(ret.Error)
 		}
@@ -159,7 +166,7 @@ func ListProject(limit int, skip int, order int, status int) (totalNum int64, c 
 	return total, _p, ret.Error
 }
 
-// GetOneProjectByID 通过ID查找数据集
+// GetOneProjectByID 通过ID查找项目
 func GetOneProjectByID(id int) (p Project, e error) {
 	_p := Project{}
 	ret2 := db.Model(&_p).Where("id=?", id).First(&_p)
