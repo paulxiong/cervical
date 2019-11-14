@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -38,5 +39,32 @@ func GetPredictResult2(c *gin.Context) {
 		"status": e.StatusSucceed,
 		"data":   fmt.Sprintf("%d %d %d %d", pid, bid, mid, iid),
 	})
+	return
+}
+
+// GetPredictImges 根据传递来的数据集ID，返回当前报告的所有图片列表
+// @Summary 据传递来的数据集ID，返回当前报告的所有图片列表
+// @Description 据传递来的数据集ID，返回当前报告的所有图片列表(注意预测报告只有一个批次，一个病例，所以这个借口除了医疗报告，其他操作不要用)
+// @Description status：
+// @Description 200 创建
+// @tags API1 医疗报告（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param did query string false "did, default 0, 数据集ID"
+// @Success 200 {object} models.Image
+// @Router /api1/datasetimgs [get]
+func GetPredictImges(c *gin.Context) {
+	didStr := c.DefaultQuery("did", "0")
+	did, _ := strconv.ParseInt(didStr, 10, 64)
+
+	_d, err := models.GetOneDatasetByID(int(did))
+	if err != nil || len(_d.MedicalIDs1) < 1 {
+		ResString(c, "datasets not found")
+		return
+	}
+
+	total, imgs, _ := models.ListImagesByMedicalID2(_d.MedicalIDs1[0])
+	ResStructTotal(c, imgs, total)
 	return
 }

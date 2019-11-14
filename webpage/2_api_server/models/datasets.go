@@ -332,8 +332,12 @@ type Dataset struct {
 
 	DatasetParameter
 
-	Types1 []int  `json:"types"          gorm:"-"`            //当前数据集的细胞分类, 数组(传递给前端，数据库没有这个字段)
-	Types2 string `json:"-"              gorm:"column:types"` //当前数据集的细胞分类, 字符串存储(存数据库，前端没有这个字段)
+	Types1      []int    `json:"types"          gorm:"-"`                 //当前数据集的细胞分类, 数组(传递给前端，数据库没有这个字段)
+	Types2      string   `json:"-"              gorm:"column:types"`      //当前数据集的细胞分类, 字符串存储(存数据库，前端没有这个字段)
+	BatchIDs1   []string `json:"batchids"       gorm:"-"`                 //当前数据集的批次, 数组(传递给前端，数据库没有这个字段)
+	BatchIDs2   string   `json:"-"              gorm:"column:batchids"`   //当前数据集的批次, 字符串存储(存数据库，前端没有这个字段)
+	MedicalIDs1 []string `json:"medicalids"     gorm:"-"`                 //当前数据集的病例, 数组(传递给前端，数据库没有这个字段)
+	MedicalIDs2 string   `json:"-"              gorm:"column:medicalids"` //当前数据集的病例, 字符串存储(存数据库，前端没有这个字段)
 
 	CreatedBy int64     `json:"created_by"      gorm:"column:created_by"` //创建者
 	CreatedAt time.Time `json:"created_at"      gorm:"column:created_at"` //创建时间
@@ -356,9 +360,17 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 		d.ETA = 1800 //默认半个小时
 	}
 
-	str, err2 := u.Array2String(&d.Types1)
+	str, err2 := u.IntArray2String(&d.Types1)
 	if err2 == nil {
 		d.Types2 = str
+	}
+	str, err2 = u.StrArray2String(&d.BatchIDs1)
+	if err2 == nil {
+		d.BatchIDs2 = str
+	}
+	str, err2 = u.StrArray2String(&d.MedicalIDs1)
+	if err2 == nil {
+		d.MedicalIDs2 = str
 	}
 	return nil
 }
@@ -366,9 +378,21 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 // AfterFind 把数据库里面存的字符串转成数组返回
 func (d *Dataset) AfterFind(scope *gorm.Scope) error {
 	if d.Types2 != "" {
-		arr, err := u.String2Array(d.Types2)
+		arr, err := u.String2IntArray(d.Types2)
 		if err == nil {
 			d.Types1 = arr
+		}
+	}
+	if d.BatchIDs2 != "" {
+		arr, err := u.String2StrArray(d.BatchIDs2)
+		if err == nil {
+			d.BatchIDs1 = arr
+		}
+	}
+	if d.MedicalIDs2 != "" {
+		arr, err := u.String2StrArray(d.MedicalIDs2)
+		if err == nil {
+			d.MedicalIDs1 = arr
 		}
 	}
 	return nil
@@ -393,7 +417,7 @@ func UpdateDatasetsCellTypes(did int64, cti []CellTypesinfo) (e error) {
 		typearr = append(typearr, cti[i].CellType)
 	}
 	if d.Status == 4 {
-		arr, err := u.Array2String(&typearr)
+		arr, err := u.IntArray2String(&typearr)
 		if err == nil {
 			d.Types2 = arr
 		}

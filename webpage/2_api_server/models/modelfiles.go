@@ -42,7 +42,7 @@ func (d *Model) BeforeCreate(scope *gorm.Scope) error {
 		d.UpdatedAt = time.Now()
 	}
 
-	str, err2 := u.Array2String(&d.Types1)
+	str, err2 := u.IntArray2String(&d.Types1)
 	if err2 == nil {
 		d.Types2 = str
 	}
@@ -52,7 +52,7 @@ func (d *Model) BeforeCreate(scope *gorm.Scope) error {
 // AfterFind 把数据库里面存的字符串转成数组返回
 func (d *Model) AfterFind(scope *gorm.Scope) error {
 	if d.Types2 != "" {
-		arr, err := u.String2Array(d.Types2)
+		arr, err := u.String2IntArray(d.Types2)
 		if err == nil {
 			d.Types1 = arr
 		}
