@@ -365,6 +365,8 @@ func CreateDataset(c *gin.Context) {
 	dt.Desc = w.Desc
 	dt.Dir = u.GetRandomSalt()
 	dt.Status = 0
+	dt.BatchIDs1 = w.Batchids
+	dt.MedicalIDs1 = w.Medicalids
 	// 处理的参数
 	dt.ParameterGray = w.ParameterGray
 	dt.ParameterSize = w.ParameterSize

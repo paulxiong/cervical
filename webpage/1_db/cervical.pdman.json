@@ -1062,21 +1062,21 @@
               "type": "MiddleString",
               "remark": "数组，被转成字符串存储",
               "chnname": "当前数据集的所有细胞类型",
-              "defaultValue": "\"\""
+              "defaultValue": "\"[]\""
             },
             {
               "name": "batchids",
               "type": "LongString",
               "remark": "数组，被转成字符串存储",
               "chnname": "批次ID数组",
-              "defaultValue": "\"\""
+              "defaultValue": "\"[]\""
             },
             {
               "name": "medicalids",
               "type": "LongString",
               "remark": "数组，被转成字符串存储",
               "chnname": "病例ID数组",
-              "defaultValue": "\"\""
+              "defaultValue": "\"[]\""
             },
             {
               "name": "created_by",
