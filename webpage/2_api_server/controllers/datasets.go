@@ -533,6 +533,9 @@ func SetJobResult(c *gin.Context) {
 					Status:       0,
 				}
 				cellpredict.CreatePredict()
+
+				// 状态改为送去审核, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
+				models.UpdateProjectStatus(w.ID, 5)
 			}
 		}
 	}

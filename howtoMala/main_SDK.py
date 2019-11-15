@@ -122,8 +122,12 @@ class mala_predict(worker):
 
         if df is None or df.shape[0] < 1:
             return False
-        #组织训练的目录结构
+
+        #组织预测的目录结构
         if self.wtype == wt.PREDICT.value:
+            #设置预测个数
+            self.BS = df.shape[0]
+
             X_predict, _, y_predict, _ = self.copy_train_cells(df)
             self.resize_img(X_predict, y_predict, self.project_resize_predict_dir, self.project_predict_labels_csv, RESIZE=size)
             return True
