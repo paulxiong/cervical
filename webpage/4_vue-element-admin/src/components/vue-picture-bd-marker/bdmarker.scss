@@ -6,11 +6,11 @@
   background: rgba(0, 0, 0, 0.1);
 }
 .annotate .selected {
-  border: 1px solid rgb(255, 0, 255);
+  border: 1px solid rgb(238, 255, 0);
   background: rgba(255, 255, 255, 0.1);
 }
 .selected .g-image-op-content {
-  background: rgba(255, 0, 255, 0.7);
+  background: rgba(238, 255, 0, 0.24);
 }
 .g-image-op {
   overflow: auto;
@@ -21,12 +21,13 @@
 }
 .g-image-op-content{
   font-size: 12px;
-  background: rgba(0, 255, 81, 0.7);
+  background: rgba(0, 255, 81, 0.24);
   padding-left: 2px;
-  width: 24px;
+  width: 28px;
+  overflow: auto;
 }
 .g-image-op-del {
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   color: rgb(255, 255, 255);
 }

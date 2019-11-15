@@ -37,25 +37,26 @@
           </el-tab-pane>
           <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`图 ${total}`" class="img-tab flex">
             <section class="label-img flex">
-              <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
+              <div class="check-box" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 5px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
                   <img class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'">
                 </div>
               </div>
               <AIMarker
+                v-if="fov_img.imgpath"
                 ref="aiPanel-editor"
                 class="ai-observer"
-                :style="{width: imgInfo.imgw < 1000 ? imgInfo.imgw + 'px' : 1000 + 'px',height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}"
+                :style="{width: fov_img.w < 1000 ? fov_img.w + 'px' : 1000 + 'px',height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}"
                 :read="readOnly"
-                :img="hosturlpath64 + fov_img + '?width=1000'"
+                :img="hosturlpath64 + fov_img.imgpath + '?width=1000'"
                 @vmarker:onSelect="onSelect"
               />
-              <div class="check-box" style="width: 200px" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
-                <div v-for="(v, idx) in rightCellsList" :id="`anchor-${idx}`" :key="v.url" class="item-box">
-                  <el-badge :value="`score=${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
-                    <img class="img-item" :class="idx === 0 ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.url + '?width=64'" @click="changeLabel(v, idx)">
+              <div class="check-box" style="width: 200px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
+                <div v-for="v in imgInfo.cells" :id="`anchor-${v.id}`" :key="v.id" :class="select.id === v.id ? 'item-box-select' : 'item-box'">
+                  <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
+                    <img class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)">
                   </el-badge>
-                  <el-radio-group v-model="v.type" size="mini">
+                  <el-radio-group v-model="v.predict_type" size="mini">
                     <el-radio-button label="50">阴性</el-radio-button>
                     <el-radio-button label="51">阳性</el-radio-button>
                     <el-radio-button label="100">不确定</el-radio-button>
@@ -83,7 +84,7 @@
 <script>
 import { APIUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { getPercent, getPredictResult, getjoblog, getLabelByImageId, getDatasetImgs } from '@/api/cervical'
+import { getPercent, getPredictResult, getPredictResult2, getjoblog, getDatasetImgs } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 
 let timer
@@ -97,7 +98,7 @@ export default {
       startPredict: false,
       readOnly: true,
       url: APIUrl + '/imgs/',
-      fov_img: '',
+      fov_img: {},
       imgInfo: {},
       modelList: [],
       modelInfo: {},
@@ -120,36 +121,35 @@ export default {
     }
   },
   created() {
-    this.getPredictResult()
-    this.getDatasetImgs(62)
+    this.getDatasetImgs()
     this.getPercent()
     this.getjoblog()
     this.loopGetPercent()
-    this.fov_img = this.url + this.fov_img
-    this.getLabelByImageId(1909, 10)
   },
   destroyed() {
     clearInterval(timer)
   },
   methods: {
-    changeLabel(item, idx) {
-      this.select = this.imgInfo.labels[idx]
-      const labels = this.imgInfo.labels
-      labels.map((v, i) => {
-        if (this.select.id === v.id) {
-          labels.splice(i, 1)
+    changeLabel(item) {
+      const cells = this.imgInfo.cells
+      cells.map((v, i) => {
+        if (item.id === v.id) {
+          this.select = item
+          cells.splice(i, 1)
         }
       })
-      labels.push(this.select)
-      this.renderLabel(labels)
+      cells.push(this.select)
+      document.querySelector(`#anchor-${item.id}`).scrollIntoView(true)
+      this.renderLabel(cells)
     },
     changeFovImg(v, idx) {
-      this.fov_img = v.imgpath
+      this.fov_img = v
       this.selectFov = idx
+      this.getPredictResult2(v.id, 999, 0)
     },
     onSelect(data) {
       this.select = data
-      document.querySelector(`#anchor-${parseInt(Math.random() * 10) + 10}`).scrollIntoView(true)
+      document.querySelector(`#anchor-${data.id}`).scrollIntoView(true)
     },
     getPredictResult() {
       getPredictResult({ 'id': this.$route.query.pid }).then(res => {
@@ -173,11 +173,30 @@ export default {
         }
       })
     },
+    getPredictResult2(iid, limit, skip) {
+      getPredictResult2({ 'iid': iid, 'limit': limit, 'skip': skip }).then(res => {
+        this.imgInfo = res.data.data
+        this.imgInfo.cells.map(v => {
+          v.tag = `${v.imgid}-${v.predict_type}`
+          v.tagName = v.predict_type
+          v.position = {
+            x: parseFloat(v.x1 / this.fov_img.w) * 100 + '%',
+            x1: parseFloat(v.x2 / this.fov_img.w) * 100 + '%',
+            y: parseFloat(v.y1 / this.fov_img.h) * 100 + '%',
+            y1: parseFloat(v.y2 / this.fov_img.h) * 100 + '%'
+          }
+          v.uuid = v.id
+        })
+        this.select = this.imgInfo.cells[5]
+        this.renderLabel(this.imgInfo.cells)
+      })
+    },
     getDatasetImgs(did) {
-      getDatasetImgs({ 'did': did }).then(res => {
+      getDatasetImgs({ 'did': this.$route.query.did }).then(res => {
         this.orgImgList = res.data.data.images
-        this.fov_img = this.orgImgList.length ? this.orgImgList[this.orgImgList.length - 1].imgpath : ''
+        this.fov_img = this.orgImgList[0]
         this.total = res.data.data.total
+        this.getPredictResult2(this.fov_img.id, 999, 0)
       })
     },
     getjoblog() {
@@ -200,24 +219,6 @@ export default {
         }
       })
     },
-    getLabelByImageId(id, status) {
-      getLabelByImageId({ 'limit': 999, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
-        this.imgInfo = res.data.data
-        this.imgInfo.labels.map(v => {
-          v.tag = `${v.imgid}-${v.type}`
-          v.tagName = v.type
-          v.position = {
-            x: parseFloat(v.x1 / this.imgInfo.imgw) * 100 + '%',
-            x1: parseFloat(v.x2 / this.imgInfo.imgw) * 100 + '%',
-            y: parseFloat(v.y1 / this.imgInfo.imgh) * 100 + '%',
-            y1: parseFloat(v.y2 / this.imgInfo.imgh) * 100 + '%'
-          }
-          v.uuid = v.id
-        })
-        this.select = this.imgInfo.labels[5]
-        this.renderLabel(this.imgInfo.labels)
-      })
-    },
     /**
      * 定时器轮训百分比
      */
@@ -234,9 +235,9 @@ export default {
     changeCellTypes(val) {
       this.postCelltypes = val
     },
-    renderLabel(lables) {
+    renderLabel(cells) {
       this.$refs['aiPanel-editor'].getMarker().clearData()
-      this.$refs['aiPanel-editor'].getMarker().renderData(lables)
+      this.$refs['aiPanel-editor'].getMarker().renderData(cells)
     }
   }
 }
@@ -295,23 +296,26 @@ export default {
     margin-left: 7px;
   }
   .select-fov {
-    background: rgb(255, 0, 255);
+    background: rgb(238, 255, 0);
   }
   .results {
     padding: 7px 30px;
+    .item-box-select {
+      background: rgba(111, 110, 111, 0.4);
+    }
     .img-item {
       // margin-right: 10px;
       // margin-bottom: 10px;
     }
     .img-select {
-      border: 2px solid rgb(255, 0, 255);
+      border: 2px solid rgb(238, 255, 0);
     }
     .img-right {
       border: 2px solid rgb(0, 255, 81);
       border-radius: 5px;
     }
     .img-false {
-      border: 2px solid rgb(255, 0, 255);
+      border: 2px solid rgb(238, 255, 0);
       border-radius: 5px;
     }
   }

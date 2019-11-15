@@ -242,3 +242,11 @@ export function getPredictResult(query) {
     params: query
   })
 }
+
+export function getPredictResult2(query) {
+  return request({
+    url: '/api1/predictresult2',
+    method: 'get',
+    params: query
+  })
+}
