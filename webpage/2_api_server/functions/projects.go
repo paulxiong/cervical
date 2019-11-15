@@ -134,6 +134,7 @@ type PredictCell struct {
 	Y1      int     `json:"y1"      example:"0"`       //左上角Y
 	X2      int     `json:"x2"      example:"320"`     //右下角X
 	Y2      int     `json:"y2"      example:"320"`     //右下角Y
+	ImgID   int64   `json:"imgid"   example:"320"`     //图片的ID
 }
 
 // PredictInfo2 存在硬盘的JSON文件，描述预测数据集和模型以及预测结果

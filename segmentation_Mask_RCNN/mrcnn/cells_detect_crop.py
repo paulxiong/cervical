@@ -2,6 +2,7 @@ import os, time, cv2
 import pandas as pd
 from SDK.worker import worker
 from SDK.const.const import wt, mt
+from SDK.utilslib.fileops import getcellname
 from config import Config
 import model as modellib
 
@@ -144,9 +145,9 @@ class cells_detect_crop(worker):
         self.mtype = mt.MASKRCNN.value
 
     def cell_name(self, imginfo, x1, y1, x2, y2, celltype):
-        batchid, medicalid, imgname = str(imginfo['batchid']), str(imginfo['medicalid']), str(imginfo['imgname'])
-        cellname = "{}.{}.{}_{}_{}_{}_{}_{}_{}_{}_{}_{}.png".format(
-            batchid, medicalid, imgname,
+        batchid, medicalid, imgname, imgid = str(imginfo['batchid']), str(imginfo['medicalid']), str(imginfo['imgname']), int(imginfo['imgid'])
+        cellname = getcellname(
+            batchid, medicalid, imgid, imgname,
             str(self.datasetinfo["parameter_gray"]),
             str(self.datasetinfo["parameter_size"]),
             str(self.datasetinfo["parameter_type"]),
@@ -158,7 +159,7 @@ class cells_detect_crop(worker):
         """
         细胞信息, 存成csv，方便后面抠图和统计细胞信息
         """
-        columns = ['batchid', 'medicalid', 'imgname', 'imgpath', 'p1n0', 'parameter_gray',
+        columns = ['batchid', 'medicalid', 'imgid', 'imgname', 'imgpath', 'p1n0', 'parameter_gray',
                    'parameter_size', 'parameter_type', 'parameter_mid', 'parameter_cache',
                    'cellpath', 'x1', 'y1', 'x2', 'y2', 'celltype']
         cellsinfo2 = []
@@ -176,6 +177,7 @@ class cells_detect_crop(worker):
             _cellsinfo2.append(str(imginfo['batchid']))
             _cellsinfo2.append(str(imginfo['medicalid']))
             _cellsinfo2.append(str(imginfo['imgname']))
+            _cellsinfo2.append(imginfo['imgid'])
             _cellsinfo2.append(image_path)
             _cellsinfo2.append(str(imginfo['p1n0']))
             _cellsinfo2.append(int(self.datasetinfo['parameter_gray']))

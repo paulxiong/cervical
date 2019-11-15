@@ -517,7 +517,7 @@ func SetJobResult(c *gin.Context) {
 				// PredictType := 100 //1到15是细胞类型，51-阳性  50-阴性， 100 未知
 				cellpredict := &models.Predict{
 					ID:           0,
-					ImgID:        0,
+					ImgID:        v.ImgID,
 					PID:          w.ID,
 					X1:           v.X1,
 					Y1:           v.Y1,

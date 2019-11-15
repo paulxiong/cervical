@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report
 #from keras.utils.vis_utils import plot_model
 from SDK.worker import worker
 from SDK.const.const import wt, mt
-from SDK.utilslib.fileops import parse_xy_from_cellname
+from SDK.utilslib.fileops import parse_imgid_xy_from_cellname
 
 #传入文件的路径，返回路径，文件名字，文件后缀
 def get_filePath_fileName_fileExt(filename):
@@ -181,7 +181,7 @@ class mala_predict(worker):
             for index, row in df.iterrows():
                 cellpath = row["cellpath"][len(self.rootdir):]
                 one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath, "score":row["score"],
-                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"]}
+                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"], "imgid": row["imgid"]}
                 result["crop_cells"].append(one)
         elif predict_info['parameter_type'] == 0:
             #统计每个分类的信息
@@ -191,7 +191,7 @@ class mala_predict(worker):
             for index, row in df.iterrows():
                 cellpath = row["cellpath"][len(self.rootdir):]
                 one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath, "score":row["score"],
-                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"]}
+                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"], "imgid": row["imgid"]}
                 result["crop_cells"].append(one)
 
         #写入文件
@@ -238,9 +238,9 @@ class mala_predict(worker):
            if int(f[1]) == 1:
                predict_label = 50
            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
-           x1, y1, x2, y2 = parse_xy_from_cellname(shotname)
+           imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2])
+           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
 
         # for each image in the testing set we need to find the index of the
         # label with corresponding largest predicted probability
@@ -250,7 +250,7 @@ class mala_predict(worker):
         #print('\n',classification_report(testGen_cross_domain.classes, predIdxs,
         #	target_names=testGen_cross_domain.class_indices.keys()))
 
-        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2'])
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
 
         #预测结果统计
         self.result_predict(df_result)

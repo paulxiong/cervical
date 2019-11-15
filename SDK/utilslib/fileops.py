@@ -7,14 +7,17 @@ def load_json_file(filepath):
         load_dict = json.load(load_f)
     return load_dict
 
-def getcellname(batchid, medicalid, imgname, gray, size, _type, mid, x1, y1, x2, y2, celltype):
-    cellname = "{}.{}.{}_{}_{}_{}_{}_{}_{}_{}_{}_{}.png".format(
-        batchid, medicalid, imgname,
-        str(gray), str(size), str(type), str(mid),
+def getcellname(batchid, medicalid, imgid, imgname, gray, size, _type, mid, x1, y1, x2, y2, celltype):
+    cellname = "{}.{}.{}.{}_{}_{}_{}_{}_{}_{}_{}_{}_{}.png".format(
+        batchid, medicalid, imgid, imgname,
+        str(gray), str(size), str(_type), str(mid),
         x1, y1, x2, y2, celltype)
     return cellname
 
-def parse_xy_from_cellname(cellname):
+def parse_imgid_xy_from_cellname(cellname):
     arr = cellname.split("_", -1)
     x1, y1, x2, y2 = int(arr[5]), int(arr[6]), int(arr[7]), int(arr[8])
-    return x1, y1, x2, y2
+    arr = cellname.split(".", -1)
+    imgid = int(arr[2])
+
+    return imgid, x1, y1, x2, y2
