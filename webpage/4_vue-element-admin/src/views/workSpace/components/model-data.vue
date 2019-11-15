@@ -71,7 +71,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="项目 ID"
+        label="模型ID"
         prop="id"
         width="100"
       />
