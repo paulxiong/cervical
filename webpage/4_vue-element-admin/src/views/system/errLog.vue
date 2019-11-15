@@ -193,12 +193,6 @@ export default {
       this.currentPageSize = val
       this.getErrLog(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
-    data() {
-      return {
-        currentSkip: 0, // 当前记录的位置
-        currentPageSize: 10 // 每页显示多少条
-      }
-    },
     getErrLog(limit, skip, order) {
       this.loading = true
       getErrLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
