@@ -234,9 +234,9 @@ class mala_predict(worker):
         for f in zip(filenames, classes, classes_scores):
            cellpath = os.path.join(self.project_resize_predict_dir, f[0])
            #FIXME: mala这个模型暂时按照预测阴性/阳性来显示结果
-           predict_label = str(51) #阳性
+           predict_label = 51 #阳性
            if int(f[1]) == 1:
-               predict_label = str(50)
+               predict_label = 50
            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
            x1, y1, x2, y2 = parse_xy_from_cellname(shotname)
 

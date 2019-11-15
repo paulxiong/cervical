@@ -1,15 +1,18 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 
-	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 
 	"github.com/gin-gonic/gin"
 )
+
+type reporterpredicts struct {
+	Total    int              `json:"total"  example:"100"` // 总细胞预测数量
+	Predicts []models.Predict `json:"cells"`                // 每个细胞
+}
 
 // GetPredictResult2 根据传递来的图片ID,返回预测的结果
 // @Summary 根据传递来的图片ID,返回预测的结果
@@ -20,26 +23,26 @@ import (
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param pid query string false "pid, default 0, 项目ID"
-// @Param bid query string false "bid, default 0, 批次ID"
-// @Param mid query string false "mid, default 0, 病例ID"
-// @Param iid query string false "iid, default 0, 图片ID"
-// @Success 200 {object} function.PredictInfo2
+// @Param iid query string false "iid, default 659, 图片ID"
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Success 200 {object} controllers.reporterpredicts
 // @Router /api1/predictresult2 [get]
 func GetPredictResult2(c *gin.Context) {
-	pidStr := c.DefaultQuery("pid", "0")
-	bidStr := c.DefaultQuery("bid", "0")
-	midStr := c.DefaultQuery("mid", "0")
 	iidStr := c.DefaultQuery("iid", "0")
-	pid, _ := strconv.ParseInt(pidStr, 10, 64)
-	bid, _ := strconv.ParseInt(bidStr, 10, 64)
-	mid, _ := strconv.ParseInt(midStr, 10, 64)
 	iid, _ := strconv.ParseInt(iidStr, 10, 64)
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   fmt.Sprintf("%d %d %d %d", pid, bid, mid, iid),
-	})
+	total, predicts, _ := models.ListPredict(int(limit), int(skip), int(iid))
+	_predicts := reporterpredicts{
+		Total:    int(total),
+		Predicts: predicts,
+	}
+
+	ResStruct(c, _predicts)
 	return
 }
 
@@ -64,7 +67,7 @@ type reporterimgs struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param did query string false "did, default 0, 数据集ID"
+// @Param did query string false "did, default 62, 数据集ID"
 // @Success 200 {object} controllers.reporterimgs
 // @Router /api1/datasetimgs [get]
 func GetPredictImges(c *gin.Context) {

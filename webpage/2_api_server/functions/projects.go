@@ -127,9 +127,13 @@ type PredictRsult struct {
 // PredictCell 预测的细胞的信息
 type PredictCell struct {
 	URL     string  `json:"url"     example:"abc.png"` //细胞路径用来拼接出URL
-	Type    string  `json:"type"    example:"1"`       //细胞类型
-	Predict string  `json:"predict" example:"1"`       //细胞预测为什么类型
+	Type    int     `json:"type"    example:"1"`       //细胞类型, 1到15是细胞类型，51-阳性  50-阴性， 100 未知
+	Predict int     `json:"predict" example:"1"`       //细胞预测为什么类型, 1到15是细胞类型，51-阳性  50-阴性， 100 未知
 	Score   float32 `json:"score"   example:"0.99"`    //得分
+	X1      int     `json:"x1"      example:"0"`       //左上角X
+	Y1      int     `json:"y1"      example:"0"`       //左上角Y
+	X2      int     `json:"x2"      example:"320"`     //右下角X
+	Y2      int     `json:"y2"      example:"320"`     //右下角Y
 }
 
 // PredictInfo2 存在硬盘的JSON文件，描述预测数据集和模型以及预测结果

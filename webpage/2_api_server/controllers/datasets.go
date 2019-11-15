@@ -408,10 +408,10 @@ func CreateDataset(c *gin.Context) {
 }
 
 type jobResult struct {
-	ID      int64 `json:"id"`
-	Type    int   `json:"type"`   //0未知 1数据处理 2训练 3预测
-	Status  int   `json:"status"` //0初始化 1送去处理 2开始处理 3处理出错 4处理完成
-	MType   int   `json:"mtype"`  //目前预测时候有用,表示使用哪种模型,0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
+	ID      int64 `json:"id"`     // 数据集ID或者项目ID
+	Type    int   `json:"type"`   // 0未知 1数据处理 2训练 3预测
+	Status  int   `json:"status"` // 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
+	MType   int   `json:"mtype"`  // 目前预测时候有用,表示使用哪种模型,0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
 	ETA     int   `json:"ETA"`
 	Percent int   `json:"percent"` // 完成百分比
 }
@@ -458,7 +458,7 @@ func GetOneJob(c *gin.Context) {
 			})
 			return
 		}
-		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
+		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
 		if w.Status == 1 {
 			models.UpdateProjectStatus(project.ID, 2)
 		}
@@ -491,7 +491,7 @@ func SetJobResult(c *gin.Context) {
 		})
 		return
 	}
-
+	// 0未知 1数据处理 2训练 3预测
 	if w.Type == 1 {
 		models.UpdateDatasetsStatus(w.ID, w.Status)
 		models.UpdateDatasetsPercent(w.ID, w.Percent, w.ETA)
@@ -504,6 +504,37 @@ func SetJobResult(c *gin.Context) {
 	} else if w.Type == 2 || w.Type == 3 {
 		models.UpdateProjectStatus(w.ID, w.Status)
 		models.UpdateProjectPercent(w.ID, w.Percent, w.ETA)
+	}
+
+	// 预测任务结束时候要把结果写入数据库
+	// 训练任务： 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
+	if w.Type == 3 && w.Status == 4 {
+		_p, err2 := models.GetOneProjectByID(int(w.ID))
+		if err2 == nil && len(_p.Dir) > 0 {
+			result := f.LoadPredictJSONFile(_p.Dir)
+			for _, v := range result.Cells {
+				logger.Info.Println(v.URL, v.Type, v.Predict, v.Score, v.X1, v.Y1, v.X2, v.Y2)
+				// PredictType := 100 //1到15是细胞类型，51-阳性  50-阴性， 100 未知
+				cellpredict := &models.Predict{
+					ID:           0,
+					ImgID:        0,
+					PID:          w.ID,
+					X1:           v.X1,
+					Y1:           v.Y1,
+					X2:           v.X2,
+					Y2:           v.Y2,
+					CellPath:     v.URL,
+					PredictScore: int(v.Score * 100),
+					PredictType:  v.Predict,
+					PredictP1n0:  0,
+					TrueType:     v.Predict,
+					TrueP1n0:     0,
+					VID:          0,
+					Status:       0,
+				}
+				cellpredict.CreatePredict()
+			}
+		}
 	}
 
 	c.JSON(e.StatusReqOK, gin.H{
