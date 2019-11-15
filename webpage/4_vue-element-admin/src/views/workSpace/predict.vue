@@ -35,14 +35,19 @@
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${rightCellsList.length}`" class="img-tab flex">
+          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${total}`" class="img-tab flex">
             <section class="label-img flex">
+              <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
+                <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 5px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
+                  <img class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'">
+                </div>
+              </div>
               <AIMarker
                 ref="aiPanel-editor"
                 class="ai-observer"
                 :style="{width: imgInfo.imgw < 1000 ? imgInfo.imgw + 'px' : 1000 + 'px',height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}"
                 :read="readOnly"
-                :img="fov_img"
+                :img="hosturlpath64 + fov_img + '?width=1000'"
                 @vmarker:onSelect="onSelect"
               />
               <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
@@ -78,7 +83,7 @@
 <script>
 import { APIUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { getPercent, getPredictResult, getjoblog, getLabelByImageId } from '@/api/cervical'
+import { getPercent, getPredictResult, getjoblog, getLabelByImageId, getDatasetImgs } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 
 let timer
@@ -92,7 +97,7 @@ export default {
       startPredict: false,
       readOnly: true,
       url: APIUrl + '/imgs/',
-      fov_img: 'img/20190523/1807178/Images/IMG001x014.JPG?width=1000',
+      fov_img: '',
       imgInfo: {},
       modelList: [],
       modelInfo: {},
@@ -108,11 +113,15 @@ export default {
       predictResult: {},
       rightCellsList: [],
       falseCellsList: [],
-      select: {}
+      select: {},
+      selectFov: 0,
+      orgImgList: [],
+      total: 0
     }
   },
   created() {
     this.getPredictResult()
+    this.getDatasetImgs(62)
     this.getPercent()
     this.getjoblog()
     this.loopGetPercent()
@@ -134,8 +143,11 @@ export default {
       labels.push(this.select)
       this.renderLabel(labels)
     },
+    changeFovImg(v, idx) {
+      this.fov_img = v.imgpath
+      this.selectFov = idx
+    },
     onSelect(data) {
-      console.log(data)
       this.select = data
       document.querySelector(`#anchor-${parseInt(Math.random() * 10) + 10}`).scrollIntoView(true)
     },
@@ -161,6 +173,13 @@ export default {
         }
       })
     },
+    getDatasetImgs(did) {
+      getDatasetImgs({ 'did': did }).then(res => {
+        this.orgImgList = res.data.data.images
+        this.fov_img = this.orgImgList.length ? this.orgImgList[this.orgImgList.length - 1].imgpath : ''
+        this.total = res.data.data.total
+      })
+    },
     getjoblog() {
       // type 0 未知 1 数据集处理 2 训练 3 预测
       getjoblog({ id: this.$route.query.pid, type: '3' }).then(res => {
@@ -173,7 +192,7 @@ export default {
         this.percentage = res.data.data.percent
         this.status = res.data.data.status
         this.ETA = res.data.data.ETA
-        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
+        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
           this.loading = false
           clearInterval(timer)
         } else {
@@ -204,7 +223,7 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
-        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
+        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
           this.getPercent()
           this.getjoblog()
           location.reload()
@@ -274,6 +293,9 @@ export default {
     overflow: auto;
     border: 1px dashed #ccc;
     margin-left: 7px;
+  }
+  .select-fov {
+    background: rgb(255, 0, 255);
   }
   .results {
     padding: 7px 30px;

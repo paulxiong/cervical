@@ -62,7 +62,7 @@ export default {
         this.percentage = res.data.data.percent
         this.status = res.data.data.status
         this.ETA = res.data.data.ETA
-        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
+        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
           this.loading = false
           clearInterval(timer)
         } else {
@@ -75,7 +75,7 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
-        if ((this.percentage === 100) || (this.status === 4) || (this.ETA === 0)) {
+        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
           this.getTrainresult()
           this.getPercent()
           location.reload()

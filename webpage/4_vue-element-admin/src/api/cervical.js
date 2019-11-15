@@ -99,6 +99,14 @@ export function getLabelByImageId(query) {
   })
 }
 
+export function getDatasetImgs(query) {
+  return request({
+    url: '/api1/datasetimgs',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getimgnptypebymids(data) {
   return request({
     url: '/api1/getimgnptypebymids',

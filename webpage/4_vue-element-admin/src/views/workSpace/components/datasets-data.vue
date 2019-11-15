@@ -205,11 +205,12 @@ export default {
     stepNext() {
       this.$refs.newDatasets.stepNext()
       this.step = this.$refs.newDatasets.step
-      this.uploadServer = false
+      this.uploadServer = true
     },
     stepBack() {
       this.$refs.newDatasets.stepBack()
       this.step = this.$refs.newDatasets.step
+      this.uploadServer = false
     },
     closedDialog() {
       this.$refs.newDatasets.step = 1
