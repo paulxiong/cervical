@@ -95,3 +95,35 @@ func GetPredictImges(c *gin.Context) {
 	ResStruct(c, rimgs)
 	return
 }
+
+type predictupdate struct {
+	ID       int64 `json:"id"`        // 细胞预测的ID
+	TrueP1n0 int   `json:"true_p1n0"` // 审核为阴/阳性, 1-阳性 0-阴性
+	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
+}
+
+// UpdatePredict 医生审核信息写回数据库
+// @Summary 医生审核信息写回数据库
+// @Description 医生审核信息写回数据库
+// @Description status：
+// @Description 200 创建
+// @tags API1 医疗报告（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param predictupdate body controllers.predictupdate true "医生审核信息"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/updatepredict [post]
+func UpdatePredict(c *gin.Context) {
+	pu := predictupdate{}
+	err := c.ShouldBindJSON(&pu)
+	if err != nil {
+		ResString(c, "invalied post data")
+		return
+	}
+
+	models.UpdatePredict(pu.ID, pu.TrueType, pu.TrueP1n0)
+
+	ResString(c, "ok")
+	return
+}

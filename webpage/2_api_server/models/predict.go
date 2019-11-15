@@ -18,7 +18,7 @@ type Predict struct {
 	Y2           int       `json:"y2"            gorm:"column:y2"              example:"100"` //预右下角Y坐标 单位是像素
 	CellPath     string    `json:"cellpath"      gorm:"column:cellpath"        example:"100"` //上述坐标切割出来的细胞
 	PredictScore int       `json:"predict_score" gorm:"column:predict_score"   example:"100"` //预测得分 50表示50%
-	PredictType  int       `json:"predict_type"  gorm:"column:predict_type"    example:"100"` //预测的细胞类型
+	PredictType  int       `json:"predict_type"  gorm:"column:predict_type"    example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
 	PredictP1n0  int       `json:"predict_p1n0"  gorm:"column:predict_p1n0"    example:"100"` //预测阴/阳性
 	TrueType     int       `json:"true_type"     gorm:"column:true_type"       example:"100"` //医生标注的细胞类型 默认等于predict_type
 	TrueP1n0     int       `json:"true_p1n0"     gorm:"column:true_p1n0"       example:"100"` //医生标注的阴/阳性 默认等于predict_p1n0
@@ -44,6 +44,16 @@ func (p *Predict) BeforeCreate(scope *gorm.Scope) error {
 func (p *Predict) FindPredictbyImgIDPIDXY() (*Predict, error) {
 	_p := &Predict{}
 	ret := db.Model(_p).Where("pid=? AND imgid=? AND x1=? AND x2=? AND y1=? AND y2=?", p.PID, p.ImgID, p.X1, p.X2, p.Y1, p.Y2).First(_p)
+	if ret.Error != nil {
+		return _p, ret.Error
+	}
+	return _p, nil
+}
+
+// FindPredictbyID 按照ID查询审核
+func FindPredictbyID(id int64) (*Predict, error) {
+	_p := &Predict{}
+	ret := db.Model(_p).Where("id=?", id).First(_p)
 	if ret.Error != nil {
 		return _p, ret.Error
 	}
@@ -77,4 +87,18 @@ func ListPredict(limit int, skip int, imgid int) (totalNum int64, p []Predict, e
 		logger.Info.Println(ret.Error)
 	}
 	return total, _p, ret.Error
+}
+
+// UpdatePredict 更新审核信息
+func UpdatePredict(id int64, trueType int, trueP1n0 int) (e error) {
+	_, err := FindPredictbyID(id)
+	if err != nil {
+		return err
+	}
+
+	ret := db.Model(&Project{}).Where("id=?", id).Updates(map[string]interface{}{"true_type": trueType, "true_p1n0": trueP1n0, "status": 1})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
 }

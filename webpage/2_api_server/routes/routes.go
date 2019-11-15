@@ -109,6 +109,7 @@ func Router() *gin.Engine {
 		// 医疗报告
 		api1.GET("/predictresult2", ctr.GetPredictResult2)
 		api1.GET("/datasetimgs", ctr.GetPredictImges)
+		api1.POST("/updatepredict", ctr.UpdatePredict)
 	}
 
 	// 图片服务器API
