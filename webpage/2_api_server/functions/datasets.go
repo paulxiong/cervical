@@ -3,6 +3,7 @@ package function
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -124,13 +125,13 @@ func CreateDataset(imgs []models.Image, dt *models.Dataset) (n int, p int) {
 	var cntp int = 0
 
 	w := csv.NewWriter(fd)
-	w.Write([]string{"imgpath", "csvpath", "p1n0", "batchid", "medicalid", "imgname"})
+	w.Write([]string{"imgid", "imgpath", "csvpath", "p1n0", "batchid", "medicalid", "imgname"})
 	w.Flush()
 
 	for _, v := range imgs {
 		imgpath := Imgpath(v.Batchid, v.Medicalid, v.Imgpath, v.Type)
 		csvpath := csvPath(v.Csvpath)
-		w.Write([]string{imgpath, csvpath, strconv.Itoa(0), v.Batchid, v.Medicalid, v.Imgpath})
+		w.Write([]string{fmt.Sprintf("%d", v.ID), imgpath, csvpath, strconv.Itoa(0), v.Batchid, v.Medicalid, v.Imgpath})
 		w.Flush()
 	}
 	fd.Close()
