@@ -9,6 +9,7 @@ from sklearn.metrics import classification_report
 #from keras.utils.vis_utils import plot_model
 from SDK.worker import worker
 from SDK.const.const import wt, mt
+from SDK.utilslib.fileops import parse_xy_from_cellname
 
 #传入文件的路径，返回路径，文件名字，文件后缀
 def get_filePath_fileName_fileExt(filename):
@@ -107,7 +108,7 @@ class mala_predict(worker):
         size = self.projectinfo['parameter_resize']
         #获得所选数据集的细胞列表信息
         df = self.get_all_cells_list()
-        
+
         #获取预测数据信息，输出到前端log
         temp_np = np.array(df['celltype'])
         key = np.unique(temp_np)
@@ -118,7 +119,7 @@ class mala_predict(worker):
             v = temp_np_new.size
             result[k] = v
         self.log.info("预测数据信息：%s"%result)
-        
+
         if df is None or df.shape[0] < 1:
             return False
         #组织训练的目录结构
@@ -152,43 +153,6 @@ class mala_predict(worker):
             file.write(json.dumps(mod, indent=2, ensure_ascii=False))
         return True
 
-    def train_autokeras(self):
-        time_limit = self.projectinfo['parameter_time']
-        #Load images
-        train_data, train_labels = load_image_dataset(csv_file_path=self.project_train_labels_csv,
-                                                      images_path=self.project_resize_train_dir)
-        test_data, test_labels = load_image_dataset(csv_file_path=self.project_test_labels_csv,
-                                                    images_path=self.project_resize_test_dir)
-
-        train_data = train_data.astype('float32') / 255
-        test_data = test_data.astype('float32') / 255
-        self.log.info("Train data shape: %d" % train_data.shape[0])
-
-        clf = ImageClassifier(verbose=True, path=self.project_tmp_dir, resume=False)
-        clf.fit(train_data, train_labels, time_limit=time_limit)
-        clf.final_fit(train_data, train_labels, test_data, test_labels, retrain=True)
-
-        evaluate_value = clf.evaluate(test_data, test_labels)
-        self.log.info("Evaluate: %f" % evaluate_value)
-
-        clf.export_autokeras_model(self.project_mod_path)
-
-        #统计训练信息
-        dic = {}
-        ishape = clf.cnn.searcher.input_shape
-        dic['n_train'] = train_data.shape[0]  #训练总共用了多少图
-        dic['n_classes'] = clf.cnn.searcher.n_classes
-        dic['input_shape'] = str(ishape[0]) + 'x' + str(ishape[1]) + 'x' + str(ishape[2])
-        dic['history'] = clf.cnn.searcher.history
-        dic['model_count'] = clf.cnn.searcher.model_count
-        dic['best_model'] = clf.cnn.searcher.get_best_model_id()
-        best_model = [item for item in dic['history'] if item['model_id'] == dic['best_model']]
-        if len(best_model) > 0:
-            dic['loss'] = best_model[0]['loss']
-            dic['metric_value'] = best_model[0]['metric_value']
-        dic['evaluate_value'] = evaluate_value
-        return dic
-
     #统计预测结果
     def result_predict(self, df):
         predict_info = self.load_info_json()
@@ -197,7 +161,7 @@ class mala_predict(worker):
             self.log.info("统计:图片直接检测并切割出细胞")
         elif predict_info['parameter_type'] == 1:
             self.log.info("统计:按照标注csv切割细胞")
-        
+
         #计算每个类别的recall/precision/f1，输出到前端log
         true_label = np.array(df["true_label"])
         predict_label = np.array(df["predict_label"])
@@ -216,7 +180,8 @@ class mala_predict(worker):
             #统计crop_cells
             for index, row in df.iterrows():
                 cellpath = row["cellpath"][len(self.rootdir):]
-                one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath, "score":row["score"]}
+                one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath, "score":row["score"],
+                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"]}
                 result["crop_cells"].append(one)
         elif predict_info['parameter_type'] == 0:
             #统计每个分类的信息
@@ -225,7 +190,8 @@ class mala_predict(worker):
             #统计crop_cells
             for index, row in df.iterrows():
                 cellpath = row["cellpath"][len(self.rootdir):]
-                one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath, "score":row["score"]}
+                one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath, "score":row["score"],
+                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"]}
                 result["crop_cells"].append(one)
 
         #写入文件
@@ -268,8 +234,13 @@ class mala_predict(worker):
         for f in zip(filenames, classes, classes_scores):
            cellpath = os.path.join(self.project_resize_predict_dir, f[0])
            #FIXME: mala这个模型暂时按照预测阴性/阳性来显示结果
-           predict_label = str(int(f[1]) + 50)
-           result.append([cellpath, predict_label, predict_label, f[2], 1])
+           predict_label = str(51) #阳性
+           if int(f[1]) == 1:
+               predict_label = str(50)
+           _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+           x1, y1, x2, y2 = parse_xy_from_cellname(shotname)
+
+           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2])
 
         # for each image in the testing set we need to find the index of the
         # label with corresponding largest predicted probability
@@ -279,7 +250,7 @@ class mala_predict(worker):
         #print('\n',classification_report(testGen_cross_domain.classes, predIdxs,
         #	target_names=testGen_cross_domain.class_indices.keys()))
 
-        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct'])
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2'])
 
         #预测结果统计
         self.result_predict(df_result)
@@ -294,23 +265,18 @@ def worker_load(w):
     w.log.info("获得一个%s任务%d 工作目录%s" % (w_str, wid, wdir))
 
     ret = True
-    try:
-        w.prepare(wid, wdir, w.wtype, w.mtype)
-        w.log.info("初始化%s文件目录完成" % w_str)
+    w.prepare(wid, wdir, w.wtype, w.mtype)
+    w.log.info("初始化%s文件目录完成" % w_str)
 
-        w.projectinfo = w.load_info_json()
-        w.log.info("读取%s信息完成" % w_str)
+    w.projectinfo = w.load_info_json()
+    w.log.info("读取%s信息完成" % w_str)
 
-        w.log.info("开始%s" % w_str)
-        w.woker_percent(4, 1800)
-        if w.wtype == wt.TRAIN.value:
-            ret = w.train()
-        elif w.wtype == wt.PREDICT.value:
-            ret = w.predict()
-    except Exception as ex:
-        w.log.error(str(ex))
-        ret = False
-
+    w.log.info("开始%s" % w_str)
+    w.woker_percent(4, 1800)
+    if w.wtype == wt.TRAIN.value:
+        ret = w.train()
+    elif w.wtype == wt.PREDICT.value:
+        ret = w.predict()
     if ret == True:
         w.done()
         w.log.info("%s完成 %d 工作目录%s" % (w_str, wid, wdir))
@@ -324,4 +290,3 @@ if __name__ == '__main__':
     while 1:
         worker_load(w)
         time.sleep(10)
-
