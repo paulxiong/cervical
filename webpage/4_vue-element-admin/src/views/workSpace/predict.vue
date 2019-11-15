@@ -35,7 +35,7 @@
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`细胞图 ${total}`" class="img-tab flex">
+          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`图 ${total}`" class="img-tab flex">
             <section class="label-img flex">
               <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 5px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
@@ -50,21 +50,21 @@
                 :img="hosturlpath64 + fov_img + '?width=1000'"
                 @vmarker:onSelect="onSelect"
               />
-              <div class="check-box" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
+              <div class="check-box" style="width: 200px" :style="{height: imgInfo.imgw < 1000 ? imgInfo.imgh + 'px' : (imgInfo.imgh*(1000/imgInfo.imgw)) + 'px'}">
                 <div v-for="(v, idx) in rightCellsList" :id="`anchor-${idx}`" :key="v.url" class="item-box">
                   <el-badge :value="`score=${v.score}`" :type="v.type === '50' ? 'warning': 'info'" class="item">
                     <img class="img-item" :class="idx === 0 ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.url + '?width=64'" @click="changeLabel(v, idx)">
                   </el-badge>
                   <el-radio-group v-model="v.type" size="mini">
-                    <el-radio-button label="51">阴性</el-radio-button>
-                    <el-radio-button label="50">阳性</el-radio-button>
+                    <el-radio-button label="50">阴性</el-radio-button>
+                    <el-radio-button label="51">阳性</el-radio-button>
                     <el-radio-button label="100">不确定</el-radio-button>
                   </el-radio-group>
                 </div>
               </div>
             </section>
           </el-tab-pane>
-          <el-tab-pane label="预测log">
+          <el-tab-pane label="log">
             <el-input
               v-model="cLog"
               type="textarea"
