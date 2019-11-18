@@ -61,15 +61,17 @@ func UserTypeInit() error {
 
 // User 用户信息
 type User struct {
-	ID        int64     `json:"id"         gorm:"column:id"`         //ID
-	Mobile    string    `json:"mobile"     gorm:"column:mobile"`     //手机号
-	Email     string    `json:"email"      gorm:"column:email"`      //邮箱
-	Name      string    `json:"name"       gorm:"column:name"`       //用户名
-	Image     string    `json:"image"      gorm:"column:image"`      //用户头像的URL
-	TypeID    int       `json:"type_id"    gorm:"column:type_id"`    //用户类型ID
-	Password  string    `json:"-"          gorm:"column:password"`   //密码
-	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"` //创建时间
-	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"` //更新时间
+	ID           int64     `json:"id"           gorm:"column:id"`           //ID
+	Mobile       string    `json:"mobile"       gorm:"column:mobile"`       //手机号
+	Email        string    `json:"email"        gorm:"column:email"`        //邮箱
+	Name         string    `json:"name"         gorm:"column:name"`         //用户名
+	Image        string    `json:"image"        gorm:"column:image"`        //用户头像的URL
+	TypeID       int       `json:"type_id"      gorm:"column:type_id"`      //用户类型ID
+	Password     string    `json:"-"            gorm:"column:password"`     //密码
+	Introduction string    `json:"introduction" gorm:"column:introduction"` //简介
+	Roles        []string  `json:"roles"        gorm:"-"`                   //密码
+	CreatedAt    time.Time `json:"created_at"   gorm:"column:created_at"`   //创建时间
+	UpdatedAt    time.Time `json:"updated_at"   gorm:"column:updated_at"`   //更新时间
 }
 
 // BeforeCreate insert之前的hook
@@ -85,6 +87,17 @@ func (u *User) BeforeCreate(scope *gorm.Scope) error {
 		return err
 	}
 	u.Password = string(hash)
+	return nil
+}
+
+// AfterFind 返回用户角色, 1 超级管理员 1000 普通用户
+func (u *User) AfterFind(scope *gorm.Scope) error {
+	if u.TypeID == 1 {
+		u.Roles = []string{"admin"}
+	} else if u.TypeID == 1000 {
+		u.Roles = []string{"user"}
+	}
+
 	return nil
 }
 

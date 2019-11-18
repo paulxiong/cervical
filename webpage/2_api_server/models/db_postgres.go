@@ -40,5 +40,5 @@ func init() {
 
 	// db.AutoMigrate(&Token{}, &UserType{}, &User{})
 
-	// UserTypeInit()
+	UserTypeInit()
 }

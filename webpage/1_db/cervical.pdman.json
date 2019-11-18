@@ -44,9 +44,16 @@
               "relationNoShow": true
             },
             {
+              "name": "introduction",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "用户文字的介绍",
+              "defaultValue": "\"\""
+            },
+            {
               "name": "type_id",
               "type": "Integer",
-              "remark": "",
+              "remark": "1 超级管理员 1000 普通用户",
               "chnname": "用户类型",
               "notNull": true
             },
@@ -871,7 +878,7 @@
               }
             ],
             "sourceAnchor": 1,
-            "targetAnchor": 6
+            "targetAnchor": 8
           },
           {
             "shape": "erdRelation",
@@ -922,7 +929,7 @@
           },
           "to": {
             "entity": "user",
-            "field": "name"
+            "field": "image"
           }
         },
         {
