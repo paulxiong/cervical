@@ -56,11 +56,14 @@
                   <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
                     <img class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)">
                   </el-badge>
-                  <el-radio-group v-model="v.predict_type" size="mini">
-                    <el-radio-button label="50">阴性</el-radio-button>
-                    <el-radio-button label="51">阳性</el-radio-button>
-                    <el-radio-button label="100">不确定</el-radio-button>
-                  </el-radio-group>
+                  <el-cascader
+                    :value="v.predict_type"
+                    :options="cellsOptions"
+                    :props="{ checkStrictly: true, expandTrigger: 'hover' }"
+                    size="mini"
+                    :show-all-levels="false"
+                    clearable
+                  />
                 </div>
               </div>
             </section>
@@ -117,7 +120,89 @@ export default {
       select: {},
       selectFov: 0,
       orgImgList: [],
-      total: 0
+      total: 0,
+      cellsOptions: [
+        {
+          value: 50,
+          label: '阴性',
+          children: [
+            {
+              value: 1,
+              label: 'Norm正常细胞'
+            },
+            {
+              value: 5,
+              label: 'NILM未见上皮内病变'
+            },
+            {
+              value: 12,
+              label: 'T滴虫'
+            },
+            {
+              value: 13,
+              label: 'M霉菌'
+            },
+            {
+              value: 14,
+              label: 'HSV疱疹'
+            },
+            {
+              value: 15,
+              label: 'X1线索细胞'
+            }
+          ]
+        },
+        {
+          value: 51,
+          label: '阳性',
+          children: [
+            {
+              value: 2,
+              label: 'LSIL鳞状上皮细胞低度病变'
+            },
+            {
+              value: 3,
+              label: 'HSIL鳞状上皮细胞高度病变'
+            },
+            {
+              value: 4,
+              label: 'HPV感染'
+            },
+            {
+              value: 6,
+              label: 'SCC鳞状上皮细胞癌'
+            },
+            {
+              value: 7,
+              label: 'ASCUS不典型鳞状细胞低'
+            },
+            {
+              value: 8,
+              label: 'ASCH不典型鳞状细胞高'
+            },
+            {
+              value: 9,
+              label: 'AGC不典型腺细胞'
+            },
+            {
+              value: 10,
+              label: 'AIS颈管原位腺癌'
+            },
+            {
+              value: 11,
+              label: 'ADC腺癌'
+            }
+          ]
+        },
+        {
+          value: 100,
+          label: '未知类型'
+        },
+        {
+          value: 200,
+          label: '不是细胞'
+        }
+      ]
     }
   },
   created() {
@@ -297,7 +382,9 @@ export default {
   .results {
     padding: 7px 30px;
     .item-box-select {
-      background: rgba(238, 255, 0, 0.5);;
+      padding: 10px 10px;
+      border-bottom: 1px solid #ccc;
+      background: rgba(238, 255, 0, 0.5);
     }
     .img-item {
       // margin-right: 10px;
