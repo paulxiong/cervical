@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node ./version.js && vue-cli-service serve",
     "build:alpha": "node ./version.js && vue-cli-service build --mode alpha",
-    "build:prod": "node ./version.js && vue-cli-service build",
+    "build:prod": "node ./version.js && vue-cli-service build --mode prod",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"

@@ -8,7 +8,7 @@ fi
 
 pushd web
     npm install
-    npm run build:prod
+    npm run build:alpha
 popd
 
 rm -rf release.tgz
