@@ -247,7 +247,7 @@ func UserLists(limit int, skip int, order int) (users []User, t int, err error) 
 	if order == 0 { //order, default 1, 1倒序，0顺序
 		orderStr = "created_at ASC"
 	}
-	ret := db.Model(&User{}).Order(orderStr).Limit(limit).Find(&us)
+	ret := db.Model(&User{}).Order(orderStr).Limit(limit).Offset(skip).Find(&us)
 	if ret.Error != nil {
 		logger.Info.Println(users)
 	}
