@@ -22,7 +22,8 @@ export default {
       `
         <h1 style="text-align: left;">讯动医疗邮箱注册验证码</h1>
         <br/>
-        <p style="text-align: left;">您好，您正在使用****xundong@gmail.com注册账号。 您的注册验证码为：000000</p>
+        <p style="text-align: left;">您好，您正在使用<span style="color: blue;">****xundong@gmail.com</span>注册账号</p>
+        <p style="text-align: left;">您的注册验证码为：000000</p>
         <br/>
         <hr/>
         <p style="text-align: right;">谢谢！</p>
