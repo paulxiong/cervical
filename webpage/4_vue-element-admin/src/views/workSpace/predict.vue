@@ -131,16 +131,9 @@ export default {
   },
   methods: {
     changeLabel(item) {
-      const cells = this.imgInfo.cells
-      cells.map((v, i) => {
-        if (item.id === v.id) {
-          this.select = item
-          cells.splice(i, 1)
-        }
-      })
-      cells.push(this.select)
-      document.querySelector(`#anchor-${item.id}`).scrollIntoView(true)
-      this.renderLabel(cells)
+      this.select = item
+      this.renderLabel(this.imgInfo.cells)
+      this.$refs['aiPanel-editor'].getMarker().renderData([item])
     },
     changeFovImg(v, idx) {
       this.fov_img = v
@@ -187,8 +180,11 @@ export default {
           }
           v.uuid = v.id
         })
-        this.select = this.imgInfo.cells[5]
+        this.select = this.imgInfo.cells[this.imgInfo.cells.length - 1]
         this.renderLabel(this.imgInfo.cells)
+        setTimeout(() => {
+          document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
+        }, 200)
       })
     },
     getDatasetImgs(did) {
@@ -296,12 +292,12 @@ export default {
     margin-left: 7px;
   }
   .select-fov {
-    background: rgb(238, 255, 0);
+    background: rgba(238, 255, 0, 0.5);
   }
   .results {
     padding: 7px 30px;
     .item-box-select {
-      background: rgba(111, 110, 111, 0.4);
+      background: rgba(238, 255, 0, 0.5);;
     }
     .img-item {
       // margin-right: 10px;
