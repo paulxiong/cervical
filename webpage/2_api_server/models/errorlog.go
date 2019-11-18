@@ -57,7 +57,7 @@ func ErrorlogLists(limit int, skip int, order int) (el []Errorlog, t int, err er
 	if order == 0 { //order, default 1, 1倒序，0顺序
 		orderStr = "created_at ASC"
 	}
-	ret := db.Model(&Errorlog{}).Order(orderStr).Limit(limit).Find(&_el)
+	ret := db.Model(&Errorlog{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_el)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
