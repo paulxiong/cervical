@@ -318,7 +318,7 @@ func GetAccessLog(c *gin.Context) {
 // @Param limit query string false "limit, default 100"
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
-// @Success 200 {object} models.Operationlog
+// @Success 200 {object} models.User
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/lists [get]
 func GetUserLists(c *gin.Context) {

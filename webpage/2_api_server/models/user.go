@@ -65,8 +65,8 @@ type User struct {
 	Mobile    string    `json:"mobile"     gorm:"column:mobile"`     //手机号
 	Email     string    `json:"email"      gorm:"column:email"`      //邮箱
 	Name      string    `json:"name"       gorm:"column:name"`       //用户名
-	Image     string    `json:"image"      gorm:"column:image"`      //用户头像
-	TypeID    int       `json:"type_id"    gorm:"column:type_id"`    //用户类型
+	Image     string    `json:"image"      gorm:"column:image"`      //用户头像的URL
+	TypeID    int       `json:"type_id"    gorm:"column:type_id"`    //用户类型ID
 	Password  string    `json:"-"          gorm:"column:password"`   //密码
 	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"` //创建时间
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"` //更新时间
