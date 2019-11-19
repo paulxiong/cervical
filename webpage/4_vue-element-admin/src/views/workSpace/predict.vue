@@ -76,7 +76,7 @@
                   <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
                     <img class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)">
                   </el-badge>
-                  <svg-icon style="width:50px;height:50px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : 'unchecked'" />
+                  <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : 'unchecked'" />
                   <el-cascader
                     :value="v.status ? v.true_type : v.predict_type"
                     :options="cellsOptions"
