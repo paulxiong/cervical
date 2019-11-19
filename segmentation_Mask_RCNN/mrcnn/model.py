@@ -23,6 +23,7 @@ import keras.backend as K
 import keras.layers as KL
 import keras.engine as KE
 import keras.models as KM
+import keras.backend.tensorflow_backend as KTF
 
 # from mrcnn import utils
 import utils
@@ -32,6 +33,11 @@ from distutils.version import LooseVersion
 assert LooseVersion(tf.__version__) >= LooseVersion("1.3")
 assert LooseVersion(keras.__version__) >= LooseVersion('2.0.8')
 
+# 自适应分配计算资源
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+session = tf.Session(config=config)
+KTF.set_session(session)
 
 ############################################################
 #  Utility Functions
