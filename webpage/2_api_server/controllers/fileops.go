@@ -118,10 +118,12 @@ func UploadDatasetHandler(c *gin.Context) {
 	dirpath := f.NewMedicalDir(_bid, _mid)
 	f.NewDir(dirpath)
 	filename := u.URLEncodeFileName(header.Filename)
-	if filename != header.Filename {
-		filename = u.GetRandomString(12) + path.Ext(filename)
-	}
 	filepath := path.Join(dirpath, filename)
+	exists, _ := f.PathExists(filepath)
+	if filename != header.Filename || exists == true {
+		filename = u.GetRandomString(12) + path.Ext(filename)
+		filepath = path.Join(dirpath, filename)
+	}
 
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -170,7 +172,7 @@ func UploadDatasetHandler(c *gin.Context) {
 	return
 }
 
-// UploadImgHandler 上传一张头像图片，不记录到数据库
+// UploadImgHandler 上传一张头像图片，不记录到数据库，用作非病例相关图片上传
 // @Summary 上传一张头像图片，不记录到数据库
 // @Description 上传一张头像图片，不记录到数据库
 // @tags API1 文件（需要认证）
@@ -188,7 +190,7 @@ func UploadImgHandler(c *gin.Context) {
 	}
 
 	filename := u.URLEncodeFileName(header.Filename)
-	filepath := f.HeaderImgPath(filename)
+	filepath, fileURL := f.HeaderImgPathURL(filename)
 
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -204,6 +206,6 @@ func UploadImgHandler(c *gin.Context) {
 		return
 	}
 
-	ResString(c, filepath)
+	ResString(c, fileURL)
 	return
 }

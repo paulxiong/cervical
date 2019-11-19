@@ -98,7 +98,6 @@ func GetPredictImges(c *gin.Context) {
 
 type predictupdate struct {
 	ID       int64 `json:"id"`        // 细胞预测的ID
-	TrueP1n0 int   `json:"true_p1n0"` // 审核为阴/阳性, 1-阳性 0-阴性
 	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
 }
 
@@ -122,7 +121,7 @@ func UpdatePredict(c *gin.Context) {
 		return
 	}
 
-	models.UpdatePredict(pu.ID, pu.TrueType, pu.TrueP1n0)
+	models.UpdatePredict(pu.ID, pu.TrueType)
 
 	ResString(c, "ok")
 	return

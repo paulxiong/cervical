@@ -3,6 +3,7 @@ package function
 import (
 	"fmt"
 	"os"
+	"path"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 )
@@ -57,13 +58,15 @@ func csvPath(csvpath string) string {
 	return _csvpath
 }
 
-// HeaderImgPath 用户头像的相对路径
-func HeaderImgPath(filename string) string {
-	_imgpath := fmt.Sprintf("%s/%s/%s", scratchRoot, "static", filename)
-	ret, err := PathExists(_imgpath)
+// HeaderImgPathURL 用户头像的相对路径
+func HeaderImgPathURL(filename string) (string, string) {
+	_dirpath := path.Join(scratchRoot, "static")
+	_imgpath := path.Join(_dirpath, filename)
+	_imgURL := path.Join("/imgs", _imgpath)
+	ret, err := PathExists(_dirpath)
 	if ret != true || err != nil {
-		NewDir(_imgpath)
-		return _imgpath
+		NewDir(_dirpath)
+		return _dirpath, _imgURL
 	}
-	return _imgpath
+	return _imgpath, _imgURL
 }

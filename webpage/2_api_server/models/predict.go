@@ -90,13 +90,20 @@ func ListPredict(limit int, skip int, imgid int) (totalNum int64, p []Predict, e
 }
 
 // UpdatePredict 更新审核信息
-func UpdatePredict(id int64, trueType int, trueP1n0 int) (e error) {
+func UpdatePredict(id int64, trueType int) (e error) {
 	_, err := FindPredictbyID(id)
 	if err != nil {
 		return err
 	}
 
-	ret := db.Model(&Project{}).Where("id=?", id).Updates(map[string]interface{}{"true_type": trueType, "true_p1n0": trueP1n0, "status": 1})
+	// 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
+	// TODO: 类型计算
+	var trueP1n0 int = 0
+
+	// 状态 0 未审核 1 已审核 2 移除 3 管理员确认
+	var status int = 1
+
+	ret := db.Model(&Predict{}).Where("id=?", id).Updates(map[string]interface{}{"true_type": trueType, "true_p1n0": trueP1n0, "status": status})
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

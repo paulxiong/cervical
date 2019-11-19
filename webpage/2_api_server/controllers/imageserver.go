@@ -12,10 +12,9 @@ import (
 // ImageAPI 图片服务器API
 // @Summary 图片服务器API（图片在线缩放、旋转、裁剪等）
 // @Description 图片URL，详细参数请参考 https://github.com/pierrre/imageserver
-// @tags API1 文件（需要认证）
+// @tags API1 文件（不需要认证）
 // @Accept  json
 // @Produce json
-// @Security ApiKeyAuth
 // @Param width query string false "width, 图片宽度，不传值表示原始尺寸，只传width不传height表示按照width等比例缩放"
 // @Param height query string false "height, 图片高度，不传值表示原始尺寸，只传height不传width表示按照height等比例缩放"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
