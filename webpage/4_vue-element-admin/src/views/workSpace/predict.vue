@@ -65,7 +65,8 @@
                     :props="{ checkStrictly: true, expandTrigger: 'hover' }"
                     size="mini"
                     :show-all-levels="false"
-                    clearable
+                    @change="updatePredict"
+                    @focus="selectCells(v)"
                   />
                 </div>
               </div>
@@ -90,7 +91,7 @@
 <script>
 import { APIUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { getPercent, getPredictResult, getPredictResult2, getjoblog, getDatasetImgs } from '@/api/cervical'
+import { getPercent, getPredictResult, getPredictResult2, getjoblog, getDatasetImgs, updatePredict } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 
 let timer
@@ -222,6 +223,20 @@ export default {
       this.select = item
       this.renderLabel(this.imgInfo.cells)
       this.$refs['aiPanel-editor'].getMarker().renderData([item])
+    },
+    updatePredict(value) {
+      updatePredict({
+        'id': this.select.id,
+        'true_type': value.length === 2 ? value[1] : value[0]
+      }).then(res => {
+        this.$message({
+          message: '审核修改成功',
+          type: 'success'
+        })
+      })
+    },
+    selectCells(v) {
+      this.select = v
     },
     changeFovImg(v, idx) {
       this.fov_img = v

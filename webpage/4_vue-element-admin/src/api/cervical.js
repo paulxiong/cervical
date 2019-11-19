@@ -115,6 +115,14 @@ export function getimgnptypebymids(data) {
   })
 }
 
+export function updatePredict(data) {
+  return request({
+    url: '/api1/updatepredict',
+    method: 'post',
+    data
+  })
+}
+
 export function createdataset(data) {
   return request({
     url: '/api1/createdataset',
