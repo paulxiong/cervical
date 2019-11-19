@@ -37,7 +37,24 @@
           </el-tab-pane>
           <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`图 ${total}`" class="img-tab">
             <section class="tools-bar flex">
-              abc
+              <span>审核状态</span>
+              <el-select v-model="filterValue.filterChecked" placeholder="审核状态" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
+                <el-option
+                  v-for="item in checkedOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+              <span>细胞类型</span>
+              <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
+                <el-option
+                  v-for="item in CellsTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </section>
             <section class="label-img flex">
               <div class="check-box" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
@@ -55,12 +72,13 @@
                 @vmarker:onSelect="onSelect"
               />
               <div class="check-box" style="width: 200px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
-                <div v-for="v in imgInfo.cells" :id="`anchor-${v.id}`" :key="v.id" :class="select.id === v.id ? 'item-box-select' : 'item-box'">
+                <div v-for="v in renderData" :id="`anchor-${v.id}`" :key="v.id" :class="select.id === v.id ? 'item-box-select' : 'item-box'" style="position: relative;">
                   <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
                     <img class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)">
                   </el-badge>
+                  <svg-icon style="width:50px;height:50px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : 'unchecked'" />
                   <el-cascader
-                    :value="v.predict_type"
+                    :value="v.status ? v.true_type : v.predict_type"
                     :options="cellsOptions"
                     :props="{ checkStrictly: true, expandTrigger: 'hover' }"
                     size="mini"
@@ -107,6 +125,7 @@ export default {
       url: APIUrl + '/imgs/',
       fov_img: {},
       imgInfo: {},
+      renderData: [],
       modelList: [],
       modelInfo: {},
       datasetsInfo: {},
@@ -206,7 +225,39 @@ export default {
           value: 200,
           label: '不是细胞'
         }
-      ]
+      ],
+      checkedOptions: [
+        {
+          value: 0,
+          label: '未审核'
+        },
+        {
+          value: 1,
+          label: '已审核'
+        },
+        {
+          value: 2,
+          label: '全部'
+        }
+      ],
+      CellsTypeOptions: [
+        {
+          value: 0,
+          label: '阴性'
+        },
+        {
+          value: 1,
+          label: '阳性'
+        },
+        {
+          value: 2,
+          label: '全部'
+        }
+      ],
+      filterValue: {
+        'filterChecked': 2,
+        'filterCellsType': 2
+      }
     }
   },
   created() {
@@ -221,8 +272,41 @@ export default {
   methods: {
     changeLabel(item) {
       this.select = item
-      this.renderLabel(this.imgInfo.cells)
+      this.$refs['aiPanel-editor'].getMarker().clearData()
+      this.$refs['aiPanel-editor'].getMarker().renderData(this.renderData)
       this.$refs['aiPanel-editor'].getMarker().renderData([item])
+    },
+    filterChecked(value) {
+      switch (value) {
+        case 0:
+          this.renderData = this.imgInfo.cells.filter(v => v.status === 0)
+          this.renderLabel(this.renderData)
+          break
+        case 1:
+          this.renderData = this.imgInfo.cells.filter(v => v.status === 1)
+          this.renderLabel(this.renderData)
+          break
+        default:
+          this.renderData = this.imgInfo.cells
+          this.renderLabel(this.renderData)
+          break
+      }
+    },
+    filterCellsType(value) {
+      switch (value) {
+        case 0:
+          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 50)
+          this.renderLabel(this.renderData)
+          break
+        case 1:
+          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 51)
+          this.renderLabel(this.renderData)
+          break
+        default:
+          this.renderData = this.imgInfo.cells
+          this.renderLabel(this.renderData)
+          break
+      }
     },
     updatePredict(value) {
       updatePredict({
@@ -283,11 +367,8 @@ export default {
           }
           v.uuid = v.id
         })
-        this.select = this.imgInfo.cells[this.imgInfo.cells.length - 1]
-        this.renderLabel(this.imgInfo.cells)
-        setTimeout(() => {
-          document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
-        }, 200)
+        this.renderData = this.imgInfo.cells
+        this.renderLabel(this.renderData)
       })
     },
     getDatasetImgs(did) {
@@ -337,6 +418,10 @@ export default {
     renderLabel(cells) {
       this.$refs['aiPanel-editor'].getMarker().clearData()
       this.$refs['aiPanel-editor'].getMarker().renderData(cells)
+      this.select = cells[cells.length - 1]
+      setTimeout(() => {
+        document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
+      }, 100)
     }
   }
 }
@@ -351,6 +436,13 @@ export default {
     .item-box {
       padding: 10px 10px;
       border-bottom: 1px solid #ccc;
+    }
+    .tools-bar {
+      justify-content: flex-start;
+      margin-left: 5px;
+      span {
+        font-size: 14px;
+      }
     }
   }
   .badge {
@@ -394,6 +486,11 @@ export default {
     overflow: auto;
     border: 1px dashed #ccc;
     margin-left: 7px;
+    .check-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
   }
   .select-fov {
     background: rgba(238, 255, 0, 0.5);
