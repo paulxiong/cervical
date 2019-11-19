@@ -339,10 +339,11 @@ func GetUserLists(c *gin.Context) {
 
 // updateUser 修改用户信息
 type updateUser struct {
-	Mobile string `json:"mobile" example:"111222222"`                                                 //手机号
-	Email  string `json:"email"  example:"mail@163.com"`                                              //邮箱
-	Name   string `json:"name"   example:"username"`                                                  //用户名
-	Image  string `json:"image"  example:"http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"` //用户头像
+	Mobile       string `json:"mobile"       example:"111222222"`                                                 //手机号
+	Email        string `json:"email"        example:"mail@163.com"`                                              //邮箱
+	Name         string `json:"name"         example:"username"`                                                  //用户名
+	Introduction string `json:"introduction" example:"abc"`                                                       //文字介绍
+	Image        string `json:"image"        example:"http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"` //用户头像
 }
 
 // UpdateUserInfo 修改当前用户信息
@@ -366,11 +367,12 @@ func UpdateUserInfo(c *gin.Context) {
 	}
 
 	userinfo := &m.User{
-		ID:     u.ID,
-		Mobile: uu.Mobile,
-		Email:  uu.Email,
-		Name:   uu.Name,
-		Image:  uu.Image,
+		ID:           u.ID,
+		Mobile:       uu.Mobile,
+		Email:        uu.Email,
+		Name:         uu.Name,
+		Image:        uu.Image,
+		Introduction: uu.Introduction,
 	}
 
 	err2 := userinfo.UpdateUserInfo()

@@ -256,8 +256,8 @@ func UserLists(limit int, skip int, order int) (users []User, t int, err error) 
 
 // UpdateUserInfo 更新用户的信息
 func (u *User) UpdateUserInfo() (err error) {
-
 	var updateu map[string]interface{}
+	updateu = make(map[string]interface{})
 
 	if u.Mobile != "" {
 		updateu["mobile"] = u.Mobile
@@ -270,6 +270,9 @@ func (u *User) UpdateUserInfo() (err error) {
 	}
 	if u.Image != "" {
 		updateu["image"] = u.Image
+	}
+	if u.Introduction != "" {
+		updateu["introduction"] = u.Introduction
 	}
 	if len(updateu) < 1 {
 		return nil

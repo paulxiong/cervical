@@ -61,3 +61,11 @@ export function logout() {
     method: 'get'
   })
 }
+
+export function updateUserInfo(data) {
+  return request({
+    url: '/user/updateinfo',
+    method: 'post',
+    data
+  })
+}
