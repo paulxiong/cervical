@@ -3,6 +3,7 @@
 import time, os, shutil, cv2, json
 import pandas as pd
 import numpy as np
+import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import load_model
 from sklearn.metrics import classification_report
@@ -10,6 +11,13 @@ from sklearn.metrics import classification_report
 from SDK.worker import worker
 from SDK.const.const import wt, mt
 from SDK.utilslib.fileops import parse_imgid_xy_from_cellname
+import keras.backend.tensorflow_backend as KTF
+
+# 自适应分配计算资源
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+session = tf.Session(config=config)
+KTF.set_session(session)
 
 #传入文件的路径，返回路径，文件名字，文件后缀
 def get_filePath_fileName_fileExt(filename):
