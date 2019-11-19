@@ -35,7 +35,10 @@
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`图 ${total}`" class="img-tab flex">
+          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`图 ${total}`" class="img-tab">
+            <section class="tools-bar flex">
+              abc
+            </section>
             <section class="label-img flex">
               <div class="check-box" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 5px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
@@ -327,8 +330,9 @@ export default {
 <style lang="scss" scoped>
 .predict {
   .img-tab {
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    .label-img {
+      justify-content: flex-start;
+    }
     .item-box {
       padding: 10px 10px;
       border-bottom: 1px solid #ccc;

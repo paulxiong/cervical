@@ -178,7 +178,7 @@ export default {
     },
     goDetail(val) {
       this.$router.push({
-        path: `/workSpace/details?pid=${val.id}&did=${val.did}&type=${val.type}`
+        path: `/report/details?pid=${val.id}&did=${val.did}&type=${val.type}`
       })
     },
     getListreport(limit, skip, status, order) {

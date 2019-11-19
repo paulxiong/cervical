@@ -82,12 +82,12 @@ export const constantRoutes = [
   {
     path: '/workSpace',
     component: Layout,
-    redirect: '/workSpace/workSpace',
+    redirect: '/workSpace/list',
     name: '概览',
     meta: { title: '概览', icon: 'component' },
     children: [
       {
-        path: 'workSpace',
+        path: 'list',
         component: () => import('@/views/workSpace/index'),
         name: '工作台',
         meta: { title: '工作台', icon: 'component', affix: true }
@@ -104,13 +104,22 @@ export const constantRoutes = [
   {
     path: '/report',
     component: Layout,
-    redirect: '/report',
+    redirect: '/report/list',
+    name: '概览',
+    meta: { title: '概览', icon: 'nested' },
     children: [
       {
-        path: '/report',
+        path: 'list',
         component: () => import('@/views/report/report'),
         name: '医疗报告',
         meta: { title: '医疗报告', icon: 'documentation', affix: true }
+      },
+      {
+        path: 'details',
+        component: () => import('@/views/workSpace/details'),
+        hidden: true,
+        name: '详情',
+        meta: { title: '详情', affix: true }
       }
     ]
   },
