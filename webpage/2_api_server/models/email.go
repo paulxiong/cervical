@@ -146,6 +146,13 @@ func SendRegisterCode(toaddr string) error {
 	mailTo := []string{toaddr} //定义收件人
 	subject := "注册码"           //邮件主题
 	body := code               // 邮件正文
+
+	// 查找系统配置里面的邮件样式
+	emailbody := getEmailBody(toaddr, code)
+	if len(emailbody) > 0 {
+		body = emailbody
+	}
+
 	err = sendMail(mailTo, subject, body)
 	if err != nil {
 		logger.Info.Println(err)

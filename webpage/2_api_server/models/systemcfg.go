@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strings"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -71,4 +72,16 @@ func (s *Syscfg) NewOrUpdateSysCfg() error {
 	s.ID = _s.ID
 	err := s.UpdateSysCfg()
 	return err
+}
+
+// getEmailBody 根据注册码和邮箱地址生成邮件内容
+func getEmailBody(toaddr string, code string) string {
+	_s, err := FindSysCfg()
+	if err != nil || len(_s.EmailRegisterContent) < 1 {
+		return ""
+	}
+
+	emailbody := strings.Replace(_s.EmailRegisterContent, "email@gmail.com", toaddr, -1)
+	emailbody = strings.Replace(emailbody, "000000", code, -1)
+	return emailbody
 }
