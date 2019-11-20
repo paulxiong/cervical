@@ -58,7 +58,7 @@ export default {
     }
   },
   created() {
-    this.getListprojects(5, 0, 1)
+    this.getListprojects(4, 0, 1)
   },
   methods: {
     getListprojects(limit, skip, order) {
