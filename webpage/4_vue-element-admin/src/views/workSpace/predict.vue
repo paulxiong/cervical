@@ -55,6 +55,7 @@
                   :value="item.value"
                 />
               </el-select>
+              <el-button class="filter-btn" type="primary" size="mini" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
             </section>
             <section class="label-img flex">
               <div class="check-box" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
@@ -276,6 +277,9 @@ export default {
       this.$refs['aiPanel-editor'].getMarker().renderData(this.renderData)
       this.$refs['aiPanel-editor'].getMarker().renderData([item])
     },
+    filterSearch() {
+      this.getPredictResult2(this.fov_img.id, 999, 0, 'select')
+    },
     filterChecked(value) {
       switch (value) {
         case 0:
@@ -313,6 +317,7 @@ export default {
         'id': this.select.id,
         'true_type': value.length === 2 ? value[1] : value[0]
       }).then(res => {
+        this.filterSearch()
         this.$message({
           message: '审核修改成功',
           type: 'success'
@@ -353,12 +358,12 @@ export default {
         }
       })
     },
-    getPredictResult2(iid, limit, skip) {
+    getPredictResult2(iid, limit, skip, select) {
       getPredictResult2({ 'iid': iid, 'limit': limit, 'skip': skip }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.cells.map(v => {
-          v.tag = `${v.imgid}-${v.predict_type}`
-          v.tagName = v.predict_type
+          v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
+          v.tagName = v.status === 1 ? v.true_type : v.predict_type
           v.position = {
             x: parseFloat(v.x1 / this.fov_img.w) * 100 + '%',
             x1: parseFloat(v.x2 / this.fov_img.w) * 100 + '%',
@@ -368,7 +373,8 @@ export default {
           v.uuid = v.id
         })
         this.renderData = this.imgInfo.cells
-        this.renderLabel(this.renderData)
+        this.renderLabel(this.renderData, select)
+        if (select) this.changeLabel(this.select)
       })
     },
     getDatasetImgs(did) {
@@ -415,13 +421,15 @@ export default {
     changeCellTypes(val) {
       this.postCelltypes = val
     },
-    renderLabel(cells) {
+    renderLabel(cells, select) {
       this.$refs['aiPanel-editor'].getMarker().clearData()
       this.$refs['aiPanel-editor'].getMarker().renderData(cells)
-      this.select = cells[cells.length - 1]
-      setTimeout(() => {
-        document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
-      }, 100)
+      if (!select) {
+        this.select = cells[cells.length - 1]
+        setTimeout(() => {
+          document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
+        }, 100)
+      }
     }
   }
 }

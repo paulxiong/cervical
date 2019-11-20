@@ -23,9 +23,9 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <a target="_blank" href="#">
+          <router-link to="/authManage/userInfo">
             <el-dropdown-item>{{ userInfo.name }}</el-dropdown-item>
-          </a>
+          </router-link>
           <el-dropdown-item divided style="text-align:center;">
             <span style="display:block;" @click="logout">登出</span>
           </el-dropdown-item>

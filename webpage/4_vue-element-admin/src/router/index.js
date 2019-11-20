@@ -162,7 +162,8 @@ export const constantRoutes = [
         path: 'userInfo',
         component: () => import('@/views/user/userInfo'),
         name: '用户信息',
-        meta: { title: '用户信息', icon: 'nested', affix: true }
+        meta: { title: '用户信息', icon: 'nested', affix: true },
+        hidden: true
       }
     ]
   },
