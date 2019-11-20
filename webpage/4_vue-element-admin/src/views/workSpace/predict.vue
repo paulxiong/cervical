@@ -81,7 +81,7 @@
                   <el-cascader
                     :value="v.status ? v.true_type : v.predict_type"
                     :options="cellsOptions"
-                    :props="{ checkStrictly: true, expandTrigger: 'hover' }"
+                    :props="{ checkStrictly: true }"
                     size="mini"
                     :show-all-levels="false"
                     @change="updatePredict"

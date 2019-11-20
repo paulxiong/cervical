@@ -209,7 +209,7 @@ export default {
 .reportData {
   overflow: auto;
   height: 100%;
-  padding-bottom: 30px;
+  padding: 30px;
   // margin-top: 30px;
   .filter-box {
     // position: fixed;
