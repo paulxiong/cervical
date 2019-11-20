@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { postErrlog } from '@/api/cervical'
+import { postErrlog } from '@/api/system'
 const config = require('../../../version.config')
 
 export default {

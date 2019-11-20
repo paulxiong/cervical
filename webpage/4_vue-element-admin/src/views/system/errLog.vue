@@ -137,7 +137,7 @@
 </template>
 
 <script>
-import { getErrLog } from '@/api/cervical'
+import { getErrLog } from '@/api/system'
 import { parseTime } from '@/utils/index'
 import UA from 'ua-device'
 
