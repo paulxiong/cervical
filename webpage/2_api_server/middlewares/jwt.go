@@ -75,10 +75,10 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			EmailMobile := loginVals.EmailOrMobile
 			password := loginVals.Password
 			userFound, errstring := LoginWithPasswd(userName, password, EmailMobile)
-			m.SaveUsertoContext(c, userFound)
 			if userFound == nil {
 				return "", errors.New(errstring)
 			}
+			m.SaveUsertoContext(c, userFound)
 			return userFound, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
