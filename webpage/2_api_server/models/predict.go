@@ -131,3 +131,17 @@ func UpdatePredict(id int64, trueType int) (e error) {
 	}
 	return ret.Error
 }
+
+// ReviewPredict 管理员检查医生审核过后的信息
+func ReviewPredict(id int64, status int) (e error) {
+	_, err := FindPredictbyID(id)
+	if err != nil {
+		return err
+	}
+
+	ret := db.Model(&Predict{}).Where("id=?", id).Updates(map[string]interface{}{"status": status})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}

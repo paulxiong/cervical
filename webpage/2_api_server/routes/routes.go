@@ -115,6 +115,7 @@ func Router() *gin.Engine {
 		api1.GET("/predictresult2", ctr.GetPredictResult2)
 		api1.GET("/datasetimgs", ctr.GetPredictImges)
 		api1.POST("/updatepredict", ctr.UpdatePredict)
+		api1.POST("/reviewpredict", ctr.ReviewPredict)
 	}
 
 	return r

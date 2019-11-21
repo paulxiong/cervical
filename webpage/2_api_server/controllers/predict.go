@@ -129,3 +129,34 @@ func UpdatePredict(c *gin.Context) {
 	ResString(c, "ok")
 	return
 }
+
+type predictreview struct {
+	ID     int64 `json:"id"`     // 细胞预测的（医生审核的信息）ID
+	Status int   `json:"status"` // 管理员检查结果，2 错误 3 正确(对应于预测的状态 0 未审核 1 已审核 2 移除 3 管理员确认)
+}
+
+// ReviewPredict 管理员检查医生审核过后的信息
+// @Summary 管理员检查医生审核过后的信息
+// @Description 管理员检查医生审核过后的信息
+// @Description status：
+// @Description 200 创建
+// @tags API1 医疗报告（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param predictreview body controllers.predictreview true "管理员检查结果"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/reviewpredict [post]
+func ReviewPredict(c *gin.Context) {
+	pr := predictreview{}
+	err := c.ShouldBindJSON(&pr)
+	if err != nil {
+		ResString(c, "invalied post data")
+		return
+	}
+
+	models.ReviewPredict(pr.ID, pr.Status)
+
+	ResString(c, "ok")
+	return
+}
