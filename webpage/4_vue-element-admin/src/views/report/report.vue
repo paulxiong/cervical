@@ -25,7 +25,6 @@ export default {
   },
   mounted() {
     this.activeName = localStorage.getItem('REPORT_TAB') || 'doctor'
-    console.log(doctor)
   },
   methods: {
     handleClick(tab, event) {
