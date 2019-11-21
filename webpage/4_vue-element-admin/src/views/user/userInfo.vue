@@ -21,12 +21,12 @@
         </el-form-item>
         <el-form-item label="性别" prop="sex">
           <el-select v-model="ruleForm.sex" placeholder="请选择您的性别" class="sex">
-            <el-option label="男" value="man" />
-            <el-option label="女" value="women" />
+            <el-option label="男" value="male" />
+            <el-option label="女" value="female" />
             <el-option label="保密" value="secret" />
           </el-select>
         </el-form-item>
-        <el-form-item label="手机" prop="mobile">
+        <el-form-item label="手机号码" prop="mobile">
           <el-input v-model="ruleForm.mobile" />
         </el-form-item>
         <el-form-item label="创建时间" prop="created_at">
@@ -49,7 +49,7 @@ import AvatarCropper from 'vue-avatar-cropper'
 import { APIUrl } from '@/const/config'
 import { getToken } from '@/utils/auth'
 import { mapGetters } from 'vuex'
-import { updateUserInfo } from '@/api/user'
+import { updateUserInfo, getUserInfo } from '@/api/user'
 // import { parseTime } from '@/utils/index'
 
 export default {
@@ -102,7 +102,11 @@ export default {
   methods: {
     handleUploaded(resp) {
       this.newAvatar = APIUrl + resp.data
-      console.log(resp)
+    },
+    getUserInfo() {
+      getUserInfo().then(res => {
+        localStorage.setItem('USER_INFO', JSON.stringify(res.data.data))
+      })
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -115,14 +119,19 @@ export default {
             'introduction': this.$refs[formName].model.introduction
           }
           updateUserInfo(postdata).then(response => {
-            console.log(response)
+            this.getUserInfo()
           }).catch(error => {
             console.log(error)
           })
-          console.log(postdata)
-          alert('用户信息已经更新')
+          this.$message({
+            message: '用户信息已经更新',
+            type: 'success'
+          })
         } else {
-          console.log('请重新填写')
+          this.$message({
+            message: '请重新填写',
+            type: 'danger'
+          })
           return false
         }
       })

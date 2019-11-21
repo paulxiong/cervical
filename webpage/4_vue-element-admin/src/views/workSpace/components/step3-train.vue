@@ -122,7 +122,10 @@ export default {
       loading: false,
       inputName: '',
       postData: JSON.parse(localStorage.getItem('POST_DATA')),
-      countNP: JSON.parse(localStorage.getItem('countNP')),
+      countNP: JSON.parse(localStorage.getItem('countNP')) || {
+        countn: 0,
+        countp: 0
+      },
       modelInfo: JSON.parse(localStorage.getItem('MODEL_INFO'))
     }
   },

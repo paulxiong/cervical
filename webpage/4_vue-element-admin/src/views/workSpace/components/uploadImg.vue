@@ -12,6 +12,7 @@
       :before-upload="beforeUpload"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
+      :on-success="onSuccess"
       :auto-upload="false"
     >
       <i class="el-icon-upload" />
@@ -65,8 +66,10 @@ export default {
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
       setTimeout(() => {
         this.$refs.upload.submit()
+      }, 200)
+    },
+    onSuccess() {
         this.$emit('checkUpload', true)
-      }, 500)
     },
     abortUpload() {
       this.$refs.upload.abort()

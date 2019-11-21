@@ -89,6 +89,7 @@
       <el-table-column label="数据集 ID" prop="did" />
       <el-table-column label="创建者" prop="created_by" />
       <el-table-column label="类型" prop="projectType" />
+      <el-table-column label="创建时间" prop="created_at" />
       <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
           <el-tag :type="scope.row.statusType" effect="dark">{{ scope.row.statusTime }}</el-tag>
