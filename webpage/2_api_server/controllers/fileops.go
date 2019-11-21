@@ -108,7 +108,7 @@ func UploadDatasetHandler(c *gin.Context) {
 		return
 	}
 
-	file, header, err := c.Request.FormFile("file")
+	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		ResString(c, fmt.Sprintf("file err : %s", err.Error()))
 		return
@@ -117,13 +117,8 @@ func UploadDatasetHandler(c *gin.Context) {
 	// 新建批次病例目录
 	dirpath := f.NewMedicalDir(_bid, _mid)
 	f.NewDir(dirpath)
-	filename := u.URLEncodeFileName(header.Filename)
+	filename := u.GetUUID()
 	filepath := path.Join(dirpath, filename)
-	exists, _ := f.PathExists(filepath)
-	if filename != header.Filename || exists == true {
-		filename = u.GetRandomString(12) + path.Ext(filename)
-		filepath = path.Join(dirpath, filename)
-	}
 
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -183,13 +178,13 @@ func UploadDatasetHandler(c *gin.Context) {
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/uploadimg [post]
 func UploadImgHandler(c *gin.Context) {
-	file, header, err := c.Request.FormFile("file")
+	file, _, err := c.Request.FormFile("file")
 	if err != nil {
 		ResString(c, fmt.Sprintf("file err : %s", err.Error()))
 		return
 	}
 
-	filename := u.URLEncodeFileName(header.Filename)
+	filename := u.GetUUID()
 	filepath, fileURL := f.HeaderImgPathURL(filename)
 
 	out, err := os.Create(filepath)

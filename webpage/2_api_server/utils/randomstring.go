@@ -4,7 +4,10 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"math/rand"
+	"strings"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 // MD5 生成32位MD5
@@ -41,4 +44,14 @@ func GetRandomStringNum(length int64) string {
 		result = append(result, bytes[r.Intn(len(bytes))])
 	}
 	return string(result)
+}
+
+// GetUUID 生成uuid，长度32的字符串
+func GetUUID() string {
+	u1 := uuid.NewV4().String()
+	if len(u1) != 36 {
+		return GetRandomString(32)
+	}
+	u1 = strings.Replace(u1, "-", "", -1)
+	return u1
 }
