@@ -22,7 +22,13 @@ import (
 // @version 1.0
 // @description 这是API说明文档，开发服务器才有， 正式部署之后没有。
 // @description 认证时候填 "token eyJhbGciOiJIU..." (注意token后面有个空格， token向管理员申请)
-// @description 网络请求每次返回code比如200、404或者401。返回内容是JSON {status: 状态码, data: 具体内容}
+// @description swagger 只显示返回值data字段的内容，返回值的描述如下：
+// @description {
+// @description     code: "200", // 当前请求的状态，比如 RFC 7231, 6.3.1， 200表示StatusOK
+// @description     status: "70", // 我们平台处理请求的状态, 比如70表示：注册的用户名已经存在
+// @description     type: "obj", // data字段的内容的类型，可以是 obj/array/int/string里面的4种
+// @description     data: {}/[]/int/string // 我们平台处理请求的结果，可以是对象/数组/整数/字符串
+// @description }
 // @termsOfService http://dev.medical.raidcdn.cn:3000
 // @contact.name API Support
 // @contact.url http://dev.medical.raidcdn.cn:3000

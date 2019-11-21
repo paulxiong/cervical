@@ -1,0 +1,22 @@
+{
+	"errs": [
+        {"id": 0,  "key": "Succeed",    "msg": "网络请求成功"},
+        {"id": 1,  "key": "Unknown",    "msg": "未知的错误"},
+        {"id": 51, "key": "PingFailed", "msg": "ping失败(这个绝对不可能出现)"},
+
+        {"id": 60, "key": "LoginBadPasswd",    "msg": "密码错误，请重新输入"},
+        {"id": 61, "key": "LoginUserNotFound", "msg": "用户名不存在"},
+        {"id": 62, "key": "LoginError",        "msg": "登录出错，请重试"},
+        {"id": 63, "key": "LoginInvalidData",  "msg": "提交数据错误， 请重试"},
+
+        {"id": 70, "key": "RegisterUserExisted",    "msg": "注册的用户名已经存在，请直接登录或换一个用户名再试"},
+        {"id": 71, "key": "RegisterEmailExisted",   "msg": "注册的邮箱已经存在， 请直接登录"},
+        {"id": 72, "key": "RegisterPasswdMismatch", "msg": "两次密码不一致， 请重新输入"},
+        {"id": 73, "key": "RegisterInvalidData",    "msg": "提交数据错误， 请重试"},
+        {"id": 74, "key": "RegisterNewUserFailed",  "msg": "创建用户失败，请重试"},
+        {"id": 75, "key": "RegisterError",          "msg": "注册出错，请重试"},
+        {"id": 76, "key": "RegisterMobileExisted",  "msg": "注册的手机号已经存在，请直接登录"},
+        {"id": 77, "key": "RegisterMailFailed",     "msg": "使用邮箱注册出错，请重试"},
+        {"id": 78, "key": "RegisterMailInvalid",    "msg": "邮箱地址格式错误，请重新输入"}
+	]
+}
