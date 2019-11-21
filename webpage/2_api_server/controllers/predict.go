@@ -26,17 +26,20 @@ type reporterpredicts struct {
 // @Param iid query string false "iid, default 659, 图片ID"
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
+// @Param status query string false "status, default 0, 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
 // @Success 200 {object} controllers.reporterpredicts
 // @Router /api1/predictresult2 [get]
 func GetPredictResult2(c *gin.Context) {
 	iidStr := c.DefaultQuery("iid", "0")
-	iid, _ := strconv.ParseInt(iidStr, 10, 64)
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
+	statusStr := c.DefaultQuery("status", "0")
+	iid, _ := strconv.ParseInt(iidStr, 10, 64)
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
 
-	total, predicts, _ := models.ListPredict(int(limit), int(skip), int(iid))
+	total, predicts, _ := models.ListPredict(int(limit), int(skip), int(iid), int(status))
 	_predicts := reporterpredicts{
 		Total:    int(total),
 		Predicts: predicts,

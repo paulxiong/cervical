@@ -77,12 +77,34 @@ func (p *Predict) CreatePredict() (e error) {
 }
 
 // ListPredict 通过图片ID查找预测
-func ListPredict(limit int, skip int, imgid int) (totalNum int64, p []Predict, e error) {
+func ListPredict(limit int, skip int, imgid int, status int) (totalNum int64, p []Predict, e error) {
 	var _p []Predict
 	var total int64 = 0
 
-	db.Model(&Predict{}).Where("imgid=?", imgid).Count(&total)
-	ret := db.Model(&Predict{}).Where("imgid=?", imgid).Limit(limit).Offset(skip).Find(&_p)
+	//0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核
+	if status == 4 {
+		var _p2 []Predict
+		var total2 int64 = 0
+		var _p3 []Predict
+		var total3 int64 = 0
+		db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 0).Count(&total2)
+		ret := db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 0).Limit(limit).Offset(skip).Find(&_p2)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 1).Count(&total3)
+		ret = db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 1).Limit(limit).Offset(skip).Find(&_p3)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		_p = append(append(_p, _p2...), _p3...)
+		total = total + total2 + total3
+
+		return total, _p, ret.Error
+	}
+
+	db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, status).Count(&total)
+	ret := db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, status).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
