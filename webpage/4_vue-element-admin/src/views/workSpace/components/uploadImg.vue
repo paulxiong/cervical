@@ -69,7 +69,7 @@ export default {
       }, 200)
     },
     onSuccess() {
-        this.$emit('checkUpload', true)
+      this.$emit('checkUpload', true)
     },
     abortUpload() {
       this.$refs.upload.abort()
