@@ -17,7 +17,12 @@ import (
 // Router 注册路由
 func Router() *gin.Engine {
 	r := gin.New()
-	r.Use(gin.Logger())
+	// 图片服务器API,放在这里目的是不打印log，因为这个是动态路由
+	r.GET("/imgs/*any", ctr.ImageAPI)
+	// swager,放在这里目的是不打印log，因为这个是动态路由
+	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
+
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping"}}))
 	r.Use(gin.Recovery())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
@@ -35,8 +40,6 @@ func Router() *gin.Engine {
 	r.Use(corsObject)
 
 	r.Use(ctr.History)
-
-	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
 
 	/* 用户相关的API */
 	user := r.Group("/user")
@@ -114,7 +117,5 @@ func Router() *gin.Engine {
 		api1.POST("/updatepredict", ctr.UpdatePredict)
 	}
 
-	// 图片服务器API
-	r.GET("/imgs/*any", ctr.ImageAPI)
 	return r
 }
