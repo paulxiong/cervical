@@ -115,6 +115,14 @@ export function updatePredict(data) {
   })
 }
 
+export function reviewpredict(data) {
+  return request({
+    url: '/api1/reviewpredict',
+    method: 'post',
+    data
+  })
+}
+
 export function createdataset(data) {
   return request({
     url: '/api1/createdataset',

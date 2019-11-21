@@ -1,31 +1,31 @@
 <template>
   <div class="predict">
     <section v-loading="loading" :element-loading-text="loadingtext" class="results">
-      <!-- <section class="info-box">
+      <section v-if="!report" class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
           <el-table-column prop="type" width="400" label="类型" />
           <el-table-column prop="total" label="预测个数" />
           <el-table-column v-if="predictResult.parameter_type" prop="falseCnt" label="错误个数" />
           <el-table-column v-if="predictResult.parameter_type" prop="correct" label="正确个数" />
         </el-table>
-      </section> -->
+      </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="predictResult.parameter_type === 0" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
+          <el-tab-pane v-if="!report" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
             <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
               <el-badge :value="`${v.type}>${v.predict}`" type="info" class="item">
                 <img class="img-item img-false" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="predictResult.parameter_type === 0" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
+          <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
             <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 20px;">
               <el-badge :value="`${v.type}-${v.score}`" class="item">
                 <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="predictResult.parameter_type === 1" type="info" :label="`图 ${total}`" class="img-tab">
+          <el-tab-pane v-if="report" type="info" :label="`图 ${total}`" class="img-tab">
             <section class="tools-bar flex">
               <span>审核状态</span>
               <el-select v-model="filterValue.filterChecked" placeholder="审核状态" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
@@ -67,8 +67,9 @@
                   <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
                     <img class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)">
                   </el-badge>
-                  <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : 'unchecked'" />
+                  <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : v.status === 2 ? 'delete' : v.status === 3 ? 'adminA' : 'unchecked'" />
                   <el-cascader
+                    :disabled="report === 'admin'"
                     :value="v.status ? v.true_type : v.predict_type"
                     :options="cellsOptions"
                     :props="{ checkStrictly: true }"
@@ -77,6 +78,10 @@
                     @change="updatePredict"
                     @focus="selectCells(v)"
                   />
+                  <el-radio-group v-if="report === 'admin'" v-model="v.status" size="mini" style="position: absolute;top: 45px;right: 0;" @change="updateAdminValue">
+                    <el-radio-button label="错误" />
+                    <el-radio-button label="正确" />
+                  </el-radio-group>
                 </div>
               </div>
             </section>
@@ -100,7 +105,7 @@
 <script>
 import { APIUrl } from '@/const/config'
 import { cellsType } from '@/const/const'
-import { getPercent, getPredictResult, getPredictResult2, getjoblog, getDatasetImgs, updatePredict } from '@/api/cervical'
+import { getPercent, getPredictResult, getPredictResult2, getjoblog, getDatasetImgs, updatePredict, reviewpredict } from '@/api/cervical'
 import { AIMarker } from '@/components/vue-picture-bd-marker/label.js'
 
 let timer
@@ -134,6 +139,7 @@ export default {
       select: {},
       selectFov: 0,
       orgImgList: [],
+      adminValue: '错误',
       total: 0,
       cellsOptions: [
         {
@@ -228,6 +234,14 @@ export default {
         },
         {
           value: 2,
+          label: '移除'
+        },
+        {
+          value: 3,
+          label: '管理员已确认'
+        },
+        {
+          value: 4,
           label: '全部'
         }
       ],
@@ -246,12 +260,15 @@ export default {
         }
       ],
       filterValue: {
-        'filterChecked': 2,
+        'filterChecked': 0, // 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
         'filterCellsType': 2
-      }
+      },
+      report: ''
     }
   },
   created() {
+    this.report = this.$route.query.report
+    this.filterValue.filterChecked = this.report === 'admin' ? 1 : 0
     if (this.$route.query.report) {
       this.getDatasetImgs()
     } else {
@@ -271,24 +288,27 @@ export default {
       this.$refs['aiPanel-editor'].getMarker().renderData(this.renderData)
       this.$refs['aiPanel-editor'].getMarker().renderData([item])
     },
-    filterSearch() {
-      this.getPredictResult2(this.fov_img.id, 999, 0, 'select')
+    updateAdminValue(val) {
+      const status = val === '错误' ? 2 : 3
+      reviewpredict({
+        'id': this.select.id,
+        'status': status
+      }).then(res => {
+        this.filterSearch()
+        this.$message({
+          message: '审核确认成功',
+          type: 'success'
+        })
+      })
     },
-    filterChecked(value) {
-      switch (value) {
-        case 0:
-          this.renderData = this.imgInfo.cells.filter(v => v.status === 0)
-          this.renderLabel(this.renderData)
-          break
-        case 1:
-          this.renderData = this.imgInfo.cells.filter(v => v.status === 1)
-          this.renderLabel(this.renderData)
-          break
-        default:
-          this.renderData = this.imgInfo.cells
-          this.renderLabel(this.renderData)
-          break
-      }
+    filterSearch() {
+      this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked, 'select')
+      setTimeout(() => {
+        this.filterCellsType(this.filterValue.filterCellsType)
+      }, 100)
+    },
+    filterChecked(value, select) {
+      this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
     },
     filterCellsType(value) {
       switch (value) {
@@ -324,7 +344,7 @@ export default {
     changeFovImg(v, idx) {
       this.fov_img = v
       this.selectFov = idx
-      this.getPredictResult2(v.id, 999, 0)
+      this.getPredictResult2(v.id, 999, 0, this.filterValue.filterChecked)
     },
     onSelect(data) {
       this.select = data
@@ -352,8 +372,8 @@ export default {
         }
       })
     },
-    getPredictResult2(iid, limit, skip, select) {
-      getPredictResult2({ 'iid': iid, 'limit': limit, 'skip': skip }).then(res => {
+    getPredictResult2(iid, limit, skip, status, select) {
+      getPredictResult2({ 'iid': iid, 'limit': limit, 'skip': skip, 'status': status }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.cells.map(v => {
           v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
@@ -376,7 +396,7 @@ export default {
         this.orgImgList = res.data.data.images
         this.fov_img = this.orgImgList[0]
         this.total = res.data.data.total
-        this.getPredictResult2(this.fov_img.id, 999, 0)
+        this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
       })
     },
     getjoblog() {
