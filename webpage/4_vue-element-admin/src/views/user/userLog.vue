@@ -149,7 +149,7 @@
         class="page"
         :current-page.sync="currentPage"
         :page-sizes="[10, 20, 50, 100, 200]"
-        :page-size="10"
+        :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="userLog.total"
         @current-change="handleCurrentChange"
@@ -197,7 +197,7 @@ export default {
     }
   },
   created() {
-    this.getUserLog(10, 0, 1)
+    this.getUserLog(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
   },
   methods: {
     refreshData() {

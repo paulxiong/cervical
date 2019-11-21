@@ -93,7 +93,7 @@
         class="page"
         :current-page.sync="currentPage"
         :page-sizes="[10, 20, 30, 50]"
-        :page-size="10"
+        :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @current-change="handleCurrentChange"
@@ -140,7 +140,7 @@ export default {
     }
   },
   created() {
-    this.getListmodel(10, 0, 52)
+    this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
   },
   methods: {
     filterSearch() {
