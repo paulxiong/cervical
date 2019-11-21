@@ -1,7 +1,7 @@
 <template>
   <div class="projectData">
     <el-table :data="projectlist" style="width: 100%;padding-top: 7px;">
-      <el-table-column label="近期项目ID" min-width="150">
+      <el-table-column label="近期项目" min-width="100">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
@@ -11,12 +11,12 @@
           {{ scope.row.desc }}
         </template>
       </el-table-column>
-      <el-table-column label="数据集ID" width="150" align="center">
+      <el-table-column label="数据集" width="100" align="center">
         <template slot-scope="scope">
           {{ scope.row.did }}
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" width="150" align="center">
+      <el-table-column label="创建时间" width="250" align="center">
         <template slot-scope="scope">
           {{ scope.row.starttime }}
         </template>
