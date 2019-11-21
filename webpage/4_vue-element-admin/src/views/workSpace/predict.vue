@@ -1,15 +1,5 @@
 <template>
   <div class="predict">
-    <!-- <section class="header flex">
-      <el-badge is-dot class="badge">预测进度</el-badge>
-      <el-progress
-        :text-inside="true"
-        :stroke-width="26"
-        :percentage="percentage"
-        class="progress"
-        status="success"
-      />
-    </section> -->
     <section v-loading="loading" :element-loading-text="loadingtext" class="results">
       <!-- <section class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
@@ -21,21 +11,21 @@
       </section> -->
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="predictResult.parameter_type" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
-            <div v-for="v in falseCellsList" :key="v.url" class="item-box">
+          <el-tab-pane v-if="predictResult.parameter_type === 0" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
+            <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
               <el-badge :value="`${v.type}>${v.predict}`" type="info" class="item">
                 <img class="img-item img-false" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="predictResult.parameter_type" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
-            <div v-for="v in rightCellsList" :key="v.url" class="item-box">
+          <el-tab-pane v-if="predictResult.parameter_type === 0" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
+            <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 20px;">
               <el-badge :value="`${v.type}-${v.score}`" class="item">
                 <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
               </el-badge>
             </div>
           </el-tab-pane>
-          <el-tab-pane v-if="!predictResult.parameter_type" type="info" :label="`图 ${total}`" class="img-tab">
+          <el-tab-pane v-if="predictResult.parameter_type === 1" type="info" :label="`图 ${total}`" class="img-tab">
             <section class="tools-bar flex">
               <span>审核状态</span>
               <el-select v-model="filterValue.filterChecked" placeholder="审核状态" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
@@ -262,7 +252,11 @@ export default {
     }
   },
   created() {
-    this.getDatasetImgs()
+    if (this.$route.query.report) {
+      this.getDatasetImgs()
+    } else {
+      this.getPredictResult()
+    }
     this.getPercent()
     this.getjoblog()
     this.loopGetPercent()
@@ -438,6 +432,8 @@ export default {
 <style lang="scss" scoped>
 .predict {
   .img-tab {
+    justify-content: flex-start;
+    flex-wrap: wrap;
     .label-img {
       justify-content: flex-start;
     }

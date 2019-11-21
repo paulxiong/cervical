@@ -28,7 +28,6 @@ export default {
   components: { projectData, datasetsData, modelData, recycleData },
   data() {
     return {
-      switchVal: true,
       activeName: 'project'
     }
   },

@@ -111,8 +111,8 @@ export const constantRoutes = [
       {
         path: 'list',
         component: () => import('@/views/report/report'),
-        name: '管理员审核报告',
-        meta: { title: '管理员审核报告', icon: 'documentation', affix: true }
+        name: '审核报告',
+        meta: { title: '审核报告', icon: 'documentation', affix: true }
       },
       {
         path: 'details',
