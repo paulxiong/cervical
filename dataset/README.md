@@ -309,3 +309,18 @@ temp_data_1021_torun
 │       └── 7
 ... ...
 ```
+#### 不同内容的FOV数据（用于对比细胞切割算法）
+### Data_FOV_types
+```
+链接：https://pan.baidu.com/s/1AUeui2f-juKkruImBPOjGw
+提取码：uhd6
+说明：orgdata_fov_types包含不同内容的FOV原始数据（详情请看解压文件中的readme）；output_MaskRcnn为基于orgdata_fov_types算法MaskRcnn在FOV上标记其检测出的细胞的图像，后面可将其他算法标记的细胞与该数据进行对比，从而选出性能更佳的算法。
+目录结构（括号内为细胞数量）
+Data_FOV_types/
+├── orgdata_fov_types（78）
+│   ├── FOV_type_a
+│   ├── ...
+└── output_MaskRcnn（78）
+    ├── a
+    ├── ...
+```
