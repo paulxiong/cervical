@@ -8,6 +8,7 @@ import (
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	mid "github.com/paulxiong/cervical/webpage/2_api_server/middlewares"
 	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 
 	"github.com/gin-gonic/gin"
 )
@@ -57,10 +58,7 @@ func RegisterUser(c *gin.Context) {
 	var user m.User
 	err := c.ShouldBindJSON(&reg)
 	if err != nil {
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": e.StatusRegisterError75,
-			"data":   "register faild",
-		})
+		res.ResFailedStatus(c, e.Errors["RegisterInvalidData"])
 		return
 	}
 
@@ -73,19 +71,13 @@ func RegisterUser(c *gin.Context) {
 
 	if user.Password == "" || (user.Name == "" && user.Email == "" && user.Mobile == "") {
 		logger.Warning.Println("RegisterUser failed ", user)
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": e.StatusRegisterInvalidData73,
-			"data":   "register faild",
-		})
+		res.ResFailedStatus(c, e.Errors["RegisterInvalidData"])
 		return
 	}
 
-	exituser, errorcode := user.CheckUserExist()
+	exituser, _ := user.CheckUserExist()
 	if exituser != nil {
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": errorcode,
-			"data":   "register faild",
-		})
+		res.ResFailedStatus(c, e.Errors["RegisterUserExisted"])
 		return
 	}
 
@@ -93,10 +85,7 @@ func RegisterUser(c *gin.Context) {
 	if user.Email != "" {
 		valid, em, codeerr := m.CheckEmailCodeValied(user.Email, reg.EmailCode)
 		if codeerr != nil || valid == false {
-			c.JSON(e.StatusNotAcceptable, gin.H{
-				"status": e.StatusRegisterMailInvalid78,
-				"data":   "register faild",
-			})
+			res.ResFailedStatus(c, e.Errors["RegisterMailInvalid"])
 			return
 		}
 		//校验完之后丢弃这个校验码
@@ -105,18 +94,12 @@ func RegisterUser(c *gin.Context) {
 
 	err = user.Newuser()
 	if err != nil {
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": e.StatusRegisterNewUserFailed74,
-			"data":   "register faild",
-		})
+		res.ResFailedStatus(c, e.Errors["RegisterNewUserFailed"])
 		return
 	}
 
 	logger.Info.Println("RegisterUser succsess ", user)
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   "ok",
-	})
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -133,17 +116,13 @@ func RegisterUser(c *gin.Context) {
 // @Router /user/userinfo [get]
 func GetUser(c *gin.Context) {
 	u, _ := m.GetUserFromContext(c)
-
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   u,
-	})
+	res.ResSucceedStruct(c, u)
 	return
 }
 
 // OptionUser option请求
 func OptionUser(c *gin.Context) {
-	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed})
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -162,7 +141,7 @@ type login struct {
 // @Accept  json
 // @Produce json
 // @Param Login body middlewares.LoginFormData true "登录信息表单"
-// @Success 200 {string} json "{"expire": "当前token到期时间", "status": 200, "token": "token的字符串","user": {"id": 3,"mobile": "string","email": "string","name": "string","image": "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg","type_id": 1000,"created_at": "2019-09-12T10:05:39Z","updated_at": "2019-09-12T03:34:17Z"}}"
+// @Success 200 {object} middlewares.LoginSucceed
 // @Failure 401 {string} json "{"data": "login faild", "status": 错误码}"
 // @Router /user/login [post]
 func LoginUser(c *gin.Context) {
@@ -181,10 +160,7 @@ func LoginUser(c *gin.Context) {
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/logout [get]
 func LogoutUser(c *gin.Context) {
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   "ok",
-	})
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -218,39 +194,26 @@ func GetEmailCode(c *gin.Context) {
 	err := c.ShouldBindJSON(&mregister)
 	if err != nil {
 		logger.Info.Println(err)
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": e.StatusRegisterInvalidData73,
-			"data":   "send mail faild",
-		})
+		res.ResFailedStatus(c, e.Errors["EmailCodeInvalidData"])
 		return
 	}
 
 	user.Email = mregister.Email
-	exituser, errorcode := user.CheckUserExist()
+	exituser, _ := user.CheckUserExist()
 	if exituser != nil {
 		logger.Info.Println(err)
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": errorcode,
-			"data":   "email exist",
-		})
+		res.ResFailedStatus(c, e.Errors["RegisterUserExisted"])
 		return
 	}
 
 	err = m.SendRegisterCode(mregister.Email)
 	if err != nil {
 		logger.Info.Println(err)
-		c.JSON(e.StatusNotAcceptable, gin.H{
-			"status": e.StatusRegisterMailFailed77,
-			"data":   "sent email failed",
-		})
+		res.ResFailedStatus(c, e.Errors["EmailCodeSendFailed"])
 		return
-
 	}
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   "ok",
-	})
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -301,10 +264,7 @@ func GetAccessLog(c *gin.Context) {
 	dts.Operationlog = ds
 	dts.Total = total
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   dts,
-	})
+	res.ResSucceedStruct(c, dts)
 	return
 }
 
@@ -362,7 +322,7 @@ func UpdateUserInfo(c *gin.Context) {
 	err := c.ShouldBindJSON(&uu)
 	u, _ := m.GetUserFromContext(c)
 	if err != nil || u.ID < 1 {
-		ResString(c, "invalied user update")
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 
@@ -377,9 +337,9 @@ func UpdateUserInfo(c *gin.Context) {
 
 	err2 := userinfo.UpdateUserInfo()
 	if err2 != nil {
-		ResString(c, "update user info failed")
+		res.ResFailedStatus(c, e.Errors["UserUpdateFailed"])
 	}
 
-	ResString(c, "ok")
+	res.ResSucceedString(c, "ok")
 	return
 }

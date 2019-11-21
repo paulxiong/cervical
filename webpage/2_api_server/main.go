@@ -26,7 +26,7 @@ import (
 // @description {
 // @description     code: "200", // 当前请求的状态，比如 RFC 7231, 6.3.1， 200表示StatusOK
 // @description     status: "70", // 我们平台处理请求的状态, 比如70表示：注册的用户名已经存在
-// @description     type: "obj", // data字段的内容的类型，可以是 obj/array/int/string里面的4种
+// @description     type: "obj", // data字段的内容的类型，可以是 obj/array/int/string/null里面的5种
 // @description     data: {}/[]/int/string // 我们平台处理请求的结果，可以是对象/数组/整数/字符串
 // @description }
 // @termsOfService http://dev.medical.raidcdn.cn:3000

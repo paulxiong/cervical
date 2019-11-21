@@ -1,5 +1,13 @@
 package errorcode
 
+import (
+	"encoding/json"
+	"io/ioutil"
+)
+
+// Errors 所有的错误和错误值的map
+var Errors map[string]int
+
 const (
 	StatusContinue           = 100 // RFC 7231, 6.2.1
 	StatusSwitchingProtocols = 101 // RFC 7231, 6.2.2
@@ -102,3 +110,40 @@ const (
 	UpdateFillInTheBlankBadData = 96
 	UpdateFillInTheBlankExisted = 97
 )
+
+const errorfile = "web/src/const/errCode.json"
+
+type erroritem struct {
+	ID      int    `json:"id"      example:"1"`              //错误的ID
+	Key     string `json:"key"     example:"description..."` //错误的key
+	Content string `json:"content" example:"description..."` //错误的内容描述
+}
+
+type allerrors struct {
+	Errs []erroritem
+}
+
+// loadJSONFile 加载json文件内容成struct
+func loadJSONFile(filename string) allerrors {
+	ae := allerrors{}
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return ae
+	}
+	err = json.Unmarshal(data, &ae)
+	if err != nil {
+		return ae
+	}
+	return ae
+}
+
+func init() {
+	err := loadJSONFile(errorfile)
+
+	if length := len(err.Errs); length > 0 {
+		Errors = make(map[string]int, length)
+		for _, _e := range err.Errs {
+			Errors[_e.Key] = _e.ID
+		}
+	}
+}

@@ -64,7 +64,7 @@ func Router() *gin.Engine {
 
 	api1.Use(ctr.CheckAuth)
 	{
-		api1.GET("/refresh_token", ctr.AuthMiddleware.RefreshHandler) // Refresh time can be longer than token timeout
+		// api1.GET("/refresh_token", ctr.AuthMiddleware.RefreshHandler) // Refresh time can be longer than token timeout
 		api1.GET("/authping", ctr.AuthPong)
 		// 数据
 		api1.GET("/dtinfo", ctr.AllInfo)

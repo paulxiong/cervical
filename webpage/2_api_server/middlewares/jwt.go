@@ -4,7 +4,8 @@ import (
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
-	m "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 
 	"errors"
 	"time"
@@ -19,14 +20,21 @@ var IdentityKey = "user.Id"
 
 // LoginFormData 登录的表单数据
 type LoginFormData struct {
-	Username      string `form:"username" json:"username" example:"用户名" format:"string"`
-	Password      string `form:"password" json:"password" binding:"required" example:"密码" format:"string"`
-	EmailOrMobile string `form:"emailormobile" json:"emailormobile" example:"邮箱或者手机号" format:"string"`
+	Username      string `form:"username"      json:"username"                    example:"username"`        // 用户名
+	Password      string `form:"password"      json:"password" binding:"required" example:"password"`        // 密码
+	EmailOrMobile string `form:"emailormobile" json:"emailormobile"               example:"email or mobile"` // 邮箱或者手机号
+}
+
+// LoginSucceed 登录成功之后返回客户端的内容
+type LoginSucceed struct {
+	Token  string       `json:"token"  example:"token"`  // token的字符串
+	Expire string       `json:"expire" example:"expire"` // 当前token过期的时间戳
+	User   *models.User `json:"user"`                    // 当前登录的用户信息
 }
 
 // LoginWithPasswd 检查用户名密码是否匹配
-func LoginWithPasswd(name string, password string, emailormobile string) (*m.User, string) {
-	userFound, _ := m.CheckUserExist2(name, emailormobile, emailormobile)
+func LoginWithPasswd(name string, password string, emailormobile string) (*models.User, string) {
+	userFound, _ := models.CheckUserExist2(name, emailormobile, emailormobile)
 	if userFound == nil {
 		return nil, "LoginUserNotFound"
 	}
@@ -50,7 +58,7 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		MaxRefresh:  time.Second * time.Duration(configs.Jwt.ExpireSecond*60),
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			user, ok := data.(*m.User)
+			user, ok := data.(*models.User)
 			if ok {
 				return jwt.MapClaims{
 					IdentityKey: user.ID,
@@ -61,8 +69,8 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			userID := int64(claims[IdentityKey].(float64))
-			user := &m.User{ID: userID}
-			m.SaveUsertoContext(c, user)
+			user := &models.User{ID: userID}
+			models.SaveUsertoContext(c, user)
 			return user
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -78,7 +86,7 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			if userFound == nil {
 				return "", errors.New(errstring)
 			}
-			m.SaveUsertoContext(c, userFound)
+			models.SaveUsertoContext(c, userFound)
 			return userFound, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
@@ -92,21 +100,21 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			if message == "missing Username or Password" || message == "" {
-				c.JSON(code, gin.H{"status": e.StatusLoginInvalidData64, "data": message})
+				res.ResFailedStatus(c, e.Errors["LoginInvalidData"])
 			} else if message == "LoginUserNotFound" {
-				c.JSON(code, gin.H{"status": e.StatusLoginUserNotFound61, "data": message})
+				res.ResFailedStatus(c, e.Errors["LoginUserNotFound"])
 			} else if message == "LoginBadPasswd" {
-				c.JSON(code, gin.H{"status": e.StatusLoginBadPasswd60, "data": message})
+				res.ResFailedStatus(c, e.Errors["LoginBadPasswd"])
 			} else {
-				c.JSON(code, gin.H{"status": e.StatusLoginError63, "data": message})
+				res.ResFailedStatus(c, e.Errors["LoginError"])
 			}
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
-			user := &m.User{}
-			newtoken := &m.Token{}
+			user := &models.User{}
+			newtoken := &models.Token{}
 			userTmp, exists := c.Get("user")
 			if exists == true && userTmp != nil {
-				userTmp2 := userTmp.(*m.User)
+				userTmp2 := userTmp.(*models.User)
 				user.ID = userTmp2.ID
 				newtoken.UserID = userTmp2.ID
 			}
@@ -114,11 +122,10 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 			newtoken.UpdateToken(token, expire)
 			user.UserLogined()
 
-			c.JSON(e.StatusReqOK, gin.H{
-				"status": e.StatusSucceed,
-				"token":  token,
-				"expire": expire.Format(time.RFC3339),
-				"user":   user,
+			res.ResSucceedStruct(c, LoginSucceed{
+				Token:  token,
+				Expire: expire.Format(time.RFC3339),
+				User:   user,
 			})
 		},
 		// TokenLookup is a string in the form of "<source>:<name>" that is used

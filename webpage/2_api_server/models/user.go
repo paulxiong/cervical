@@ -69,7 +69,7 @@ type User struct {
 	TypeID       int       `json:"type_id"      gorm:"column:type_id"`      //用户类型ID
 	Password     string    `json:"-"            gorm:"column:password"`     //密码
 	Introduction string    `json:"introduction" gorm:"column:introduction"` //简介
-	Roles        []string  `json:"roles"        gorm:"-"`                   //密码
+	Roles        []string  `json:"roles"        gorm:"-"`                   //角色
 	CreatedAt    time.Time `json:"created_at"   gorm:"column:created_at"`   //创建时间
 	UpdatedAt    time.Time `json:"updated_at"   gorm:"column:updated_at"`   //更新时间
 }
