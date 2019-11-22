@@ -107,7 +107,7 @@
         class="page"
         :current-page.sync="currentPage"
         :page-sizes="[10, 20, 30, 50]"
-        :page-size="10"
+        :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @current-change="handleCurrentChange"
@@ -157,7 +157,7 @@ export default {
     }
   },
   created() {
-    this.getListreport(10, 0, 101, 1)
+    this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 101, 1)
   },
   methods: {
     handleClick(row) {
