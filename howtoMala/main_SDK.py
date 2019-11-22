@@ -31,6 +31,7 @@ class mala_predict(worker):
         worker.__init__(self, workertype)
         self.log.info("初始化一个预测的worker")
         self.mtype = mt.MALA.value
+        self.modpath = ""
 
         self.BS = 100
         #totalTest_cross_domain = len(list(paths.list_images(config.TEST_PATH_CROSS_DOMAIN)))
@@ -227,14 +228,15 @@ class mala_predict(worker):
         	shuffle=False,
         	batch_size=self.BS)
 
-        model=load_model(self.projectinfo['modpath'])
-        # 保存模型结构图
-        #plot_model(model, to_file='model1.png',show_shapes=True)
+        if self.modpath != self.projectinfo['modpath'] or self.model is None:
+            self.modpath = self.projectinfo['modpath']
+            self.model = load_model(self.projectinfo['modpath'])
+
         # reset the testGen_cross_domain generator and then use our trained model to
         # make predictions on the data
         print("[INFO] evaluating network ...(testGen_cross_domain)")
         testGen_cross_domain.reset()
-        predIdxs = model.predict_generator(testGen_cross_domain,
+        predIdxs = self.model.predict_generator(testGen_cross_domain,
         	steps=(self.totalTest_cross_domain // self.BS+1),verbose=1)
 
         classes = list(np.argmax(predIdxs, axis=1))
