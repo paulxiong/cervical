@@ -9,12 +9,12 @@
       <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
         <best-model />
       </el-col>
-      <!-- <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
+      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
         <medical-report />
       </el-col>
       <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:20px;margin-bottom:30px;">
-        <marking-progress />
-      </el-col> -->
+        <data-sets />
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -23,17 +23,17 @@
 import PanelGroup from './components/PanelGroup'
 import TransactionTable from './components/TransactionTable'
 import BestModel from './components/bestModel'
-// import MarkingProgress from './components/MarkingProgress'
-// import medicalReport from './components/medicalReport'
+import DataSets from './components/DataSets'
+import medicalReport from './components/medicalReport'
 
 export default {
   name: 'DashboardAdmin',
   components: {
     PanelGroup,
     TransactionTable,
-    BestModel
-    // MarkingProgress,
-    // medicalReport
+    BestModel,
+    DataSets,
+    medicalReport
   }
 }
 </script>

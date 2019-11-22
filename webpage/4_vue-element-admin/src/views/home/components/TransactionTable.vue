@@ -1,7 +1,7 @@
 <template>
   <div class="projectData">
     <el-table :data="projectlist" style="width: 100%;padding-top: 7px;">
-      <el-table-column label="近期项目" min-width="100">
+      <el-table-column label="项目ID" min-width="100">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>

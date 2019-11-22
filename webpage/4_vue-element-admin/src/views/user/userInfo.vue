@@ -64,7 +64,8 @@ export default {
       ruleForm: {
         name: '',
         mobile: '',
-        introduction: ''
+        introduction: '',
+        created_at: ''
       },
       rules: {
         name: [

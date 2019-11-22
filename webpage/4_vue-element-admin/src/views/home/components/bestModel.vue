@@ -58,7 +58,7 @@ export default {
     }
   },
   created() {
-    this.getListmodel(5, 0, 52)
+    this.getListmodel(4, 0, 52)
   },
   methods: {
     getListmodel(limit, skip, type) {
