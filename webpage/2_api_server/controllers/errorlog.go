@@ -5,6 +5,7 @@ import (
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,13 +23,12 @@ type errlog struct {
 // @Security ApiKeyAuth
 // @Param CreateErrorLog body controllers.errlog true "新建(训练/预测)项目"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/errorlog [post]
 func CreateErrorLog(c *gin.Context) {
 	el := errlog{}
 	err := c.ShouldBindJSON(&el)
 	if err != nil {
-		ResString(c, "invalied errorlog")
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 	user, _ := models.GetUserFromContext(c)
@@ -42,11 +42,13 @@ func CreateErrorLog(c *gin.Context) {
 
 	models.SaveErrorlogIDtoContext(c, nel.ID)
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   "ok",
-	})
+	res.ResSucceedString(c, "ok")
 	return
+}
+
+type errlogs struct {
+	Logs  []models.Errorlog
+	Total int `json:"total"  example:"100"` //错误日志的的个数
 }
 
 // GetErrorLog 获得前端错误日志
@@ -59,8 +61,7 @@ func CreateErrorLog(c *gin.Context) {
 // @Param limit query string false "limit, default 10"
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
-// @Success 200 {object} models.Errorlog
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
+// @Success 200 {object} controllers.errlogs
 // @Router /api1/errorlog [get]
 func GetErrorLog(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
@@ -71,6 +72,11 @@ func GetErrorLog(c *gin.Context) {
 	_order, _ := strconv.ParseInt(orderStr, 10, 32)
 
 	els, total, _ := models.ErrorlogLists(int(limit), int(skip), int(_order))
-	ResStructTotal(c, els, total)
+
+	el := errlogs{
+		Logs:  els,
+		Total: total,
+	}
+	res.ResSucceedStruct(c, el)
 	return
 }

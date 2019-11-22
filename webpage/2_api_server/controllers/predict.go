@@ -3,8 +3,10 @@ package controllers
 import (
 	"strconv"
 
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,7 +47,7 @@ func GetPredictResult2(c *gin.Context) {
 		Predicts: predicts,
 	}
 
-	ResStruct(c, _predicts)
+	res.ResSucceedStruct(c, _predicts)
 	return
 }
 
@@ -79,7 +81,7 @@ func GetPredictImges(c *gin.Context) {
 
 	_d, err := models.GetOneDatasetByID(int(did))
 	if err != nil || len(_d.MedicalIDs1) < 1 {
-		ResString(c, "datasets not found")
+		res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
 		return
 	}
 
@@ -95,7 +97,7 @@ func GetPredictImges(c *gin.Context) {
 			H:       v.H,
 		})
 	}
-	ResStruct(c, rimgs)
+	res.ResSucceedStruct(c, rimgs)
 	return
 }
 
@@ -120,13 +122,13 @@ func UpdatePredict(c *gin.Context) {
 	pu := predictupdate{}
 	err := c.ShouldBindJSON(&pu)
 	if err != nil {
-		ResString(c, "invalied post data")
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 
 	models.UpdatePredict(pu.ID, pu.TrueType)
 
-	ResString(c, "ok")
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -151,12 +153,12 @@ func ReviewPredict(c *gin.Context) {
 	pr := predictreview{}
 	err := c.ShouldBindJSON(&pr)
 	if err != nil {
-		ResString(c, "invalied post data")
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 
 	models.ReviewPredict(pr.ID, pr.Status)
 
-	ResString(c, "ok")
+	res.ResSucceedString(c, "ok")
 	return
 }

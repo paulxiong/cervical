@@ -33,7 +33,7 @@ func ResInt64(c *gin.Context, status int, v int64) {
 func ResFailedStatus(c *gin.Context, status int) {
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": status,
-		"data":   "",
+		"data":   nil,
 	})
 }
 

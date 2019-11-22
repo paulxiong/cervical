@@ -3,8 +3,9 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 
-	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 )
 
 // emailContent 邮件的格式
@@ -21,13 +22,12 @@ type emailContent struct {
 // @Security ApiKeyAuth
 // @Param emailContent body controllers.emailContent true "邮件的html内容"
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/registeremailcfg [POST]
 func RegisterEmailCfg(c *gin.Context) {
 	var ec emailContent
 	err := c.ShouldBindJSON(&ec)
 	if err != nil {
-		ResString(c, "invalied labels")
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 
@@ -37,11 +37,10 @@ func RegisterEmailCfg(c *gin.Context) {
 
 	err = s.NewOrUpdateSysCfg()
 	if err != nil {
-		logger.Info.Println(err)
-		ResString(c, "save system cfg failed")
+		res.ResFailedStatus(c, e.Errors["SystemSaveFailed"])
 		return
 	}
-	ResString(c, "ok")
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -53,14 +52,14 @@ func RegisterEmailCfg(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {object} models.Syscfg
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/registeremailcfg [GET]
 func GetRegisterEmailCfg(c *gin.Context) {
 	s, err := models.FindSysCfg()
 	if err != nil {
-		ResString(c, "system cfg not found")
+		res.ResFailedStatus(c, e.Errors["SystemNotFound"])
+		return
 	}
 
-	ResStruct(c, s)
+	res.ResSucceedStruct(c, s)
 	return
 }

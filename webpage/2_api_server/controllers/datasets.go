@@ -8,6 +8,7 @@ import (
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -43,7 +44,6 @@ type Statistics struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/dtinfo [get]
 func AllInfo(c *gin.Context) {
 	st := Statistics{}
@@ -80,10 +80,7 @@ func AllInfo(c *gin.Context) {
 	st.TotalLabelP = totalP
 	st.TotalLabelN = totalN
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   st,
-	})
+	res.ResSucceedStruct(c, st)
 	return
 }
 
@@ -100,26 +97,26 @@ type BatchInfo struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param limit query string false "limit, default 100"
+// @Param skip query string false "skip, default 0"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/batchinfo [get]
 func GetBatchInfo(c *gin.Context) {
-	total, bs, err := models.ListBatch(100, 0)
+	limitStr := c.DefaultQuery("limit", "100")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+
+	total, bs, err := models.ListBatch(int(limit), int(skip))
 	if err != nil {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "",
-		})
+		res.ResFailedStatus(c, e.Errors["BatchListFailed"])
 		return
 	}
 	bi := BatchInfo{
 		Total:  int(total),
 		Batchs: bs,
 	}
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   bi,
-	})
+	res.ResSucceedStruct(c, bi)
 	return
 }
 
@@ -137,7 +134,6 @@ type MedicalIDInfo struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/medicalidinfo [get]
 func GetMedicalIDInfo(c *gin.Context) {
 	var total int
@@ -155,10 +151,7 @@ func GetMedicalIDInfo(c *gin.Context) {
 		Total:      int(total),
 		MedicalIds: allms,
 	}
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   mi,
-	})
+	res.ResSucceedStruct(c, mi)
 	return
 }
 
@@ -184,7 +177,6 @@ type CategorysInfo struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/categoryinfo [get]
 func GetCategoryInfo(c *gin.Context) {
 	var ci CategorysInfo
@@ -199,10 +191,7 @@ func GetCategoryInfo(c *gin.Context) {
 			Checked: false,
 		})
 	}
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   ci,
-	})
+	res.ResSucceedStruct(c, ci)
 	return
 }
 
@@ -229,7 +218,6 @@ type wanted2 struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/imglistsofwanted [get]
 func GetImgListOfWanted(c *gin.Context) {
 	images := wanted2{}
@@ -250,15 +238,12 @@ func GetImgListOfWanted(c *gin.Context) {
 		}
 	}
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   images,
-	})
-
+	res.ResSucceedStruct(c, images)
 	return
 }
 
 type imageslists struct {
+	Total  int64          `json:"total"`
 	Images []models.Image `json:"images"`
 }
 
@@ -270,7 +255,6 @@ type imageslists struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/imglistsonebyone [get]
 func GetImgListOneByOne(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
@@ -286,13 +270,9 @@ func GetImgListOneByOne(c *gin.Context) {
 	for _, v := range imgs {
 		images.Images = append(images.Images, v)
 	}
+	images.Total = total
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   images,
-		"total":  total,
-	})
-
+	res.ResSucceedStruct(c, images)
 	return
 }
 
@@ -320,22 +300,21 @@ type imagesNPCount struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/getimgnptypebymids [post]
 func GetImagesNPTypeByMedicalID(c *gin.Context) {
 	cnt := imagesNPCount{}
 	w := imagesNPTypeByMedicalID{}
 	err := c.BindJSON(&w)
-	logger.Info.Println(err, w.Medicalids)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
 
 	totaln, totalp, _ := models.ListImagesNPTypeByMedicalID(w.Medicalids)
 	cnt.CountN = totaln
 	cnt.CountP = totalp
-	logger.Info.Println(totaln, totalp)
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   cnt,
-	})
+
+	res.ResSucceedStruct(c, cnt)
 	return
 }
 
@@ -348,13 +327,13 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param createdataset body controllers.imagesNPTypeByMedicalID true "创建数据集"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/createdataset [post]
 func CreateDataset(c *gin.Context) {
 	w := imagesNPTypeByMedicalID{}
 	err := c.BindJSON(&w)
 	if err != nil {
-		logger.Info.Println(err)
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
 	}
 
 	usr, _ := models.GetUserFromContext(c)
@@ -375,7 +354,6 @@ func CreateDataset(c *gin.Context) {
 	dt.ParameterCache = w.ParameterCache
 
 	dt.CreateDatasets()
-	logger.Info.Println(w.Medicalids)
 
 	//根据病历号取出所有的图片
 	medicalids := make([]models.Image, 0)
@@ -386,10 +364,7 @@ func CreateDataset(c *gin.Context) {
 		}
 	}
 	if len(medicalids) < 1 {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "invalied data",
-		})
+		res.ResFailedStatus(c, e.Errors["MedicalImageNotFound"])
 		return
 	}
 
@@ -399,11 +374,7 @@ func CreateDataset(c *gin.Context) {
 
 	f.NewJSONFile(dt, w.Batchids, w.Medicalids, cntn, cntp)
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   dt.ID,
-	})
-
+	res.ResSucceedInt64(c, dt.ID)
 	return
 }
 
@@ -424,7 +395,6 @@ type jobResult struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 63}"
 // @Router /api1/job [post]
 func GetOneJob(c *gin.Context) {
 	w := jobResult{}
@@ -434,10 +404,7 @@ func GetOneJob(c *gin.Context) {
 	if w.Type == 1 {
 		dt, err := models.GetOneDatasetsToProcess(w.Status)
 		if err != nil {
-			c.JSON(e.StatusReqOK, gin.H{
-				"status": e.StatusSucceed,
-				"data":   dt,
-			})
+			res.ResSucceedStruct(c, dt)
 			return
 		}
 		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5目录不存在 6送去训练
@@ -445,28 +412,18 @@ func GetOneJob(c *gin.Context) {
 			models.UpdateDatasetsStatus(dt.ID, 2)
 		}
 
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   dt,
-		})
+		res.ResSucceedStruct(c, dt)
 	} else if w.Type == 2 || w.Type == 3 {
 		project, err := models.GetOneProjectToProcess(w.Status, w.Type, w.MType)
 		if err != nil {
-			c.JSON(e.StatusReqOK, gin.H{
-				"status": e.StatusSucceed,
-				"data":   project,
-			})
+			res.ResSucceedStruct(c, project)
 			return
 		}
 		//0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
 		if w.Status == 1 {
 			models.UpdateProjectStatus(project.ID, 2)
 		}
-
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   project,
-		})
+		res.ResSucceedStruct(c, project)
 	}
 	return
 }
@@ -479,16 +436,12 @@ func GetOneJob(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobresult [post]
 func SetJobResult(c *gin.Context) {
 	w := jobResult{}
 	err := c.BindJSON(&w)
 	if err != nil {
-		logger.Info.Println(err)
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-		})
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 	// 0未知 1数据处理 2训练 3预测
@@ -539,11 +492,7 @@ func SetJobResult(c *gin.Context) {
 			}
 		}
 	}
-
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-	})
-
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -563,7 +512,6 @@ type listDatasets struct {
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listdatasets [get]
 func ListDatasets(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
@@ -582,10 +530,7 @@ func ListDatasets(c *gin.Context) {
 	dts.Datasets = ds
 	dts.Total = total
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   dts,
-	})
+	res.ResSucceedStruct(c, dts)
 	return
 }
 
@@ -599,7 +544,6 @@ func ListDatasets(c *gin.Context) {
 // @Param id query string false "id, default 1"
 // @Param done query string false "查看完成前的标注信息还是完成后的细胞统计信息, default 0 是完成之前的标注信息， 1是完成之后的细胞信息"
 // @Success 200 {object} function.JobInfo
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobresult [get]
 func GetJobResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
@@ -613,11 +557,7 @@ func GetJobResult(c *gin.Context) {
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, done))
 	j.Status = d.Status
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   j,
-	})
-
+	res.ResSucceedStruct(c, j)
 	return
 }
 
@@ -637,7 +577,6 @@ type datasetPercent struct {
 // @Param id query string false "id, default 1, 被预测的数据集ID/被预测或训练的项目的ID，即目标任务的ID"
 // @Param type query string false "type, default 1, 查询的对象 0 未知 1 数据集处理 2 训练 3 预测"
 // @Success 200 {object} controllers.datasetPercent
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/jobpercent [get]
 func GetJobPercent(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
@@ -659,11 +598,7 @@ func GetJobPercent(c *gin.Context) {
 		percent.Status = p.Status
 	}
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   percent,
-	})
-
+	res.ResSucceedStruct(c, percent)
 	return
 }
 
@@ -677,7 +612,6 @@ func GetJobPercent(c *gin.Context) {
 // @Param id query string false "id, default 1, 被预测的数据集ID/被预测或训练的项目的ID"
 // @Param type query string false "type, default 1, 查询的对象 0 未知 1 数据集处理 2 训练 3 预测"
 // @Success 200 {string} json "{"data": "日志字符串",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/joblog [get]
 func GetJobLog(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "1")
@@ -695,10 +629,7 @@ func GetJobLog(c *gin.Context) {
 		dirname = project.Dir
 	}
 	logstr := f.GetLogContent(dirname, int(_type))
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   logstr,
-	})
+	res.ResSucceedString(c, logstr)
 	return
 }
 
@@ -727,7 +658,6 @@ type imgsofmedical struct {
 // @Param limit query string false "limit, default 100, 个数上限制"
 // @Param skip query string false "skip, default 0, 跳过的个数"
 // @Success 200 {object} controllers.imgsofmedical
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/getimgbymid [get]
 func GetImgListOfMedicalID(c *gin.Context) {
 	MedicalID := c.DefaultQuery("mdcid", "")
@@ -738,13 +668,13 @@ func GetImgListOfMedicalID(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 32)
 
 	if len(MedicalID) < 1 || len(BatchID) < 1 {
-		ResString(c, "bad MedicalID or BatchID")
+		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return
 	}
 
 	total, _imgs, err := models.ListImageOfMedicalID(BatchID, MedicalID, limit, skip)
 	if err != nil {
-		ResString(c, "not found images")
+		res.ResFailedStatus(c, e.Errors["MedicalImageNotFound"])
 		return
 	}
 	imgs := imgsofmedical{
@@ -760,8 +690,7 @@ func GetImgListOfMedicalID(c *gin.Context) {
 			H:       v.H,
 		})
 	}
-
-	ResStruct(c, imgs)
+	res.ResSucceedStruct(c, imgs)
 	return
 }
 

@@ -247,6 +247,11 @@ func GetAccessLog(c *gin.Context) {
 	return
 }
 
+type listusers struct {
+	Users []m.User `json:"users"`
+	Total int      `json:"total"`
+}
+
 // GetUserLists 按数据库存储顺序依次获得所有用户信息
 // @Summary 按数据库存储顺序依次获得所有用户信息
 // @Description 按数据库存储顺序依次获得所有用户信息
@@ -271,7 +276,11 @@ func GetUserLists(c *gin.Context) {
 	if err != nil {
 		logger.Info.Println(err)
 	}
-	ResStructTotal(c, users, total)
+	lu := listusers{
+		Users: users,
+		Total: total,
+	}
+	res.ResSucceedStruct(c, lu)
 	return
 }
 

@@ -5,14 +5,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 )
 
 // Labelslists 标注信息
 type Labelslists struct {
 	Labels []models.Label `json:"labels"`
-	W      int            `json:"imgw" example:"1024"`
-	H      int            `json:"imgh" example:"768"`
+	W      int            `json:"imgw"  example:"1024"`
+	H      int            `json:"imgh"  example:"768"`
+	Total  int64          `json:"total" example:"1"`
 }
 
 // GetLabelByImageID 通过图片的ID获得对应的所有标注信息
@@ -27,7 +30,6 @@ type Labelslists struct {
 // @Param status query string false "status, default 10, 0 未审核 1 已审核 2 移除 10 审核+未审核的"
 // @Param imgid query string false "imgid, default 1， 表示图片的ID"
 // @Success 200 {object} controllers.Labelslists
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/getLabelbyimageid [get]
 func GetLabelByImageID(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
@@ -61,8 +63,8 @@ func GetLabelByImageID(c *gin.Context) {
 		v.TypeOut = _c.Name
 		labels.Labels = append(labels.Labels, v)
 	}
-	ResStructTotal(c, labels, int(total))
-
+	labels.Total = total
+	res.ResSucceedStruct(c, labels)
 	return
 }
 
@@ -79,6 +81,7 @@ type labelResult struct {
 
 type labelsResult struct {
 	Labels []labelResult
+	Total  int64 `json:"total" example:"1"`
 }
 
 // UpdateLabelsOfImage 标注信息的增删改
@@ -90,19 +93,18 @@ type labelsResult struct {
 // @Security ApiKeyAuth
 // @Param CreateProject body controllers.labelsResult true "某张图片的标注增删改查的信息"
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/updatelabelsofimage [POST]
 func UpdateLabelsOfImage(c *gin.Context) {
 	var lr labelsResult
 	err := c.ShouldBindJSON(&lr)
 	if err != nil {
-		ResString(c, "invalied labels")
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 
 	for _, v := range lr.Labels {
 		if v.Op == 0 || v.Op > 3 || v.ImgID < 1 || ((v.Op == 2 || v.Op == 3) && v.LabelID < 1) {
-			ResString(c, "invalied labels 2")
+			res.ResFailedStatus(c, e.Errors["LabelInvalied"])
 			return
 		}
 
@@ -117,7 +119,7 @@ func UpdateLabelsOfImage(c *gin.Context) {
 			Status: 0,
 		}
 		if newl.X1 < 0 || newl.Y1 < 0 || newl.X2 <= newl.X1 || newl.Y2 <= newl.Y1 {
-			ResString(c, "invalied labels 3")
+			res.ResFailedStatus(c, e.Errors["LabelInvalied"])
 			return
 		}
 
@@ -130,7 +132,6 @@ func UpdateLabelsOfImage(c *gin.Context) {
 		}
 	}
 
-	//ResStructTotal(c, labels, int(total))
-
+	res.ResSucceedString(c, "ok")
 	return
 }

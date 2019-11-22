@@ -8,7 +8,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"net/http"
 	"os"
 	"path"
 	"strconv"
@@ -19,6 +18,7 @@ import (
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
 
@@ -31,7 +31,6 @@ import (
 // @Security ApiKeyAuth
 // @Param id query string false "id, default 0, 数据集的ID"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/zipdownload [get]
 func FileDownload(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
@@ -40,10 +39,7 @@ func FileDownload(c *gin.Context) {
 	// GetOneDatasetByID 通过ID查找数据集
 	dt, err := models.GetOneDatasetByID(int(id))
 	if len(dt.Dir) < 1 || err != nil || dt.Status != 4 {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "data not found or not ready",
-		})
+		res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
 		return
 	}
 
@@ -52,10 +48,7 @@ func FileDownload(c *gin.Context) {
 	//打包zip
 	err = f.ZipCompress(dt.Dir, filename)
 	if err != nil {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "data not avalied",
-		})
+		res.ResFailedStatus(c, e.Errors["ZipFailed"])
 		return
 	}
 
@@ -75,7 +68,6 @@ func FileDownload(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param id query string false "id, default 0, 数据集的ID"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/uploads [post]
 func UploadsHandler(c *gin.Context) {
 	//获取解析后表单
@@ -87,7 +79,7 @@ func UploadsHandler(c *gin.Context) {
 	for _, file := range files {
 		c.SaveUploadedFile(file, file.Filename)
 	}
-	c.String(http.StatusOK, fmt.Sprintf("%d 个文件被上传成功!", len(files)))
+	res.ResSucceedString(c, fmt.Sprintf("%d 个文件被上传成功!", len(files)))
 }
 
 // UploadDatasetHandler 上传单个文件,并记录到数据集
@@ -98,19 +90,18 @@ func UploadsHandler(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/upload [post]
 func UploadDatasetHandler(c *gin.Context) {
 	_mid := c.DefaultPostForm("mid", "")
 	_bid := c.DefaultPostForm("bid", "")
 	if len(_mid) < 1 || len(_bid) < 1 {
-		ResString(c, "invalied medicalid or batchid")
+		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return
 	}
 
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
-		ResString(c, fmt.Sprintf("file err : %s", err.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadGetFileNameFailed"])
 		return
 	}
 
@@ -122,27 +113,25 @@ func UploadDatasetHandler(c *gin.Context) {
 
 	out, err := os.Create(filepath)
 	if err != nil {
-		logger.Info.Println(err)
-		ResString(c, fmt.Sprintf("Create %s failed, %s", filepath, err.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadMkdirFailed"])
 		return
 	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
-		logger.Info.Println(err)
-		ResString(c, fmt.Sprintf("Create %s failed, %s", filepath, err.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}
 
 	imgfile, err1 := os.Open(filepath)
 	if err1 != nil {
-		ResString(c, fmt.Sprintf("open image %s failed, %s", filepath, err1.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadOpenFailed"])
 		return
 	}
 	defer imgfile.Close()
 	imginfo, _, err2 := image.DecodeConfig(imgfile)
 	if err2 != nil {
-		ResString(c, fmt.Sprintf("Decode image %s failed, %s", filepath, err2.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadDecodeFailed"])
 		return
 	}
 
@@ -163,7 +152,7 @@ func UploadDatasetHandler(c *gin.Context) {
 	}
 	img.CreateImage()
 
-	ResString(c, "ok")
+	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -175,12 +164,11 @@ func UploadDatasetHandler(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/uploadimg [post]
 func UploadImgHandler(c *gin.Context) {
 	file, _, err := c.Request.FormFile("file")
 	if err != nil {
-		ResString(c, fmt.Sprintf("file err : %s", err.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadGetFileNameFailed"])
 		return
 	}
 
@@ -189,18 +177,16 @@ func UploadImgHandler(c *gin.Context) {
 
 	out, err := os.Create(filepath)
 	if err != nil {
-		logger.Info.Println(err)
-		ResString(c, fmt.Sprintf("Create %s failed, %s", filepath, err.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadMkdirFailed"])
 		return
 	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
-		logger.Info.Println(err)
-		ResString(c, fmt.Sprintf("Create %s failed, %s", filepath, err.Error()))
+		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}
 
-	ResString(c, fileURL)
+	res.ResSucceedString(c, fileURL)
 	return
 }

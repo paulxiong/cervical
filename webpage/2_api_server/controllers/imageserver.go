@@ -18,7 +18,6 @@ import (
 // @Param width query string false "width, 图片宽度，不传值表示原始尺寸，只传width不传height表示按照width等比例缩放"
 // @Param height query string false "height, 图片高度，不传值表示原始尺寸，只传height不传width表示按照height等比例缩放"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /imgs [get]
 func ImageAPI(c *gin.Context) {
 	cfg := f.ImageServerSettings{

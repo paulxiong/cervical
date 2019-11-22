@@ -28,10 +28,28 @@
 
         {"status": 100, "key": "ProjectNotReady",        "content": "项目没找到或者项目没处理完成"},
 
-        {"status": 110, "key": "DatasetsNotFound",       "content": "数据集没找到"},
+        {"status": 110, "key": "DatasetsNotFound",       "content": "数据集没找到,或者没准备好"},
 
         {"status": 120, "key": "ModelInfoNotFound",      "content": "模型文件信息没找到或加载失败"},
         {"status": 121, "key": "ModelAlreadySaved",      "content": "该模型文件已经保存过了"},
-        {"status": 122, "key": "ModelSaveFailed",        "content": "模型文件保存失败"}
+        {"status": 122, "key": "ModelSaveFailed",        "content": "模型文件保存失败"},
+
+        {"status": 130, "key": "BatchListFailed",        "content": "获取批次信息失败"},
+
+        {"status": 140, "key": "MedicalImageNotFound",   "content": "所选病历号下面没找到图片"},
+        {"status": 141, "key": "MedicalBatchInvalied",   "content": "病历号或批次号错误"},
+
+        {"status": 150, "key": "ZipFailed",   "content": "创建zip失败"},
+
+        {"status": 160, "key": "UploadGetFileNameFailed",   "content": "获取上传文件名失败"},
+        {"status": 161, "key": "UploadMkdirFailed",   "content": "创建目录失败"},
+        {"status": 162, "key": "UploadSaveFailed",   "content": "保存文件失败"},
+        {"status": 163, "key": "UploadOpenFailed",   "content": "读取文件失败"},
+        {"status": 164, "key": "UploadDecodeFailed",   "content": "解析图片文件失败"},
+
+        {"status": 170, "key": "LabelInvalied",   "content": "标注数据未按照规定格式传递"},
+
+        {"status": 180, "key": "SystemSaveFailed",   "content": "保存系统配置出错"},
+        {"status": 181, "key": "SystemNotFound",   "content": "系统配置未找到"}
 	]
 }
