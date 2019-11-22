@@ -24,10 +24,8 @@ import (
 // @description 认证时候填 "token eyJhbGciOiJIU..." (注意token后面有个空格， token向管理员申请)
 // @description swagger 只显示返回值data字段的内容，返回值的描述如下：
 // @description {
-// @description     code: "200", // 当前请求的状态，比如 RFC 7231, 6.3.1， 200表示StatusOK
 // @description     status: "70", // 我们平台处理请求的状态, 比如70表示：注册的用户名已经存在
-// @description     type: "obj", // data字段的内容的类型，可以是 obj/array/int/string/null里面的5种
-// @description     data: {}/[]/int/string // 我们平台处理请求的结果，可以是对象/数组/整数/字符串
+// @description     data: {}/[]/int/string // 我们平台处理请求的结果，可以是对象/数组/整数/字符串, null是状态为出错(status>0)时候返回的
 // @description }
 // @termsOfService http://dev.medical.raidcdn.cn:3000
 // @contact.name API Support

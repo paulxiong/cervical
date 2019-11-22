@@ -42,7 +42,7 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ emailormobile: username.trim(), password: password }).then(response => {
-        const { data } = response
+        const { data } = response.data
         commit('SET_TOKEN', data.token)
         setToken(`token ${data.token}`)
         resolve()

@@ -1,29 +1,29 @@
 {
 	"errs": [
-        {"id": 0,  "key": "Succeed",    "content": "网络请求成功"},
-        {"id": 1,  "key": "Unknown",    "content": "未知的错误"},
-        {"id": 51, "key": "PingFailed", "content": "ping失败(这个绝对不可能出现)"},
+        {"status": 0,  "key": "Succeed",    "content": "网络请求成功"},
+        {"status": 1,  "key": "Unknown",    "content": "未知的错误"},
+        {"status": 51, "key": "PingFailed", "content": "ping失败(这个绝对不可能出现)"},
 
-        {"id": 40, "key": "PostDataInvalied",  "content": "提交数据格式错误"},
+        {"status": 40, "key": "PostDataInvalied",  "content": "提交数据格式错误"},
 
-        {"id": 60, "key": "LoginBadPasswd",    "content": "密码错误，请重新输入"},
-        {"id": 61, "key": "LoginUserNotFound", "content": "用户名不存在"},
-        {"id": 62, "key": "LoginError",        "content": "登录出错，请重试"},
-        {"id": 63, "key": "LoginInvalidData",  "content": "没填写用户名或者密码， 请重试"},
+        {"status": 60, "key": "LoginBadPasswd",    "content": "密码错误，请重新输入"},
+        {"status": 61, "key": "LoginUserNotFound", "content": "用户名不存在"},
+        {"status": 62, "key": "LoginError",        "content": "登录出错，请重试"},
+        {"status": 63, "key": "LoginInvalidData",  "content": "没填写用户名或者密码， 请重试"},
 
-        {"id": 70, "key": "RegisterUserExisted",    "content": "注册的用户名已经存在，请直接登录或换一个用户名再试"},
-        {"id": 71, "key": "RegisterEmailExisted",   "content": "注册的邮箱已经存在， 请直接登录"},
-        {"id": 72, "key": "RegisterPasswdMismatch", "content": "两次密码不一致， 请重新输入"},
-        {"id": 73, "key": "RegisterInvalidData",    "content": "提交数据错误， 请重试"},
-        {"id": 74, "key": "RegisterNewUserFailed",  "content": "创建用户失败，请重试"},
-        {"id": 75, "key": "RegisterError",          "content": "注册出错，请重试"},
-        {"id": 76, "key": "RegisterMobileExisted",  "content": "注册的手机号已经存在，请直接登录"},
-        {"id": 77, "key": "RegisterMailFailed",     "content": "使用邮箱注册出错，请重试"},
-        {"id": 78, "key": "RegisterMailInvalid",    "content": "验证码错误，请重输入"},
+        {"status": 70, "key": "RegisterUserExisted",    "content": "注册的用户名已经存在，请直接登录或换一个用户名再试"},
+        {"status": 71, "key": "RegisterEmailExisted",   "content": "注册的邮箱已经存在， 请直接登录"},
+        {"status": 72, "key": "RegisterPasswdMismatch", "content": "两次密码不一致， 请重新输入"},
+        {"status": 73, "key": "RegisterInvalidData",    "content": "提交数据错误， 请重试"},
+        {"status": 74, "key": "RegisterNewUserFailed",  "content": "创建用户失败，请重试"},
+        {"status": 75, "key": "RegisterError",          "content": "注册出错，请重试"},
+        {"status": 76, "key": "RegisterMobileExisted",  "content": "注册的手机号已经存在，请直接登录"},
+        {"status": 77, "key": "RegisterMailFailed",     "content": "使用邮箱注册出错，请重试"},
+        {"status": 78, "key": "RegisterMailInvalid",    "content": "验证码错误，请重输入"},
 
-        {"id": 80, "key": "EmailCodeInvalidData",    "content": "提交数据错误， 请重试"},
-        {"id": 81, "key": "EmailCodeSendFailed",     "content": "邮件发送失败， 请稍后重试"},
+        {"status": 80, "key": "EmailCodeInvalidData",    "content": "提交数据错误， 请重试"},
+        {"status": 81, "key": "EmailCodeSendFailed",     "content": "邮件发送失败， 请稍后重试"},
 
-        {"id": 90, "key": "UserUpdateFailed",        "content": "用户信息更新失败， 请稍后重试"}
+        {"status": 90, "key": "UserUpdateFailed",        "content": "用户信息更新失败， 请稍后重试"}
 	]
 }

@@ -114,7 +114,7 @@ const (
 const errorfile = "web/src/const/errCode.json"
 
 type erroritem struct {
-	ID      int    `json:"id"      example:"1"`              //错误的ID
+	Status  int    `json:"status"  example:"1"`              //错误的ID
 	Key     string `json:"key"     example:"description..."` //错误的key
 	Content string `json:"content" example:"description..."` //错误的内容描述
 }
@@ -143,7 +143,7 @@ func init() {
 	if length := len(err.Errs); length > 0 {
 		Errors = make(map[string]int, length)
 		for _, _e := range err.Errs {
-			Errors[_e.Key] = _e.ID
+			Errors[_e.Key] = _e.Status
 		}
 	}
 }
