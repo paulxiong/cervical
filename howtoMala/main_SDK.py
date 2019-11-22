@@ -33,7 +33,7 @@ class mala_predict(worker):
         self.mtype = mt.MALA.value
         self.modpath = ""
 
-        self.BS = 100
+        self.BS = 128
         #totalTest_cross_domain = len(list(paths.list_images(config.TEST_PATH_CROSS_DOMAIN)))
         self.totalTest_cross_domain = 1
         self.log.info("totalTest_cross_domain=" + str(self.totalTest_cross_domain))
@@ -135,7 +135,8 @@ class mala_predict(worker):
         #组织预测的目录结构
         if self.wtype == wt.PREDICT.value:
             #设置预测个数
-            self.BS = df.shape[0]
+            self.BS = 128
+            self.totalTest_cross_domain = df.shape[0]
 
             X_predict, _, y_predict, _ = self.copy_train_cells(df)
             self.resize_img(X_predict, y_predict, self.project_resize_predict_dir, self.project_predict_labels_csv, RESIZE=size)
@@ -217,6 +218,8 @@ class mala_predict(worker):
         ret = self.mkdatasets()
         if ret is False:
             return False
+
+        self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
 
         # initialize the testing generator for cross domain
         valAug = ImageDataGenerator(rescale=1 / 255.0)
