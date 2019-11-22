@@ -13,7 +13,7 @@ class api():
         #    print(path, payload)
         api_url = self.apihost + path
         try:
-            response = requests.post(api_url, json=payload, timeout=4)
+            response = requests.post(api_url, json=payload, timeout=60)
         except Exception as e:
             print(e)
         else:

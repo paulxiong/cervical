@@ -149,11 +149,17 @@ func GetTrainResult(c *gin.Context) {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param id query string false "id, default 0, 项目ID"
+// @Param limit query string false "limit, default 500, 细胞图个数上限制"
+// @Param skip query string false "skip, default 0, 细胞图跳过的个数"
 // @Success 200 {object} function.PredictInfo2
 // @Router /api1/predictresult [get]
 func GetPredictResult(c *gin.Context) {
 	idStr := c.DefaultQuery("id", "0")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
+	limitStr := c.DefaultQuery("limit", "500")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 
 	dinfo, err := models.GetOneProjectByID(int(id))
 	if err != nil {
@@ -161,8 +167,22 @@ func GetPredictResult(c *gin.Context) {
 		return
 	}
 
-	str := f.LoadPredictJSONFile(dinfo.Dir)
+	j := f.LoadPredictJSONFile(dinfo.Dir)
+	j.CellsTotal = len(j.Cells)
+	if j.CellsTotal > int(limit) {
+		var CellsCrop []f.PredictCell
+		for index, v := range j.Cells {
+			if index < int(skip) {
+				continue
+			}
+			if len(CellsCrop) >= int(limit) {
+				break
+			}
+			CellsCrop = append(CellsCrop, v)
+		}
+		j.Cells = CellsCrop
+	}
 
-	res.ResSucceedStruct(c, str)
+	res.ResSucceedStruct(c, j)
 	return
 }

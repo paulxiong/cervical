@@ -464,10 +464,11 @@ func SetJobResult(c *gin.Context) {
 		_p, err2 := models.GetOneProjectByID(int(w.ID))
 		if err2 == nil && len(_p.Dir) > 0 {
 			result := f.LoadPredictJSONFile(_p.Dir)
+
+			var cellpredicts []*models.Predict
 			for _, v := range result.Cells {
-				logger.Info.Println(v.URL, v.Type, v.Predict, v.Score, v.X1, v.Y1, v.X2, v.Y2)
 				// PredictType := 100 //1到15是细胞类型，51-阳性  50-阴性， 100 未知
-				cellpredict := &models.Predict{
+				cellpredicts = append(cellpredicts, &models.Predict{
 					ID:           0,
 					ImgID:        v.ImgID,
 					PID:          w.ID,
@@ -483,12 +484,11 @@ func SetJobResult(c *gin.Context) {
 					TrueP1n0:     0,
 					VID:          0,
 					Status:       0,
-				}
-				cellpredict.CreatePredict()
-
-				// 状态改为送去审核, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
-				models.UpdateProjectStatus(w.ID, 5)
+				})
 			}
+			models.CreatePredicts(cellpredicts, w.ID)
+			// 状态改为送去审核, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
+			models.UpdateProjectStatus(w.ID, 5)
 		}
 	}
 	res.ResSucceedString(c, "ok")

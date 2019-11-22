@@ -76,6 +76,24 @@ func (p *Predict) CreatePredict() (e error) {
 	return ret.Error
 }
 
+// CreatePredicts 新建细胞预测结果，一个很长的数组
+func CreatePredicts(predicts []*Predict, pid int64) (e error) {
+	// 删除当前项目的所有预测结果
+	db.Where("pid=?", pid).Delete(Predict{})
+
+	_db := db.Begin()
+	// 新增预测结果
+	for _, v := range predicts {
+		ret2 := _db.Create(&v)
+		if ret2.Error != nil {
+			logger.Info.Println(ret2.Error)
+		}
+	}
+	_db.Commit()
+
+	return nil
+}
+
 // ListPredict 通过图片ID查找预测
 func ListPredict(limit int, skip int, imgid int, status int) (totalNum int64, p []Predict, e error) {
 	var _p []Predict
