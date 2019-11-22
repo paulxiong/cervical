@@ -47,11 +47,12 @@
               </el-select>
               <el-button class="filter-btn" type="primary" size="mini" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
             </section>
-            <section class="label-img flex">
+            <section class="label-img flex" style="position: relative;">
               <div class="check-box" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 5px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
                   <img class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'">
                 </div>
+                <div style="position: absolute;bottom:-20px;left: 10px;">总进度:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
               </div>
               <AIMarker
                 v-if="fov_img.imgpath"
@@ -84,6 +85,7 @@
                   </el-radio-group>
                 </div>
               </div>
+              <div style="position: absolute;bottom:-20px;left: 500px;">当前图片进度:{{ imgCellsInfo.imgcellsverified }} / {{ imgCellsInfo.imgcellsall }}</div>
             </section>
           </el-tab-pane>
           <el-tab-pane label="log">
@@ -263,7 +265,8 @@ export default {
         'filterChecked': 0, // 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
         'filterCellsType': 2
       },
-      report: ''
+      report: '',
+      imgCellsInfo: {}
     }
   },
   created() {
@@ -330,6 +333,10 @@ export default {
         'true_type': value.length === 2 ? value[1] : value[0]
       }).then(res => {
         this.filterSearch()
+        this.imgCellsInfo.imgcellsall = res.data.data.imgcellsall
+        this.imgCellsInfo.imgcellsverified = res.data.data.imgcellsverified
+        this.imgCellsInfo.cellsall = res.data.data.cellsall
+        this.imgCellsInfo.cellsverified = res.data.data.cellsverified
         this.$message({
           message: '审核修改成功',
           type: 'success'
