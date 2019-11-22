@@ -84,7 +84,7 @@
           <el-pagination
             class="page"
             :current-page.sync="currentPage"
-            :page-sizes="[1000, 2000, 5000, 10000]"
+            :page-sizes="[500, 1000, 2000, 5000]"
             :page-size="currentPageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total"
@@ -149,7 +149,7 @@ export default {
       currentPage2: 1,
       total: 1,
       total2: 1,
-      currentPageSize: 1000,
+      currentPageSize: 500,
       currentPageSize2: 100,
       cells_crop_masked: []
     }
@@ -186,18 +186,30 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
       this.getjobresult2()
+      this.$nextTick(() => {
+        this.cells_crop = this.objData2.cells_crop
+      })
     },
     handleSizeChange(val) {
       this.currentPageSize = val
       this.getjobresult2()
+      this.$nextTick(() => {
+        this.cells_crop = this.objData2.cells_crop
+      })
     },
     handleCurrentChange2(val) {
       this.currentPage2 = val
       this.getjobresult2()
+      this.$nextTick(() => {
+        this.origin_imgs = this.objData2.origin_imgs
+      })
     },
     handleSizeChange2(val) {
       this.currentPageSize2 = val
       this.getjobresult2()
+      this.$nextTick(() => {
+        this.origin_imgs = this.objData2.origin_imgs
+      })
     },
     getjobresult2() {
       getjobresult({ did: this.$route.query.did, done: '1', limit: this.currentPageSize, skip: (this.currentPage - 1) * this.currentPageSize, limit2: this.currentPageSize2, skip2: (this.currentPage2 - 1) * this.currentPageSize2 }).then(res => {
@@ -211,7 +223,7 @@ export default {
         this.objData = Object.assign(this.objData, res.data.data)
         this.objData.batchids = Array.from(new Set(this.objData.batchids))
         this.objData.medicalids = Array.from(new Set(this.objData.medicalids))
-        getjobresult({ did: this.$route.query.did, done: '1', limit: this.currentPageSize, skip: this.currentPage, limit2: this.currentPageSize2, skip2: this.currentPage2 }).then(res => {
+        getjobresult({ did: this.$route.query.did, done: '1', limit: this.currentPageSize, skip: (this.currentPage - 1) * this.currentPageSize, limit2: this.currentPageSize2, skip2: (this.currentPage2 - 1) * this.currentPageSize2 }).then(res => {
           this.objData2 = Object.assign(this.objData2, res.data.data)
           this.objData2.batchids = Array.from(new Set(this.objData2.batchids))
           this.objData2.medicalids = Array.from(new Set(this.objData2.medicalids))
@@ -256,9 +268,6 @@ export default {
         case '1':
           this.cells_crop = this.objData2.cells_crop
           break
-        case '2':
-          this.cells_crop_masked = this.objData2.cells_crop_masked
-          break
       }
     },
     /**
@@ -274,7 +283,7 @@ export default {
           location.reload()
           clearInterval(timer)
         }
-      }, 2000)
+      }, 1500)
     }
   },
   beforedestroy() {

@@ -73,13 +73,14 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
+        this.getPercent()
         if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
           this.getTrainresult()
           this.getPercent()
           location.reload()
           clearInterval(timer)
         }
-      }, 2000)
+      }, 1500)
     }
   },
   beforedestroy() {

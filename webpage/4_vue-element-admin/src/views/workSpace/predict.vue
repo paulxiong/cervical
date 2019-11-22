@@ -422,13 +422,14 @@ export default {
      */
     loopGetPercent() {
       timer = setInterval(() => {
+        this.getPercent()
         if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
           this.getPercent()
           this.getjoblog()
           location.reload()
           clearInterval(timer)
         }
-      }, 2000)
+      }, 1500)
     },
     changeCellTypes(val) {
       this.postCelltypes = val
