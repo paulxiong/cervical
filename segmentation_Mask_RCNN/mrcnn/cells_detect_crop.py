@@ -280,6 +280,7 @@ class cells_detect_crop(worker):
             self.log.info("方式：图片直接送检测并切割出细胞")
             model_path = os.path.join(self.modules_dir, self.datasetinfo['modpath'])
             if self.model_path != model_path or self.detector is None:
+                self.model_path = model_path
                 self.detector =  cells_detector(model_path, self.wdir, self.debug)
         elif self.datasetinfo['parameter_type'] == 1:
             self.log.info("方式：按照标注切割出细胞")
