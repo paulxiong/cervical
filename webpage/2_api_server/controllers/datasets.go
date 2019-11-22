@@ -567,29 +567,28 @@ func GetJobResult(c *gin.Context) {
 
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, done))
 	if len(j.CellsCrop) > int(limit) {
-		CellsCrop := make([]string, limit)
+		var CellsCrop []string
 		for index, v := range j.CellsCrop {
 			if index < int(skip) {
 				continue
 			}
-			logger.Info.Println(v)
-			CellsCrop = append(CellsCrop, v)
 			if len(CellsCrop) >= int(limit) {
 				break
 			}
+			CellsCrop = append(CellsCrop, v)
 		}
 		j.CellsCrop = CellsCrop
 	}
 	if len(j.OriginImgs) > int(limit2) {
-		OriginImgs := make([]string, limit2)
+		var OriginImgs []string
 		for index, v := range j.OriginImgs {
 			if index < int(skip2) {
 				continue
 			}
-			OriginImgs = append(OriginImgs, v)
 			if len(OriginImgs) >= int(limit2) {
 				break
 			}
+			OriginImgs = append(OriginImgs, v)
 		}
 		j.OriginImgs = OriginImgs
 	}
