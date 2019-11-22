@@ -35,23 +35,12 @@ type register struct {
 
 // RegisterUser 注册新用户
 // @Description 注册新用户 code: 200 注册请求成功,  406 注册失败
-// @Description status：
-// @Description 78 验证码无效
-// @Description 76 手机号已经注册过
-// @Description 75 表单数据错误
-// @Description 74 新建用户失败
-// @Description 73 表单数据不对（密码或手机号/邮箱/用户名为空）
-// @Description 72 两次密码不一致
-// @Description 71 邮箱已经注册过
-// @Description 70 用户已经存在
-// @Description 200 注册成功
 // @Summary 注册
 // @tags API1 用户
 // @Accept  multipart/form-data
 // @Produce json
 // @Param Register body controllers.register true "注册信息表单"
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
-// @Failure 406 {string} json "{"data": "register faild", "status": 错误码}"
 // @Router /user/register [post]
 func RegisterUser(c *gin.Context) {
 	var reg register
@@ -104,15 +93,13 @@ func RegisterUser(c *gin.Context) {
 }
 
 // GetUser 获得当前用户信息
-// @Description 获得当前用户信息 code: 200 用户信息获取成功  401 未登录
-// @Description status: 200 成功  其他: 未登录
+// @Description 获得当前用户信息
 // @Summary 用户信息
 // @tags API1 用户（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/userinfo [get]
 func GetUser(c *gin.Context) {
 	u, _ := m.GetUserFromContext(c)
@@ -134,7 +121,7 @@ type login struct {
 }
 
 // LoginUser 用户登录
-// @Description 用户通过邮箱/用户名/手机号登录 	status: 60-密码错误  61-用户不存在 63-登录失败 64-表单数据错误
+// @Description 用户通过邮箱/用户名/手机号登录
 // @Description
 // @Summary 登录
 // @tags API1 用户
@@ -142,7 +129,6 @@ type login struct {
 // @Produce json
 // @Param Login body middlewares.LoginFormData true "登录信息表单"
 // @Success 200 {object} middlewares.LoginSucceed
-// @Failure 401 {string} json "{"data": "login faild", "status": 错误码}"
 // @Router /user/login [post]
 func LoginUser(c *gin.Context) {
 	AuthMiddleware.LoginHandler(c)
@@ -157,7 +143,6 @@ func LoginUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {string} json “{"status": 200, "data": "ok"}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/logout [get]
 func LogoutUser(c *gin.Context) {
 	res.ResSucceedString(c, "ok")
@@ -177,16 +162,11 @@ type mailregister struct {
 // GetEmailCode 用户注册时候获取邮箱验证码
 // @Description 注册时候获取邮箱验证码
 // @Summary 用户注册时候获取邮箱验证码
-// @Description status：
-// @Description 71 邮箱已经注册过
-// @Description 73 表单数据不对（邮箱为空或格式不对）
-// @Description 77 邮件发送出错
 // @tags API1 用户
 // @Accept  multipart/form-data
 // @Produce json
 // @Param Register body controllers.mailregister true "注册信息表单"
 // @Success 200 {string} json “{"status": 200, "data": "ok"}"
-// @Failure 406 {string} json "{"data": "", "status": 错误码}"
 // @Router /user/emailcode [POST]
 func GetEmailCode(c *gin.Context) {
 	var user m.User
@@ -239,7 +219,6 @@ type listOperationlog struct {
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {object} models.Operationlog
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/accesslog [get]
 func GetAccessLog(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
@@ -279,7 +258,6 @@ func GetAccessLog(c *gin.Context) {
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {object} models.User
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/lists [get]
 func GetUserLists(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "100")
@@ -315,7 +293,6 @@ type updateUser struct {
 // @Security ApiKeyAuth
 // @Param Register body controllers.updateUser true "修改当前用户信息"
 // @Success 200 {string} json “{"status": 200, "data": "ok"}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /user/updateinfo [post]
 func UpdateUserInfo(c *gin.Context) {
 	uu := updateUser{}

@@ -21,8 +21,8 @@ func ResStruct(c *gin.Context, status int, v interface{}) {
 	})
 }
 
-// ResInt 响应一个int
-func ResInt(c *gin.Context, status int, v int) {
+// ResInt64 响应一个int64
+func ResInt64(c *gin.Context, status int, v int64) {
 	c.JSON(e.StatusReqOK, gin.H{
 		"status": status,
 		"data":   v,
@@ -47,7 +47,7 @@ func ResSucceedStruct(c *gin.Context, v interface{}) {
 	ResStruct(c, e.Errors["Succeed"], v)
 }
 
-// ResSucceedInt 响应一个int
-func ResSucceedInt(c *gin.Context, v int) {
-	ResInt(c, e.Errors["Succeed"], v)
+// ResSucceedInt64 响应一个int
+func ResSucceedInt64(c *gin.Context, v int64) {
+	ResInt64(c, e.Errors["Succeed"], v)
 }

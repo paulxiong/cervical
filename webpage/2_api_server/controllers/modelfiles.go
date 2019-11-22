@@ -7,6 +7,7 @@ import (
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 )
 
 type listMods struct {
@@ -25,7 +26,6 @@ type listMods struct {
 // @Param skip query string false "skip, default 0"
 // @Param type query string false "type, default 52, 模型类型，0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型"
 // @Success 200 {object} controllers.listMods
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listmodel [get]
 func GetModelLists(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
@@ -40,10 +40,7 @@ func GetModelLists(c *gin.Context) {
 	lm.Models = mods
 	lm.Total = total
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   lm,
-	})
+	res.ResSucceedStruct(c, lm)
 	return
 }
 
@@ -69,28 +66,19 @@ func SaveModelInfo(c *gin.Context) {
 
 	p, err := models.GetOneProjectByID(int(w.ID))
 	if err != nil || p.Status != 4 {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "project trainning not finished or not found",
-		})
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
 	}
 
 	modinfo := f.LoadModJSONFile(p.Dir)
 	if modinfo.Path == "" {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "load modinfo failed",
-		})
+		res.ResFailedStatus(c, e.Errors["ModelInfoNotFound"])
 		return
 	}
 
 	ret := modinfo.ModelInfoSaved()
 	if ret == true {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "model already saved",
-		})
+		res.ResFailedStatus(c, e.Errors["ModelAlreadySaved"])
 		return
 	}
 
@@ -99,15 +87,9 @@ func SaveModelInfo(c *gin.Context) {
 
 	err = modinfo.CreateModelInfo()
 	if err == nil {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "ok",
-		})
+		res.ResSucceedString(c, "ok")
 	} else {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "failed",
-		})
+		res.ResFailedStatus(c, e.Errors["ModelSaveFailed"])
 	}
 	return
 }

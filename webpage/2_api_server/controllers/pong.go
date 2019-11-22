@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +14,7 @@ import (
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Router /api1/ping [get]
 func Pong(c *gin.Context) {
-	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed, "ping": "pong"})
+	res.ResSucceedString(c, "pong")
 }
 
 // AuthPong 检查网络是否正常，需要登录
@@ -27,5 +27,5 @@ func Pong(c *gin.Context) {
 // @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/authping [get]
 func AuthPong(c *gin.Context) {
-	c.JSON(e.StatusReqOK, gin.H{"status": e.StatusSucceed, "ping": "pong"})
+	res.ResSucceedString(c, "pong")
 }

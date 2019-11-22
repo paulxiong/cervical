@@ -1,4 +1,5 @@
 #!/bin/bash
+#该脚本只测试过在Linux环境执行
 swag init
 go build -v -o main.exe main.go
 if [ ! -f main.exe ]; then
@@ -12,7 +13,7 @@ pushd web
 popd
 
 rm -rf release.tgz
-tar -czvmf release.tgz main.exe configs/conf.ini web/dist/
+tar -czvmf release.tgz main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
 if [ ! -f release.tgz ]; then
     echo "not found release.tgz"
     exit 2

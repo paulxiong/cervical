@@ -7,6 +7,7 @@ import (
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -33,17 +34,13 @@ type newProject struct {
 // @Security ApiKeyAuth
 // @Param CreateProject body controllers.newProject true "新建(训练/预测)项目"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/createproject [post]
 func CreateProject(c *gin.Context) {
 	np := newProject{}
 	err := c.BindJSON(&np)
 	if err != nil {
 		logger.Info.Println(err)
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "invalied data",
-		})
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
 
@@ -70,10 +67,7 @@ func CreateProject(c *gin.Context) {
 
 	f.NewProjectJSONFile(p, np.Celltypes, _mod)
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   p.ID,
-	})
+	res.ResSucceedInt64(c, p.ID)
 	return
 }
 
@@ -94,7 +88,6 @@ type listProjectsData struct {
 // @Param status query string false "status, default 100, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100 全部 101 送去审核以及核完成的预测结果"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
 // @Success 200 {object} controllers.listProjectsData
-// @Failure 401 {string} json "{"data": "cookie token is empty", "status": 错误码}"
 // @Router /api1/listprojects [get]
 func ListProjects(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
@@ -114,11 +107,7 @@ func ListProjects(c *gin.Context) {
 	dts := listProjectsData{}
 	dts.Projects = p
 	dts.Total = total
-
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   dts,
-	})
+	res.ResSucceedStruct(c, dts)
 	return
 }
 
@@ -140,19 +129,13 @@ func GetTrainResult(c *gin.Context) {
 
 	d, err := models.GetOneProjectByID(int(id))
 	if err != nil || d.Status != 4 {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "datasets trainning not finished or not found",
-		})
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
 	}
 
 	modinfo := f.LoadModJSONFile(d.Dir)
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   modinfo,
-	})
+	res.ResSucceedStruct(c, modinfo)
 	return
 }
 
@@ -174,18 +157,12 @@ func GetPredictResult(c *gin.Context) {
 
 	dinfo, err := models.GetOneProjectByID(int(id))
 	if err != nil {
-		c.JSON(e.StatusReqOK, gin.H{
-			"status": e.StatusSucceed,
-			"data":   "datasets info not found",
-		})
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
 	}
 
 	str := f.LoadPredictJSONFile(dinfo.Dir)
 
-	c.JSON(e.StatusReqOK, gin.H{
-		"status": e.StatusSucceed,
-		"data":   str,
-	})
+	res.ResSucceedStruct(c, str)
 	return
 }
