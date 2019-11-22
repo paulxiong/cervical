@@ -26,6 +26,8 @@ type JobInfo struct {
 	Starttimets int64                  `json:"starttimets"       example:"1568891127753"`  //开始处理数据的时间
 	OriginImgs  []string               `json:"origin_imgs"       example:"fov path"`       //原始图片路径构成的数组
 	CellsCrop   []string               `json:"cells_crop"        example:"cell path"`      //裁剪之后的细胞图路径构成的数组
+	OriginTotal int                    `json:"origin_total"      example:"1"`              //原始图片的个数
+	CellsTotal  int                    `json:"cells_total"       example:"1000"`           //裁剪之后的细胞图的个数
 	BatchCnt    int                    `json:"batchcnt"          example:"1"`              //总的批次数, 初始化和结束时候的值可能不一样
 	MedicalCnt  int                    `json:"medicalcnt"        example:"2"`              //总的病例数，初始化和结束时候的值可能不一样
 	FovCnt      int                    `json:"fovcnt"            example:"100"`            //总的图片数，初始化和结束时候的值可能不一样

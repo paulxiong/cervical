@@ -566,7 +566,9 @@ func GetJobResult(c *gin.Context) {
 	d, _ := models.GetOneDatasetByID(int(did))
 
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, done))
-	if len(j.CellsCrop) > int(limit) {
+	j.CellsTotal = len(j.CellsCrop)
+	j.OriginTotal = len(j.OriginImgs)
+	if j.CellsTotal > int(limit) {
 		var CellsCrop []string
 		for index, v := range j.CellsCrop {
 			if index < int(skip) {
@@ -579,7 +581,7 @@ func GetJobResult(c *gin.Context) {
 		}
 		j.CellsCrop = CellsCrop
 	}
-	if len(j.OriginImgs) > int(limit2) {
+	if j.OriginTotal > int(limit2) {
 		var OriginImgs []string
 		for index, v := range j.OriginImgs {
 			if index < int(skip2) {
