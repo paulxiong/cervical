@@ -11,9 +11,9 @@
           {{ scope.row.desc }}
         </template>
       </el-table-column>
-      <el-table-column label="数据集" width="100" align="center">
+      <el-table-column label="类型" width="100" align="center">
         <template slot-scope="scope">
-          {{ scope.row.did }}
+          {{ scope.row.projectType }}
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="250" align="center">
@@ -27,6 +27,7 @@
 
 <script>
 import { getListprojects } from '@/api/cervical'
+import { projectType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -67,6 +68,7 @@ export default {
         res.data.data.projects.map(v => {
           v.starttime = parseTime(v.starttime)
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+          v.projectType = projectType[v.type]
         })
         this.projectlist = res.data.data.projects
         this.total = res.data.data.total
