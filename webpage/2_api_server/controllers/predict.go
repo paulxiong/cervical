@@ -106,6 +106,13 @@ type predictupdate struct {
 	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
 }
 
+type returnpredictupdate struct {
+	CntCellsAll         int `json:"cellsall"`         // 项目所有细胞
+	CntCellsVerified    int `json:"cellsverified"`    // 项目已经审核的细胞
+	CntImgCellsAll      int `json:"imgcellsall"`      // 当前图片的所有细胞
+	CntImgCellsVerified int `json:"imgcellsverified"` // 前图片已经审核的细胞，
+}
+
 // UpdatePredict 医生审核信息写回数据库
 // @Summary 医生审核信息写回数据库
 // @Description 医生审核信息写回数据库
@@ -116,7 +123,7 @@ type predictupdate struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param predictupdate body controllers.predictupdate true "医生审核信息"
-// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Success 200 {object} controllers.returnpredictupdate
 // @Router /api1/updatepredict [post]
 func UpdatePredict(c *gin.Context) {
 	pu := predictupdate{}
@@ -128,7 +135,17 @@ func UpdatePredict(c *gin.Context) {
 
 	models.UpdatePredict(pu.ID, pu.TrueType)
 
-	res.ResSucceedString(c, "ok")
+	// 状态0 未审核 1 已审核 2 移除 3 管理员确认
+	// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，
+	cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified := models.GetPredictPercent(pu.ID, 1)
+	rpu := returnpredictupdate{
+		CntCellsAll:         cntCellsAll,
+		CntCellsVerified:    cntCellsVerified,
+		CntImgCellsAll:      cntImgCellsAll,
+		CntImgCellsVerified: cntImgCellsVerified,
+	}
+
+	res.ResSucceedStruct(c, rpu)
 	return
 }
 
