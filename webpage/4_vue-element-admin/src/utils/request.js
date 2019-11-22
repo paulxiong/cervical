@@ -3,7 +3,12 @@ import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import { APIUrl } from '@/const/config'
-// import { errCode } from '@/const/errCode'
+import errCode from '@/const/errCode.json'
+
+const errs = {}
+errCode.errs.map(v => {
+  errs[v.status] = v.content
+})
 
 // create an axios instance
 const service = axios.create({
@@ -32,15 +37,16 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    return response
-    // if (response.data.status === 200) {
-    //   return response
-    // } else {
-    //   Message.error({
-    //     message: errCode[response.data.status].msg,
-    //     type: 'error'
-    //   })
-    // }
+    if (response.data.status === 0) {
+      console.log(response)
+      return response
+    } else {
+      Message.error({
+        message: errs[response.data.status],
+        type: 'error',
+        duration: 1e4
+      })
+    }
   },
   /**
    * 下面的注释为通过在response里，自定义code来标示请求状态
