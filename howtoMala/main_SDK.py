@@ -286,7 +286,7 @@ def worker_load(w):
     w.log.info("读取%s信息完成" % w_str)
 
     w.log.info("开始%s" % w_str)
-    w.woker_percent(4, 1800)
+    w.woker_percent(4, 60)
     if w.wtype == wt.TRAIN.value:
         ret = w.train()
     elif w.wtype == wt.PREDICT.value:

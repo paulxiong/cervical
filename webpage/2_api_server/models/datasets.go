@@ -357,7 +357,7 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 		d.ProcessEnd = time.Now()
 	}
 	if d.ETA == 0 {
-		d.ETA = 1800 //默认半个小时
+		d.ETA = 60 //默认假设１分钟
 	}
 
 	str, err2 := u.IntArray2String(&d.Types1)

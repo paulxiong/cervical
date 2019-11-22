@@ -290,7 +290,7 @@ class cells_detect_crop(worker):
         ts1 = int(time.time()*1000)
         for index, imginfo in df_imgs.iterrows():
             ts2 = int(time.time()*1000)
-            needtime = 1800
+            needtime = df_imgs.shape[0] #假设每张图片1秒
             if index > 0:
                 needtime = (ts2 - ts1) * (df_imgs.shape[0] - index)
                 self.log.info("step %d / %d 预计还需要 %d秒" % (index, df_imgs.shape[0] -1, needtime/1000))
