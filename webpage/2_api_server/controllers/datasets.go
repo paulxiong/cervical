@@ -86,8 +86,8 @@ func AllInfo(c *gin.Context) {
 
 // BatchInfo 批次信息
 type BatchInfo struct {
-	Total  int      `json:"total"`
-	Batchs []string `json:"batchs"`
+	Total  int      `json:"total"  example:"100"` // 总批次个数
+	Batchs []string `json:"batchs" example:"abc"` // 批次数组
 }
 
 // GetBatchInfo 获得所有批次信息
@@ -99,7 +99,7 @@ type BatchInfo struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 100"
 // @Param skip query string false "skip, default 0"
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.BatchInfo
 // @Router /api1/batchinfo [get]
 func GetBatchInfo(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "100")
@@ -133,7 +133,7 @@ type MedicalIDInfo struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.MedicalIDInfo
 // @Router /api1/medicalidinfo [get]
 func GetMedicalIDInfo(c *gin.Context) {
 	var total int
@@ -157,16 +157,15 @@ func GetMedicalIDInfo(c *gin.Context) {
 
 // CategoryInfo 细胞类型信息
 type CategoryInfo struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Num     int    `json:"num"`
-	Checked bool   `json:"checked"`
+	ID   int    `json:"id"   example:"1"`    // 细胞类型对应的ID
+	Name string `json:"name" example:"Norm"` // 细胞类型的英文缩写
+	Desc string `json:"desc" example:"正常细胞"` // 细胞类型的中文描述
 }
 
 // CategorysInfo 所有细胞类型信息
 type CategorysInfo struct {
-	Total     int            `json:"total"`
-	Categorys []CategoryInfo `json:"categorys"`
+	Total     int            `json:"total" example:"100"` // 总数
+	Categorys []CategoryInfo `json:"categorys"`           // 分类
 }
 
 // GetCategoryInfo 获得细胞分类信息
@@ -176,7 +175,7 @@ type CategorysInfo struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.CategorysInfo
 // @Router /api1/categoryinfo [get]
 func GetCategoryInfo(c *gin.Context) {
 	var ci CategorysInfo
@@ -185,10 +184,9 @@ func GetCategoryInfo(c *gin.Context) {
 	ci.Total = int(total)
 	for _, v := range cs {
 		ci.Categorys = append(ci.Categorys, CategoryInfo{
-			ID:      int(v.ID),
-			Name:    v.Name,
-			Num:     0,
-			Checked: false,
+			ID:   int(v.ID),
+			Name: v.Name,
+			Desc: v.Other,
 		})
 	}
 	res.ResSucceedStruct(c, ci)
@@ -207,7 +205,7 @@ type wanted struct {
 }
 
 type wanted2 struct {
-	Images []string `json:"images"`
+	Images []string `json:"images" example:"abc.png"` // 图片路径数组
 }
 
 // GetImgListOfWanted 获得所选批/次病/细胞类型的图片
@@ -217,7 +215,7 @@ type wanted2 struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.wanted2
 // @Router /api1/imglistsofwanted [get]
 func GetImgListOfWanted(c *gin.Context) {
 	images := wanted2{}
@@ -254,7 +252,7 @@ type imageslists struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.imageslists
 // @Router /api1/imglistsonebyone [get]
 func GetImgListOneByOne(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
@@ -299,7 +297,7 @@ type imagesNPCount struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.imagesNPCount
 // @Router /api1/getimgnptypebymids [post]
 func GetImagesNPTypeByMedicalID(c *gin.Context) {
 	cnt := imagesNPCount{}
@@ -389,12 +387,13 @@ type jobResult struct {
 
 // GetOneJob python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @Summary python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
-// @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
+// @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型。注意文档的返回值有２中，为了区分其中一种code写成了2000，其实应该是200
 // @tags API1 任务（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} models.Dataset
+// @Success 2000 {object} models.Project
 // @Router /api1/job [post]
 func GetOneJob(c *gin.Context) {
 	w := jobResult{}
@@ -511,7 +510,7 @@ type listDatasets struct {
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
 // @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
-// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Success 200 {object} controllers.listDatasets
 // @Router /api1/listdatasets [get]
 func ListDatasets(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")

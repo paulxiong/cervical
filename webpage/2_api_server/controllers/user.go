@@ -99,7 +99,7 @@ func RegisterUser(c *gin.Context) {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Success 200 {object} models.User
 // @Router /user/userinfo [get]
 func GetUser(c *gin.Context) {
 	u, _ := m.GetUserFromContext(c)
