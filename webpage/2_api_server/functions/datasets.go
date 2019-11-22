@@ -16,29 +16,26 @@ import (
 
 // JobInfo 存在硬盘的JSON文件，描述每个任务的属性，info.json是初始化时候，info2.json是裁剪结束之后
 type JobInfo struct {
-	ID              int64                  `json:"id"                example:"1"`                     //任务ID
-	Desc            string                 `json:"desc"              example:"description..."`        //当前任务的文字描述
-	Dir             string                 `json:"dir"               example:"dir name"`              //任务执行的目录名，调试时候很有用
-	Batchids        []string               `json:"batchids"          example:"batch id"`              //批次号构成的数组
-	Medicalids      []string               `json:"medicalids"        example:"medical id"`            //病历号构成的数组
-	Status          int                    `json:"status"            example:"4"`                     //任务的状态码
-	Createdatts     int64                  `json:"createdatts"       example:"1568891127753"`         //创建数据集的时间
-	Starttimets     int64                  `json:"starttimets"       example:"1568891127753"`         //开始处理数据的时间
-	OriginImgs      []string               `json:"origin_imgs"       example:"fov path"`              //原始图片路径构成的数组
-	CellsCrop       []string               `json:"cells_crop"        example:"cell path"`             //裁剪之后的细胞图路径构成的数组
-	CellsCropMasked []string               `json:"cells_crop_masked" example:"cell kernel path"`      //裁剪之后的细胞核路径构成的数组
-	CellsMaskNpy    []string               `json:"cells_mask_npy"    example:"cell kernel mask path"` //细胞核掩码，这里默认是空数组
-	CellsRois       []string               `json:"cells_rois"        example:"ROIS"`                  //细胞核坐标，这里默认是空数组
-	BatchCnt        int                    `json:"batchcnt"          example:"1"`                     //总的批次数, 初始化和结束时候的值可能不一样
-	MedicalCnt      int                    `json:"medicalcnt"        example:"2"`                     //总的病例数，初始化和结束时候的值可能不一样
-	FovCnt          int                    `json:"fovcnt"            example:"100"`                   //总的图片数，初始化和结束时候的值可能不一样
-	FovnCnt         int                    `json:"fovncnt"           example:"10"`                    //FOV N的个数，初始化和结束时候的值可能不一样
-	FovpCnt         int                    `json:"fovpcnt"           example:"90"`                    //FOV P的个数，初始化和结束时候的值可能不一样
-	LabelnCnt       int                    `json:"labelncnt"         example:"100"`                   //n 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
-	LabelpCnt       int                    `json:"labelpcnt"         example:"900"`                   //p 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
-	LabelCnt        int                    `json:"labelcnt"          example:"1000"`                  //总的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
-	Types           []models.CellTypesinfo `json:"types"`                                             //各个type标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
-	ModPath         string                 `json:"modpath"           example:"mod path"`              //模型文件的路径
+	ID          int64                  `json:"id"                example:"1"`              //任务ID
+	Desc        string                 `json:"desc"              example:"description..."` //当前任务的文字描述
+	Dir         string                 `json:"dir"               example:"dir name"`       //任务执行的目录名，调试时候很有用
+	Batchids    []string               `json:"batchids"          example:"batch id"`       //批次号构成的数组
+	Medicalids  []string               `json:"medicalids"        example:"medical id"`     //病历号构成的数组
+	Status      int                    `json:"status"            example:"4"`              //任务的状态码
+	Createdatts int64                  `json:"createdatts"       example:"1568891127753"`  //创建数据集的时间
+	Starttimets int64                  `json:"starttimets"       example:"1568891127753"`  //开始处理数据的时间
+	OriginImgs  []string               `json:"origin_imgs"       example:"fov path"`       //原始图片路径构成的数组
+	CellsCrop   []string               `json:"cells_crop"        example:"cell path"`      //裁剪之后的细胞图路径构成的数组
+	BatchCnt    int                    `json:"batchcnt"          example:"1"`              //总的批次数, 初始化和结束时候的值可能不一样
+	MedicalCnt  int                    `json:"medicalcnt"        example:"2"`              //总的病例数，初始化和结束时候的值可能不一样
+	FovCnt      int                    `json:"fovcnt"            example:"100"`            //总的图片数，初始化和结束时候的值可能不一样
+	FovnCnt     int                    `json:"fovncnt"           example:"10"`             //FOV N的个数，初始化和结束时候的值可能不一样
+	FovpCnt     int                    `json:"fovpcnt"           example:"90"`             //FOV P的个数，初始化和结束时候的值可能不一样
+	LabelnCnt   int                    `json:"labelncnt"         example:"100"`            //n 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	LabelpCnt   int                    `json:"labelpcnt"         example:"900"`            //p 的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	LabelCnt    int                    `json:"labelcnt"          example:"1000"`           //总的标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	Types       []models.CellTypesinfo `json:"types"`                                      //各个type标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
+	ModPath     string                 `json:"modpath"           example:"mod path"`       //模型文件的路径
 	models.DatasetParameter
 }
 

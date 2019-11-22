@@ -533,27 +533,67 @@ func ListDatasets(c *gin.Context) {
 	return
 }
 
-// GetJobResult 获得任务状态（数据处理/训练/预测）
-// @Summary 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
-// @Description 获得任务状态（数据处理/训练/预测）。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
+// GetJobResult 获得数据集状态
+// @Summary 获得数据集状态。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
+// @Description 获得数据集状态。查看完成前的标注信息还是完成后的细胞统计信息，二者返回的数据结构完全一致
 // @tags API1 任务（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param id query string false "id, default 1"
+// @Param did query string false "did, default 1, 数据集的ID"
 // @Param done query string false "查看完成前的标注信息还是完成后的细胞统计信息, default 0 是完成之前的标注信息， 1是完成之后的细胞信息"
+// @Param limit query string false "limit, default 10000, 细胞图个数上限制"
+// @Param skip query string false "skip, default 0, 细胞图跳过的个数"
+// @Param limit2 query string false "limit2, default 100, 原图个数上限制"
+// @Param skip2 query string false "skip2, default 0, 原图跳过的个数"
 // @Success 200 {object} function.JobInfo
 // @Router /api1/jobresult [get]
 func GetJobResult(c *gin.Context) {
-	idStr := c.DefaultQuery("id", "1")
-	id, _ := strconv.ParseInt(idStr, 10, 64)
+	didStr := c.DefaultQuery("did", "1")
+	did, _ := strconv.ParseInt(didStr, 10, 64)
+	limitStr := c.DefaultQuery("limit", "10000")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	limit2Str := c.DefaultQuery("limit2", "100")
+	skip2Str := c.DefaultQuery("skip2", "0")
+	limit2, _ := strconv.ParseInt(limit2Str, 10, 64)
+	skip2, _ := strconv.ParseInt(skip2Str, 10, 64)
 
 	doneStr := c.DefaultQuery("done", "0")
 	done, _ := strconv.ParseInt(doneStr, 10, 64)
 
-	d, _ := models.GetOneDatasetByID(int(id))
+	d, _ := models.GetOneDatasetByID(int(did))
 
 	j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, done))
+	if len(j.CellsCrop) > int(limit) {
+		CellsCrop := make([]string, limit)
+		for index, v := range j.CellsCrop {
+			if index < int(skip) {
+				continue
+			}
+			logger.Info.Println(v)
+			CellsCrop = append(CellsCrop, v)
+			if len(CellsCrop) >= int(limit) {
+				break
+			}
+		}
+		j.CellsCrop = CellsCrop
+	}
+	if len(j.OriginImgs) > int(limit2) {
+		OriginImgs := make([]string, limit2)
+		for index, v := range j.OriginImgs {
+			if index < int(skip2) {
+				continue
+			}
+			OriginImgs = append(OriginImgs, v)
+			if len(OriginImgs) >= int(limit2) {
+				break
+			}
+		}
+		j.OriginImgs = OriginImgs
+	}
+
 	j.Status = d.Status
 
 	res.ResSucceedStruct(c, j)
