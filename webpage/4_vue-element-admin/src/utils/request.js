@@ -38,7 +38,6 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     if (response.data.status === 0) {
-      console.log(response)
       return response
     } else {
       Message.error({

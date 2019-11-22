@@ -183,7 +183,7 @@ export default {
       console.log(row)
     },
     filterSearch() {
-      this.getErrLog(10, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getErrLog(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
       this.currentPage = val
@@ -196,7 +196,7 @@ export default {
     getErrLog(limit, skip, order) {
       this.loading = true
       getErrLog({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        res.data.data.map(v => {
+        res.data.data.Logs.map(v => {
           v.operationlog.cost = (v.cost / 1000).toFixed(2)
           v.created_time = parseTime(v.created_time)
           v.operationlog.created_at = parseTime(v.operationlog.created_at)
@@ -204,8 +204,8 @@ export default {
           v.err = JSON.parse(v.errlog)[0].err || ''
           v.version = JSON.parse(v.errlog)[0].version || ''
         })
-        this.errLog = res.data.data
-        this.total = res.data.total
+        this.errLog = res.data.data.Logs
+        this.total = res.data.data.total
         this.loading = false
       })
     }

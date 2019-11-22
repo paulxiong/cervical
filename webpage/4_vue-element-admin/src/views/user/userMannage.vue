@@ -24,7 +24,7 @@
       </el-select>
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div>
-    <el-table :data="userList" height="850px" style="width: 100%">
+    <el-table :data="userList.users" height="850px" style="width: 100%">
       <el-table-column prop="id" label="用户ID" width="100" />
       <el-table-column prop="name" label="用户名" width="180" />
       <el-table-column prop="type_id" label="用户类型" width="100" />
@@ -53,7 +53,7 @@
         :page-sizes="[10, 20, 30, 50]"
         :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="1000"
+        :total="userList.total"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
@@ -90,7 +90,7 @@ export default {
           name: '城市'
         }
       ],
-      userList: []
+      userList: {}
     }
   },
   created() {
@@ -98,7 +98,7 @@ export default {
   },
   methods: {
     filterSearch() {
-      this.getUserLists(10, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleClick(row) {
       // console.log(row)
@@ -114,7 +114,6 @@ export default {
     getUserLists(limit, skip, order) {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         this.userList = res.data.data
-        console.log(res.data.data)
       })
     }
   }
