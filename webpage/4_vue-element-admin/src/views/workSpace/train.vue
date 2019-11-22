@@ -46,8 +46,6 @@ export default {
     }
   },
   created() {
-    this.getPercent()
-    this.getTrainresult()
     this.loopGetPercent()
   },
   methods: {
@@ -81,7 +79,7 @@ export default {
           location.reload()
           clearInterval(timer)
         }
-      }, 5000)
+      }, 2000)
     }
   },
   beforedestroy() {

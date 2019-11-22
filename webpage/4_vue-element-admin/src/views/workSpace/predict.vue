@@ -274,8 +274,6 @@ export default {
     } else {
       this.getPredictResult()
     }
-    this.getPercent()
-    this.getjoblog()
     this.loopGetPercent()
   },
   destroyed() {
@@ -430,7 +428,7 @@ export default {
           location.reload()
           clearInterval(timer)
         }
-      }, 5000)
+      }, 2000)
     },
     changeCellTypes(val) {
       this.postCelltypes = val

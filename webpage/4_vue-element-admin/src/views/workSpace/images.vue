@@ -38,35 +38,59 @@
         @tab-click="tabClick"
       >
         <el-tab-pane label="原图">
-          <el-image
-            v-for="(img,idx) in origin_imgs"
-            :key="idx"
-            class="img"
-            :src="hosturlpath100 + img + '?width=100'"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline" />
-            </div>
-          </el-image>
+          <div class="img-div" style="overflow-y: auto;height:600px;">
+            <el-image
+              v-for="(img,idx) in origin_imgs"
+              :key="idx"
+              class="img"
+              :src="hosturlpath100 + img + '?width=100'"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" />
+              </div>
+            </el-image>
+          </div>
+          <el-pagination
+            class="page"
+            :current-page.sync="currentPage2"
+            :page-sizes="[10, 20, 50, 100, 200]"
+            :page-size="currentPageSize2"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total2"
+            @current-change="handleCurrentChange2"
+            @size-change="handleSizeChange2"
+          />
         </el-tab-pane>
-        <el-tab-pane>
+        <el-tab-pane style="overflow: scroll;">
           <span slot="label">
             细胞图
             <i v-if="downloadLoading" class="el-icon-loading" />
             <svg-icon v-else class="download" icon-class="download" @click="downloadImgs" />
           </span>
-          <el-image
-            v-for="(img,idx) in cells_crop"
-            :key="idx"
-            class="img"
-            :src="hosturlpath32 + img + '?width=32'"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline" />
-            </div>
-          </el-image>
+          <div class="img-div" style="overflow-y: auto;height:600px;">
+            <el-image
+              v-for="(img,idx) in cells_crop"
+              :key="idx"
+              class="img"
+              :src="hosturlpath32 + img + '?width=32'"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" />
+              </div>
+            </el-image>
+          </div>
+          <el-pagination
+            class="page"
+            :current-page.sync="currentPage"
+            :page-sizes="[1000, 2000, 5000, 10000]"
+            :page-size="currentPageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          />
         </el-tab-pane>
         <!-- <el-tab-pane label="细胞核图">
           <el-image
@@ -81,7 +105,7 @@
             </div>
           </el-image>
         </el-tab-pane>-->
-        <el-tab-pane label="图片处理log">
+        <el-tab-pane label="Log">
           <el-input
             v-model="cLog"
             type="textarea"
@@ -121,13 +145,16 @@ export default {
       origin_imgs: [],
       cells_crop: [],
       downloadLoading: false,
+      currentPage: 1,
+      currentPage2: 1,
+      total: 1,
+      total2: 1,
+      currentPageSize: 1000,
+      currentPageSize2: 100,
       cells_crop_masked: []
     }
   },
   created() {
-    this.getjobresult()
-    this.getPercent()
-    this.getjoblog()
     this.loopGetPercent()
   },
   methods: {
@@ -156,20 +183,43 @@ export default {
         this.downloadLoading = false
       })
     },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.getjobresult2()
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this.getjobresult2()
+    },
+    handleCurrentChange2(val) {
+      this.currentPage2 = val
+      this.getjobresult2()
+    },
+    handleSizeChange2(val) {
+      this.currentPageSize2 = val
+      this.getjobresult2()
+    },
+    getjobresult2() {
+      getjobresult({ did: this.$route.query.did, done: '1', limit: this.currentPageSize, skip: (this.currentPage - 1) * this.currentPageSize, limit2: this.currentPageSize2, skip2: (this.currentPage2 - 1) * this.currentPageSize2 }).then(res => {
+        this.objData2 = Object.assign(this.objData2, res.data.data)
+        this.origin_imgs = this.objData2.origin_imgs
+      })
+    },
     getjobresult() {
       // 异步任务改为同步,数组去重复
-      getjobresult({ id: this.$route.query.did, done: '0' }).then(res => {
+      getjobresult({ did: this.$route.query.did, done: '0' }).then(res => {
         this.objData = Object.assign(this.objData, res.data.data)
         this.objData.batchids = Array.from(new Set(this.objData.batchids))
         this.objData.medicalids = Array.from(new Set(this.objData.medicalids))
-        getjobresult({ id: this.$route.query.did, done: '1' }).then(res => {
+        getjobresult({ did: this.$route.query.did, done: '1', limit: this.currentPageSize, skip: this.currentPage, limit2: this.currentPageSize2, skip2: this.currentPage2 }).then(res => {
           this.objData2 = Object.assign(this.objData2, res.data.data)
           this.objData2.batchids = Array.from(new Set(this.objData2.batchids))
           this.objData2.medicalids = Array.from(new Set(this.objData2.medicalids))
           this.tableData = []
           this.tableData.push(this.objData, this.objData2)
           this.origin_imgs = this.objData2.origin_imgs
-          localStorage.setItem('jobResult', JSON.stringify(this.objData2))
+          this.total = this.objData2.cells_total
+          this.total2 = this.objData2.origin_total
         })
       })
     },
@@ -224,7 +274,7 @@ export default {
           location.reload()
           clearInterval(timer)
         }
-      }, 5000)
+      }, 2000)
     }
   },
   beforedestroy() {
