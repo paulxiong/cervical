@@ -15,6 +15,7 @@
         prop="modelType"
       />
       <el-table-column
+        width="100"
         label="准确度"
         prop="precision"
       />

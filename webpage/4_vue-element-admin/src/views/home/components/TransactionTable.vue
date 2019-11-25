@@ -3,7 +3,7 @@
     <el-table :data="projectlist">
       <el-table-column width="100" label="项目ID" prop="id" />
       <el-table-column label="描述" prop="desc" />
-      <el-table-column label="类型" prop="projectType" />
+      <el-table-column width="100" label="类型" prop="projectType" />
       <el-table-column label="创建时间" prop="created_at" />
       <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
