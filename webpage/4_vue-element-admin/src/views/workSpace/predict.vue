@@ -306,9 +306,9 @@ export default {
     },
     filterSearch() {
       this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked, 'select')
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.filterCellsType(this.filterValue.filterCellsType)
-      }, 100)
+      })
     },
     filterChecked(value, select) {
       this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
@@ -317,17 +317,15 @@ export default {
       switch (value) {
         case 0:
           this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 50)
-          this.renderLabel(this.renderData)
           break
         case 1:
           this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 51)
-          this.renderLabel(this.renderData)
           break
         default:
           this.renderData = this.imgInfo.cells
-          this.renderLabel(this.renderData)
           break
       }
+      this.renderLabel(this.renderData)
     },
     updatePredict(value) {
       updatePredict({
@@ -394,7 +392,7 @@ export default {
           v.uuid = v.id
         })
         this.renderData = this.imgInfo.cells
-        // this.imgCellsInfo = this.imgInfo.info
+        this.imgCellsInfo = this.imgInfo.info
         this.renderLabel(this.renderData, select)
         if (select) this.changeLabel(this.select)
       })
