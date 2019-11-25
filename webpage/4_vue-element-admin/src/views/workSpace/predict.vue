@@ -335,10 +335,7 @@ export default {
         'true_type': value.length === 2 ? value[1] : value[0]
       }).then(res => {
         this.filterSearch()
-        this.imgCellsInfo.imgcellsall = res.data.data.imgcellsall
-        this.imgCellsInfo.imgcellsverified = res.data.data.imgcellsverified
-        this.imgCellsInfo.cellsall = res.data.data.cellsall
-        this.imgCellsInfo.cellsverified = res.data.data.cellsverified
+        this.imgCellsInfo = res.data.data
         this.$message({
           message: '审核修改成功',
           type: 'success'
@@ -394,6 +391,7 @@ export default {
           v.uuid = v.id
         })
         this.renderData = this.imgInfo.cells
+        this.imgCellsInfo = this.imgInfo.info
         this.renderLabel(this.renderData, select)
         if (select) this.changeLabel(this.select)
       })
