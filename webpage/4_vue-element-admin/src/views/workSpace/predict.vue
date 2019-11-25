@@ -27,32 +27,35 @@
           </el-tab-pane>
           <el-tab-pane v-if="report" type="info" :label="`图 ${total}`" class="img-tab">
             <section class="tools-bar flex">
-              <span>审核状态</span>
-              <el-select v-model="filterValue.filterChecked" placeholder="审核状态" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
-                <el-option
-                  v-for="item in checkedOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-              <span>细胞类型</span>
-              <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
-                <el-option
-                  v-for="item in CellsTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-              <el-button class="filter-btn" type="primary" size="mini" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
+              <div style="">总进度:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
+              <div class="fitler-tools">
+                <span>审核状态</span>
+                <el-select v-model="filterValue.filterChecked" placeholder="审核状态" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
+                  <el-option
+                    v-for="item in checkedOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+                <span>细胞类型</span>
+                <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
+                  <el-option
+                    v-for="item in CellsTypeOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+                <el-button class="filter-btn" type="primary" size="mini" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
+              </div>
+              <div style="">当前图片进度:{{ imgCellsInfo.imgcellsverified }} / {{ imgCellsInfo.imgcellsall }}</div>
             </section>
-            <section class="label-img flex" style="position: relative;">
+            <section class="label-img flex">
               <div class="check-box" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 5px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
                   <img class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'">
                 </div>
-                <div style="position: absolute;bottom:-20px;left: 10px;">总进度:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
               </div>
               <AIMarker
                 v-if="fov_img.imgpath"
@@ -85,7 +88,6 @@
                   </el-radio-group>
                 </div>
               </div>
-              <div style="position: absolute;bottom:-20px;left: 500px;">当前图片进度:{{ imgCellsInfo.imgcellsverified }} / {{ imgCellsInfo.imgcellsall }}</div>
             </section>
           </el-tab-pane>
           <el-tab-pane label="log">
@@ -468,8 +470,8 @@ export default {
       border-bottom: 1px solid #ccc;
     }
     .tools-bar {
-      justify-content: flex-start;
-      margin-left: 5px;
+      justify-content: space-between;
+      margin-left: 7px;
       span {
         font-size: 14px;
       }
