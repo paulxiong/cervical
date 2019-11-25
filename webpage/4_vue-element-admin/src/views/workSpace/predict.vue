@@ -54,7 +54,7 @@
             <section class="label-img flex">
               <div class="check-box" style="width: 110px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 3px 3px 0px 4px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
-                  <img class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'">
+                  <el-image class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'" lazy />
                 </div>
               </div>
               <AIMarker
@@ -69,7 +69,7 @@
               <div class="check-box" style="width: 200px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="v in renderData" :id="`anchor-${v.id}`" :key="v.id" :class="select.id === v.id ? 'item-box-select' : 'item-box'" style="position: relative;">
                   <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
-                    <img class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)">
+                    <el-image class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" @click="changeLabel(v)" />
                   </el-badge>
                   <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : v.status === 2 ? 'delete' : v.status === 3 ? 'adminA' : 'unchecked'" />
                   <el-cascader
@@ -335,7 +335,10 @@ export default {
         'true_type': value.length === 2 ? value[1] : value[0]
       }).then(res => {
         this.filterSearch()
-        this.imgCellsInfo = res.data.data
+        this.imgCellsInfo.imgcellsall = res.data.data.imgcellsall
+        this.imgCellsInfo.imgcellsverified = res.data.data.imgcellsverified
+        this.imgCellsInfo.cellsall = res.data.data.cellsall
+        this.imgCellsInfo.cellsverified = res.data.data.cellsverified
         this.$message({
           message: '审核修改成功',
           type: 'success'
@@ -391,7 +394,7 @@ export default {
           v.uuid = v.id
         })
         this.renderData = this.imgInfo.cells
-        this.imgCellsInfo = this.imgInfo.info
+        // this.imgCellsInfo = this.imgInfo.info
         this.renderLabel(this.renderData, select)
         if (select) this.changeLabel(this.select)
       })
@@ -443,12 +446,13 @@ export default {
     },
     renderLabel(cells, select) {
       this.$refs['aiPanel-editor'].getMarker().clearData()
+      if (cells.length < 1) return
       this.$refs['aiPanel-editor'].getMarker().renderData(cells)
       if (!select) {
         this.select = cells[cells.length - 1]
-        setTimeout(() => {
+        this.$nextTick(() => {
           document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
-        }, 100)
+        })
       }
     }
   }
