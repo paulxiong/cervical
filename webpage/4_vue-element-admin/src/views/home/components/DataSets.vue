@@ -1,7 +1,7 @@
 <template>
   <div class="dataSets">
     <el-table :data="datasetsList" style="width: 100%;padding-top: 7px;">
-      <el-table-column label="数据ID" min-width="50">
+      <el-table-column label="数据ID" min-width="100">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
@@ -88,9 +88,7 @@ export default {
 
 <style lang="scss" scoped>
 .dataSets {
-    // width: 100%;
-    // height: 336px;
-    // background: #fff;
-    // padding-top: 7px;
+    margin-left:  16px;
+    margin-right: -16px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="modelData">
     <el-table :data="modelLists" style="width: 100%;padding-top: 7px;">
-      <el-table-column label="模型ID" min-width="50">
+      <el-table-column label="模型ID" min-width="100">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
@@ -78,7 +78,6 @@ export default {
 <style lang="scss" scoped>
 .bestModel {
     width: 100%;
-    height: 341px;
     background: #fff;
     padding-top: 7px;
 }

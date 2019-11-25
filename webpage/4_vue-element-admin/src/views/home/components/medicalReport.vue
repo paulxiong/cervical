@@ -79,6 +79,7 @@ export default {
 
 <style lang="scss" scoped>
 .medicalReport {
-    padding-left: 0px;
+    margin-left: -16px;
+    margin-right: 16px;
 }
 </style>
