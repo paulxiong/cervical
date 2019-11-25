@@ -150,21 +150,27 @@ func UpdatePredict(id int64, trueType int) (e error) {
 	return ret.Error
 }
 
+// GetPredictPercentByImgID 根据图片ID返回当前图片以及当前项目的审核进度
+func GetPredictPercentByImgID(imgid int64, pid int64, status int) (int, int, int, int) {
+	// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，
+	cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified := 0, 0, 0, 0
+	db.Model(&Predict{}).Where("pid=?", pid).Count(&cntCellsAll)
+	db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Count(&cntCellsVerified)
+	db.Model(&Predict{}).Where("pid=? AND imgid=?", pid, imgid).Count(&cntImgCellsAll)
+	db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, status).Count(&cntImgCellsVerified)
+	return cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified
+}
+
 // GetPredictPercent 更新审核信息时候顺带返回当前图片以及当前项目的审核进度
 func GetPredictPercent(id int64, status int) (int, int, int, int) {
 	var _p Predict
 	// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，
-	cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified := 0, 0, 0, 0
 	ret := db.Model(&Predict{}).Where("id=?", id).First(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
-		return cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified
+		return 0, 0, 0, 0
 	}
-	db.Model(&Predict{}).Where("pid=?", _p.PID).Count(&cntCellsAll)
-	db.Model(&Predict{}).Where("pid=? AND status=?", _p.PID, status).Count(&cntCellsVerified)
-	db.Model(&Predict{}).Where("pid=? AND imgid=?", _p.PID, _p.ImgID).Count(&cntImgCellsAll)
-	db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", _p.PID, _p.ImgID, status).Count(&cntImgCellsVerified)
-	return cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified
+	return GetPredictPercentByImgID(_p.ImgID, _p.PID, status)
 }
 
 // ReviewPredict 管理员检查医生审核过后的信息

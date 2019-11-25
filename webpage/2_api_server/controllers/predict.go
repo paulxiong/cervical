@@ -12,8 +12,9 @@ import (
 )
 
 type reporterpredicts struct {
-	Total    int              `json:"total"  example:"100"` // 总细胞预测数量
-	Predicts []models.Predict `json:"cells"`                // 每个细胞
+	Total    int                 `json:"total"  example:"100"` // 总细胞预测数量
+	Predicts []models.Predict    `json:"cells"`                // 每个细胞
+	Info     returnpredictupdate `json:"info"`                 // 当前图片审核进度，项目审核进度
 }
 
 // GetPredictResult2 根据传递来的图片ID,返回预测的结果
@@ -46,7 +47,16 @@ func GetPredictResult2(c *gin.Context) {
 		Total:    int(total),
 		Predicts: predicts,
 	}
-
+	if len(predicts) > 0 {
+		pid := predicts[0].ID
+		// 状态0 未审核 1 已审核 2 移除 3 管理员确认
+		// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，
+		cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified := models.GetPredictPercentByImgID(iid, pid, 1)
+		_predicts.Info.CntCellsAll = cntCellsAll
+		_predicts.Info.CntCellsVerified = cntCellsVerified
+		_predicts.Info.CntImgCellsAll = cntImgCellsAll
+		_predicts.Info.CntImgCellsVerified = cntImgCellsVerified
+	}
 	res.ResSucceedStruct(c, _predicts)
 	return
 }
