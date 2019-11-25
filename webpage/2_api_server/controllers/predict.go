@@ -48,7 +48,7 @@ func GetPredictResult2(c *gin.Context) {
 		Predicts: predicts,
 	}
 	if len(predicts) > 0 {
-		pid := predicts[0].ID
+		pid := predicts[0].PID
 		// 状态0 未审核 1 已审核 2 移除 3 管理员确认
 		// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，
 		cntCellsAll, cntCellsVerified, cntImgCellsAll, cntImgCellsVerified := models.GetPredictPercentByImgID(iid, pid, 1)
