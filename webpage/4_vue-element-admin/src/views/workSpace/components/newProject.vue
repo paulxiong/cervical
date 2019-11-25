@@ -81,7 +81,7 @@ export default {
   components: { modelCard, datasetsCard },
   data() {
     return {
-      predictType: '训练',
+      predictType: '预测',
       predictWay: '没标注的图',
       cutInput: 100,
       useTime: '1800',
