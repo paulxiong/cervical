@@ -13,12 +13,18 @@
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :on-success="onSuccess"
-      :auto-upload="true"
+      :auto-upload="false"
     >
       <i class="el-icon-upload" />
       <div class="el-upload__text">将多张/单张图片文件拖到此处</div>
       <div slot="tip" class="el-upload__tip">只能上传png/jpg/png文件</div>
-      <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
+      <el-button
+        style="margin: 10px 0 0 20px;"
+        size="mini"
+        type="success"
+        @click.stop="submitUpload"
+      >上传到服务器</el-button>
+      <el-button style="margin-left: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
   </div>
 </template>
@@ -62,8 +68,10 @@ export default {
         this.$refs.upload.submit()
       }, 200)
     },
-    onSuccess() {
-      this.$emit('checkUpload', true)
+    onSuccess(response, file, fileList) {
+      if (fileList[fileList.length - 1].percentage === 100) {
+        this.$emit('checkUpload', true)
+      }
     },
     abortUpload() {
       this.$refs.upload.abort()
@@ -89,12 +97,9 @@ export default {
 
 <style lang="scss" scoped>
 .upload {
-  margin-left: 100px;
   .upload-imgs {
-    width: 500px;
     max-height: 500px;
     overflow-y: auto;
   }
-  margin-top: 10px;
 }
 </style>

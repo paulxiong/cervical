@@ -13,7 +13,6 @@ const mutations = {
 
 const actions = {
   addErrorLog({ commit }, log) {
-    console.log('errLog')
     commit('ADD_ERROR_LOG', log)
   },
   clearErrorLog({ commit }) {

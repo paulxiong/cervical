@@ -43,7 +43,7 @@ service.interceptors.response.use(
       Message.error({
         message: errs[response.data.status],
         type: 'error',
-        duration: 1e4
+        duration: 3000
       })
     }
   },
