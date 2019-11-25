@@ -207,11 +207,12 @@ class detector():
                     print2("%s drop roi, score=%f" % (filename, score))
                     continue
                 y1, x1, y2, x2 = roi[0], roi[1], roi[2], roi[3]
-                mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
-                x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, original_image, 50) # 细胞裁剪尺寸已被固定
-                if (x2-x1) != (y2-y1):
-                    continue
-                _rois.append([y1, x1, y2, x2])
+                if ((y2-y1)+(x2-x1))/2 >=17:
+                    mask_x, mask_y = int((x2 + x1) / 2), int((y2 + y1) / 2)
+                    x1, y1, x2, y2 = self.calculate_wh(mask_x, mask_y, original_image, 50) # 细胞裁剪尺寸已被固定
+                    if (x2-x1) != (y2-y1):
+                        continue
+                    _rois.append([y1, x1, y2, x2])
 
             cell_points = np.array(_rois)
             if sign == '1': # 训练
