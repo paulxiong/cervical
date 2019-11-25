@@ -1,24 +1,12 @@
 <template>
   <div class="dataSets">
-    <el-table :data="datasetsList" style="width: 100%;padding-top: 7px;">
-      <el-table-column label="数据ID" min-width="100">
+    <el-table :data="datasetsList">
+      <el-table-column label="数据集ID" width="100" prop="id" />
+      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="创建时间" prop="created_at" />
+      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column label="描述" width="200" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.desc }}
-        </template>
-      </el-table-column>
-      <el-table-column label="裁剪模型" width="100" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.parameter_mid }}
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" width="250" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.created_at }}
+          <el-tag :type="scope.row.statusType" effect="dark">{{ scope.row.statusTime }}</el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -27,6 +15,7 @@
 
 <script>
 import { listdatasets } from '@/api/cervical'
+import { taskStatus, taskType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -66,7 +55,7 @@ export default {
     }
   },
   created() {
-    this.listdatasets(7, 0, 1)
+    this.listdatasets(5, 0, 1)
   },
   methods: {
     listdatasets(limit, skip, order) {
@@ -75,6 +64,8 @@ export default {
         if (res.data.data.total > 0) {
           res.data.data.datasets.map(v => {
             v.created_at = parseTime(v.created_at)
+            v.statusType = taskType[v.status]
+            v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
           })
           this.datasetsList = res.data.data.datasets
           this.total = res.data.data.total
@@ -86,9 +77,3 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.dataSets {
-    margin-left:  16px;
-    margin-right: -16px;
-}
-</style>

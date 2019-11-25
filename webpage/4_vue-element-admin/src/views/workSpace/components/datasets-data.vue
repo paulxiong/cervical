@@ -249,8 +249,7 @@ export default {
             v.processend = parseTime(v.processend)
             v.created_by = createdBy[v.created_by] || '普通用户'
             v.statusType = taskType[v.status]
-            v.status = taskStatus[v.status]
-            v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+            v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
             v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
             v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
           })

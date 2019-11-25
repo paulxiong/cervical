@@ -1,24 +1,13 @@
 <template>
   <div class="medicalReport">
-    <el-table :data="projectlist" style="width: 100%;padding-top: 7px;">
-      <el-table-column label="报告ID" min-width="100">
+    <el-table :data="projectlist">
+      <el-table-column width="100" label="报告ID" prop="id" />
+      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="数据集" prop="did" />
+      <el-table-column label="创建时间" prop="created_at" />
+      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column label="描述" width="150" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.desc }}
-        </template>
-      </el-table-column>
-      <el-table-column label="数据集" width="100" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.did }}
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" width="250" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.starttime }}
+          <el-tag :type="scope.row.statusType" effect="dark">{{ scope.row.statusTime }}</el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -27,6 +16,7 @@
 
 <script>
 import { getListprojects } from '@/api/cervical'
+import { taskStatus, taskType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -58,15 +48,16 @@ export default {
     }
   },
   created() {
-    this.getListprojects(7, 0, 1)
+    this.getListprojects(5, 0, 1)
   },
   methods: {
     getListprojects(limit, skip, order) {
       this.loading = true
       getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.projects.map(v => {
-          v.starttime = parseTime(v.starttime)
-          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+          v.created_at = parseTime(v.created_at)
+          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
+          v.statusType = taskType[v.status]
         })
         this.projectlist = res.data.data.projects
         this.total = res.data.data.total
@@ -76,10 +67,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.medicalReport {
-    margin-left: -16px;
-    margin-right: 16px;
-}
-</style>

@@ -2,20 +2,12 @@
   <div class="dashboard-editor-container">
     <panel-group />
 
-    <el-row :gutter="8">
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:20px;margin-bottom:30px;">
-        <transaction-table />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
-        <best-model />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-left:20px;margin-bottom:30px;">
-        <medical-report />
-      </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:20px;margin-bottom:30px;">
-        <data-sets />
-      </el-col>
-    </el-row>
+    <div class="row-box flex">
+      <transaction-table style="width: 48%;max-height: 360px;overflow-y: auto;" />
+      <best-model style="width: 48%;max-height: 360px;overflow-y: auto;" />
+      <data-sets style="width: 48%;max-height: 360px;overflow-y: auto; margin: 40px 0;" />
+      <medical-report style="width: 48%;max-height: 360px;overflow-y: auto; margin: 40px 0;" />
+    </div>
   </div>
 </template>
 
@@ -39,6 +31,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.row-box {
+  justify-content: space-around;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
 .dashboard-editor-container {
   padding: 32px;
   position: relative;

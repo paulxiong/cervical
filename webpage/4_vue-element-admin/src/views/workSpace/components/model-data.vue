@@ -164,8 +164,7 @@ export default {
           v.created_at = parseTime(v.created_at)
           v.created_by = createdBy[v.created_by] || '普通用户'
           v.statusType = taskType[v.status]
-          v.status = taskStatus[v.status]
-          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
+          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
           v.modelType = modelType[v.type]
         })
         this.modelLists = res.data.data.models
