@@ -1,6 +1,6 @@
 <template>
   <div class="dataSets">
-    <el-table :data="datasetsList" height="300">
+    <el-table :data="datasetsList" max-height="300">
       <el-table-column label="数据集ID" width="100" prop="id" />
       <el-table-column label="描述" prop="desc" />
       <el-table-column label="创建时间" prop="created_at" />

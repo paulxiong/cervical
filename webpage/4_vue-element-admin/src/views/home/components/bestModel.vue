@@ -1,6 +1,6 @@
 <template>
   <div class="modelData">
-    <el-table :data="modelLists" height="300">
+    <el-table :data="modelLists" max-height="300">
       <el-table-column
         label="模型ID"
         prop="id"

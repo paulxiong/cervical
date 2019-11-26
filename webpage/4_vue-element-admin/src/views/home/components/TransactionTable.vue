@@ -1,6 +1,6 @@
 <template>
   <div class="projectData">
-    <el-table :data="projectlist" height="300">
+    <el-table :data="projectlist" max-height="300">
       <el-table-column width="100" label="项目ID" prop="id" />
       <el-table-column label="描述" prop="desc" />
       <el-table-column width="100" label="类型" prop="projectType" />
