@@ -10,8 +10,6 @@
       multiple
       show-file-list
       :before-upload="beforeUpload"
-      :on-preview="handlePreview"
-      :on-remove="handleRemove"
       :on-success="onSuccess"
       :auto-upload="false"
     >
@@ -84,12 +82,6 @@ export default {
         this.$message.error('只能上传图片格式')
       }
       return isPNG || isJPG || isJPEG
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePreview(file) {
-      console.log(file)
     }
   }
 }
