@@ -246,7 +246,7 @@ export default {
             this.$store
               .dispatch('user/register', this.loginForm)
               .then(() => {
-                setTimeout(() => {
+                this.$nextTick(() => {
                   this.$store
                     .dispatch('user/login', this.loginForm)
                     .then(() => {
@@ -260,7 +260,7 @@ export default {
                     .catch(() => {
                       this.loading = false
                     })
-                }, 1e3)
+                })
               })
               .catch(() => {
                 this.loading = false

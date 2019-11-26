@@ -83,21 +83,21 @@ export const constantRoutes = [
     path: '/workSpace',
     component: Layout,
     redirect: '/workSpace/list',
-    name: '概览',
-    meta: { title: '概览', icon: 'component' },
+    name: '工作台',
+    meta: { title: '工作台', icon: 'component' },
     children: [
       {
         path: 'list',
         component: () => import('@/views/workSpace/index'),
-        name: '工作台',
-        meta: { title: '工作台', icon: 'component', affix: true }
+        name: '工作台概览',
+        meta: { title: '工作台概览', icon: 'component', affix: true }
       },
       {
         path: 'details',
         component: () => import('@/views/workSpace/details'),
         hidden: true,
-        name: '详情',
-        meta: { title: '详情', affix: true }
+        name: '任务详情',
+        meta: { title: '任务详情', affix: true }
       }
     ]
   },
@@ -105,21 +105,21 @@ export const constantRoutes = [
     path: '/report',
     component: Layout,
     redirect: '/report/list',
-    name: '概览',
-    meta: { title: '概览', icon: 'nested' },
+    name: '审核报告',
+    meta: { title: '审核报告', icon: 'nested' },
     children: [
       {
         path: 'list',
         component: () => import('@/views/report/report'),
-        name: '审核报告',
-        meta: { title: '审核报告', icon: 'documentation', affix: true }
+        name: '审核报告概览',
+        meta: { title: '审核报告概览', icon: 'documentation', affix: true }
       },
       {
         path: 'details',
         component: () => import('@/views/workSpace/details'),
         hidden: true,
-        name: '详情',
-        meta: { title: '详情', affix: true }
+        name: '审核报告详情',
+        meta: { title: '审核报告详情', affix: true }
       }
     ]
   },

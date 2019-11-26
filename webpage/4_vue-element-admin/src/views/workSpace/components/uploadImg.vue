@@ -64,7 +64,7 @@ export default {
       this.postData.batchids = [this.args.bid]
       this.postData.medicalids.push(this.args.mid)
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.$refs.upload.submit()
       }, 200)
     },

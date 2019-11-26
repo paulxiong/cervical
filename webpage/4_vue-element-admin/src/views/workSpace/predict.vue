@@ -297,7 +297,7 @@ export default {
         'id': this.select.id,
         'status': status
       }).then(res => {
-        this.filterSearch()
+        this.changeLabel(this.select)
         this.$message({
           message: '审核确认成功',
           type: 'success'
@@ -332,7 +332,7 @@ export default {
         'id': this.select.id,
         'true_type': value.length === 2 ? value[1] : value[0]
       }).then(res => {
-        this.filterSearch()
+        this.changeLabel(this.select)
         this.imgCellsInfo.imgcellsall = res.data.data.imgcellsall
         this.imgCellsInfo.imgcellsverified = res.data.data.imgcellsverified
         this.imgCellsInfo.cellsall = res.data.data.cellsall
