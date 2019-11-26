@@ -1,6 +1,6 @@
 <template>
   <div class="medicalReport">
-    <el-table :data="projectlist">
+    <el-table :data="projectlist" max-height="300">
       <el-table-column width="100" label="报告ID" prop="id" />
       <el-table-column label="描述" prop="desc" />
       <el-table-column width="100" label="数据集" prop="did" />
