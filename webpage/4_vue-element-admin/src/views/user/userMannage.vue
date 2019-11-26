@@ -26,9 +26,10 @@
     </div>
     <el-table :data="userList.users" height="850px" style="width: 100%">
       <el-table-column prop="id" label="用户ID" width="100" />
-      <el-table-column prop="name" label="用户名" width="180" />
+      <el-table-column prop="name" label="用户名" width="250" />
       <el-table-column prop="type_id" label="用户类型" width="100" />
-      <el-table-column prop="city" label="城市" />
+      <el-table-column prop="created_at" label="创建时间" />
+      <el-table-column prop="updated_at" label="最近操作" />
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" trigger="click">
@@ -36,8 +37,9 @@
               <table class="tftable" border="1">
                 <tr><td class="td-1">用户ID:</td><td>{{ scope.row.id }}</td></tr>
                 <tr><td class="td-1">用户名:</td><td>{{ scope.row.name }}</td></tr>
-                <tr><td class="td-1">类型:</td><td>{{ scope.row.type_id }}</td></tr>
+                <tr><td class="td-1">用户类型:</td><td>{{ scope.row.type_id }}</td></tr>
                 <tr><td class="td-1">邮箱:</td><td>{{ scope.row.email }}</td></tr>
+                <tr><td class="td-1">手机号码:</td><td>{{ scope.row.mobile }}</td></tr>
               </table>
             </div>
             <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
@@ -63,6 +65,7 @@
 
 <script>
 import { getUserLists } from '@/api/user'
+import { formatTime } from '@/utils/index'
 
 export default {
   name: 'UserList',
@@ -113,6 +116,10 @@ export default {
     },
     getUserLists(limit, skip, order) {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        res.data.data.users.map(v => {
+          v.created_at = formatTime(v.created_at)
+          v.updated_at = formatTime(v.updated_at)
+        })
         this.userList = res.data.data
       })
     }

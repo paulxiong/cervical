@@ -102,7 +102,7 @@ export default {
       }
 
       .icon-report {
-        background: #eef103;
+        background: #03e1f1;
       }
     }
 
@@ -119,7 +119,7 @@ export default {
     }
 
     .icon-report {
-      color: #f1f509;
+      color: #09d2f5;
     }
 
     .card-panel-icon-wrapper {
