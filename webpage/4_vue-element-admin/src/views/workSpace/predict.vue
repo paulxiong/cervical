@@ -305,7 +305,7 @@ export default {
       })
     },
     filterSearch() {
-      this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked, 'select')
+      this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
       this.$nextTick(() => {
         this.filterCellsType(this.filterValue.filterCellsType)
       })
@@ -332,7 +332,7 @@ export default {
         'id': this.select.id,
         'true_type': value.length === 2 ? value[1] : value[0]
       }).then(res => {
-        this.changeLabel(this.select)
+        this.filterSearch()
         this.imgCellsInfo.imgcellsall = res.data.data.imgcellsall
         this.imgCellsInfo.imgcellsverified = res.data.data.imgcellsverified
         this.imgCellsInfo.cellsall = res.data.data.cellsall
