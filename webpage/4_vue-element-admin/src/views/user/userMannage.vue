@@ -24,7 +24,7 @@
       </el-select>
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div>
-    <el-table :data="userList.users" height="850px" style="width: 100%">
+    <el-table :data="userList.users" style="width: 100%">
       <el-table-column prop="id" label="用户ID" width="100" />
       <el-table-column prop="name" label="用户名" width="250" />
       <el-table-column prop="type_id" label="用户类型" width="100" />

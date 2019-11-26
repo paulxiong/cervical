@@ -47,7 +47,6 @@
       v-loading="loading"
       element-loading-text="拼命加载中"
       :data="datasetsList"
-      max-height="777"
       style="width: 100%"
     >
       <el-table-column type="expand">

@@ -184,12 +184,6 @@ export const constantRoutes = [
         meta: { title: '邮件设置', icon: 'email', affix: true }
       },
       {
-        path: 'resourece',
-        component: () => import('@/views/system/resource'),
-        name: '资源管理',
-        meta: { title: '资源管理', icon: 'tree-table', affix: true }
-      },
-      {
         path: 'errLog',
         component: () => import('@/views/system/errLog'),
         name: '错误日志',

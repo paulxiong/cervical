@@ -24,7 +24,7 @@
       </el-select>
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div>
-    <el-table :data="errLog" height="850px" style="width: 100%">
+    <el-table :data="errLog" style="width: 100%">
       <el-table-column prop="operationlog.name" label="用户" width="200px" />
       <el-table-column prop="created_time" label="操作时间" width="200" />
       <el-table-column prop="version" label="版本" width="100" />

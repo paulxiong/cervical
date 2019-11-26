@@ -31,7 +31,6 @@
     </div>
     <el-table
       :data="recycleList"
-      max-height="777"
       style="width: 100%"
     >
       <el-table-column type="expand">
