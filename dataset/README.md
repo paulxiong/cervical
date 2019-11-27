@@ -356,16 +356,27 @@ Data_FOV_types/
     ├── a
     ├── ...
 ```
-#### 细胞过滤分类器用
-### data_cell_seg_1122
+#### 细胞过滤
+### data_cell_seg_1122（训练数据）
 ```
 链接：https://pan.baidu.com/s/1yUUOAi0Q2GeecscdXg2S4A
 提取码：hcc2
 说明：data_cell_seg_1122数据集用于训练过滤细胞分类器，原始数据来自5个批次随机抽取的500张FOV，其细胞图尺寸:100*100，RGB三通道，valid为质量较好的细胞（希望过滤得到），invalid为质量较差的细胞（希望过滤掉），实际训练时建议将两者比例调成1:1
 目录结构（括号内为细胞数量）
 data_cell_seg_1122
+
 ├── invalid(26479)
 │   ├── ...
 └── valid(9545)
 │   ├── ...
+```
+### FOV_cells_origin（测试数据）
+```
+链接：https://pan.baidu.com/s/1NjrdXjreQjBKlQyXydBvvA
+提取码：ew8v
+说明：2019年11约26日制作的数据，用于验证细胞过滤分类器效果，其中FOV_origin为从17P...、2019...批次数据抽取的两个病例中随机抽出500张FOV，cells_all为FOV_origin数据用MaskRcnn切割出的细胞共41059个细胞。尺寸：100*100，RGB三通道
+目录结构：
+FOV_cells_origin
+├── cells_all（41059）
+└── FOV_origin（500）
 ```
