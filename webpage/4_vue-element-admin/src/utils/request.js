@@ -43,8 +43,9 @@ service.interceptors.response.use(
       Message.error({
         message: errs[response.data.status],
         type: 'error',
-        duration: 3000
+        duration: 5000
       })
+      return response
     }
   },
   /**

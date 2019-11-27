@@ -1,4 +1,5 @@
-import { login, register, logout, getInfo } from '@/api/user'
+import { login, register, logout, getInfo, forgetPassword } from '@/api/user'
+import { Message } from 'element-ui'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -61,6 +62,25 @@ const actions = {
         commit('SET_TOKEN', data.token)
         setToken(`token ${data.token}`)
         resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // user login
+  updatepasswd({ commit }, userInfo) {
+    const { username, password, confirmPassword, code } = userInfo
+    return new Promise((resolve, reject) => {
+      forgetPassword({ username: username.trim(), password: password, confirmPassword: confirmPassword, email: username, mobile: '', emailcode: code }).then(response => {
+        if (response.status > 0) {
+          Message.success({
+            message: '密码修改成功',
+            type: 'success',
+            duration: 3000
+          })
+        }
+        resolve(response)
       }).catch(error => {
         reject(error)
       })

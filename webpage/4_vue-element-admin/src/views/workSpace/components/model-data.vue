@@ -1,6 +1,6 @@
 <template>
   <div class="modelData">
-    <div class="filter-box">
+    <!-- <div class="filter-box">
       <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
@@ -35,7 +35,7 @@
         icon="el-icon-edit"
         @click="createModel"
       >新增模型</el-button>
-    </div>
+    </div> -->
     <el-table
       :data="modelLists"
       style="width: 100%"

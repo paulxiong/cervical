@@ -50,7 +50,7 @@
           </span>
         </el-form-item>
 
-        <el-form-item v-if="register" prop="confirmPassword">
+        <el-form-item v-if="register || forgetPassword" prop="confirmPassword">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
@@ -70,7 +70,7 @@
           </span>
         </el-form-item>
 
-        <el-form-item v-if="register" prop="code">
+        <el-form-item v-if="register || forgetPassword" prop="code">
           <span class="svg-container">
             <svg-icon icon-class="email" />
           </span>
@@ -96,10 +96,10 @@
           type="primary"
           style="width:100%;margin-bottom:20px;"
           @click.native.prevent="handleLogin"
-        >{{ register?'注册并登录':'登录' }}</el-button>
+        >{{ forgetPassword?'确认修改新密码':register?'注册并登录':'登录' }}</el-button>
         <div style="position:relative">
           <div class="tips">
-            <el-link type="primary" :underline="false" icon="el-icon-key">忘记密码</el-link>
+            <el-link type="primary" :underline="false" icon="el-icon-key" @click="handleForgetPassword">{{ !forgetPassword?'忘记密码':'登录' }}</el-link>
             <el-link
               type="primary"
               :underline="false"
@@ -157,6 +157,7 @@ export default {
     return {
       fuValue: '',
       register: false,
+      forgetPassword: false,
       loginForm: {
         username: '',
         code: '',
@@ -206,22 +207,35 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    handleForgetPassword() {
+      this.forgetPassword = !this.forgetPassword
+      this.passwordType = 'password'
+      this.loginForm.username = ''
+      this.loginForm.password = ''
+      this.loginForm.confirmPassword = ''
+      this.loginForm.code = ''
+    },
     handleRegisterLogin() {
       this.register = !this.register
       this.passwordType = 'password'
       this.loginForm.username = ''
       this.loginForm.password = ''
+      this.loginForm.confirmPassword = ''
+      this.loginForm.code = ''
     },
     sendCode() {
       if (!validEmail(this.loginForm.username)) return
-      getCode({ 'email': this.loginForm.username, 'type': 1 })
-      timer = setInterval(() => {
-        this.time--
-        if (this.time === 0) {
-          clearInterval(timer)
-          this.time = 60
-        }
-      }, 1e3)
+      if (this.time < 60) return
+      getCode({ 'email': this.loginForm.username, 'type': this.forgetPassword ? 2 : 1 }).then(res => {
+        if (res.data.status > 0) return
+        timer = setInterval(() => {
+          this.time--
+          if (this.time === 0) {
+            clearInterval(timer)
+            this.time = 60
+          }
+        }, 1e3)
+      })
     },
     showPwd() {
       if (this.passwordType === 'password') {
@@ -242,6 +256,19 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
+          if (this.forgetPassword) {
+            this.$store
+              .dispatch('user/updatepasswd', this.loginForm)
+              .then(() => {
+                this.forgetPassword = false
+                this.loading = false
+              })
+              .catch(() => {
+                this.forgetPassword = false
+                this.loading = false
+              })
+            return
+          }
           if (this.register) {
             this.$store
               .dispatch('user/register', this.loginForm)
