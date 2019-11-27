@@ -74,8 +74,8 @@ func (s *Syscfg) NewOrUpdateSysCfg() error {
 	return err
 }
 
-// getEmailBody 根据注册码和邮箱地址生成邮件内容
-func getEmailBody(toaddr string, code string) string {
+// GetEmailBody 根据注册码和邮箱地址生成邮件内容
+func GetEmailBody(toaddr string, code string) string {
 	_s, err := FindSysCfg()
 	if err != nil || len(_s.EmailRegisterContent) < 1 {
 		return ""

@@ -73,8 +73,8 @@ func RegisterUser(c *gin.Context) {
 	//检查如果是邮箱注册，必须检查验证码的合法
 	if user.Email != "" {
 		valid, em, codeerr := m.CheckEmailCodeValied(user.Email, reg.EmailCode)
-		if codeerr != nil || valid == false {
-			res.ResFailedStatus(c, e.Errors["RegisterMailInvalid"])
+		if valid == false {
+			res.ResFailedStatus(c, codeerr)
 			return
 		}
 		//校验完之后丢弃这个校验码
@@ -152,58 +152,6 @@ func LogoutUser(c *gin.Context) {
 // CheckAuth 检查当前连接是否已经登录
 func CheckAuth(c *gin.Context) {
 	AuthMiddleware.MiddlewareFunc()(c)
-	return
-}
-
-type mailregister struct {
-	Email string `form:"email" json:"email" example:"youremail@163.com"` // 用户的邮箱地址
-	Type  int    `form:"type"  json:"type"  example:"1"`                 // 验证码类型, 0未知 1注册 2忘记密码
-}
-
-// GetEmailCode 用户注册时候获取邮箱验证码
-// @Description 注册时候获取邮箱验证码
-// @Summary 用户注册时候获取邮箱验证码
-// @tags API1 用户
-// @Accept  multipart/form-data
-// @Produce json
-// @Param Email body controllers.mailregister true "注册信息表单"
-// @Success 200 {string} json "{"status": 200, "data": "ok"}"
-// @Router /user/emailcode [POST]
-func GetEmailCode(c *gin.Context) {
-	var user m.User
-	var mcode mailregister
-	err := c.ShouldBindJSON(&mcode)
-	if err != nil {
-		logger.Info.Println(err)
-		res.ResFailedStatus(c, e.Errors["EmailCodeInvalidData"])
-		return
-	}
-
-	user.Email = mcode.Email
-	exituser, _ := user.CheckUserExist()
-	if mcode.Type == 1 {
-		if exituser != nil {
-			res.ResFailedStatus(c, e.Errors["RegisterUserExisted"])
-			return
-		}
-	} else if mcode.Type == 2 {
-		if exituser == nil || exituser.ID < 1 {
-			res.ResFailedStatus(c, e.Errors["PasswdUpdateEmailNotFound"])
-			return
-		}
-	} else {
-		res.ResFailedStatus(c, e.Errors["EmailCodeunknown"])
-		return
-	}
-
-	err = m.SendEmailCode(mcode.Email, mcode.Type)
-	if err != nil {
-		logger.Info.Println(err)
-		res.ResFailedStatus(c, e.Errors["EmailCodeSendFailed"])
-		return
-	}
-
-	res.ResSucceedString(c, "ok")
 	return
 }
 
@@ -370,7 +318,14 @@ func UpdatePassWD(c *gin.Context) {
 		return
 	}
 
-	// 检查验证码是否有效
+	//必须检查验证码的合法
+	valid, em, codeerr := m.CheckEmailCodeValied(up.Email, up.EmailCode)
+	if valid == false {
+		res.ResFailedStatus(c, codeerr)
+		return
+	}
+	//校验完之后丢弃这个校验码
+	em.UpdateEmailInvalid()
 
 	userinfo := &m.User{
 		ID:    0,
