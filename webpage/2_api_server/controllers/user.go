@@ -142,7 +142,7 @@ func LoginUser(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
-// @Success 200 {string} json “{"status": 200, "data": "ok"}"
+// @Success 200 {string} json "{"status": 200, "data": "ok"}"
 // @Router /user/logout [get]
 func LogoutUser(c *gin.Context) {
 	res.ResSucceedString(c, "ok")
@@ -167,7 +167,7 @@ type mailregister struct {
 // @Accept  multipart/form-data
 // @Produce json
 // @Param Email body controllers.mailregister true "注册信息表单"
-// @Success 200 {string} json “{"status": 200, "data": "ok"}"
+// @Success 200 {string} json "{"status": 200, "data": "ok"}"
 // @Router /user/emailcode [POST]
 func GetEmailCode(c *gin.Context) {
 	var user m.User
@@ -188,7 +188,7 @@ func GetEmailCode(c *gin.Context) {
 		}
 	} else if mcode.Type == 2 {
 		if exituser == nil || exituser.ID < 1 {
-			res.ResFailedStatus(c, e.Errors["ForgetEmailNotFound"])
+			res.ResFailedStatus(c, e.Errors["PasswdUpdateEmailNotFound"])
 			return
 		}
 	} else {
@@ -311,7 +311,7 @@ type updateUser struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param Register body controllers.updateUser true "修改当前用户信息"
-// @Success 200 {string} json “{"status": 200, "data": "ok"}"
+// @Success 200 {string} json "{"status": 200, "data": "ok"}"
 // @Router /user/updateinfo [post]
 func UpdateUserInfo(c *gin.Context) {
 	uu := updateUser{}
@@ -334,6 +334,58 @@ func UpdateUserInfo(c *gin.Context) {
 	err2 := userinfo.UpdateUserInfo()
 	if err2 != nil {
 		res.ResFailedStatus(c, e.Errors["UserUpdateFailed"])
+	}
+
+	res.ResSucceedString(c, "ok")
+	return
+}
+
+// updatepasswd 通过验证码修改密码
+type updatepasswd struct {
+	Email           string `json:"email"     example:"mail@163.com"`                                          // 邮箱
+	EmailCode       string `json:"emailcode" example:"654321"`                                                // 验证码
+	Password        string `json:"password" binding:"required,max=124" example:"123"`                         // 新密码
+	ConfirmPassword string `json:"confirmPassword" binding:"required,eqfield=Password,max=124" example:"123"` // 新密码确认
+}
+
+// UpdatePassWD 通过验证码修改密码
+// @Summary 通过验证码修改密码
+// @Description 通过验证码修改密码
+// @tags API1 用户
+// @Accept  json
+// @Produce json
+// @Param updatepasswd body controllers.updatepasswd true "通过验证码修改密码"
+// @Success 200 {string} json "{"status": 200, "data": "ok"}"
+// @Router /user/updatepasswd [post]
+func UpdatePassWD(c *gin.Context) {
+	up := updatepasswd{}
+	err := c.ShouldBindJSON(&up)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	if len(up.Email) < 5 || len(up.EmailCode) < 6 || len(up.Password) < 3 || up.Password != up.ConfirmPassword {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	// 检查验证码是否有效
+
+	userinfo := &m.User{
+		ID:    0,
+		Email: up.Email,
+	}
+	_user, err2 := userinfo.Finduserbyemail()
+	if err2 != nil || _user.ID < 1 {
+		res.ResFailedStatus(c, e.Errors["PasswdUpdateEmailNotFound"])
+		return
+	}
+
+	err3 := m.UpdateUserPassWD(_user.ID, up.Password)
+	if err3 != nil {
+		res.ResFailedStatus(c, e.Errors["PasswdUpdateFailed"])
+		return
 	}
 
 	res.ResSucceedString(c, "ok")

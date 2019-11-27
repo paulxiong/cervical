@@ -285,3 +285,23 @@ func (u *User) UpdateUserInfo() (err error) {
 
 	return ret.Error
 }
+
+// UpdateUserPassWD 更新用户的密码
+func UpdateUserPassWD(UID int64, passwd string) (err error) {
+	var updateu map[string]interface{}
+	updateu = make(map[string]interface{})
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(passwd), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	updateu["password"] = string(hash)
+
+	ret := db.Model(&User{}).Where("id=?", UID).Updates(updateu)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+
+	return ret.Error
+}

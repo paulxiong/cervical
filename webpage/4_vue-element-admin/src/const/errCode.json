@@ -53,6 +53,7 @@
         {"status": 180, "key": "SystemSaveFailed",   "content": "保存系统配置出错"},
         {"status": 181, "key": "SystemNotFound",   "content": "系统配置未找到"},
 
-        {"status": 190, "key": "ForgetEmailNotFound",   "content": "该邮箱没有注册过用户，请直接注册新用户"}
+        {"status": 190, "key": "PasswdUpdateEmailNotFound",   "content": "该邮箱没有注册过用户，请直接注册新用户"},
+        {"status": 191, "key": "PasswdUpdateFailed",   "content": "密码修改出错，请重试"}
 	]
 }
