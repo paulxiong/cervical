@@ -51,7 +51,9 @@ export default {
   methods: {
     getTrainresult() {
       getTrainresult({ 'id': this.$route.query.pid }).then(res => {
-        this.modelInfo = res.data.data
+        if (res.data.data) {
+          this.modelInfo = res.data.data
+        }
       })
     },
     getPercent() {
@@ -60,9 +62,12 @@ export default {
         this.percentage = res.data.data.percent
         this.status = res.data.data.status
         this.ETA = res.data.data.ETA
-        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
+        if (this.status >= 3) {
           this.loading = false
           clearInterval(timer)
+          if ((this.percentage === 100) || (this.ETA === 0)) {
+            this.getTrainresult()
+          }
         } else {
           this.loadingtext = '预计还需要' + this.ETA + '秒'
         }
@@ -74,12 +79,6 @@ export default {
     loopGetPercent() {
       timer = setInterval(() => {
         this.getPercent()
-        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
-          this.getTrainresult()
-          this.getPercent()
-          location.reload()
-          clearInterval(timer)
-        }
       }, 1500)
     }
   },

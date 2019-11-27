@@ -241,11 +241,13 @@ export default {
         this.percentage = res.data.data.percent
         this.ETA = res.data.data.ETA
         this.status = res.data.data.status
-        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
+        if (this.status >= 3) {
           this.loading = false
-          this.getjobresult()
-          this.getjoblog()
           clearInterval(timer)
+          if ((this.percentage === 100) || (this.ETA === 0)) {
+            this.getjobresult()
+            this.getjoblog()
+          }
         } else {
           this.loadingtext = '预计还需要' + this.ETA + '秒'
         }
@@ -276,13 +278,6 @@ export default {
     loopGetPercent() {
       timer = setInterval(() => {
         this.getPercent()
-        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
-          this.getjobresult()
-          this.getPercent()
-          this.getjoblog()
-          location.reload()
-          clearInterval(timer)
-        }
       }, 1500)
     }
   },

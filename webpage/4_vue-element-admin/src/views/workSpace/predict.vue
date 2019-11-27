@@ -274,11 +274,6 @@ export default {
   created() {
     this.report = this.$route.query.report
     this.filterValue.filterChecked = this.report === 'admin' ? 1 : 0
-    if (this.$route.query.report) {
-      this.getDatasetImgs()
-    } else {
-      this.getPredictResult()
-    }
     this.loopGetPercent()
   },
   destroyed() {
@@ -417,9 +412,15 @@ export default {
         this.percentage = res.data.data.percent
         this.status = res.data.data.status
         this.ETA = res.data.data.ETA
-        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
+        if (this.status >= 3) {
           this.loading = false
           clearInterval(timer)
+          if (this.$route.query.report) {
+            this.getDatasetImgs()
+          } else {
+            this.getPredictResult()
+          }
+          this.getjoblog()
         } else {
           this.loadingtext = '预计还需要' + this.ETA + '秒'
         }
@@ -431,12 +432,6 @@ export default {
     loopGetPercent() {
       timer = setInterval(() => {
         this.getPercent()
-        if ((this.percentage === 100) || (this.status >= 3) || (this.ETA === 0)) {
-          this.getPercent()
-          this.getjoblog()
-          location.reload()
-          clearInterval(timer)
-        }
       }, 1500)
     },
     changeCellTypes(val) {
