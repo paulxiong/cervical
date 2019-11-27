@@ -1,6 +1,6 @@
 <template>
   <div class="userList">
-    <div class="filter-box">
+    <!-- <div class="filter-box">
       <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
@@ -23,7 +23,7 @@
         />
       </el-select>
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
-    </div>
+    </div> -->
     <el-table :data="userList.users" style="width: 100%">
       <el-table-column prop="id" label="用户ID" width="100" />
       <el-table-column prop="name" label="用户名" width="250" />

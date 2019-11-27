@@ -1,6 +1,6 @@
 <template>
   <div class="doctor-report">
-    <div class="filter-box">
+    <!-- <div class="filter-box">
       <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
@@ -35,7 +35,7 @@
         icon="el-icon-edit"
         @click="dialogFormVisible = true"
       >新增报告</el-button>
-    </div>
+    </div> -->
     <el-table
       v-loading="loading"
       element-loading-text="拼命加载中"

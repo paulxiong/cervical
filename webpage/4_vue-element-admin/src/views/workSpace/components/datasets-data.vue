@@ -1,7 +1,7 @@
 <template>
   <div class="datasetsData">
     <div class="filter-box">
-      <el-input
+      <!-- <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
         style="width:200px;"
@@ -21,7 +21,7 @@
           :label="item.name"
           :value="item.key"
         />
-      </el-select>
+      </el-select> -->
       <el-button
         class="filter-btn"
         type="primary"

@@ -1,6 +1,6 @@
 <template>
   <div class="recycleData">
-    <div class="filter-box">
+    <!-- <div class="filter-box">
       <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
@@ -28,7 +28,7 @@
         icon="el-icon-search"
         @click="filterSearch"
       >搜索</el-button>
-    </div>
+    </div> -->
     <el-table
       :data="recycleList"
       style="width: 100%"
