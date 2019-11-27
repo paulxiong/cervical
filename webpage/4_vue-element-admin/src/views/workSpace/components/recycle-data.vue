@@ -123,7 +123,7 @@ export default {
           'created_by': '用户六',
           'score': '98.6',
           'status': '已完成',
-          'created_at': '2019-10-25T17:53:13Z',
+          'created_at': '2019-10-25 17:53:13',
           'model_id': '2',
           'datasets_id': '3'
         },
@@ -133,7 +133,7 @@ export default {
           'created_by': '用户一',
           'status': '已完成',
           'score': '98.6',
-          'created_at': '2019-10-25T17:00:13Z',
+          'created_at': '2019-10-25 17:00:13',
           'model_id': '1',
           'datasets_id': '1'
         },
@@ -143,7 +143,7 @@ export default {
           'created_by': '管理员',
           'status': '已完成',
           'score': '94.0',
-          'created_at': '2019-10-25T11:03:13Z',
+          'created_at': '2019-10-25 11:03:13',
           'model_id': '2',
           'datasets_id': '2'
         },
@@ -153,7 +153,7 @@ export default {
           'created_by': '用户二',
           'status': '未完成',
           'score': '0',
-          'created_at': '2019-10-25T06:00:00Z',
+          'created_at': '2019-10-25 06:00:00',
           'model_id': '7',
           'datasets_id': '2'
         },
@@ -163,7 +163,7 @@ export default {
           'created_by': '用户三',
           'status': '已完成',
           'score': '99.0',
-          'created_at': '2019-10-25T11:00:13Z',
+          'created_at': '2019-10-25 11:00:13',
           'model_id': '1',
           'datasets_id': '1'
         },
@@ -173,7 +173,7 @@ export default {
           'created_by': '用户四',
           'status': '未完成',
           'score': '0',
-          'created_at': '2019-10-25T12:00:13Z',
+          'created_at': '2019-10-25 12:00:13',
           'model_id': '3',
           'datasets_id': '4'
         },
@@ -183,7 +183,7 @@ export default {
           'created_by': '用户五',
           'status': '已完成',
           'score': '98.1',
-          'created_at': '2019-10-25T14:53:13Z',
+          'created_at': '2019-10-25 14:53:13',
           'model_id': '2',
           'datasets_id': '3'
         }
@@ -225,12 +225,7 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  // margin-top: 30px;
   .filter-box {
-    // position: fixed;
-    // float: auto;
-    // z-index: 10;
-    // margin-top: -40px;
   }
   .tools {
     background: #fff;
