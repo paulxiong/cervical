@@ -109,8 +109,8 @@ func Router() *gin.Engine {
 		// 系统
 		api1.POST("/errorlog", ctr.CreateErrorLog)
 		api1.GET("/errorlog", ctr.GetErrorLog)
-		api1.POST("/registeremailcfg", ctr.RegisterEmailCfg)
-		api1.GET("/registeremailcfg", ctr.GetRegisterEmailCfg)
+		api1.POST("/emailcfg", ctr.EmailCfg)
+		api1.GET("/mailcfg", ctr.GetEmailCfg)
 
 		// 医疗报告
 		api1.GET("/predictresult2", ctr.GetPredictResult2)

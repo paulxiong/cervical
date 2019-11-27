@@ -68,7 +68,7 @@ func SendEmailCode(toaddr string, _type int) error {
 	body := code               // 邮件正文
 
 	// 查找系统配置里面的邮件样式
-	emailbody := m.GetEmailBody(toaddr, code)
+	emailbody := m.GetEmailBody(toaddr, code, _type)
 	if len(emailbody) > 0 {
 		body = emailbody
 	}

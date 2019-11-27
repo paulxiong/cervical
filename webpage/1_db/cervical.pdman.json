@@ -2366,14 +2366,41 @@
               "name": "host",
               "type": "MiddleString",
               "remark": "",
-              "chnname": "本服务域名+端口",
+              "chnname": "协议+本服务域名+端口",
               "defaultValue": "\"\""
             },
             {
               "name": "email_register_content",
               "type": "LongText",
               "remark": "",
-              "chnname": "发送注册邮件的内容"
+              "chnname": "发送注册邮件的格式"
+            },
+            {
+              "name": "email_forgot_content",
+              "type": "LongText",
+              "remark": "",
+              "chnname": "发送忘记密码邮件的格式"
+            },
+            {
+              "name": "referer_en",
+              "type": "Integer",
+              "remark": "0关闭1开启",
+              "chnname": "开启图片防盗链",
+              "defaultValue": "0"
+            },
+            {
+              "name": "referer_404_url",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "图片不存在,默认图片",
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "referer_401_url",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "非法请求,默认图片",
+              "defaultValue": "\"\""
             },
             {
               "name": "created_by",
