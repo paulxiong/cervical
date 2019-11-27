@@ -2,12 +2,44 @@ package controllers
 
 import (
 	"net/http"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 )
+
+// checkReferer 防盗链功能
+func checkReferer(c *gin.Context, rootURLpath string) {
+	ref := c.Request.Referer()
+	// 非法请求
+	if ref == "" {
+		c.Request.URL.Path = path.Join("/imgs", "scratch/static/forbidden.png")
+		return
+	}
+	referers := [...]string{
+		"http://medical.raidcdn.cn:3000",
+		"https://medical.raidcdn.cn:3000",
+		"http://dev.medical.raidcdn.cn:3000",
+		"https://dev.medical.raidcdn.cn:3000",
+	}
+	//检查referer是否合法, 合法的不做任何操作直接返回
+	for _, _ref := range referers {
+		if strings.HasPrefix(ref, _ref) {
+			// 图片不存在
+			ret, err := f.PathExists(c.Request.URL.Path)
+			if ret == false || err != nil {
+				c.Request.URL.Path = path.Join("/imgs", "scratch/static/notfound.png")
+			}
+			return
+		}
+	}
+
+	c.Request.URL.Path = path.Join("/imgs", "scratch/static/forbidden.png")
+	return
+}
 
 // ImageAPI 图片服务器API
 // @Summary 图片服务器API（图片在线缩放、旋转、裁剪等）
@@ -26,9 +58,10 @@ func ImageAPI(c *gin.Context) {
 		ImgDir:       ".",
 		Cachedir:     "cache",
 		MemCacheSize: int64(128 * (1 << 20)), //128M
-		HTTPExpires:  7 * 24 * time.Hour,
+		HTTPExpires:  1 * 24 * time.Hour,
 	}
 
+	// checkReferer(c, "/imgs")
 	h := http.StripPrefix("/imgs", f.ImageServer(&cfg))
 	h.ServeHTTP(c.Writer, c.Request)
 }

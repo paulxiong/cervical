@@ -17,12 +17,6 @@ import (
 // Router 注册路由
 func Router() *gin.Engine {
 	r := gin.New()
-	// 图片服务器API,放在这里目的是不打印log，因为这个是动态路由
-	r.GET("/imgs/*any", ctr.ImageAPI)
-	// swager,放在这里目的是不打印log，因为这个是动态路由
-	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
-
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping", "/api1/job", "/api1/jobresult", "/api1/upload", "/api1/jobpercent"}}))
 	r.Use(gin.Recovery())
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
@@ -34,12 +28,18 @@ func Router() *gin.Engine {
 	corsObject := cors.New(cors.Config{
 		AllowAllOrigins: true,
 		AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:    []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-Requested-With", "testHeader"},
+		AllowHeaders:    []string{"Accept", "Authorization", "Content-Length", "Content-Type", "X-CSRF-Token", "X-Requested-With", "Referer"},
 		MaxAge:          12 * time.Hour,
 	})
 	r.Use(corsObject)
 
+	// 图片服务器API,放在这里目的是不打印log，因为这个是动态路由
+	r.GET("/imgs/*any", ctr.ImageAPI)
+	// swager,放在这里目的是不打印log，因为这个是动态路由
+	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
+
 	r.Use(ctr.History)
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping", "/api1/job", "/api1/jobresult", "/api1/upload", "/api1/jobpercent"}}))
 
 	/* 用户相关的API */
 	user := r.Group("/user")
