@@ -1,48 +1,43 @@
 <template>
-  <div class="components-container">
-    <aside>
-      讯动医疗邮件设置页面
-      <el-button type="primary" @click="saveEmailConfig">保存设置</el-button>
-    </aside>
-    <div class="content flex">
-      <tinymce v-model="content" :height="540" style="width: 48%;" />
-      <div class="editor-content" style="width: 48%;" v-html="content" />
-    </div>
+  <div class="emailData">
+    <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
+      <el-tab-pane label="注册验证邮件" name="register">
+        <registerEmail />
+      </el-tab-pane>
+      <el-tab-pane label="忘记密码邮件" name="password">
+        <passwordEmail />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-import Tinymce from '@/components/Tinymce'
-import { getRegisterEmail, updateRegisterEmail } from '@/api/system'
+import registerEmail from './components/register-email'
+import passwordEmail from './components/password-email'
+
 export default {
-  name: 'TinymceDemo',
-  components: { Tinymce },
+  name: 'EmailData',
+  components: { registerEmail, passwordEmail },
   data() {
     return {
-      loading: true,
-      content: ''
+      activeName: 'register'
     }
   },
-  created() {
-    this.getRegisterEmail()
+  mounted() {
+    this.activeName = localStorage.getItem('EAMIL_TAB') || 'register'
   },
   methods: {
-    saveEmailConfig() {
-      updateRegisterEmail({ 'content': this.content })
-    },
-    getRegisterEmail() {
-      this.loading = true
-      getRegisterEmail().then(res => {
-        this.content = res.data.data.email_register_content
-      })
+    handleClick(tab, event) {
+      localStorage.setItem('EMAIL_TAB', this.activeName)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.content {
-    justify-content: space-between;
-    align-items: flex-start;
+.emailData {
+  height: 100%;
+  padding: 0px 30px;
 }
 </style>
+
