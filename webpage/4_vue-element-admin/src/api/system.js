@@ -16,17 +16,17 @@ export function getErrLog(query) {
   })
 }
 
-export function updateRegisterEmail(data) {
+export function updateEmail(data) {
   return request({
-    url: '/api1/registeremailcfg',
+    url: '/api1/emailcfg',
     method: 'post',
     data
   })
 }
 
-export function getRegisterEmail(query) {
+export function getEmail(query) {
   return request({
-    url: '/api1/registeremailcfg',
+    url: '/api1/emailcfg',
     method: 'get',
     params: query
   })

@@ -13,26 +13,27 @@
 
 <script>
 import Tinymce from '@/components/Tinymce'
-import { getRegisterEmail, updateRegisterEmail } from '@/api/system'
+import { getEmail, updateEmail } from '@/api/system'
 export default {
   name: 'TinymceDemo',
   components: { Tinymce },
   data() {
     return {
       loading: true,
-      content: ''
+      content: '',
+      type: 1 // 0未知 1注册 2忘记密码
     }
   },
   created() {
-    this.getRegisterEmail()
+    this.getEmail(this.type) // 0未知 1注册 2忘记密码
   },
   methods: {
     saveEmailConfig() {
-      updateRegisterEmail({ 'content': this.content })
+      updateEmail({ 'content': this.content, 'type': this.type })
     },
-    getRegisterEmail() {
+    getEmail(type) {
       this.loading = true
-      getRegisterEmail().then(res => {
+      getEmail({ 'type': type }).then(res => {
         this.content = res.data.data.email_register_content
       })
     }
