@@ -1,15 +1,11 @@
 package models
 
 import (
-	"strconv"
 	"time"
 
-	"gopkg.in/gomail.v2"
-
 	"github.com/jinzhu/gorm"
-	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
-	util "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
 
 // Email 邮件信息
@@ -61,6 +57,9 @@ func (em *Email) UpdateEmail() (e error) {
 
 // UpdateEmailInvalid 邮件验证过了，标记成invalid
 func (em *Email) UpdateEmailInvalid() (e error) {
+	if em.ID == 0 {
+		return nil
+	}
 	em.Valid = 0
 	ret := db.Model(em).Where("id=?", em.ID).Updates(em)
 	if ret.Error != nil {
@@ -80,89 +79,18 @@ func FindEmailbyToAddr(toaddr string) (*Email, error) {
 }
 
 // CheckEmailCodeValied 检查验证码是否正确，邮件是否有效
-func CheckEmailCodeValied(toaddr string, code string) (bool, *Email, error) {
+func CheckEmailCodeValied(toaddr string, code string) (bool, *Email, int) {
 	em, err := FindEmailbyToAddr(toaddr)
 	if err != nil {
-		return false, em, err
+		return false, em, e.Errors["VerifyEmailNotFound"]
 	}
-	//过期了,失效了，没发送成功, 没找到邮件记录
-	if time.Now().After(em.Exire) || em.Valid == 0 || em.Status != 1 || em.Code != code {
-		return false, em, err
+	//过期了
+	if time.Now().After(em.Exire) {
+		return false, em, e.Errors["VerifyExpired"]
 	}
-	return true, em, err
-}
-
-// sendMail 发送电子邮件
-func sendMail(mailTo []string, subject string, body string) error {
-	//定义邮箱服务器连接信息，如果是阿里邮箱 pass填密码，qq邮箱填授权码
-	mailConn := map[string]string{
-		"user": configs.Email.User,
-		"pass": configs.Email.Passwd,
-		"host": configs.Email.Host,
-		"port": configs.Email.Port,
+	//失效了，没发送成功, 没找到邮件记录
+	if em.Valid == 0 || em.Status != 1 || em.Code != code {
+		return false, em, e.Errors["VerifyInvalied"]
 	}
-
-	//转换端口类型为int
-	port, _ := strconv.Atoi(mailConn["port"])
-
-	m := gomail.NewMessage()
-	m.SetHeader("From", "Register"+"<"+mailConn["user"]+">") //这种方式可以添加别名，即"Register"， 也可以直接用<code>m.SetHeader("From",mailConn["user"])</code> 读者可以自行实验下效果
-	m.SetHeader("To", mailTo...)                             //发送给多个用户
-	m.SetHeader("Subject", subject)                          //设置邮件主题
-	m.SetBody("text/html", body)                             //设置邮件正文
-
-	d := gomail.NewDialer(mailConn["host"], port, mailConn["user"], mailConn["pass"])
-
-	err := d.DialAndSend(m)
-	return err
-}
-
-// SendEmailCode 发送注册/忘记密码时候的邮箱验证码
-func SendEmailCode(toaddr string, _type int) error {
-	code := util.GetRandomStringNum(6)
-	newemail := Email{
-		ID:       0,
-		ToAddr:   toaddr,
-		FromAddr: configs.Email.User,
-		MailType: _type,
-		Status:   0,
-		Valid:    1,
-		Code:     code,
-		Content:  code,
-	}
-
-	err := newemail.NeEmail()
-	if err != nil {
-		logger.Info.Println(err)
-		return err
-	}
-
-	// 邮件十分钟之内有效
-	m10, _ := time.ParseDuration("10m")
-	newemail.Exire = newemail.CreatedAt.Add(m10)
-	newemail.Valid = 1
-	newemail.Status = 1
-
-	mailTo := []string{toaddr} //定义收件人
-	subject := "注册码"           //邮件主题
-	body := code               // 邮件正文
-
-	// 查找系统配置里面的邮件样式
-	emailbody := getEmailBody(toaddr, code)
-	if len(emailbody) > 0 {
-		body = emailbody
-	}
-
-	err = sendMail(mailTo, subject, body)
-	if err != nil {
-		logger.Info.Println(err)
-		newemail.Status = 2
-		newemail.Valid = 0
-	}
-
-	err2 := newemail.UpdateEmail()
-	if err2 != nil {
-		logger.Info.Println(err2)
-	}
-	return err
+	return true, em, e.Errors["Succeed"]
 }

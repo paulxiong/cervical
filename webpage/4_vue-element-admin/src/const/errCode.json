@@ -54,6 +54,10 @@
         {"status": 181, "key": "SystemNotFound",   "content": "系统配置未找到"},
 
         {"status": 190, "key": "PasswdUpdateEmailNotFound",   "content": "该邮箱没有注册过用户，请直接注册新用户"},
-        {"status": 191, "key": "PasswdUpdateFailed",   "content": "密码修改出错，请重试"}
+        {"status": 191, "key": "PasswdUpdateFailed",   "content": "密码修改出错，请重试"},
+
+        {"status": 200, "key": "VerifyInvalied",   "content": "验证码错误，请重新输入或者获取"},
+        {"status": 201, "key": "VerifyExpired",   "content": "验证码过期，请重新获取"},
+        {"status": 202, "key": "VerifyEmailNotFound",   "content": "该邮箱未找到"}
 	]
 }
