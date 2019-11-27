@@ -214,7 +214,7 @@ export default {
     },
     sendCode() {
       if (!validEmail(this.loginForm.username)) return
-      getCode({ 'email': this.loginForm.username })
+      getCode({ 'email': this.loginForm.username, 'type': 1 })
       timer = setInterval(() => {
         this.time--
         if (this.time === 0) {

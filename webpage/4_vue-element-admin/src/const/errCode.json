@@ -23,6 +23,7 @@
 
         {"status": 80, "key": "EmailCodeInvalidData",    "content": "提交数据错误， 请重试"},
         {"status": 81, "key": "EmailCodeSendFailed",     "content": "邮件发送失败， 请稍后重试"},
+        {"status": 82, "key": "EmailCodeunknown",        "content": "未知发送验证码类型"},
 
         {"status": 90, "key": "UserUpdateFailed",        "content": "用户信息更新失败， 请稍后重试"},
 
@@ -50,6 +51,8 @@
         {"status": 170, "key": "LabelInvalied",   "content": "标注数据未按照规定格式传递"},
 
         {"status": 180, "key": "SystemSaveFailed",   "content": "保存系统配置出错"},
-        {"status": 181, "key": "SystemNotFound",   "content": "系统配置未找到"}
+        {"status": 181, "key": "SystemNotFound",   "content": "系统配置未找到"},
+
+        {"status": 190, "key": "ForgetEmailNotFound",   "content": "该邮箱没有注册过用户，请直接注册新用户"}
 	]
 }

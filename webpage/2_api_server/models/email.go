@@ -117,14 +117,14 @@ func sendMail(mailTo []string, subject string, body string) error {
 	return err
 }
 
-// SendRegisterCode 发送注册时候的邮箱验证码
-func SendRegisterCode(toaddr string) error {
+// SendEmailCode 发送注册/忘记密码时候的邮箱验证码
+func SendEmailCode(toaddr string, _type int) error {
 	code := util.GetRandomStringNum(6)
 	newemail := Email{
 		ID:       0,
 		ToAddr:   toaddr,
 		FromAddr: configs.Email.User,
-		MailType: 1,
+		MailType: _type,
 		Status:   0,
 		Valid:    1,
 		Code:     code,

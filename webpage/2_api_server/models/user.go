@@ -174,7 +174,12 @@ func (u *User) UserLogined() error {
 
 // CheckUserExist 检查这个用户是否存在
 func (u *User) CheckUserExist() (user *User, errcode int) {
-	user, err := u.Finduserbyname()
+	user, err := u.Finduserbyemail()
+	if err == nil && user != nil {
+		logger.Warning.Println("checkUserExist " + u.Email)
+		return user, e.StatusRegisterEmailExisted71
+	}
+	user, err = u.Finduserbyname()
 	if err == nil && user != nil {
 		logger.Warning.Println("UserExisted " + u.Name)
 		return user, e.StatusRegisterUserExisted70
@@ -183,11 +188,6 @@ func (u *User) CheckUserExist() (user *User, errcode int) {
 	if err == nil && user != nil {
 		logger.Warning.Println("MobileExisted " + u.Mobile)
 		return user, e.StatusRegisterMobileExisted76
-	}
-	user, err = u.Finduserbyemail()
-	if err == nil && user != nil {
-		logger.Warning.Println("checkUserExist " + u.Email)
-		return user, e.StatusRegisterEmailExisted71
 	}
 	return nil, e.StatusSucceed
 }
