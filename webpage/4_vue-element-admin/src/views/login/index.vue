@@ -12,7 +12,7 @@
         label-position="left"
       >
         <div class="title-container">
-          <h3 class="title">讯动医疗</h3>
+          <h3 class="title">{{ forgetPassword ? '密码找回' : register ? '注册' : '欢迎登录' }}</h3>
         </div>
 
         <el-form-item prop="username">
@@ -99,8 +99,9 @@
         >{{ forgetPassword?'确认修改新密码':register?'注册并登录':'登录' }}</el-button>
         <div style="position:relative">
           <div class="tips">
-            <el-link type="primary" :underline="false" icon="el-icon-key" @click="handleForgetPassword">{{ !forgetPassword?'忘记密码':'登录' }}</el-link>
+            <el-link v-show="!register" type="primary" :underline="false" icon="el-icon-key" @click="handleForgetPassword">{{ !forgetPassword?'忘记密码':'登录' }}</el-link>
             <el-link
+              v-show="!forgetPassword"
               type="primary"
               :underline="false"
               icon="el-icon-user"
