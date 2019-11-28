@@ -95,7 +95,7 @@ func CreatePredicts(predicts []*Predict, pid int64) (e error) {
 }
 
 // ListPredict 通过图片ID查找预测
-func ListPredict(limit int, skip int, imgid int, status int) (totalNum int64, p []Predict, e error) {
+func ListPredict(limit int, skip int, pid int, imgid int, status int) (totalNum int64, p []Predict, e error) {
 	var _p []Predict
 	var total int64 = 0
 
@@ -105,13 +105,13 @@ func ListPredict(limit int, skip int, imgid int, status int) (totalNum int64, p 
 		var total2 int64 = 0
 		var _p3 []Predict
 		var total3 int64 = 0
-		db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 0).Count(&total2)
-		ret := db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 0).Limit(limit).Offset(skip).Find(&_p2)
+		db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 0).Count(&total2)
+		ret := db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 0).Limit(limit).Offset(skip).Find(&_p2)
 		if ret.Error != nil {
 			logger.Info.Println(ret.Error)
 		}
-		db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 1).Count(&total3)
-		ret = db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, 1).Limit(limit).Offset(skip).Find(&_p3)
+		db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 1).Count(&total3)
+		ret = db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 1).Limit(limit).Offset(skip).Find(&_p3)
 		if ret.Error != nil {
 			logger.Info.Println(ret.Error)
 		}
@@ -121,8 +121,8 @@ func ListPredict(limit int, skip int, imgid int, status int) (totalNum int64, p 
 		return total, _p, ret.Error
 	}
 
-	db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, status).Count(&total)
-	ret := db.Model(&Predict{}).Where("imgid=? AND status=?", imgid, status).Limit(limit).Offset(skip).Find(&_p)
+	db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, status).Count(&total)
+	ret := db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, status).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
