@@ -184,7 +184,7 @@ export default {
       this.getLabelByImageId(this.imgid, this.labelType)
     },
     changeCelltype() {
-      console.log(this.cellType)
+      this.readOnly = false
     },
     getAll() {
       this.getLabelByImageId(this.imgid, this.labelType)
@@ -353,6 +353,7 @@ export default {
           v.uuid = v.id
         })
         this.renderLabel()
+        this.readOnly = false
       })
     },
     onDrawOne(data) {
