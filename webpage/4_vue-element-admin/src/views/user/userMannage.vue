@@ -28,10 +28,11 @@
       <el-table-column prop="id" label="用户ID" width="100" />
       <el-table-column label="头像" width="200">
         <template slot-scope="scope">
-          <el-image :src="scope.row.image" style="width:55px;height:55px;border-radius:7px;" />
+          <el-image :src="scope.row.image" style="width:36px;height:36px;border-radius:6px;" />
         </template>
       </el-table-column>
       <el-table-column prop="name" label="用户名" width="250" />
+      <el-table-column prop="email" label="邮箱" width="250" />
       <el-table-column prop="type_id" label="用户类型" width="100" />
       <el-table-column prop="created_at" label="创建时间" />
       <el-table-column prop="updated_at" label="最近操作" />
