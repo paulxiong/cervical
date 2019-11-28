@@ -420,7 +420,7 @@ export default {
       })
     },
     getPredictResult2(iid, limit, skip, status, select) {
-      getPredictResult2({ 'iid': iid, 'limit': limit, 'skip': skip, 'status': status }).then(res => {
+      getPredictResult2({ 'pid': this.$route.query.pid, 'iid': iid, 'limit': limit, 'skip': skip, 'status': status }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.cells.map(v => {
           v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
