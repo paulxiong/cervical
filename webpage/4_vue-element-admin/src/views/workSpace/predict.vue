@@ -51,7 +51,7 @@
               </div>
               <div>当前图片进度:{{ imgCellsInfo.imgcellsverified }} / {{ imgCellsInfo.imgcellsall }}</div>
             </section>
-            <section class="label-img flex">
+            <section v-if="orgImgList.length" class="label-img flex">
               <div class="check-box" style="width: 110px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
                 <div v-for="(v, idx) in orgImgList" :key="idx" class="item-box" style="padding: 3px 3px 0px 4px;" :class="selectFov === idx ? 'select-fov' : ''" @click="changeFovImg(v, idx)">
                   <el-image class="img-item" :src="hosturlpath64 + v.imgpath + '?width=100'" lazy />
@@ -395,9 +395,15 @@ export default {
     getDatasetImgs(did) {
       getDatasetImgs({ 'did': this.$route.query.did }).then(res => {
         this.orgImgList = res.data.data.images
-        this.fov_img = this.orgImgList[0]
         this.total = res.data.data.total
-        this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
+        if (this.orgImgList.length) {
+          this.fov_img = this.orgImgList[0]
+          this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
+        } else {
+          this.$alert('所选数据集为空', '提示', {
+            confirmButtonText: '确定'
+          })
+        }
       })
     },
     getjoblog() {

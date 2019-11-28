@@ -48,23 +48,25 @@ export default {
       }
     }
   },
+  created() {
+    const y = new Date().getFullYear()
+    const m = new Date().getMonth() + 1
+    const d = new Date().getDate()
+    const nowDate = new Date(`${y}-${m}-${d}`).getTime()
+    const now = new Date().getTime()
+    this.args = {
+      'bid': `b${nowDate}${this.userInfo.id}`,
+      'mid': `m${now}${this.userInfo.id}`
+    }
+  },
   methods: {
     submitUpload() {
-      const y = new Date().getFullYear()
-      const m = new Date().getMonth() + 1
-      const d = new Date().getDate()
-      const nowDate = new Date(`${y}-${m}-${d}`).getTime()
-      const now = new Date().getTime()
-      this.args = {
-        'bid': `b${nowDate}${this.userInfo.id}`,
-        'mid': `m${now}${this.userInfo.id}`
-      }
       this.postData.batchids = [this.args.bid]
       this.postData.medicalids.push(this.args.mid)
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
       this.$nextTick(() => {
         this.$refs.upload.submit()
-      }, 200)
+      })
     },
     onSuccess(response, file, fileList) {
       if (fileList[fileList.length - 1].percentage === 100) {
