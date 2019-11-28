@@ -147,6 +147,8 @@ type PredictInfo2 struct {
 	PRsult          []PredictRsult `json:"result"`                          //预测的细胞的个数统计
 	Cells           []PredictCell  `json:"crop_cells"`                      //预测的细胞的信息
 	CellsTotal      int            `json:"cells_total"      example:"1800"` //预测的细胞的总数
+	CorrecTotal     int            `json:"correc_total"     example:"900"`  //预测对的细胞的总数
+	InCorrecTotal   int            `json:"incorrec_total"   example:"900"`  //预测错误的细胞的总数
 	ParameterTime   int            `json:"parameter_time"   example:"1800"` //训练使用的最长时间
 	ParameterResize int            `json:"parameter_resize" example:"100"`  //训练之前统一的尺寸
 	ParameterMID    int            `json:"parameter_mid"    example:"1"`    //预测使用的模型的id,只有预测时候需要

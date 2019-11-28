@@ -151,6 +151,7 @@ func GetTrainResult(c *gin.Context) {
 // @Param id query string false "id, default 0, 项目ID"
 // @Param limit query string false "limit, default 500, 细胞图个数上限制"
 // @Param skip query string false "skip, default 0, 细胞图跳过的个数"
+// @Param correct query string false "correct, default 1, 0--预测错误 1--预测正确"
 // @Success 200 {object} function.PredictInfo2
 // @Router /api1/predictresult [get]
 func GetPredictResult(c *gin.Context) {
@@ -158,8 +159,10 @@ func GetPredictResult(c *gin.Context) {
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	limitStr := c.DefaultQuery("limit", "500")
 	skipStr := c.DefaultQuery("skip", "0")
+	correctStr := c.DefaultQuery("correct", "1")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	correc, _ := strconv.ParseInt(correctStr, 10, 64)
 
 	dinfo, err := models.GetOneProjectByID(int(id))
 	if err != nil {
@@ -175,12 +178,24 @@ func GetPredictResult(c *gin.Context) {
 			if index < int(skip) {
 				continue
 			}
+			if correc == 0 && v.Type == v.Predict {
+				continue
+			} else if correc == 1 && v.Type != v.Predict {
+				continue
+			}
 			if len(CellsCrop) >= int(limit) {
 				break
 			}
 			CellsCrop = append(CellsCrop, v)
 		}
 		j.Cells = CellsCrop
+	}
+
+	j.CorrecTotal = 0
+	j.InCorrecTotal = 0
+	for _, v := range j.PRsult {
+		j.CorrecTotal = j.CorrecTotal + v.Correct
+		j.CorrecTotal = j.CorrecTotal + (v.Total - v.Correct)
 	}
 
 	res.ResSucceedStruct(c, j)
