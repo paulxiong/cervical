@@ -26,6 +26,11 @@
     </div> -->
     <el-table :data="userList.users" style="width: 100%">
       <el-table-column prop="id" label="用户ID" width="100" />
+      <el-table-column label="头像" width="200">
+        <template slot-scope="scope">
+          <el-image :src="scope.row.image" style="width:55px;height:55px;border-radius:7px;" />
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="用户名" width="250" />
       <el-table-column prop="type_id" label="用户类型" width="100" />
       <el-table-column prop="created_at" label="创建时间" />
@@ -40,6 +45,9 @@
                 <tr><td class="td-1">用户类型:</td><td>{{ scope.row.type_id }}</td></tr>
                 <tr><td class="td-1">邮箱:</td><td>{{ scope.row.email }}</td></tr>
                 <tr><td class="td-1">手机号码:</td><td>{{ scope.row.mobile }}</td></tr>
+                <tr><td class="td-1">介绍:</td><td>{{ scope.row.introduction }}</td></tr>
+                <tr><td class="td-1">权限:</td><td>{{ scope.row.roles }}</td></tr>
+
               </table>
             </div>
             <el-button slot="reference" type="text" size="small" @click="handleClick(scope.row)">查看</el-button>

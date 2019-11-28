@@ -31,7 +31,14 @@ export default {
   },
   methods: {
     saveEmailConfig() {
-      updateEmail({ 'content': this.reset ? this.resetContent : this.content, 'type': this.type })
+      updateEmail({ 'content': this.reset ? this.resetContent : this.content, 'type': 1 }).then(res => {
+        if (res.data.data === 'ok') {
+          this.$message({
+            message: '注册邮件格式保存成功',
+            type: 'success'
+          })
+        }
+      })
     },
     getContent() {
       getEmail({ 'type': 1 }).then(res => {

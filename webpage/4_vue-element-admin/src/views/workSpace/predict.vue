@@ -11,19 +11,45 @@
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="!report" :label="`错误细胞 ${falseCellsList.length}`" class="img-tab flex">
-            <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
-              <el-badge :value="`${v.type}>${v.predict}`" type="info" class="item">
-                <img class="img-item img-false" :src="hosturlpath64 + v.url + '?width=64'">
-              </el-badge>
+          <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${predictResult.correc_total}`" class="img-tab">
+            <div class="img-div flex" style="overflow-y: auto;height:600px;">
+              <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 20px;">
+                <el-badge :value="`${v.type}-${v.score}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
+                  <el-image class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'" lazy />
+                </el-badge>
+              </div>
             </div>
+            <el-pagination
+              v-if="predictResult.correc_total"
+              class="page"
+              :current-page.sync="currentPage"
+              :page-sizes="[500, 1000, 2000, 5000]"
+              :page-size="currentPageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="predictResult.correc_total"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+            />
           </el-tab-pane>
-          <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${rightCellsList.length}`" class="img-tab flex">
-            <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 20px;">
-              <el-badge :value="`${v.type}-${v.score}`" class="item">
-                <img class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'">
-              </el-badge>
+          <el-tab-pane v-if="!report" :label="`错误细胞 ${predictResult.incorrec_total}`" class="img-tab flex">
+            <div class="img-div" style="overflow-y: auto;height:600px;">
+              <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
+                <el-badge :value="`${v.type}>${v.predict}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
+                  <el-image class="img-item img-false" :src="hosturlpath64 + v.url + '?width=64'" lazy />
+                </el-badge>
+              </div>
             </div>
+            <el-pagination
+              v-if="predictResult.incorrec_total"
+              class="page"
+              :current-page.sync="currentPage2"
+              :page-sizes="[500, 1000, 2000, 5000]"
+              :page-size="currentPageSize2"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="incorrec_total"
+              @current-change="handleCurrentChange2"
+              @size-change="handleSizeChange2"
+            />
           </el-tab-pane>
           <el-tab-pane v-if="report" type="info" :label="`图 ${total}`" class="img-tab">
             <section class="tools-bar flex">
@@ -268,12 +294,15 @@ export default {
         'filterCellsType': 2
       },
       report: '',
-      imgCellsInfo: {}
+      imgCellsInfo: {},
+      currentPage: 1,
+      currentPage2: 1,
+      currentPageSize: 500,
+      currentPageSize2: 100
     }
   },
   created() {
     this.report = this.$route.query.report
-    this.filterValue.filterChecked = this.report === 'admin' ? 1 : 0
     this.loopGetPercent()
   },
   destroyed() {
@@ -304,6 +333,22 @@ export default {
       this.$nextTick(() => {
         this.filterCellsType(this.filterValue.filterCellsType)
       })
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.getPredictResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this.getPredictResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+    },
+    handleCurrentChange2(val) {
+      this.currentPage2 = val
+      this.getPredictResult(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, 0)
+    },
+    handleSizeChange2(val) {
+      this.currentPageSize2 = val
+      this.getPredictResult(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, 0)
     },
     filterChecked(value, select) {
       this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
@@ -350,8 +395,10 @@ export default {
       this.select = data
       document.querySelector(`#anchor-${data.id}`).scrollIntoView(true)
     },
-    getPredictResult() {
-      getPredictResult({ 'id': this.$route.query.pid }).then(res => {
+    getPredictResult(limit, skip, correct) {
+      getPredictResult({ 'id': this.$route.query.pid, 'limit': limit, 'skip': skip, 'correct': correct }).then(res => {
+        this.rightCellsList = []
+        this.falseCellsList = []
         if (typeof res.data.data !== 'string') {
           if (res.data.data.result) {
             res.data.data.result.map(v => {
@@ -424,7 +471,7 @@ export default {
           if (this.$route.query.report) {
             this.getDatasetImgs()
           } else {
-            this.getPredictResult()
+            this.getPredictResult(this.currentPageSize, this.currentPage, 1)
           }
           this.getjoblog()
         } else {
@@ -460,7 +507,7 @@ export default {
 
 <style lang="scss" scoped>
 .predict {
-  .img-tab {
+  .img-div {
     justify-content: flex-start;
     flex-wrap: wrap;
     .label-img {

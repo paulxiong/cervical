@@ -52,6 +52,7 @@
             </el-image>
           </div>
           <el-pagination
+            v-if="total2"
             class="page"
             :current-page.sync="currentPage2"
             :page-sizes="[10, 20, 50, 100, 200]"
@@ -82,6 +83,7 @@
             </el-image>
           </div>
           <el-pagination
+            v-if="total"
             class="page"
             :current-page.sync="currentPage"
             :page-sizes="[500, 1000, 2000, 5000]"
