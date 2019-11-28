@@ -95,18 +95,22 @@ func GetPredictImges(c *gin.Context) {
 		return
 	}
 
-	total, imgs, _ := models.ListImagesByMedicalID2(_d.MedicalIDs1[0])
 	rimgs := reporterimgs{}
-	rimgs.Total = total
 	rimgs.Imgs = make([]reporterimg, 0)
-	for _, v := range imgs {
-		rimgs.Imgs = append(rimgs.Imgs, reporterimg{
-			ID:      v.ID,
-			Imgpath: f.Imgpath(v.Batchid, v.Medicalid, v.Imgpath, v.Type),
-			W:       v.W,
-			H:       v.H,
-		})
+	for _, mid := range _d.MedicalIDs1 {
+		total, imgs, _ := models.ListImagesByMedicalID2(mid)
+		rimgs.Total = rimgs.Total + total
+
+		for _, v := range imgs {
+			rimgs.Imgs = append(rimgs.Imgs, reporterimg{
+				ID:      v.ID,
+				Imgpath: f.Imgpath(v.Batchid, v.Medicalid, v.Imgpath, v.Type),
+				W:       v.W,
+				H:       v.H,
+			})
+		}
 	}
+
 	res.ResSucceedStruct(c, rimgs)
 	return
 }

@@ -117,9 +117,9 @@ func (p *PredictInfo) NewPredictJSONFile() {
 
 // PredictRsult 预测的细胞的个数统计
 type PredictRsult struct {
-	Type    string `json:"type"      example:"1"`  //细胞类型
-	Total   int    `json:"total"     example:"35"` //总共送去预测的细胞个数
-	Correct int    `json:"correct"   example:"18"` //预测正确的个数
+	Type    int `json:"type"      example:"1"`  //细胞类型
+	Total   int `json:"total"     example:"35"` //总共送去预测的细胞个数
+	Correct int `json:"correct"   example:"18"` //预测正确的个数
 	//TotalOrg int    `json:"total_org" example:"37"` //总共送去预测的细胞原始个数，部分细胞图片不是正方形会被丢弃
 }
 
