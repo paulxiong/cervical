@@ -211,10 +211,8 @@ export default {
   },
   methods: {
     filterSearch() {
-      console.log(1)
     },
     handleCurrentChange(val) {
-      console.log(val)
     }
   }
 }

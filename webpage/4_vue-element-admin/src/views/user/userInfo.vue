@@ -73,11 +73,11 @@ export default {
           { min: 2, max: 40, message: '长度在 2 到 40 个字符', trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入手机号(可以不填)', trigger: 'blur' },
+          { message: '请输入手机号(可以不填)', trigger: 'blur' },
           { min: 0, max: 11, message: '长度在 0 到 11 个字符， 可以不填', trigger: 'blur' }
         ],
         introduction: [
-          { required: true, message: '请输入自我介绍', trigger: 'blur' },
+          { message: '请输入自我介绍', trigger: 'blur' },
           { min: 0, max: 512, message: '长度在 0 到 512 个字符', trigger: 'blur' }
         ]
       }
@@ -148,6 +148,7 @@ export default {
 .text-center {
 }
 .imgreplace {
+  overflow: auto;
   float: left;
   margin: 50px;
 }

@@ -167,7 +167,6 @@ export default {
   },
   methods: {
     handleClick(row) {
-      console.log(row)
     },
     // stepNext() {
     //   this.$refs.newProject.stepNext()

@@ -59,7 +59,6 @@ export default {
   },
   computed: {
     errorLogs() {
-      // console.log('错误捕获输出：', this.$store.getters.errorLogs)
       const errList = []
       this.$store.getters.errorLogs.map(v => {
         const obj = {
@@ -76,7 +75,6 @@ export default {
           'errlog': JSON.stringify(errList)
         })
       }
-      // console.log('错误捕获输出String：', JSON.stringify(errList))
       return this.$store.getters.errorLogs
     }
   },

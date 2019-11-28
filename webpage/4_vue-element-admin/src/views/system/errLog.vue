@@ -180,7 +180,6 @@ export default {
   },
   methods: {
     handleClick(row) {
-      console.log(row)
     },
     filterSearch() {
       this.getErrLog(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)

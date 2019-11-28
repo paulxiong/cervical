@@ -104,7 +104,6 @@ export default {
       this.getUserLists(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleClick(row) {
-      // console.log(row)
     },
     handleSizeChange(val) {
       this.currentPageSize = val

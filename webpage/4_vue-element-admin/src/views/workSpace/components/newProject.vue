@@ -126,7 +126,6 @@ export default {
       })
     },
     createProject() {
-      console.log(this.cellsList)
       const postData = this.predictType === '预测' ? {
         celltypes: this.cellsList.length ? this.cellsList : this.datasetsInfo.types,
         desc: this.inputName,

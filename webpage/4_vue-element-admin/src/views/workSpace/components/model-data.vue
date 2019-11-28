@@ -147,7 +147,6 @@ export default {
       this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     createModel() {
-      console.log(2)
     },
     handleCurrentChange(val) {
       this.currentPage = val

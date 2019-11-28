@@ -207,7 +207,6 @@ export default {
       this.refreshData()
     },
     handleClick(row) {
-      console.log(row)
     },
     handleCurrentChange(val) {
       this.currentPage = val

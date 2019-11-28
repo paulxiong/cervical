@@ -161,7 +161,6 @@ export default {
   },
   methods: {
     handleClick(row) {
-      console.log(row)
     },
     filterSearch() {
       this.getListreport(10, (this.currentPage - 1) * this.currentPageSize, 101, 1)

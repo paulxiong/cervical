@@ -36,7 +36,6 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      // console.log(tab, event)
       localStorage.setItem('TAB', this.activeName)
     }
   }

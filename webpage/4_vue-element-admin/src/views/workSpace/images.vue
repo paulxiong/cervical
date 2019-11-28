@@ -161,7 +161,6 @@ export default {
     downloadImgs() {
       this.downloadLoading = true
       downloadImgs({ 'id': this.$route.query.did }).then(res => {
-        console.log(res)
         const blob = new Blob([res.data])
         if (window.navigator.msSaveOrOpenBlob) {
           navigator.msSaveBlob(blob, 'nb')
