@@ -274,6 +274,26 @@ bianping_sixteen_seventeen_1127
     └── 第17批上传
         ├── ...
 ```
+### bianping_eighteen_1128(1018)
+```
+链接：https://pan.baidu.com/s/1wdK23WzwiNalJVXeiKeysQ
+提取码：mtdv
+说明：尺寸100*100，2019年11月27日到2019年11月28日的原始细胞数据，属于data_all_1010_new数据集中bianping合批次的数据，尺寸:100*100，RBG三通道
+目录结构：
+bianping_eighteen_1128/
+├── crop
+│   ├── invalid
+│   └── valid(1018)
+│       ├── 15(52)
+│       ├── 2(40)
+│       ├── 5)(813)
+│       └── 7(113)
+├── csv
+│   └── ...
+└── img
+    └── ...
+
+```
 #### 细胞团数据
 ### cluster_seg_1105
 ```
