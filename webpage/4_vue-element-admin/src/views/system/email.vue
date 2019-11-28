@@ -1,6 +1,6 @@
 <template>
   <div class="emailData">
-    <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
+    <el-tabs v-model="activeName" class="tabs">
       <el-tab-pane label="注册验证邮件" name="register">
         <registerEmail />
       </el-tab-pane>
@@ -21,14 +21,6 @@ export default {
   data() {
     return {
       activeName: 'register'
-    }
-  },
-  mounted() {
-    this.activeName = localStorage.getItem('EAMIL_TAB') || 'register'
-  },
-  methods: {
-    handleClick(tab, event) {
-      localStorage.setItem('EMAIL_TAB', this.activeName)
     }
   }
 }
