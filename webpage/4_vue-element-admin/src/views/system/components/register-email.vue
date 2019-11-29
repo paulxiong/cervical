@@ -1,7 +1,7 @@
 <template>
   <div class="components-container">
     <aside>
-      <el-button type="primary" @click="saveEmailConfig">保存设置</el-button>
+      <el-button type="primary" size="mini" @click="saveEmailConfig">保存设置</el-button>
       <el-button type="danger" @click="resetForm">初始化邮件格式</el-button>
       设置发送验证码的邮件的样式，验证用000000代替，用户的邮箱用email@gmail.com代替。后台发送的时候通过字符串替换换成对应用户的邮箱和验证码
     </aside>

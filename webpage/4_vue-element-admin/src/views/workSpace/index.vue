@@ -10,9 +10,9 @@
       <el-tab-pane label="模型" name="model">
         <modelData />
       </el-tab-pane>
-      <el-tab-pane label="回收站" name="recycle">
+      <!-- <el-tab-pane label="回收站" name="recycle">
         <recycleData />
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
@@ -21,11 +21,11 @@
 import projectData from './components/project-data'
 import datasetsData from './components/datasets-data'
 import modelData from './components/model-data'
-import recycleData from './components/recycle-data'
+// import recycleData from './components/recycle-data'
 
 export default {
   name: 'Home',
-  components: { projectData, datasetsData, modelData, recycleData },
+  components: { projectData, datasetsData, modelData },
   data() {
     return {
       activeName: 'project'

@@ -92,13 +92,13 @@
       <el-table-column label="创建时间" prop="created_at" />
       <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.statusType" effect="dark">{{ scope.row.statusTime }}</el-tag>
+          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button type="text" @click="goDetail(scope.row)">查看</el-button>
-          <el-button type="text" style="color: #ff3c43;">删除</el-button>
+          <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button>
+          <!-- <el-button type="primary" style="color: #ff3c43;" size="mini">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>

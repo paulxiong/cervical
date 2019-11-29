@@ -11,7 +11,7 @@
         <span>{{ v.desc }}</span>
         <el-button
           style="float: right; padding: 3px 0"
-          type="text"
+          type="primary"
           @click="goDetails(v)"
         >查看详情</el-button>
       </div>

@@ -95,7 +95,7 @@
         :minlength="minlength"
         :maxlength="maxlength"
         :required="required"
-        type="text"
+        type="primary"
         class="material-input"
         @focus="handleMdFocus"
         @blur="handleMdBlur"

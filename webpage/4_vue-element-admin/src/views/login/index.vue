@@ -79,7 +79,7 @@
             ref="code"
             v-model="loginForm.code"
             maxlength="6"
-            type="text"
+            type="primary"
             placeholder="邮箱验证码"
             name="code"
             tabindex="2"
@@ -226,6 +226,9 @@ export default {
     },
     sendCode() {
       if (!validEmail(this.loginForm.username)) return
+      if (this.loginForm.password !== this.loginForm.confirmPassword) {
+        return new Error('两次输入的密码不同')
+      }
       if (this.time < 60) return
       getCode({ 'email': this.loginForm.username, 'type': this.forgetPassword ? 2 : 1 }).then(res => {
         if (res.data.status > 0) return
