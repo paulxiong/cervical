@@ -1,99 +1,225 @@
 <template>
-  <div class="errPage-container">
-    <el-button icon="arrow-left" class="pan-back-btn" @click="back">
-      返回
-    </el-button>
-    <el-row>
-      <el-col :span="12">
-        <h1 class="text-jumbo text-ginormous">
-          Oops!
-        </h1>
-        gif来源<a href="https://zh.airbnb.com/" target="_blank">airbnb</a> 页面
-        <h2>你没有权限去该页面</h2>
-        <h6>如有不满请联系你领导</h6>
-        <ul class="list-unstyled">
-          <li>或者你可以去:</li>
-          <li class="link-type">
-            <router-link to="/dashboard">
-              回首页
-            </router-link>
-          </li>
-          <li class="link-type">
-            <a href="https://www.taobao.com/">随便看看</a>
-          </li>
-          <li><a href="#" @click.prevent="dialogVisible=true">点我看图</a></li>
-        </ul>
-      </el-col>
-      <el-col :span="12">
-        <img :src="errGif" width="313" height="428" alt="Girl has dropped her ice cream.">
-      </el-col>
-    </el-row>
-    <el-dialog :visible.sync="dialogVisible" title="随便看">
-      <img :src="ewizardClap" class="pan-img">
-    </el-dialog>
+  <div class="wscn-http404-container">
+    <div class="wscn-http404">
+      <div class="pic-404">
+        <img class="pic-404__parent" src="@/assets/404_images/404.png" alt="404">
+        <img class="pic-404__child left" src="@/assets/404_images/404_cloud.png" alt="404">
+        <img class="pic-404__child mid" src="@/assets/404_images/404_cloud.png" alt="404">
+        <img class="pic-404__child right" src="@/assets/404_images/404_cloud.png" alt="404">
+      </div>
+      <div class="bullshit">
+        <div class="bullshit__oops">ERROR 401!</div>
+        <div class="bullshit__headline">{{ message }}</div>
+        <div class="bullshit__info">请检查您输入的URL是否正确，或单击下面的按钮.</div>
+        <a href="" class="bullshit__return-home">回到首页</a>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import errGif from '@/assets/401_images/401.gif'
 
 export default {
   name: 'Page401',
-  data() {
-    return {
-      errGif: errGif + '?' + +new Date(),
-      ewizardClap: 'https://wpimg.wallstcn.com/007ef517-bafd-4066-aae4-6883632d9646',
-      dialogVisible: false
-    }
-  },
-  methods: {
-    back() {
-      if (this.$route.query.noGoBack) {
-        this.$router.push({ path: '/dashboard' })
-      } else {
-        this.$router.go(-1)
-      }
+  computed: {
+    message() {
+      return '您所要访问的页面不存在...'
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .errPage-container {
-    width: 800px;
-    max-width: 100%;
-    margin: 100px auto;
-    .pan-back-btn {
-      background: #008489;
-      color: #fff;
-      border: none!important;
-    }
-    .pan-gif {
-      margin: 0 auto;
-      display: block;
-    }
-    .pan-img {
-      display: block;
-      margin: 0 auto;
+.wscn-http404-container{
+  transform: translate(-50%,-50%);
+  position: absolute;
+  top: 40%;
+  left: 50%;
+}
+.wscn-http404 {
+  position: relative;
+  width: 1200px;
+  padding: 0 50px;
+  overflow: hidden;
+  .pic-404 {
+    position: relative;
+    float: left;
+    width: 600px;
+    overflow: hidden;
+    &__parent {
       width: 100%;
     }
-    .text-jumbo {
-      font-size: 60px;
-      font-weight: 700;
-      color: #484848;
-    }
-    .list-unstyled {
-      font-size: 14px;
-      li {
-        padding-bottom: 5px;
+    &__child {
+      position: absolute;
+      &.left {
+        width: 80px;
+        top: 17px;
+        left: 220px;
+        opacity: 0;
+        animation-name: cloudLeft;
+        animation-duration: 2s;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+        animation-delay: 1s;
       }
-      a {
-        color: #008489;
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
+      &.mid {
+        width: 46px;
+        top: 10px;
+        left: 420px;
+        opacity: 0;
+        animation-name: cloudMid;
+        animation-duration: 2s;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+        animation-delay: 1.2s;
+      }
+      &.right {
+        width: 62px;
+        top: 100px;
+        left: 500px;
+        opacity: 0;
+        animation-name: cloudRight;
+        animation-duration: 2s;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+        animation-delay: 1s;
+      }
+      @keyframes cloudLeft {
+        0% {
+          top: 17px;
+          left: 220px;
+          opacity: 0;
+        }
+        20% {
+          top: 33px;
+          left: 188px;
+          opacity: 1;
+        }
+        80% {
+          top: 81px;
+          left: 92px;
+          opacity: 1;
+        }
+        100% {
+          top: 97px;
+          left: 60px;
+          opacity: 0;
+        }
+      }
+      @keyframes cloudMid {
+        0% {
+          top: 10px;
+          left: 420px;
+          opacity: 0;
+        }
+        20% {
+          top: 40px;
+          left: 360px;
+          opacity: 1;
+        }
+        70% {
+          top: 130px;
+          left: 180px;
+          opacity: 1;
+        }
+        100% {
+          top: 160px;
+          left: 120px;
+          opacity: 0;
+        }
+      }
+      @keyframes cloudRight {
+        0% {
+          top: 100px;
+          left: 500px;
+          opacity: 0;
+        }
+        20% {
+          top: 120px;
+          left: 460px;
+          opacity: 1;
+        }
+        80% {
+          top: 180px;
+          left: 340px;
+          opacity: 1;
+        }
+        100% {
+          top: 200px;
+          left: 300px;
+          opacity: 0;
         }
       }
     }
   }
+  .bullshit {
+    position: relative;
+    float: left;
+    width: 300px;
+    padding: 30px 0;
+    overflow: hidden;
+    &__oops {
+      font-size: 32px;
+      font-weight: bold;
+      line-height: 40px;
+      color: #1482f0;
+      opacity: 0;
+      margin-bottom: 20px;
+      animation-name: slideUp;
+      animation-duration: 0.5s;
+      animation-fill-mode: forwards;
+    }
+    &__headline {
+      font-size: 20px;
+      line-height: 24px;
+      color: #222;
+      font-weight: bold;
+      opacity: 0;
+      margin-bottom: 10px;
+      animation-name: slideUp;
+      animation-duration: 0.5s;
+      animation-delay: 0.1s;
+      animation-fill-mode: forwards;
+    }
+    &__info {
+      font-size: 13px;
+      line-height: 21px;
+      color: grey;
+      opacity: 0;
+      margin-bottom: 30px;
+      animation-name: slideUp;
+      animation-duration: 0.5s;
+      animation-delay: 0.2s;
+      animation-fill-mode: forwards;
+    }
+    &__return-home {
+      display: block;
+      float: left;
+      width: 110px;
+      height: 36px;
+      background: #1482f0;
+      border-radius: 100px;
+      text-align: center;
+      color: #ffffff;
+      opacity: 0;
+      font-size: 14px;
+      line-height: 36px;
+      cursor: pointer;
+      animation-name: slideUp;
+      animation-duration: 0.5s;
+      animation-delay: 0.3s;
+      animation-fill-mode: forwards;
+    }
+    @keyframes slideUp {
+      0% {
+        transform: translateY(60px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  }
+}
 </style>
