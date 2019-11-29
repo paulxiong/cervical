@@ -2420,6 +2420,13 @@
               "defaultValue": "\"\""
             },
             {
+              "name": "imgexpires",
+              "type": "Integer",
+              "remark": "单位是小时",
+              "chnname": "浏览器上图片缓存过期时间",
+              "defaultValue": "72"
+            },
+            {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",

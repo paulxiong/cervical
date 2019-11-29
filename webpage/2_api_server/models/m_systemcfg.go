@@ -23,6 +23,7 @@ type Syscfg struct {
 	Referers2            []string  `json:"referers"               gorm:"-"`                             //防盗链白名单,http开头的字符串数组,前端
 	Referer404URL        string    `json:"referer_404_url"        gorm:"column:referer_404_url"`        //图片不存在,默认图片
 	Referer401URL        string    `json:"referer_401_url"        gorm:"column:referer_401_url"`        //非法请求,默认图片
+	ImgExpires           int       `json:"imgexpires"             gorm:"column:imgexpires"`             //浏览器上图片缓存过期时间,单位是小时
 	CreatedBy            int64     `json:"created_by"             gorm:"column:created_by"`             //创建者
 	CreatedAt            time.Time `json:"created_at"             gorm:"column:created_at"`             //创建时间
 	UpdatedAt            time.Time `json:"updated_at"             gorm:"column:updated_at"`             //更新时间
@@ -79,6 +80,9 @@ func (s *Syscfg) UpdateSysCfg() (err error) {
 	if len(s.Referers2) > 0 {
 		updates["referers"] = s.Referers2
 		updates["referer_en"] = s.RefererEn
+	}
+	if s.ImgExpires > 0 {
+		updates["imgexpires"] = s.ImgExpires
 	}
 
 	if len(updates) < 1 {

@@ -86,6 +86,7 @@ type refererContent struct {
 	Referers      []string `json:"referers"        example:"http://baidu.com"`   //防盗链白名单,http开头的字符串数组
 	Referer404URL string   `json:"referer_404_url" example:"http://a.com/1.png"` //图片不存在,默认图片
 	Referer401URL string   `json:"referer_401_url" example:"http://a.com/2.png"` //非法请求,默认图片
+	ImgExpires    int      `json:"imgexpires"      example:"1"`                  //浏览器上图片缓存过期时间,单位是小时，最少一小时
 }
 
 // GetRefererCfg 获取图片服务的Referer配置
@@ -104,6 +105,7 @@ func GetRefererCfg(c *gin.Context) {
 		Referers:      syscfg.Referers2,
 		Referer404URL: syscfg.Referer404URL,
 		Referer401URL: syscfg.Referer401URL,
+		ImgExpires:    syscfg.ImgExpires,
 	}
 
 	res.ResSucceedStruct(c, rc)
@@ -133,6 +135,7 @@ func UpdateRefererCfg(c *gin.Context) {
 		Referers2:     rc.Referers,
 		Referer404URL: rc.Referer404URL,
 		Referer401URL: rc.Referer401URL,
+		ImgExpires:    rc.ImgExpires,
 	}
 
 	err = s.NewOrUpdateSysCfg()
