@@ -122,7 +122,7 @@ export default {
           updateUserInfo(postdata).then(response => {
             this.getUserInfo()
           }).catch(error => {
-            console.log(error)
+            new Error(error)
           })
           this.$message({
             message: '用户信息已经更新',

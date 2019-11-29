@@ -102,7 +102,7 @@ export default {
       }
 
       .icon-report {
-        background: #03e1f1;
+        background: #f4ea2a;
       }
     }
 
