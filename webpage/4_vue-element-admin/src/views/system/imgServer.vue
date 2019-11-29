@@ -3,7 +3,7 @@
     <div class="setting">
       <div class="setting-en">
         <h4>是否启用图片防盗链</h4>
-        <el-switch v-model="refererSetting.referer_en" active-text="开" inactive-text="关" />
+        <el-switch v-model="referer_en" active-text="开" inactive-text="关" />
       </div>
       <div class="setting-time">
         <h4>设置图片缓存时间</h4>
@@ -70,6 +70,7 @@ export default {
       APIUrl: APIUrl,
       uploadURL: APIUrl + '/api1/uploadimg',
       refererInput: '',
+      referer_en: false,
       headers: {
         'Authorization': getToken()
       },
@@ -82,6 +83,9 @@ export default {
   methods: {
     addUrl() {
       if (validURL(this.refererInput)) {
+        if (!this.refererSetting.referers) {
+          this.refererSetting.referers = []
+        }
         this.refererSetting.referers.push(this.refererInput)
       } else {
         this.$message.error('请输入正确的超链接')
@@ -100,9 +104,16 @@ export default {
     getReferer() {
       getReferer().then(res => {
         this.refererSetting = res.data.data
+        if (this.refererSetting.referer_en == 2) {
+          this.referer_en = true
+        }
       })
     },
     saveAll() {
+      this.refererSetting.referer_en = 1
+      if (this.referer_en) {
+        this.refererSetting.referer_en = 2
+      }
       updateReferer(this.refererSetting).then(res => {
         this.$message({
           message: '图片服务设置保存成功',

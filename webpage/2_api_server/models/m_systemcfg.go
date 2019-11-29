@@ -71,15 +71,16 @@ func (s *Syscfg) UpdateSysCfg() (err error) {
 	}
 	if s.Referer404URL != "" {
 		updates["referer_404_url"] = s.Referer404URL
-		updates["referer_en"] = s.RefererEn
 	}
 	if s.Referer401URL != "" {
 		updates["referer_401_url"] = s.Referer401URL
+	}
+	if s.RefererEn > 0 {
 		updates["referer_en"] = s.RefererEn
 	}
-	if len(s.Referers2) > 0 {
-		updates["referers"] = s.Referers2
-		updates["referer_en"] = s.RefererEn
+	str, err := u.StrArray2String(&s.Referers2)
+	if err == nil {
+		updates["referers"] = str
 	}
 	if s.ImgExpires > 0 {
 		updates["imgexpires"] = s.ImgExpires

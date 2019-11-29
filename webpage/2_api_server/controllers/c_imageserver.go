@@ -28,7 +28,7 @@ func checkReferer(c *gin.Context, rootURLpath string) {
 	for _, _ref := range referers {
 		if strings.HasPrefix(ref, _ref) {
 			// 图片不存在
-			ret, err := f.PathExists(c.Request.URL.Path)
+			ret, err := f.PathExists(string([]byte(c.Request.URL.Path)[len(rootURLpath)+1:]))
 			if ret == false || err != nil {
 				c.Request.URL.Path = m.SystemCfg.Referer404URL
 			}
