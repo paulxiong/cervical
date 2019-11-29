@@ -181,7 +181,7 @@ export const constantRoutes = [
         path: 'imgserver',
         component: () => import('@/views/system/imgServer'),
         name: '图片设置',
-        meta: { title: '图片服务设置', icon: 'email', affix: true }
+        meta: { title: '图片服务设置', icon: 'photo', affix: true }
       },
       {
         path: 'email',
