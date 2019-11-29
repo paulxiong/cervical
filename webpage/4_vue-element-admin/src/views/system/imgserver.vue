@@ -1,10 +1,10 @@
 <template>
   <div class="emailData">
     <el-switch
-    v-model="referer_en"
-    active-text="开"
-    inactive-text="关">
-    </el-switch>
+      v-model="referer_en"
+      active-text="开"
+      inactive-text="关"
+    />
   </div>
 </template>
 
