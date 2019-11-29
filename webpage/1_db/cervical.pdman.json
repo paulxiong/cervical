@@ -2077,7 +2077,17 @@
               "relationNoShow": true
             }
           ],
-          "indexs": [],
+          "indexs": [
+            {
+              "name": "pid_imgid_status",
+              "isUnique": false,
+              "fields": [
+                "pid",
+                "imgid",
+                "status"
+              ]
+            }
+          ],
           "headers": [
             {
               "fieldName": "chnname",

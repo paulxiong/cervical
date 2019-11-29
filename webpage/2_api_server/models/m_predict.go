@@ -40,16 +40,6 @@ func (p *Predict) BeforeCreate(scope *gorm.Scope) error {
 	return nil
 }
 
-// FindPredictbyImgIDPIDXY 查找细胞预测结果是否存在
-func (p *Predict) FindPredictbyImgIDPIDXY() (*Predict, error) {
-	_p := &Predict{}
-	ret := db.Model(_p).Where("pid=? AND imgid=? AND x1=? AND x2=? AND y1=? AND y2=?", p.PID, p.ImgID, p.X1, p.X2, p.Y1, p.Y2).First(_p)
-	if ret.Error != nil {
-		return _p, ret.Error
-	}
-	return _p, nil
-}
-
 // FindPredictbyID 按照ID查询审核
 func FindPredictbyID(id int64) (*Predict, error) {
 	_p := &Predict{}
@@ -58,22 +48,6 @@ func FindPredictbyID(id int64) (*Predict, error) {
 		return _p, ret.Error
 	}
 	return _p, nil
-}
-
-// CreatePredict 新建一个细胞预测结果
-func (p *Predict) CreatePredict() (e error) {
-	p.ID = 0
-
-	_, err := p.FindPredictbyImgIDPIDXY()
-	if err == nil {
-		return err
-	}
-
-	ret := db.Model(p).Save(&p)
-	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
-	}
-	return ret.Error
 }
 
 // CreatePredicts 新建细胞预测结果，一个很长的数组
