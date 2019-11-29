@@ -117,7 +117,8 @@ export default {
             'image': this.newAvatar,
             'mobile': this.$refs[formName].model.mobile,
             'name': this.$refs[formName].model.name,
-            'introduction': this.$refs[formName].model.introduction
+            'introduction': this.$refs[formName].model.introduction,
+            'created_at': this.$refs[formName].model.created_at
           }
           updateUserInfo(postdata).then(response => {
             this.getUserInfo()
