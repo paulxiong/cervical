@@ -6,7 +6,11 @@ import (
 
 	"github.com/jinzhu/gorm"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
+
+// SystemCfg 全局变量！！目的避免每次读取数据库
+var SystemCfg *Syscfg
 
 //Syscfg 系统配置的信息
 type Syscfg struct {
@@ -14,7 +18,9 @@ type Syscfg struct {
 	Host                 string    `json:"host"                   gorm:"column:host"`                   //本服务域名+端口
 	EmailRegisterContent string    `json:"email_register_content" gorm:"column:email_register_content"` //发送注册邮件的内容
 	EmailForgotContent   string    `json:"email_forgot_content"   gorm:"column:email_forgot_content"`   //发送忘记密码邮件的格式
-	RefererEn            int64     `json:"referer_en"             gorm:"column:referer_en"`             //开启图片防盗链,0关闭1开启
+	RefererEn            int64     `json:"referer_en"             gorm:"column:referer_en"`             //开启图片防盗链,0未知1关闭２开启
+	Referers             string    `json:"-"                      gorm:"column:referers"`               //防盗链白名单,http开头的字符串数组
+	Referers2            []string  `json:"referers"               gorm:"-"`                             //防盗链白名单,http开头的字符串数组,前端
 	Referer404URL        string    `json:"referer_404_url"        gorm:"column:referer_404_url"`        //图片不存在,默认图片
 	Referer401URL        string    `json:"referer_401_url"        gorm:"column:referer_401_url"`        //非法请求,默认图片
 	CreatedBy            int64     `json:"created_by"             gorm:"column:created_by"`             //创建者
@@ -29,6 +35,21 @@ func (s *Syscfg) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if s.UpdatedAt.IsZero() {
 		s.UpdatedAt = time.Now()
+	}
+	str, err := u.StrArray2String(&s.Referers2)
+	if err == nil {
+		s.Referers = str
+	}
+	return nil
+}
+
+// AfterFind 把数据库里面存的字符串转成数组返回
+func (s *Syscfg) AfterFind(scope *gorm.Scope) error {
+	if s.Referers != "" {
+		arr, err := u.String2StrArray(s.Referers)
+		if err == nil {
+			s.Referers2 = arr
+		}
 	}
 	return nil
 }
@@ -47,6 +68,19 @@ func (s *Syscfg) UpdateSysCfg() (err error) {
 	if s.EmailForgotContent != "" {
 		updates["email_forgot_content"] = s.EmailForgotContent
 	}
+	if s.Referer404URL != "" {
+		updates["referer_404_url"] = s.Referer404URL
+		updates["referer_en"] = s.RefererEn
+	}
+	if s.Referer401URL != "" {
+		updates["referer_401_url"] = s.Referer401URL
+		updates["referer_en"] = s.RefererEn
+	}
+	if len(s.Referers2) > 0 {
+		updates["referers"] = s.Referers2
+		updates["referer_en"] = s.RefererEn
+	}
+
 	if len(updates) < 1 {
 		return nil
 	}
@@ -55,6 +89,7 @@ func (s *Syscfg) UpdateSysCfg() (err error) {
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
+	SystemCfg, _ = FindSysCfg()
 	return ret.Error
 }
 
@@ -94,4 +129,8 @@ func GetEmailBody(toaddr string, code string, _type int) string {
 	}
 	emailbody = strings.Replace(emailbody, "000000", code, -1)
 	return emailbody
+}
+
+func init() {
+	SystemCfg, _ = FindSysCfg()
 }

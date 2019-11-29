@@ -31,3 +31,19 @@ export function getEmail(query) {
     params: query
   })
 }
+
+export function updateReferer(data) {
+  return request({
+    url: '/api1/referercfg',
+    method: 'post',
+    data
+  })
+}
+
+export function getReferer(query) {
+  return request({
+    url: '/api1/referercfg',
+    method: 'get',
+    params: query
+  })
+}

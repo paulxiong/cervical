@@ -72,10 +72,74 @@ func GetEmailCfg(c *gin.Context) {
 	}
 	if _type == 1 {
 		s.EmailForgotContent = ""
-	} else if _type == 1 {
+	} else if _type == 2 {
 		s.EmailRegisterContent = ""
 	}
 
 	res.ResSucceedStruct(c, s)
+	return
+}
+
+// refererContent Referer配置
+type refererContent struct {
+	RefererEn     int64    `json:"referer_en"      example:"1"`                  //开启图片防盗链,0未知1关闭２开启
+	Referers      []string `json:"referers"        example:"http://baidu.com"`   //防盗链白名单,http开头的字符串数组
+	Referer404URL string   `json:"referer_404_url" example:"http://a.com/1.png"` //图片不存在,默认图片
+	Referer401URL string   `json:"referer_401_url" example:"http://a.com/2.png"` //非法请求,默认图片
+}
+
+// GetRefererCfg 获取图片服务的Referer配置
+// @Summary 获取图片服务的Referer配置
+// @Description　获取图片服务的Referer配置
+// @tags API1 系统（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} controllers.refererContent
+// @Router /api1/referercfg [GET]
+func GetRefererCfg(c *gin.Context) {
+	syscfg, _ := models.FindSysCfg()
+	rc := refererContent{
+		RefererEn:     syscfg.RefererEn,
+		Referers:      syscfg.Referers2,
+		Referer404URL: syscfg.Referer404URL,
+		Referer401URL: syscfg.Referer401URL,
+	}
+
+	res.ResSucceedStruct(c, rc)
+	return
+}
+
+// UpdateRefererCfg 配置图片服务的Referer
+// @Summary 配置图片服务的Referer
+// @Description　配置图片服务的Referer
+// @tags API1 系统（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param refererContent body controllers.refererContent true "Referer配置"
+// @Success 200 {string} json "{"data": "ok",	"status": 200}"
+// @Router /api1/referercfg [POST]
+func UpdateRefererCfg(c *gin.Context) {
+	var rc refererContent
+	err := c.ShouldBindJSON(&rc)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	s := models.Syscfg{
+		RefererEn:     rc.RefererEn,
+		Referers2:     rc.Referers,
+		Referer404URL: rc.Referer404URL,
+		Referer401URL: rc.Referer401URL,
+	}
+
+	err = s.NewOrUpdateSysCfg()
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["SystemSaveFailed"])
+		return
+	}
+	res.ResSucceedString(c, "ok")
 	return
 }

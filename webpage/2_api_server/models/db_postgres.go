@@ -11,7 +11,6 @@ import (
 	"time"
 
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
-	// logger "../log"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql" //mysql

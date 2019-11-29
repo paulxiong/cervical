@@ -178,6 +178,12 @@ export const constantRoutes = [
     },
     children: [
       {
+        path: 'imgserver',
+        component: () => import('@/views/system/imgserver'),
+        name: '图片设置',
+        meta: { title: '图片服务设置', icon: 'email', affix: true }
+      },
+      {
         path: 'email',
         component: () => import('@/views/system/email'),
         name: '邮件设置',

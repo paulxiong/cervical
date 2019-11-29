@@ -111,6 +111,8 @@ func Router() *gin.Engine {
 		api1.GET("/errorlog", ctr.GetErrorLog)
 		api1.POST("/emailcfg", ctr.EmailCfg)
 		api1.GET("/emailcfg", ctr.GetEmailCfg)
+		api1.GET("/referercfg", ctr.GetRefererCfg)
+		api1.POST("/referercfg", ctr.UpdateRefererCfg)
 
 		// 医疗报告
 		api1.GET("/predictresult2", ctr.GetPredictResult2)

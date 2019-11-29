@@ -2394,9 +2394,16 @@
             {
               "name": "referer_en",
               "type": "Integer",
-              "remark": "0关闭1开启",
+              "remark": "0未知1关闭２开启",
               "chnname": "开启图片防盗链",
               "defaultValue": "0"
+            },
+            {
+              "name": "referers",
+              "type": "MiddleString",
+              "remark": "http开头的字符串数组",
+              "chnname": "防盗链白名单",
+              "defaultValue": "\"[]\""
             },
             {
               "name": "referer_404_url",
