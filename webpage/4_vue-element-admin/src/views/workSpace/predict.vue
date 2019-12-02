@@ -290,6 +290,10 @@ export default {
         },
         {
           value: 3,
+          label: '不是细胞2'
+        },
+        {
+          value: 4,
           label: '全部'
         }
       ],
@@ -367,6 +371,9 @@ export default {
           break
         case 2:
           this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 200)
+          break
+        case 3:
+          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 201)
           break
         default:
           this.renderData = this.imgInfo.cells
