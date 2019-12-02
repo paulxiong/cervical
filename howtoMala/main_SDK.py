@@ -60,7 +60,7 @@ class mala_predict(worker):
     def _copy_train_cells(self, X, y, outdir):
         newX, newy = [], []
         for i in range(len(X)):
-            cellpath_src, celltype = X[i], y[i]
+            cellpath_src, celltype = X[i], int(y[i])
             cells_type_dir = os.path.join(outdir, str(celltype))
             if not os.path.exists(cells_type_dir):
                 os.makedirs(cells_type_dir)
@@ -70,7 +70,7 @@ class mala_predict(worker):
             cellpath_dst = os.path.join(cells_type_dir, shotname + extension)
             shutil.copyfile(cellpath_src, cellpath_dst)
             newX.append(cellpath_dst)
-            newy.append(str(celltype))
+            newy.append(int(celltype))
         return newX, newy
 
     def copy_train_cells(self, df, test_size=0.2):
@@ -79,7 +79,7 @@ class mala_predict(worker):
         for index, imginfo in df.iterrows():
             cellpath_src = imginfo['cellpath']
             X.append(cellpath_src)
-            y.append(str(imginfo['celltype']))
+            y.append(int(imginfo['celltype']))
 
         if self.wtype == wt.PREDICT.value:
             newX, newy = self._copy_train_cells(X, y, self.project_predict_dir)
@@ -92,10 +92,18 @@ class mala_predict(worker):
         return None, None, None, None
 
     def resize_img(self, X, y, outdir, outcsvpath, RESIZE=100):
+        result201 = []
         filelist = []
         for i in range(len(X)):
-            cellpath, celltype = X[i], y[i]
-            cellto_dir = os.path.join(outdir, celltype)
+            cellpath, celltype = X[i], int(y[i])
+            #201表示细胞尺寸太小已经排除删除了
+            if celltype == 201:
+                _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+                imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
+                result201.append([cellpath, celltype, celltype, 1.0, 1, x1, y1, x2, y2, imgid])
+                continue
+
+            cellto_dir = os.path.join(outdir, str(celltype))
             if not os.path.exists(cellto_dir):
                 os.makedirs(cellto_dir)
             img = cv2.imread(cellpath)
@@ -107,12 +115,12 @@ class mala_predict(worker):
             filepath, shotname, extension = get_filePath_fileName_fileExt(cellpath)
             cv2.imwrite(os.path.join(cellto_dir, shotname + extension), img)
 
-            filelist.append([os.path.join(celltype, shotname + extension), celltype])
+            filelist.append([os.path.join(str(celltype), shotname + extension), celltype])
 
         if len(filelist) > 0:
             df = pd.DataFrame(filelist, columns=['File Name', 'Label'])
             df.to_csv(outcsvpath, quoting = 1, mode = 'w', index = False, header = True)
-        return True
+        return True, result201
 
     def mkdatasets(self):
         size = self.projectinfo['parameter_resize']
@@ -131,7 +139,7 @@ class mala_predict(worker):
         self.log.info("预测数据信息：%s"%result)
 
         if df is None or df.shape[0] < 1:
-            return False
+            return False, []
 
         #组织预测的目录结构
         if self.wtype == wt.PREDICT.value:
@@ -140,14 +148,14 @@ class mala_predict(worker):
             self.totalTest_cross_domain = df.shape[0]
 
             X_predict, _, y_predict, _ = self.copy_train_cells(df)
-            self.resize_img(X_predict, y_predict, self.project_resize_predict_dir, self.project_predict_labels_csv, RESIZE=size)
-            return True
+            _, result201 = self.resize_img(X_predict, y_predict, self.project_resize_predict_dir, self.project_predict_labels_csv, RESIZE=size)
+            return True, result201
         elif self.wtype == wt.TRAIN.value:
             X_train, X_test, y_train, y_test = self.copy_train_cells(df)
             #resize
             self.resize_img(X_train, y_train, self.project_resize_train_dir, self.project_train_labels_csv, RESIZE=size)
             self.resize_img(X_test, y_test, self.project_resize_test_dir, self.project_test_labels_csv, RESIZE=size)
-            return True
+            return True, []
 
     def update_model_info_json(self, modinfo):
         if os.path.exists(self.info_json) is False:
@@ -215,7 +223,7 @@ class mala_predict(worker):
         self.save_info_json(predict_info, self.predict2_json)
         return True
 
-    def _filter(self):
+    def _filter(self, result201):
         filter_mod='filter_model.h5'
         self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
 
@@ -245,11 +253,14 @@ class mala_predict(worker):
             classes_scores.append(float('%.2f'%(max(predIdxs[i]))))
         filenames = testGen_cross_domain.filenames
         result = []
+        result.extend(result201)
         for f in zip(filenames, classes, classes_scores):
            cellpath = os.path.join(self.project_resize_predict_dir, f[0])
            predict_label = 100 #100未知细胞类型 200不是细胞
            if int(f[1]) == 1:
                predict_label = 200
+               os.remove(cellpath)
+               cellpath = os.path.join(self.project_predict_dir, f[0])
 
            #已经按尺寸滤掉了,201
            arr = os.path.split(f[0])
@@ -312,14 +323,20 @@ class mala_predict(worker):
         return True, df
 
     def predict(self):
-        ret = self.mkdatasets()
+        #拷贝细胞图，并且返回不是细胞的list
+        ret, result201 = self.mkdatasets()
+        if ret is False:
+            return False
+        self.log.info("根据像素尺寸删除不是细胞的图片总数%d" % len(result201))
+
+        #删除不是细胞的图片
+        ret, df = self._filter(result201)
         if ret is False:
             return False
 
-        #删除不是细胞的图片
-        ret, df = self._filter()
-        if ret is False:
-            return False
+        for predict_label, df1 in df.groupby(['predict_label']):
+            if predict_label == 200 or predict_label == "200" :
+                self.log.info("删除%s 个数　%d" % ( str(predict_label), df1.shape[0] ))
 
         #预测
         ret, df = self._predict(df)
