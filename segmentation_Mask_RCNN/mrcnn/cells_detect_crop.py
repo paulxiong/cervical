@@ -171,6 +171,11 @@ class cells_detect_crop(worker):
             cellpath = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells', _cell_name)
             if (x2 - x1) != (y2 - y1):
                 self.log.info("not square!")
+            #FIXME:细胞尺寸过滤
+            if (((x2 - x1) + (y2 - y1)) / 2) < 17:
+                self.log.info("(((x2 - x1) + (y2 - y1)) / 2) < 17 skip %s" % cellpath)
+                continue
+
             image_path = os.path.join(self.rootdir, imginfo['imgpath'])
 
             _cellsinfo2 = []

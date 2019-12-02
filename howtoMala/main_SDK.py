@@ -32,6 +32,7 @@ class mala_predict(worker):
         self.log.info("初始化一个预测的worker")
         self.mtype = mt.MALA.value
         self.modpath = ""
+        self.filtermod = ""
 
         self.BS = 128
         #totalTest_cross_domain = len(list(paths.list_images(config.TEST_PATH_CROSS_DOMAIN)))
@@ -214,12 +215,54 @@ class mala_predict(worker):
         self.save_info_json(predict_info, self.predict2_json)
         return True
 
-    def predict(self):
-        ret = self.mkdatasets()
-        if ret is False:
-            return False
-
+    def _filter(self):
+        filter_mod='filter_model.h5'
         self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
+
+        # initialize the testing generator for cross domain
+        valAug = ImageDataGenerator(rescale=1 / 255.0)
+        testGen_cross_domain = valAug.flow_from_directory(
+            self.project_resize_predict_dir,
+            class_mode="categorical",
+            target_size=(64, 64),
+            color_mode="rgb",
+            shuffle=False,
+            batch_size=self.BS)
+
+        if self.filtermod != filter_mod  or self.filter_model is None:
+            self.filtermod = filter_mod
+            self.filter_model = load_model(self.filtermod)
+
+        # reset the testGen_cross_domain generator and then use our trained model to
+        # make predictions on the data
+        testGen_cross_domain.reset()
+        predIdxs = self.filter_model.predict_generator(testGen_cross_domain,
+            steps=(self.totalTest_cross_domain // self.BS+1),verbose=1)
+
+        classes = list(np.argmax(predIdxs, axis=1))
+        classes_scores = []
+        for i in range(len(predIdxs)):
+            classes_scores.append(float('%.2f'%(max(predIdxs[i]))))
+        filenames = testGen_cross_domain.filenames
+        result = []
+        for f in zip(filenames, classes, classes_scores):
+           cellpath = os.path.join(self.project_resize_predict_dir, f[0])
+           predict_label = 100 #100未知细胞类型 200不是细胞
+           if int(f[1]) == 1:
+               predict_label = 200
+           _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+           imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
+
+           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
+        return True, df_result
+
+    def _predict(self, df):
+        self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
+        #设置预测个数
+        self.BS = 128
+        self.totalTest_cross_domain = df.shape[0]
 
         # initialize the testing generator for cross domain
         valAug = ImageDataGenerator(rescale=1 / 255.0)
@@ -257,20 +300,32 @@ class mala_predict(worker):
            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+           tmp_df = df.loc[df['cellpath'] == cellpath]
+           if tmp_df["predict_label"].iloc[0] == 100:
+               df.loc[df['cellpath'] == cellpath] = [cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid]
 
-        # for each image in the testing set we need to find the index of the
-        # label with corresponding largest predicted probability
-        #predIdxs = np.argmax(predIdxs, axis=1)
+        return True, df
 
-        ## show a nicely formatted classification report
-        #print('\n',classification_report(testGen_cross_domain.classes, predIdxs,
-        #	target_names=testGen_cross_domain.class_indices.keys()))
+    def predict(self):
+        ret = self.mkdatasets()
+        if ret is False:
+            return False
 
-        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
+        #删除不是细胞的图片
+        ret, df = self._filter()
+        if ret is False:
+            return False
+
+        #预测
+        ret, df = self._predict(df)
+        if ret is False:
+            return False
 
         #预测结果统计
-        self.result_predict(df_result)
+        ret = self.result_predict(df)
+        if ret is False:
+            return False
+
         return True
 
 def worker_load(w):
