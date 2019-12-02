@@ -104,7 +104,7 @@ export default {
     getReferer() {
       getReferer().then(res => {
         this.refererSetting = res.data.data
-        if (this.refererSetting.referer_en == 2) {
+        if (this.refererSetting.referer_en === 2) {
           this.referer_en = true
         }
       })
