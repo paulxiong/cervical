@@ -51,7 +51,7 @@
               @size-change="handleSizeChange2"
             />
           </el-tab-pane>
-          <el-tab-pane v-if="report" type="info" :label="`图 ${total}`" class="img-tab">
+          <el-tab-pane v-if="report" type="info" :label="`图 ${total}`" class="img-tab flex">
             <section class="tools-bar flex">
               <div>总进度:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
               <div class="fitler-tools">
@@ -286,12 +286,16 @@ export default {
         },
         {
           value: 2,
+          label: '不是细胞'
+        },
+        {
+          value: 3,
           label: '全部'
         }
       ],
       filterValue: {
         'filterChecked': 0, // 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
-        'filterCellsType': 2
+        'filterCellsType': 3
       },
       report: '',
       imgCellsInfo: {},
@@ -360,6 +364,9 @@ export default {
           break
         case 1:
           this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 51)
+          break
+        case 2:
+          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 200)
           break
         default:
           this.renderData = this.imgInfo.cells
@@ -506,6 +513,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.img-tab {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.tools-bar {
+  width: 1310px;
+  justify-content: space-between;
+  margin-left: 7px;
+  span {
+    font-size: 14px;
+  }
+}
 .predict {
   .img-div {
     justify-content: flex-start;
@@ -516,14 +536,6 @@ export default {
     .item-box {
       padding: 10px 10px;
       border-bottom: 1px solid #ccc;
-    }
-    .tools-bar {
-      width: 1310px;
-      justify-content: space-between;
-      margin-left: 7px;
-      span {
-        font-size: 14px;
-      }
     }
   }
   .badge {
