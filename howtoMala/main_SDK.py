@@ -274,11 +274,11 @@ class mala_predict(worker):
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
         return True, df_result
 
-    def _predict(self, df):
+    def _predict(self, df, remove_cnt_201, remove_cnt_200):
         self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
         #设置预测个数
         self.BS = 128
-        self.totalTest_cross_domain = df.shape[0]
+        self.totalTest_cross_domain = (df.shape[0] - remove_cnt_201 - remove_cnt_200)
 
         # initialize the testing generator for cross domain
         valAug = ImageDataGenerator(rescale=1 / 255.0)
@@ -323,10 +323,13 @@ class mala_predict(worker):
         return True, df
 
     def predict(self):
+        remove_cnt_201, remove_cnt_200 = 0, 0
+
         #拷贝细胞图，并且返回不是细胞的list
         ret, result201 = self.mkdatasets()
         if ret is False:
             return False
+        remove_cnt_201 = len(result201)
         self.log.info("根据像素尺寸删除不是细胞的图片总数%d" % len(result201))
 
         #删除不是细胞的图片
@@ -336,10 +339,11 @@ class mala_predict(worker):
 
         for predict_label, df1 in df.groupby(['predict_label']):
             if predict_label == 200 or predict_label == "200" :
+                remove_cnt_200 = df1.shape[0]
                 self.log.info("删除%s 个数　%d" % ( str(predict_label), df1.shape[0] ))
 
         #预测
-        ret, df = self._predict(df)
+        ret, df = self._predict(df, remove_cnt_201, remove_cnt_200)
         if ret is False:
             return False
 
