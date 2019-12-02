@@ -162,7 +162,7 @@ export default {
   methods: {
     downloadImgs() {
       this.downloadLoading = true
-      this.$alert(`耐心等待，压缩包下载大小约${parseInt(this.total * 19.4 / 1024)}M，请勿退出或刷新页面`, {
+      this.$alert(`请耐心等待下载完成，正在下载中！压缩包下载大小约${parseFloat(this.total * 20 / 1024).toFixed(1)}M，请勿离开或刷新页面`, {
         confirmButtonText: '确定'
       })
       downloadImgs({ 'id': this.$route.query.did }).then(res => {
@@ -294,6 +294,7 @@ export default {
 <style lang="scss" scoped>
 .download {
   font-size: 24px;
+  margin-left: 10px;
   color: #000;
   :hover {
     color: #00c764;
