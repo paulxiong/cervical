@@ -163,6 +163,9 @@ export default {
     downloadImgs() {
       this.downloadLoading = true
       downloadImgs({ 'id': this.$route.query.did }).then(res => {
+        this.$alert(`请耐心等待，压缩包下载大小为${parseInt(res.data.size / 1024)}M，勿退出或刷新页面`, {
+          confirmButtonText: '确定'
+        })
         const blob = new Blob([res.data])
         if (window.navigator.msSaveOrOpenBlob) {
           navigator.msSaveBlob(blob, 'nb')
@@ -289,9 +292,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.images {
-}
 .download {
+  font-size: 24px;
   color: #000;
   :hover {
     color: #00c764;
