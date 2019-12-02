@@ -162,7 +162,7 @@ export default {
   methods: {
     downloadImgs() {
       this.downloadLoading = true
-      this.$alert(`请耐心等待下载完成，正在下载中！压缩包下载大小约${parseFloat(this.total * 20 / 1024).toFixed(1)}M，请勿离开或刷新页面`, {
+      this.$alert(`正在下载中，请耐心等待下载完成！压缩包下载大小约${parseFloat(this.total * 20 / 1024).toFixed(1)}M，请勿离开或刷新页面！`, {
         confirmButtonText: '确定'
       })
       downloadImgs({ 'id': this.$route.query.did }).then(res => {
