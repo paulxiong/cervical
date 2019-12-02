@@ -26,7 +26,6 @@ export function getListprojects(query) {
 
 export function downloadImgs(query) {
   return request({
-    timeout: 1e8,
     url: '/api1/zipdownload',
     method: 'get',
     responseType: 'blob',
@@ -36,7 +35,6 @@ export function downloadImgs(query) {
 
 export function uploadImgs(query) {
   return request({
-    timeout: 1e8,
     url: '/api1/upload',
     method: 'get',
     params: query
