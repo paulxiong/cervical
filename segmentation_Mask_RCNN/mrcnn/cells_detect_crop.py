@@ -99,6 +99,9 @@ class cells_detector():
                 print2("%s drop roi, score=%f" % (filename, score))
                 continue
             y1, x1, y2, x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
+            #FIXME:细胞尺寸过滤
+            if (x2 - x1) <= 17 or  (y2 - y1) <= 17:
+                celltype = 201 #201表示不是细胞(尺寸太小)
 
             x1, y1, x2, y2 = xy_x1y1x2y2((x2 + x1) / 2, (y2 + y1) / 2, size)
             _rois.append([x1, y1, x2, y2, celltype])
@@ -171,10 +174,6 @@ class cells_detect_crop(worker):
             cellpath = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells', _cell_name)
             if (x2 - x1) != (y2 - y1):
                 self.log.info("not square!")
-            #FIXME:细胞尺寸过滤
-            if (((x2 - x1) + (y2 - y1)) / 2) < 17:
-                self.log.info("(((x2 - x1) + (y2 - y1)) / 2) < 17 skip %s" % cellpath)
-                continue
 
             image_path = os.path.join(self.rootdir, imginfo['imgpath'])
 

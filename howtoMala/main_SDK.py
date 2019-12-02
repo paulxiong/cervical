@@ -250,6 +250,11 @@ class mala_predict(worker):
            predict_label = 100 #100未知细胞类型 200不是细胞
            if int(f[1]) == 1:
                predict_label = 200
+
+           #已经按尺寸滤掉了,201
+           arr = os.path.split(f[0])
+           if arr[0] == "201":
+               predict_label = 201
            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
@@ -301,7 +306,7 @@ class mala_predict(worker):
            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
            tmp_df = df.loc[df['cellpath'] == cellpath]
-           if tmp_df["predict_label"].iloc[0] == 100:
+           if tmp_df["predict_label"].iloc[0] != 200 and tmp_df["predict_label"].iloc[0] != 201:
                df.loc[df['cellpath'] == cellpath] = [cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid]
 
         return True, df
