@@ -42,6 +42,12 @@ class mala_predict(worker):
     def get_all_cells_list(self):
         #获得需要训练的分类
         types = self.projectinfo['types']
+        #添加默认的type
+        needtypes = [100, 200, 201]
+        for _needtypes in needtypes:
+            if _needtypes not in types:
+                types.append(_needtypes)
+
         self.totalTest_cross_domain = len(types)
         if len(types) < 2 and self.wtype == wt.TRAIN.value:
             self.log.error("less then 2 labels to train")
@@ -317,7 +323,9 @@ class mala_predict(worker):
            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
            tmp_df = df.loc[df['cellpath'] == cellpath]
-           if tmp_df["predict_label"].iloc[0] != 200 and tmp_df["predict_label"].iloc[0] != 201:
+           if tmp_df is not None and  tmp_df["predict_label"] is not None and \
+              tmp_df["predict_label"].shape[0] > 0 and tmp_df["predict_label"].iloc[0] != 200 and \
+              tmp_df["predict_label"].iloc[0] != 201:
                df.loc[df['cellpath'] == cellpath] = [cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid]
 
         return True, df
