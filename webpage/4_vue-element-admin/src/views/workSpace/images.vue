@@ -162,10 +162,10 @@ export default {
   methods: {
     downloadImgs() {
       this.downloadLoading = true
+      this.$alert(`耐心等待，压缩包下载大小约${parseInt(this.total * 19.4 / 1024)}M，请勿退出或刷新页面`, {
+        confirmButtonText: '确定'
+      })
       downloadImgs({ 'id': this.$route.query.did }).then(res => {
-        this.$alert(`请耐心等待，压缩包下载大小为${parseInt(res.data.size / 1024)}M，勿退出或刷新页面`, {
-          confirmButtonText: '确定'
-        })
         const blob = new Blob([res.data])
         if (window.navigator.msSaveOrOpenBlob) {
           navigator.msSaveBlob(blob, 'nb')
