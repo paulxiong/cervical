@@ -61,7 +61,6 @@ func compress(file *os.File, prefix string, zw *zip.Writer) error {
 	} else {
 		header, err := zip.FileInfoHeader(info)
 		header.Name = prefix + "/" + header.Name
-		fmt.Println(header.Name)
 		if err != nil {
 			return err
 		}

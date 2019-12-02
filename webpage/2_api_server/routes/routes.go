@@ -27,6 +27,7 @@ func Router() *gin.Engine {
 
 	corsObject := cors.New(cors.Config{
 		AllowAllOrigins: true,
+		ExposeHeaders:   []string{"Content-Length"},
 		AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:    []string{"Accept", "Authorization", "Content-Length", "Content-Type", "X-CSRF-Token", "X-Requested-With", "Referer"},
 		MaxAge:          12 * time.Hour,
@@ -120,6 +121,5 @@ func Router() *gin.Engine {
 		api1.POST("/updatepredict", ctr.UpdatePredict)
 		api1.POST("/reviewpredict", ctr.ReviewPredict)
 	}
-
 	return r
 }

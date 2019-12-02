@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"image"
+	"strconv"
 
 	// 支持的格式
 	_ "image/jpeg"
@@ -10,7 +11,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -43,7 +43,8 @@ func FileDownload(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("%d_%s.zip", id, dt.Dir)
+	randomsreing := u.GetRandomStringNum(6)
+	filename := fmt.Sprintf("%d_%s_%s.zip", id, dt.Dir, randomsreing)
 
 	//打包zip
 	err = f.ZipCompress(dt.Dir, filename)
@@ -52,10 +53,14 @@ func FileDownload(c *gin.Context) {
 		return
 	}
 
+	filesize := f.GetFileSize(filename)
+
 	//下载
 	contentDisposition := fmt.Sprintf("attachment; filename=%s", filename)
 	c.Writer.Header().Add("Content-Disposition", contentDisposition)
-	c.Writer.Header().Add("Content-Type", "application/octet-stream")
+	c.Writer.Header().Add("Content-Type", "application/zip")
+	c.Writer.Header().Add("Accept-Length", fmt.Sprintf("%d", filesize))
+	c.Writer.Header().Add("Content-Length", fmt.Sprintf("%d", filesize))
 	c.File(filename)
 }
 

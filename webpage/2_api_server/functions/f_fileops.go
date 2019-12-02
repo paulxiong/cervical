@@ -3,6 +3,7 @@ package function
 import (
 	"encoding/csv"
 	"os"
+	"path/filepath"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
@@ -64,4 +65,14 @@ func ZipCompress(dirname string, dest string) error {
 
 	err = u.ZipCompress(filesname, filestype, dest)
 	return err
+}
+
+// GetFileSize 返回文件大小byte
+func GetFileSize(filename string) int64 {
+	var result int64
+	filepath.Walk(filename, func(path string, f os.FileInfo, err error) error {
+		result = f.Size()
+		return nil
+	})
+	return result
 }
