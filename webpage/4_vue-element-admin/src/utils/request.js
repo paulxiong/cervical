@@ -14,7 +14,7 @@ errCode.errs.map(v => {
 const service = axios.create({
   // baseURL: process.env.BASE_API, // api 的 base_url
   baseURL: APIUrl,
-  timeout: 2 * 60 * 60 * 1000 // request timeout
+  timeout: 1e5 // request timeout 27hours
 })
 
 // request interceptor
