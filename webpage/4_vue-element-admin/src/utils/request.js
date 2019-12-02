@@ -14,7 +14,7 @@ errCode.errs.map(v => {
 const service = axios.create({
   // baseURL: process.env.BASE_API, // api 的 base_url
   baseURL: APIUrl,
-  timeout: 1e6 // request timeout
+  timeout: 2 * 60 * 60 * 1000 // request timeout
 })
 
 // request interceptor
@@ -37,7 +37,7 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    if (response.data.status === 0) {
+    if (response.data.status === 0 || response.data.size) {
       return response
     } else {
       Message.error({
