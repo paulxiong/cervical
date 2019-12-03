@@ -162,9 +162,9 @@ func ReviewPredict(id int64, status int) (e error) {
 }
 
 // GetPredictByImgID 通过图片ID获得所有的预测，不管审核状态,只看机器预测的结果
-func GetPredictByImgID(iid int64) (p []Predict, e error) {
+func GetPredictByImgID(pid int64, iid int64) (p []Predict, e error) {
 	var _p []Predict
-	ret := db.Model(&Predict{}).Where("imgid=?", iid).Find(&_p)
+	ret := db.Model(&Predict{}).Where("pid=? AND imgid=?", pid, iid).Find(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

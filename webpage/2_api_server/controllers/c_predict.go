@@ -198,11 +198,13 @@ func ReviewPredict(c *gin.Context) {
 	return
 }
 
+type predictstatisticscells struct {
+	Type  int `json:"type"  example:"100"` // 图片ID
+	Total int `json:"total" example:"100"` // 预测细胞类型的统计
+}
 type predictstatisticsimg struct {
-	ID    int64       `json:"id"      example:"100"` // 图片ID
-	W     int         `json:"w"       example:"100"` // 宽
-	H     int         `json:"h"       example:"100"` // 高
-	Cells map[int]int `json:"cells"`                 // 预测细胞类型的统计
+	ID    int64                    `json:"id" example:"100"` // 图片ID
+	Cells []predictstatisticscells `json:"cells"`            // 预测细胞类型的统计
 }
 type predictstatistics struct {
 	Total int                    `json:"total"` // 当前项目总的图片个数
@@ -241,23 +243,28 @@ func GetPredictStatistics(c *gin.Context) {
 	for _, mid := range _d.MedicalIDs1 {
 		total, imgs, _ := models.ListImagesByMedicalID2(mid)
 		ps.Total = ps.Total + total
-
+		// 遍历病例下面的所有图片
 		for _, v := range imgs {
 			psi := predictstatisticsimg{
 				ID: v.ID,
-				W:  v.W,
-				H:  v.H,
 			}
-			psi.Cells = make(map[int]int, 0)
-			predicts, _ := models.GetPredictByImgID(v.ID)
+			psi.Cells = make([]predictstatisticscells, 0)
+			predicts, _ := models.GetPredictByImgID(pid, v.ID)
+			cells := make(map[int]int, 0)
+			// 遍历图片下面的所有细胞
 			for _, p := range predicts {
 				key := p.PredictType
-				if _, ok := psi.Cells[key]; ok {
-					//存在
-					psi.Cells[key] = psi.Cells[key] + 1
+				if _, ok := cells[key]; ok {
+					cells[key] = cells[key] + 1
 				} else {
-					psi.Cells[key] = 1
+					cells[key] = 1
 				}
+			}
+			for key, value := range cells {
+				psi.Cells = append(psi.Cells, predictstatisticscells{
+					Type:  key,
+					Total: value,
+				})
 			}
 			ps.Imgs = append(ps.Imgs, psi)
 		}
