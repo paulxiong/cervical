@@ -64,7 +64,7 @@
                     :value="item.value"
                   />
                 </el-select>
-                <span>细胞类型</span>
+                <span>细胞类型: {{ renderData.length }}个</span>
                 <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
                   <el-option
                     v-for="item in CellsTypeOptions"
