@@ -19,6 +19,8 @@ type Project struct {
 	EndTime         time.Time `json:"endtime"    gorm:"column:end_time"`               //处理数据结束时间
 	Percent         int       `json:"percent"    gorm:"column:percent"`                //处理数据的进度
 	ETA             int       `json:"ETA"        gorm:"column:ETA"`                    //预估还要多长时间结束,单位是秒
+	UserName        string    `json:"username"   gorm:"-"`                             //创建者名字
+	UserImg         string    `json:"userimg"    gorm:"-"`                             //创建者头像
 	CreatedBy       int64     `json:"created_by" gorm:"column:created_by"`             //创建者
 	CreatedAt       time.Time `json:"created_at" gorm:"column:created_at"`             //创建时间
 	UpdatedAt       time.Time `json:"updated_at" gorm:"column:updated_at"`             //更新时间
@@ -50,6 +52,16 @@ func (p *Project) BeforeCreate(scope *gorm.Scope) error {
 		p.ParameterMType = 5 //0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
 	}
 
+	return nil
+}
+
+// AfterFind 把数据库里面存的字符串转成数组返回
+func (p *Project) AfterFind(scope *gorm.Scope) error {
+	if p.CreatedBy > 0 {
+		u, _ := FinduserbyID(p.CreatedBy)
+		p.UserName = u.Name
+		p.UserImg = u.Image
+	}
 	return nil
 }
 

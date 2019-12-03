@@ -44,6 +44,8 @@ func CreateProject(c *gin.Context) {
 		return
 	}
 
+	usr, _ := models.GetUserFromContext(c)
+
 	p := models.Project{
 		ID:              0,
 		DID:             np.DID,
@@ -55,6 +57,7 @@ func CreateProject(c *gin.Context) {
 		ParameterResize: np.ParameterResize,
 		ParameterMID:    np.ParameterMID,
 		ParameterType:   np.ParameterType,
+		CreatedBy:       usr.ID,
 	}
 
 	_mod, _ := models.FindModelInfoByID(p.ParameterMID)

@@ -339,6 +339,9 @@ type Dataset struct {
 	MedicalIDs1 []string `json:"medicalids"     gorm:"-"`                 //当前数据集的病例, 数组(传递给前端，数据库没有这个字段)
 	MedicalIDs2 string   `json:"-"              gorm:"column:medicalids"` //当前数据集的病例, 字符串存储(存数据库，前端没有这个字段)
 
+	UserName string `json:"username" gorm:"-"` //创建者名字
+	UserImg  string `json:"userimg"  gorm:"-"` //创建者头像
+
 	CreatedBy int64     `json:"created_by"      gorm:"column:created_by"` //创建者
 	CreatedAt time.Time `json:"created_at"      gorm:"column:created_at"` //创建时间
 	UpdatedAt time.Time `json:"updated_at"      gorm:"column:updated_at"` //更新时间
@@ -400,6 +403,13 @@ func (d *Dataset) AfterFind(scope *gorm.Scope) error {
 	}
 	d.BatchIDs1 = u.RemoveDuplicatesAndEmpty(d.BatchIDs1)
 	d.MedicalIDs1 = u.RemoveDuplicatesAndEmpty(d.MedicalIDs1)
+
+	if d.CreatedBy > 0 {
+		u, _ := FinduserbyID(d.CreatedBy)
+		d.UserName = u.Name
+		d.UserImg = u.Image
+	}
+
 	return nil
 }
 
