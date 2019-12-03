@@ -360,6 +360,9 @@ func (d *Dataset) BeforeCreate(scope *gorm.Scope) error {
 		d.ETA = 60 //默认假设１分钟
 	}
 
+	d.BatchIDs1 = u.RemoveDuplicatesAndEmpty(d.BatchIDs1)
+	d.MedicalIDs1 = u.RemoveDuplicatesAndEmpty(d.MedicalIDs1)
+
 	str, err2 := u.IntArray2String(&d.Types1)
 	if err2 == nil {
 		d.Types2 = str
@@ -395,6 +398,8 @@ func (d *Dataset) AfterFind(scope *gorm.Scope) error {
 			d.MedicalIDs1 = arr
 		}
 	}
+	d.BatchIDs1 = u.RemoveDuplicatesAndEmpty(d.BatchIDs1)
+	d.MedicalIDs1 = u.RemoveDuplicatesAndEmpty(d.MedicalIDs1)
 	return nil
 }
 

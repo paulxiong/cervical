@@ -119,8 +119,9 @@ func GetPredictImges(c *gin.Context) {
 }
 
 type predictupdate struct {
-	ID       int64 `json:"id"`        // 细胞预测的ID
-	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
+	ID int64 `json:"id"` // 细胞预测的ID
+	// PID      int64 `json:"id"`        // 当前项目的ID
+	TrueType int `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
 }
 
 type returnpredictupdate struct {
@@ -194,5 +195,74 @@ func ReviewPredict(c *gin.Context) {
 	models.ReviewPredict(pr.ID, pr.Status)
 
 	res.ResSucceedString(c, "ok")
+	return
+}
+
+type predictstatisticsimg struct {
+	ID    int64       `json:"id"      example:"100"` // 图片ID
+	W     int         `json:"w"       example:"100"` // 宽
+	H     int         `json:"h"       example:"100"` // 高
+	Cells map[int]int `json:"cells"`                 // 预测细胞类型的统计
+}
+type predictstatistics struct {
+	Total int                    `json:"total"` // 当前项目总的图片个数
+	Imgs  []predictstatisticsimg `json:"imgs"`  // 预测图片的统计
+}
+
+// GetPredictStatistics 统计当前预测报告的每个图片里面细胞分类的个数
+// @Summary 统计当前预测报告的每个图片里面细胞分类的个数
+// @Description 统计当前预测报告的每个图片里面细胞分类的个数
+// @Description status：
+// @tags API1 医疗报告（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param pid query string false "pid, default 0, 所属项目的ID"
+// @Success 200 {object} controllers.reporterpredicts
+// @Router /api1/predictstatistics [get]
+func GetPredictStatistics(c *gin.Context) {
+	pidStr := c.DefaultQuery("pid", "0")
+	pid, _ := strconv.ParseInt(pidStr, 10, 64)
+
+	project, err := models.GetOneProjectByID(int(pid))
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
+		return
+	}
+
+	_d, err := models.GetOneDatasetByID(int(project.DID))
+	if err != nil || len(_d.MedicalIDs1) < 1 {
+		res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
+		return
+	}
+
+	ps := predictstatistics{}
+	ps.Imgs = make([]predictstatisticsimg, 0)
+	for _, mid := range _d.MedicalIDs1 {
+		total, imgs, _ := models.ListImagesByMedicalID2(mid)
+		ps.Total = ps.Total + total
+
+		for _, v := range imgs {
+			psi := predictstatisticsimg{
+				ID: v.ID,
+				W:  v.W,
+				H:  v.H,
+			}
+			psi.Cells = make(map[int]int, 0)
+			predicts, _ := models.GetPredictByImgID(v.ID)
+			for _, p := range predicts {
+				key := p.PredictType
+				if _, ok := psi.Cells[key]; ok {
+					//存在
+					psi.Cells[key] = psi.Cells[key] + 1
+				} else {
+					psi.Cells[key] = 1
+				}
+			}
+			ps.Imgs = append(ps.Imgs, psi)
+		}
+	}
+
+	res.ResSucceedStruct(c, ps)
 	return
 }

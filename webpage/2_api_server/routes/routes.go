@@ -64,6 +64,9 @@ func Router() *gin.Engine {
 	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
 
+	// 临时测试使用
+	api1.GET("/predictstatistics", ctr.GetPredictStatistics)
+
 	api1.Use(ctr.CheckAuth)
 	{
 		// api1.GET("/refresh_token", ctr.AuthMiddleware.RefreshHandler) // Refresh time can be longer than token timeout

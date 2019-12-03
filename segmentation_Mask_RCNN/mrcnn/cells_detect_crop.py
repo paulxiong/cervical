@@ -96,7 +96,6 @@ class cells_detector():
             classid = r['class_ids'][i]
             roi = final_rois[i]
             if int(threshold*100) > int(score*100):
-                print("%s drop roi, score=%f" % (filename, score))
                 continue
             y1, x1, y2, x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
             #FIXME:细胞尺寸过滤
