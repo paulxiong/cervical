@@ -134,11 +134,15 @@ export default {
   display: flex;
   justify-content: flex-start;
 }
+// .img-upload {
+//   padding-top: 50px;
+// }
 h4 {
   margin-right: 12px;
 }
 .setting-list {
   width: 500px;
+  padding-top: 50px;
   p {
     background: rgb(239, 238, 238);
     margin: 10px 0;
@@ -158,7 +162,10 @@ h4 {
   justify-content: flex-start;
   flex-wrap: wrap;
   align-items: center;
-  margin: 20px;
+  margin: 50px;
+}
+.setting-btn {
+  padding-top: 50px;
 }
 </style>
 
