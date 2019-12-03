@@ -187,6 +187,9 @@ export default {
       this.readOnly = false
     },
     getAll() {
+      this.$nextTick(() => {
+        this.readOnly = true
+      })
       this.getLabelByImageId(this.imgid, this.labelType)
     },
     saveAll() {
@@ -220,8 +223,6 @@ export default {
       const updatearr = idArr.filter(function(v) {
         return orgIdArr.indexOf(v) !== -1
       })
-      console.log('新增 ', newarr)
-      console.log('删除 ', delarr)
 
       const addArr = []
       const delArr = []
@@ -338,7 +339,7 @@ export default {
         })
       })
     },
-    getLabelByImageId(id, status) {
+    getLabelByImageId(id, status, refresh) {
       getLabelByImageId({ 'limit': 999, 'skip': 0, 'imgid': id, 'status': status }).then(res => {
         this.imgInfo = res.data.data
         this.imgInfo.labels.map(v => {

@@ -299,7 +299,7 @@ export default {
       ],
       filterValue: {
         'filterChecked': 0, // 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
-        'filterCellsType': 3
+        'filterCellsType': 4
       },
       report: '',
       imgCellsInfo: {},
@@ -339,7 +339,7 @@ export default {
     filterSearch() {
       this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
       this.$nextTick(() => {
-        this.filterCellsType(this.filterValue.filterCellsType)
+        this.filterCellsType()
       })
     },
     handleCurrentChange(val) {
@@ -361,8 +361,8 @@ export default {
     filterChecked(value, select) {
       this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
     },
-    filterCellsType(value) {
-      switch (value) {
+    filterCellsType() {
+      switch (this.filterValue.filterCellsType) {
         case 0:
           this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 50)
           break
@@ -404,6 +404,9 @@ export default {
       this.fov_img = v
       this.selectFov = idx
       this.getPredictResult2(v.id, 999, 0, this.filterValue.filterChecked)
+      this.$nextTick(() => {
+        this.filterCellsType()
+      })
     },
     onSelect(data) {
       this.select = data
@@ -603,6 +606,7 @@ export default {
       background: rgba(238, 255, 0, 0.5);
     }
     .img-item {
+      border: 1px solid #ccc;
       // margin-right: 10px;
       // margin-bottom: 10px;
     }
