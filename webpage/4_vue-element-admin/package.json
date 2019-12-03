@@ -10,7 +10,8 @@
     "build:prod": "node ./version.js && vue-cli-service build --mode prod",
     "preview": "node build/index.js --preview",
     "lint": "eslint --ext .js,.vue src",
-    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
+    "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
+    "snyk-test": "snyk test"
   },
   "keywords": [
     "vue",

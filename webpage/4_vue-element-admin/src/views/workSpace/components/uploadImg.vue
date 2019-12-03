@@ -21,7 +21,7 @@
         size="mini"
         type="success"
         @click.stop="submitUpload"
-      >上传到服务器</el-button>
+      >上传到服务器 {{ finishedFileList }} / {{ fileList }}</el-button>
       <el-button style="margin-left: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
   </div>
@@ -42,6 +42,8 @@ export default {
         'Authorization': getToken()
       },
       args: {},
+      finishedFileList: 0,
+      fileList: 0,
       postData: {
         'batchids': [],
         'medicalids': []
@@ -69,6 +71,8 @@ export default {
       })
     },
     onSuccess(response, file, fileList) {
+      this.fileList = fileList.length
+      this.finishedFileList = fileList.filter(v => v.percentage === 100).length
       if (fileList[fileList.length - 1].percentage === 100) {
         this.$emit('checkUpload', true)
       }
