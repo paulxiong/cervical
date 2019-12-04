@@ -27,7 +27,7 @@ func GetOverview(c *gin.Context) {
 	_, ov.UserCnt, _ = models.UserLists(0, 0, 0)
 	ov.ImgCnt, _, _ = models.ListImage(0, 0)
 	ov.DataSetCnt, _, _ = models.ListDataset(0, 0, 0)
-	ov.ProjectCnt, _, _ = models.ListProject(0, 0, 0, 0)
+	ov.ProjectCnt, _, _ = models.ListProject(0, 0, 0, 100)
 
 	res.ResSucceedStruct(c, ov)
 	return
