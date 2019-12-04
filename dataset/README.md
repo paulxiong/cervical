@@ -400,3 +400,14 @@ FOV_cells_origin
 ├── cells_all（41059）
 └── FOV_origin（500）
 ```
+### cell_filter_data_1204（测试数据2）
+```
+链接：https://pan.baidu.com/s/1waZaKRm_bmdigP9FpcpDag
+提取码：wdnn
+说明：2019年12月4日，用于测试细胞过滤分类效果，细胞尺寸：100*100，RGB三通道，FOV来自所有医生标记过的FOV
+目录结构：
+cell_filter_data_1204
+├── FOV(1136)
+├── invalid_cells(39653)
+└── valid_cells(96102)
+```
