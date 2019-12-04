@@ -55,7 +55,7 @@
               <span>{{ props.row.dir }}</span>
             </el-form-item>
             <el-form-item label="创建者">
-              <span>{{ props.row.created_by }}</span>
+              <span>{{ props.row.username }}</span>
             </el-form-item>
             <el-form-item label="数据集 ID">
               <span>{{ props.row.did }}</span>
@@ -87,7 +87,13 @@
       <el-table-column width="60" label="ID" prop="id" />
       <el-table-column label="描述" prop="desc" />
       <el-table-column label="数据集 ID" prop="did" />
-      <el-table-column label="创建者" prop="created_by" />
+      <el-table-column label="创建者">
+        <template slot-scope="scope">
+          <el-tooltip :content="scope.row.username" placement="right">
+            <el-image :src="scope.row.userimg" style="width:36px;height:36px;border-radius:7px;" />
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column label="类型" prop="projectType" />
       <el-table-column label="创建时间" prop="created_at" />
       <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
@@ -157,20 +163,20 @@ export default {
     }
   },
   created() {
-    this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 101, 1)
+    this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 6, 1)
   },
   methods: {
     handleClick(row) {
     },
     filterSearch() {
-      this.getListreport(10, (this.currentPage - 1) * this.currentPageSize, 101, 1)
+      this.getListreport(10, (this.currentPage - 1) * this.currentPageSize, 6, 1)
     },
     handleCurrentChange(val) {
-      this.getListreport(this.currentPageSize, (this.currentPage - 1) * val, 101, 1)
+      this.getListreport(this.currentPageSize, (this.currentPage - 1) * val, 6, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListreport(val, (this.currentPage - 1) * val, 101, 1)
+      this.getListreport(val, (this.currentPage - 1) * val, 6, 1)
     },
     goDetail(val) {
       this.$router.push({

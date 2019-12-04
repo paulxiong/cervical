@@ -59,7 +59,7 @@
               <span>{{ props.row.desc }}</span>
             </el-form-item>
             <el-form-item label="创建者">
-              <span>{{ props.row.created_by }}</span>
+              <span>{{ props.row.username }}</span>
             </el-form-item>
             <el-form-item label="目录">
               <span>{{ props.row.dir }}</span>
@@ -93,7 +93,13 @@
       </el-table-column>
       <el-table-column label="ID" width="60" prop="id" />
       <el-table-column label="描述" prop="desc" />
-      <el-table-column label="创建者" prop="created_by" />
+      <el-table-column label="创建者">
+        <template slot-scope="scope">
+          <el-tooltip :content="scope.row.username" placement="right">
+            <el-image :src="scope.row.userimg" style="width:36px;height:36px;border-radius:7px;" />
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column label="裁剪模型" prop="parameter_mid" />
       <el-table-column label="创建时间" prop="created_at" />
       <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
