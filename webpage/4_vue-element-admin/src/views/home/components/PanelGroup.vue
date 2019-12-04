@@ -105,16 +105,16 @@ export default {
         color: #fff;
       }
       .icon-peoples {
-        background: #40c9c6;
+        background: rgba(64, 201, 198, 0.5)
       }
       .icon-data {
-        background: #36a3f7;
+        background: rgba(67, 173, 127, 0.5);
       }
       .icon-complete {
-        background: #f4516c;
+        background: rgba(204, 204, 204, 0.5);
       }
       .icon-report {
-        background: #f4ea2a;
+        background: rgba(244, 234, 42, 0.5);
       }
     }
     .icon-peoples {
@@ -127,7 +127,7 @@ export default {
       color: #f4516c;
     }
     .icon-report {
-      color: #09d2f5;
+      color: #666666;
     }
     .card-panel-icon-wrapper {
       float: left;
