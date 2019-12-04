@@ -45,20 +45,26 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="项目 ID">
-              <span>{{ props.row.id }}</span>
-            </el-form-item>
-            <el-form-item label="描述">
-              <span>{{ props.row.desc }}</span>
-            </el-form-item>
             <el-form-item label="工作目录">
               <span>{{ props.row.dir }}</span>
             </el-form-item>
             <el-form-item label="创建者">
               <span>{{ props.row.username }}</span>
             </el-form-item>
-            <el-form-item label="数据集 ID">
-              <span>{{ props.row.did }}</span>
+            <el-form-item label="预测模型 ID">
+              <span>{{ props.row.parameter_mid }}</span>
+            </el-form-item>
+            <el-form-item label="预测模型类型">
+              <span>{{ props.row.parameter_mtype }}</span>
+            </el-form-item>
+            <el-form-item label="训练之前统一的尺寸">
+              <span>{{ props.row.parameter_resize }}</span>
+            </el-form-item>
+            <el-form-item label="训练使用的最长时间">
+              <span>{{ props.row.parameter_time }}</span>
+            </el-form-item>
+            <el-form-item label="预测方式">
+              <span>{{ props.row.parameter_type === 0 ? '没标注的图' : '有标注的图' }}</span>
             </el-form-item>
             <el-form-item label="进度">
               <span>{{ props.row.percent }}</span>
@@ -74,12 +80,6 @@
             </el-form-item>
             <el-form-item label="结束时间">
               <span>{{ props.row.endtime }}</span>
-            </el-form-item>
-            <el-form-item label="创建时间">
-              <span>{{ props.row.created_at }}</span>
-            </el-form-item>
-            <el-form-item label="更新时间">
-              <span>{{ props.row.updated_at }}</span>
             </el-form-item>
           </el-form>
         </template>

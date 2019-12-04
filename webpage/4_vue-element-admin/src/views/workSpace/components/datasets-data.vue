@@ -52,17 +52,11 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="项目 ID">
-              <span>{{ props.row.id }}</span>
-            </el-form-item>
-            <el-form-item label="描述">
-              <span>{{ props.row.desc }}</span>
+            <el-form-item label="目录">
+              <span>{{ props.row.dir }}</span>
             </el-form-item>
             <el-form-item label="创建者">
               <span>{{ props.row.username }}</span>
-            </el-form-item>
-            <el-form-item label="目录">
-              <span>{{ props.row.dir }}</span>
             </el-form-item>
             <el-form-item label="裁剪模型">
               <span>{{ props.row.parameter_mid }}</span>
@@ -81,12 +75,6 @@
             </el-form-item>
             <el-form-item label="裁剪结束">
               <span>{{ props.row.processend }}</span>
-            </el-form-item>
-            <el-form-item label="创建时间">
-              <span>{{ props.row.created_at }}</span>
-            </el-form-item>
-            <el-form-item label="更新时间">
-              <span>{{ props.row.updated_at }}</span>
             </el-form-item>
           </el-form>
         </template>
