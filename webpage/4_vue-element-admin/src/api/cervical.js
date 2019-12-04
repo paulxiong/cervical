@@ -248,3 +248,11 @@ export function getPredictResult2(query) {
     params: query
   })
 }
+
+export function getOverview(query) {
+  return request({
+    url: '/api1/overview',
+    method: 'get',
+    params: query
+  })
+}
