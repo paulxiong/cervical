@@ -16,7 +16,7 @@ type overview struct {
 // GetOverview 获得概览统计信息
 // @Summary 获得概览统计信息
 // @Description 获得概览统计信息
-// @tags API1 数据（需要认证）
+// @tags API1 概览（需要认证）
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
