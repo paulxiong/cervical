@@ -27,7 +27,7 @@
             v-model="currentLabel"
             class="cascader"
             size="mini"
-            placeholder="请选择数据集"
+            :placeholder="currentLabel[0] ? `${currentLabel[0]}/${currentLabel[1]}/${currentLabel[2].split('-')[2]}` : '请选择数据集'"
             clearable
             :props="lazyProps"
             :options="batchList"
@@ -166,6 +166,12 @@ export default {
   },
   created() {
     this.getBatchInfo()
+    if (localStorage.getItem('currentLabel')) {
+      this.currentLabel = JSON.parse(localStorage.getItem('currentLabel'))
+      this.fov_img = this.url + this.currentLabel[2].split('-')[2] + '?width=1000'
+      this.imgid = this.currentLabel[2].split('-')[1]
+      this.getLabelByImageId(this.imgid, this.labelType)
+    }
   },
   methods: {
     previousImg() {
@@ -176,6 +182,7 @@ export default {
     },
     changeBatchList(val) {
       this.readOnly = true
+      localStorage.setItem('currentLabel', JSON.stringify(this.currentLabel))
       this.fov_img = this.url + this.currentLabel[2].split('-')[2] + '?width=1000'
       this.imgid = this.currentLabel[2].split('-')[1]
       this.getLabelByImageId(this.imgid, this.labelType)

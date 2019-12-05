@@ -11,7 +11,7 @@
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${predictResult.correc_total}`" class="img-tab">
+          <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${predictResult.correc_total ? predictResult.correc_total : ''}`" class="img-tab">
             <div class="img-div flex" style="overflow-y: auto;height:600px;">
               <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 20px;">
                 <el-badge :value="`${v.type}-${v.score}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
@@ -31,7 +31,7 @@
               @size-change="handleSizeChange"
             />
           </el-tab-pane>
-          <el-tab-pane v-if="!report" :label="`错误细胞 ${predictResult.incorrec_total}`" class="img-tab flex">
+          <el-tab-pane v-if="!report" :label="`错误细胞 ${predictResult.incorrec_total ? predictResult.incorrec_total : ''}`" class="img-tab flex">
             <div class="img-div" style="overflow-y: auto;height:600px;">
               <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
                 <el-badge :value="`${v.type}>${v.predict}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
@@ -382,6 +382,10 @@ export default {
       this.renderLabel(this.renderData)
     },
     updatePredict(value) {
+      if (value.length === 1 && value[0] === 50 || value[0] === 51) {
+        this.$alert('请选择到二级目录（细胞类型）')
+        return
+      }
       updatePredict({
         'id': this.select.id,
         'true_type': value.length === 2 ? value[1] : value[0]
@@ -599,7 +603,7 @@ export default {
     background: rgba(238, 255, 0, 0.5);
   }
   .results {
-    padding: 7px 30px;
+    padding: 7px;
     .item-box-select {
       padding: 10px 10px;
       border-bottom: 1px solid #ccc;
