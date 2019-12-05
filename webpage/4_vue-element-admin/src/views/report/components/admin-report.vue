@@ -1,41 +1,5 @@
 <template>
   <div class="admin-report">
-    <!-- <div class="filter-box">
-      <el-input
-        v-model="listQuery.desc"
-        placeholder="请输入描述搜索"
-        style="width:200px;"
-        class="filter-input"
-        @keyup.enter.native="filterSearch"
-      />
-      <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
-        clearable
-        class="filter-type"
-        style="width: 130px"
-      >
-        <el-option
-          v-for="item in typeOptions"
-          :key="item.key"
-          :label="item.name"
-          :value="item.key"
-        />
-      </el-select>
-      <el-button
-        class="filter-btn"
-        type="primary"
-        :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
-        @click="filterSearch"
-      >刷新</el-button>
-      <el-button
-        class="filter-btn"
-        style="margin-left: 10px;"
-        type="success"
-        icon="el-icon-edit"
-        @click="dialogFormVisible = true"
-      >新增报告</el-button>
-    </div> -->
     <el-table
       v-loading="loading"
       element-loading-text="拼命加载中"
