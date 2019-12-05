@@ -209,11 +209,10 @@ export default {
 
 <style lang="scss" scoped>
 .doctor-report {
+  overflow: auto;
+  height: 100%;
+  padding-bottom: 30px;
   .filter-box {
-    // position: fixed;
-    // float: auto;
-    // z-index: 10;
-    // margin-top: -40px;
   }
   .tools {
     background: #fff;
