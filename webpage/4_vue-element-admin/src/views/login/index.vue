@@ -203,7 +203,7 @@ export default {
   created() {
     // window.addEventListener('storage', this.afterQRScan)
   },
-  destroyed() {
+  beforeDestroy() {
     clearInterval(timer)
     // window.removeEventListener('storage', this.afterQRScan)
   },

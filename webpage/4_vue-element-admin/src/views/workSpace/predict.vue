@@ -313,7 +313,7 @@ export default {
     this.report = this.$route.query.report
     this.loopGetPercent()
   },
-  destroyed() {
+  beforeDestroy() {
     clearInterval(timer)
   },
   methods: {

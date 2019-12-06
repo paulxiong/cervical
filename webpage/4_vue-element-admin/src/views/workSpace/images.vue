@@ -159,6 +159,9 @@ export default {
   created() {
     this.loopGetPercent()
   },
+  beforeDestroy() {
+    clearInterval(timer)
+  },
   methods: {
     downloadImgs() {
       this.downloadLoading = true
@@ -284,9 +287,6 @@ export default {
         this.getPercent()
       }, 1500)
     }
-  },
-  beforedestroy() {
-    clearInterval(timer)
   }
 }
 </script>

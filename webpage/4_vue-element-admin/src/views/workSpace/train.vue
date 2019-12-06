@@ -48,6 +48,9 @@ export default {
   created() {
     this.loopGetPercent()
   },
+  beforeDestroy() {
+    clearInterval(timer)
+  },
   methods: {
     getTrainresult() {
       getTrainresult({ 'id': this.$route.query.pid }).then(res => {
@@ -81,9 +84,6 @@ export default {
         this.getPercent()
       }, 1500)
     }
-  },
-  beforedestroy() {
-    clearInterval(timer)
   }
 }
 </script>
