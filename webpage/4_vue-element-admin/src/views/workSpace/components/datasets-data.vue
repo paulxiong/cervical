@@ -125,13 +125,14 @@
         style="margin-top:-30px;"
         @checkUpload="checkUpload"
         @checkImg="checkImg"
+        @checkModel="checkModel"
       />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
         <el-button
           v-show="step===1 || step===2"
           size="mini"
-          :disabled="!uploadServer && !imgChecked"
+          :disabled="!uploadServer && !imgChecked && !modelChecked"
           type="primary"
           @click="stepNext"
         >下一步</el-button>
@@ -161,6 +162,7 @@ export default {
       currentPage: 1,
       currentPageSize: 10,
       loading: false,
+      modelChecked: false,
       listQuery: {
         desc: undefined,
         type: undefined
@@ -215,6 +217,9 @@ export default {
     },
     checkImg(val) {
       this.imgChecked = val
+    },
+    checkModel(val) {
+      this.modelChecked = val
     },
     filterSearch() {
       this.listdatasets(10, (this.currentPage - 1) * this.currentPageSize, 1)

@@ -9,6 +9,7 @@
             :key="item.id"
             :label="item.desc"
             :value="item"
+            @change="changeModel"
           />
         </el-select>
       </section>
@@ -84,10 +85,14 @@ export default {
       }
       localStorage.setItem('MODEL_INFO', JSON.stringify(modelInfo))
     },
+    changeModel(val) {
+      this.$emit('checkModel', this.model.id)
+    },
     getListmodel() {
       getListmodel().then(res => {
         this.options = res.data.data.models
         this.model = this.options[0]
+        this.$emit('checkModel', false)
       })
     }
   }

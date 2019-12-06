@@ -364,16 +364,16 @@ export default {
     filterCellsType() {
       switch (this.filterValue.filterCellsType) {
         case 0:
-          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 50)
+          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 50 : v.predict_type === 50)
           break
         case 1:
-          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 51)
+          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 51 : v.predict_type === 51)
           break
         case 2:
-          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 200)
+          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 200 : v.predict_type === 200)
           break
         case 3:
-          this.renderData = this.imgInfo.cells.filter(v => v.predict_type === 201)
+          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 201 : v.predict_type === 201)
           break
         default:
           this.renderData = this.imgInfo.cells
@@ -382,7 +382,8 @@ export default {
       this.renderLabel(this.renderData)
     },
     updatePredict(value) {
-      if (value.length === 1 && value[0] === 50 || value[0] === 51) {
+      console.log(value)
+      if (value.length === 1 && (value[0] === 50 || value[0] === 51)) {
         this.$alert('请选择到二级目录（细胞类型）')
         return
       }

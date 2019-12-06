@@ -11,7 +11,7 @@
     <section class="main">
       <uploadImg v-if="upload && step===1" @checkUpload="checkUpload" />
       <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
-      <checkModel v-if="step===2" ref="checkModel" :upload="upload" />
+      <checkModel v-if="step===2" ref="checkModel" :upload="upload" @checkModel="checkModel" />
       <startTrain v-if="step===3" />
     </section>
   </div>
@@ -43,6 +43,9 @@ export default {
     },
     checkImg(val) {
       this.$emit('checkImg', val)
+    },
+    checkModel(val) {
+      this.$emit('checkModel', val)
     },
     stepNext() {
       if (this.step === 2) {
