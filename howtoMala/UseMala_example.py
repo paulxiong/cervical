@@ -9,14 +9,14 @@ from keras.utils.vis_utils import plot_model
 
 NUM_EPOCHS = 20
 INIT_LR = 1e-1
-BS = 0 #BS值必须为被预测图片的数量
+BS = 32 #BS值必须为被预测图片的数量
 predict_root = "./testing_cross_domain"
 file_temp = os.listdir(predict_root)
+totalTest_cross_domain=0
 for i in file_temp:
-    BS = BS + len(os.listdir(os.path.join(predict_root,i)))
-    
+    totalTest_cross_domain = totalTest_cross_domain + len(os.listdir(os.path.join(predict_root,i)))
+
 #totalTest_cross_domain = len(list(paths.list_images(config.TEST_PATH_CROSS_DOMAIN)))
-totalTest_cross_domain=2
 print("  totalTest_cross_domain="+str(totalTest_cross_domain))
 
 # initialize the testing generator for cross domain
