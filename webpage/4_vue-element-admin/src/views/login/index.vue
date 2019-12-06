@@ -226,6 +226,9 @@ export default {
     },
     sendCode() {
       if (!validEmail(this.loginForm.username)) return
+      if (this.loginForm.password.length < 3 || this.loginForm.confirmPassword.length < 3) {
+        return new Error('密码小于3位')
+      }
       if (this.loginForm.password !== this.loginForm.confirmPassword) {
         return new Error('两次输入的密码不同')
       }
