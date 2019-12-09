@@ -172,7 +172,8 @@ export default {
       this.getListreport(10, (this.currentPage - 1) * this.currentPageSize, 5, 1)
     },
     handleCurrentChange(val) {
-      this.getListreport(this.currentPageSize, (this.currentPage - 1) * val, 5, 1)
+      this.currentPage = val
+      this.getListreport(this.currentPageSize, (val - 1) * this.currentPageSize, 5, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val

@@ -226,11 +226,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.listdatasets(this.currentPageSize, (val - 1) * this.currentPageSize, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.listdatasets(val, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.listdatasets(val, (this.currentPage - 1) * val, 1)
     },
     goDetail(val) {
       this.$router.push({
