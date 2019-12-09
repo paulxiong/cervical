@@ -286,14 +286,18 @@ export default {
         },
         {
           value: 2,
-          label: '不是细胞'
+          label: '未知类型'
         },
         {
           value: 3,
-          label: '不是细胞2'
+          label: '不是细胞'
         },
         {
           value: 4,
+          label: '不是细胞2'
+        },
+        {
+          value: 5,
           label: '全部'
         }
       ],
@@ -338,9 +342,6 @@ export default {
     },
     filterSearch() {
       this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
-      this.$nextTick(() => {
-        this.filterCellsType()
-      })
     },
     handleCurrentChange(val) {
       this.currentPage = val
@@ -409,9 +410,6 @@ export default {
       this.fov_img = v
       this.selectFov = idx
       this.getPredictResult2(v.id, 999, 0, this.filterValue.filterChecked)
-      this.$nextTick(() => {
-        this.filterCellsType()
-      })
     },
     onSelect(data) {
       this.select = data
@@ -455,7 +453,7 @@ export default {
           }
           v.uuid = v.id
         })
-        this.renderData = this.imgInfo.cells
+        this.filterCellsType()
         this.imgCellsInfo = this.imgInfo.info
         this.renderLabel(this.renderData, select)
         if (select) this.changeLabel(this.select)
