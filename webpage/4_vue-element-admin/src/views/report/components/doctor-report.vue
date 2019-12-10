@@ -173,11 +173,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getListreport(this.currentPageSize, (val - 1) * this.currentPageSize, 5, 1)
+      this.getListreport(this.currentPageSize, (this.currentPageSize - 1) * this.currentPageSize, 5, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListreport(val, (this.currentPage - 1) * val, 5, 1)
+      this.getListreport(val, (this.currentPage - 1) * this.currentPageSize, 5, 1)
     },
     goDetail(val) {
       this.$router.push({

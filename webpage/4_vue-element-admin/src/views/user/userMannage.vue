@@ -116,11 +116,11 @@ export default {
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * val, 1)
+      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getUserLists(this.currentPageSize, (val - 1) * this.currentPageSize, 1)
+      this.getUserLists(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     getUserLists(limit, skip, order) {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {

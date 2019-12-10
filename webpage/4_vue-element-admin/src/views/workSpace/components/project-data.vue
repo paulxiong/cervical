@@ -187,11 +187,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getListprojects(this.currentPageSize, (val - 1) * this.currentPageSize, 1)
+      this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListprojects(val, (this.currentPage - 1) * val, 1)
+      this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     goDetail(val) {
       this.$router.push({
