@@ -40,6 +40,8 @@ class METADATA(Structure):
                 ("names", POINTER(c_char_p))]
 
 
+
+#lib = CDLL("/home/pjreddie/documents/darknet/libdarknet.so", RTLD_GLOBAL)
 lib = CDLL("./libdarknet.so", RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
@@ -142,50 +144,120 @@ def save_json(info, savefile):
         file.write(json.dumps(info, indent=2, ensure_ascii=False))
     return
 
-if __name__ == "__main__":
-    testdir="img/"
-    dir_or_files = os.listdir(testdir)
-    imgs = []
-    for i in dir_or_files:
-        path1 = os.path.join(testdir, i)
-        ext = os.path.splitext(path1)[1]
-        ext = ext.lower()
-        if not ext in ['.jpg', '.png', '.jpeg', '.bmp']:
+#box去重
+def _filter3(boxes):
+    for i in range(len(boxes)-1):
+        b1 = boxes[i]
+        b1x, b1y = int((b1["x2"] + b1["x1"]) / 2), int((b1["y2"] + b1["y1"]) / 2)
+        for j in range(i+1, len(boxes)):
+            b2 = boxes[j]
+            if b2['class'] == 'drop':
+                continue
+            b2x, b2y = int((b2["x2"] + b2["x1"]) / 2), int((b2["y2"] + b2["y1"]) / 2)
+            dst = int(math.sqrt(math.pow((b2x - b1x), 2) + math.pow((b2y - b1y), 2)))
+            if dst <= 5:
+                #print("same ", dst, b1, b2)
+                if b1['score'] > b2['score']:
+                    boxes[j]['class'] = "drop"
+                else:
+                    boxes[i]['class'] = "drop"
+    newlists = []
+    for i in boxes:
+        if i['class'] == 'drop':
             continue
+        newlists.append(i)
+    return newlists
 
-        imgs.append(path1)
+def _filter2(boxes):
+    invalid = False
+    cntk, cntm = 0, 0
+    #个数检查
+    for j in boxes:
+        classname = j["class"]
+        if classname == 'kernel':
+            cntk = cntk + 1
+        elif classname == 'mid':
+            cntm = cntm + 1
+    if cntk < 1 or (cntk + cntm) >= 5 or cntm >=2 :
+        invalid = True
+        return invalid
 
-    if len(imgs) < 1:
-        exit()
+    #得分检查, 大于70分能够基本保留valid，valid只删除了51个
+    invalid = True
+    for j in boxes:
+        score, classname = j["score"], j["class"]
+        if classname != 'kernel':
+            continue
+        if int(score*100) >= 60:
+            invalid = False
+            break
+    if invalid is True:
+        return invalid
 
-    net = load_net("yolov3-voc-predict.cfg".encode('utf-8'), "yolov3-voc.backup".encode('utf-8'), 0)
-    meta = load_meta("voc.data".encode('utf-8'))
+    #长宽检查
+    invalid = True
+    wh_threhold = 9
+    for j in boxes:
+        w, h, classname = j["w"], j["h"], j["class"]
+        if classname != 'kernel':
+            continue
+        if w > wh_threhold and h > wh_threhold:
+            invalid = False
+            break
+        if w < wh_threhold or h < wh_threhold:
+            invalid = True
 
-    for k in range(len(imgs)):
-        imgpath = imgs[k]
-        t1 = int(time.time()*1000)
-        r = detect(net, meta, imgpath.encode('utf-8'), thresh=0.2, hier_thresh=0.5, nms=0.45)
-        t2 = int(time.time()*1000)
-        #original_image = cv2.imread(imgpath)
-        print("%d/%d %d  %d" %(k, len(imgs), len(r), t2 - t1))
-        dic = {}
+    return invalid
 
-        for i in range(len(r)):
-            classname = str(r[i][0])
-            x1, y1 = int(r[i][2][0]-r[i][2][2]/2), int(r[i][2][1]-r[i][2][3]/2)
-            x2, y2 = int(r[i][2][0]+r[i][2][2]/2), int(r[i][2][1]+r[i][2][3]/2)
-            w, h = x2 - x1, y2 - y1
-            score = round(r[i][1], 2)
-            classname = str(r[i][0], encoding = "utf-8")
+def yolo_init(cfg, weights, metadata):
+    _net = load_net(cfg.encode('utf-8'), weights.encode('utf-8'), 0)
+    _meta = load_meta(metadata.encode('utf-8'))
+    return _net, _meta
 
-            key = str(i)
-            dic[key] = {}
-            dic[key]["x1"], dic[key]["y1"], dic[key]["x2"], dic[key]["y2"], \
-            dic[key]["score"], dic[key]["w"], dic[key]["h"], dic[key]["class"] = \
-            x1, y1, x2, y2, score, w, h, classname
-
-            #cv2.rectangle(original_image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
-            #cv2.putText(original_image, str(score), (int(x1), int(y1)), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 1)
-        #out_img = str(imgpath) + ".yolo.png"
-        #cv2.imwrite(out_img, original_image)
-        save_json(dic, imgpath + ".json")
+#if __name__ == "__main__":
+#    testdir="/yolov3/1211/invalid/"
+#    dir_or_files = os.listdir(testdir)
+#    imgs = []
+#    for i in dir_or_files:
+#        path1 = os.path.join(testdir, i)
+#        ext = os.path.splitext(path1)[1]
+#        ext = ext.lower()
+#        if not ext in ['.jpg', '.png', '.jpeg', '.bmp']:
+#            continue
+#
+#        imgs.append(path1)
+#
+#    if len(imgs) < 1:
+#        exit()
+#
+#    cfg, metadata = "names-data/yolov3-voc-predict.cfg", "names-data/voc.data"
+#    weights = "names-data/yolov3-voc_900.weights.kernel_mid.1213-3"
+#    net, meta = yolo_init(cfg, weights, metadata)
+#
+#    for k in range(len(imgs)):
+#        imgpath = imgs[k]
+#        t1 = int(time.time()*1000)
+#        r = detect(net, meta, imgpath.encode('utf-8'), thresh=0.5, hier_thresh=0.5, nms=0.45)
+#        t2 = int(time.time()*1000)
+#        #original_image = cv2.imread(imgpath)
+#        #print("%d/%d %d  %d" %(k, len(imgs), len(r), t2 - t1))
+#        dic = {"boxes": []}
+#
+#        for i in range(len(r)):
+#            classname = str(r[i][0])
+#            x1, y1 = int(r[i][2][0]-r[i][2][2]/2), int(r[i][2][1]-r[i][2][3]/2)
+#            x2, y2 = int(r[i][2][0]+r[i][2][2]/2), int(r[i][2][1]+r[i][2][3]/2)
+#            w, h, score, classname = x2 - x1, y2 - y1, round(r[i][1], 2), str(r[i][0], encoding = "utf-8")
+#            dic["boxes"].append({"class": classname, "score": score, "w": w, "h": h, "x1": x1, "y1": y1, "x2": x2, "y2": y2})
+#
+#        #去重　
+#        dic["boxes"] = _filter3(dic["boxes"])
+#        invalid = _filter2(dic["boxes"])
+#        if invalid is True:
+#            print(imgpath)
+#
+#            #cv2.rectangle(original_image, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
+#            #cv2.putText(original_image, str(score), (int(x1), int(y1)), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255), 1)
+#        #out_img = str(imgpath) + ".yolo.png"
+#        #cv2.imwrite(out_img, original_image)
+#        save_json(dic, imgpath + ".json")

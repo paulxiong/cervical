@@ -10,8 +10,9 @@ from sklearn.metrics import classification_report
 #from keras.utils.vis_utils import plot_model
 from SDK.worker import worker
 from SDK.const.const import wt, mt
-from SDK.utilslib.fileops import parse_imgid_xy_from_cellname
+from SDK.utilslib.fileops import parse_imgid_xy_from_cellname, get_file_lists
 import keras.backend.tensorflow_backend as KTF
+from yolov3.predict import yolo_init, detect, _filter2, _filter3
 
 # 自适应分配计算资源
 config = tf.ConfigProto()
@@ -33,6 +34,7 @@ class mala_predict(worker):
         self.mtype = mt.MALA.value
         self.modpath = ""
         self.filtermod = ""
+        self.filtermodyolo = ""
 
         self.BS = 128
         #totalTest_cross_domain = len(list(paths.list_images(config.TEST_PATH_CROSS_DOMAIN)))
@@ -280,6 +282,47 @@ class mala_predict(worker):
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
         return True, df_result
 
+    def _filter_yolo(self, result201):
+        cfg, metadata = "yolov3/yolov3-voc-predict.cfg", "yolov3/voc.data"
+        weights = "yolov3/yolov3-voc.backup"
+
+        if self.filtermodyolo != weights or self.self.yolo_net is None:
+            self.filtermodyolo = weights
+            self.yolo_net, self.yolo_meta = yolo_init(cfg, weights, metadata)
+
+        result = []
+        result.extend(result201)
+        files = get_file_lists(self.project_resize_predict_dir)
+        for f in files:
+            cellpath = f
+            predict_label = 100 #100未知细胞类型 200不是细胞
+            r = detect(self.net, self.meta, f.encode('utf-8'), thresh=0.5, hier_thresh=0.5, nms=0.45)
+            dic = {"boxes": []}
+            for i in range(len(r)):
+                classname = str(r[i][0])
+                x1, y1 = int(r[i][2][0]-r[i][2][2]/2), int(r[i][2][1]-r[i][2][3]/2)
+                x2, y2 = int(r[i][2][0]+r[i][2][2]/2), int(r[i][2][1]+r[i][2][3]/2)
+                w, h, score, classname = x2 - x1, y2 - y1, round(r[i][1], 2), str(r[i][0], encoding = "utf-8")
+                dic["boxes"].append({"class": classname, "score": score, "w": w, "h": h, "x1": x1, "y1": y1, "x2": x2, "y2": y2})
+            dic["boxes"] = _filter3(dic["boxes"])
+            invalid = _filter2(dic["boxes"])
+            if invalid is True:
+                predict_label = 200
+                os.remove(cellpath)
+                cellpath = os.path.join(self.project_predict_dir, f[0])
+
+           #已经按尺寸滤掉了,201
+           arr = os.path.split(f[0])
+           if arr[0] == "201":
+               predict_label = 201
+           _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+           imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
+
+           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
+        return True, df_result
+
     def _predict(self, df, remove_cnt_201, remove_cnt_200):
         self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
         #设置预测个数
@@ -341,7 +384,8 @@ class mala_predict(worker):
         self.log.info("根据像素尺寸删除不是细胞的图片总数%d" % len(result201))
 
         #删除不是细胞的图片
-        ret, df = self._filter(result201)
+        ret, df = self._filter_yolo(result201)
+        #ret, df = self._filter(result201)
         if ret is False:
             return False
 

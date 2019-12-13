@@ -1,5 +1,5 @@
 classes= 2
 train  = ./scripts/2012_train.txt
 valid  = ./scripts/2012_val.txt
-names =  ./voc.names
+names =  ./yolov3/voc.names
 backup = ./backup
