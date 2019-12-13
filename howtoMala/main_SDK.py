@@ -311,14 +311,14 @@ class mala_predict(worker):
                 os.remove(cellpath)
                 cellpath = os.path.join(self.project_predict_dir, f[0])
 
-           #已经按尺寸滤掉了,201
-           arr = os.path.split(f[0])
-           if arr[0] == "201":
-               predict_label = 201
-           _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
-           imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
+            #已经按尺寸滤掉了,201
+            arr = os.path.split(f[0])
+            if arr[0] == "201":
+                predict_label = 201
+            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+            result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
 
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
         return True, df_result

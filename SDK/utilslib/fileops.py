@@ -1,4 +1,4 @@
-import json
+import json, os
 
 #把json文件读到内存为dict
 def load_json_file(filepath):
