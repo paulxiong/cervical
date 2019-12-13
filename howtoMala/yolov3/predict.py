@@ -143,7 +143,7 @@ def save_json(info, savefile):
     return
 
 if __name__ == "__main__":
-    testdir="/yolov3/1211_gray/invalid/"
+    testdir="img/"
     dir_or_files = os.listdir(testdir)
     imgs = []
     for i in dir_or_files:
@@ -158,8 +158,8 @@ if __name__ == "__main__":
     if len(imgs) < 1:
         exit()
 
-    net = load_net("names-data/yolov3-voc-predict.cfg".encode('utf-8'), "names-data/yolov3-voc_1300.weights.kernel_mid.gray".encode('utf-8'), 0)
-    meta = load_meta("names-data/voc.data".encode('utf-8'))
+    net = load_net("yolov3-voc-predict.cfg".encode('utf-8'), "yolov3-voc.backup".encode('utf-8'), 0)
+    meta = load_meta("voc.data".encode('utf-8'))
 
     for k in range(len(imgs)):
         imgpath = imgs[k]
