@@ -426,3 +426,17 @@ bingli_N_cells_fit_1213
     └── valid(54567)
 
 ```
+### bingli_P2_cells_fit_1213（训练+测试数据——阳性病例）
+```
+链接：https://pan.baidu.com/s/1OfY3XrT6-lUYD52iF3G2Xw
+提取码：yrk8
+说明：2019年12月13日，基于目前数据cell_filter_data_1204，挑选其中全部valid数据，随机挑选部分invalid数据（保证样本数量均衡），按照‘人工筛选细胞的标准’人工筛选细胞
+目录结构：
+bingli_P2_cells_fit_1213
+├── test_data
+│   ├── invalid_test（1000）
+│   └── valid_test（1000）
+└── train_data
+    ├── invalid（42294）
+    └── valid（35359）
+```
