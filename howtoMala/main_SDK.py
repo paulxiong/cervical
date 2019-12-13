@@ -118,7 +118,8 @@ class mala_predict(worker):
             if img.shape[0] != img.shape[1]:
                 self.log.info("skip this image w != h: %s" % cellpath)
                 continue
-            img = cv2.resize(img, (RESIZE, RESIZE), interpolation=cv2.INTER_LINEAR)
+            if img.shape[0] != RESIZE:
+                img = cv2.resize(img, (RESIZE, RESIZE), interpolation=cv2.INTER_LINEAR)
 
             filepath, shotname, extension = get_filePath_fileName_fileExt(cellpath)
             cv2.imwrite(os.path.join(cellto_dir, shotname + extension), img)
@@ -286,7 +287,7 @@ class mala_predict(worker):
         cfg, metadata = "yolov3/yolov3-voc-predict.cfg", "yolov3/voc.data"
         weights = "yolov3/yolov3-voc.backup"
 
-        if self.filtermodyolo != weights or self.self.yolo_net is None:
+        if self.filtermodyolo != weights or self.yolo_net is None:
             self.filtermodyolo = weights
             self.yolo_net, self.yolo_meta = yolo_init(cfg, weights, metadata)
 
@@ -296,7 +297,7 @@ class mala_predict(worker):
         for f in files:
             cellpath = f
             predict_label = 100 #100未知细胞类型 200不是细胞
-            r = detect(self.net, self.meta, f.encode('utf-8'), thresh=0.5, hier_thresh=0.5, nms=0.45)
+            r = detect(self.yolo_net, self.yolo_meta, f.encode('utf-8'), thresh=0.5, hier_thresh=0.5, nms=0.45)
             dic = {"boxes": []}
             for i in range(len(r)):
                 classname = str(r[i][0])
@@ -306,19 +307,19 @@ class mala_predict(worker):
                 dic["boxes"].append({"class": classname, "score": score, "w": w, "h": h, "x1": x1, "y1": y1, "x2": x2, "y2": y2})
             dic["boxes"] = _filter3(dic["boxes"])
             invalid = _filter2(dic["boxes"])
+            arr = cellpath.split('/', -1)
             if invalid is True:
                 predict_label = 200
                 os.remove(cellpath)
-                cellpath = os.path.join(self.project_predict_dir, f[0])
+                cellpath = os.path.join(self.project_predict_dir, arr[len(arr) - 2], arr[len(arr) - 1])
 
             #已经按尺寸滤掉了,201
-            arr = os.path.split(f[0])
-            if arr[0] == "201":
+            if arr[len(arr) - 2] == "201":
                 predict_label = 201
             _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
             imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-            result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+            result.append([cellpath, predict_label, predict_label, 1, 1, x1, y1, x2, y2, imgid])
 
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
         return True, df_result
@@ -415,18 +416,22 @@ def worker_load(w):
     w.log.info("获得一个%s任务%d 工作目录%s" % (w_str, wid, wdir))
 
     ret = True
-    w.prepare(wid, wdir, w.wtype, w.mtype)
-    w.log.info("初始化%s文件目录完成" % w_str)
+    try:
+        w.prepare(wid, wdir, w.wtype, w.mtype)
+        w.log.info("初始化%s文件目录完成" % w_str)
 
-    w.projectinfo = w.load_info_json()
-    w.log.info("读取%s信息完成" % w_str)
+        w.projectinfo = w.load_info_json()
+        w.log.info("读取%s信息完成" % w_str)
 
-    w.log.info("开始%s" % w_str)
-    w.woker_percent(4, 60)
-    if w.wtype == wt.TRAIN.value:
-        ret = w.train()
-    elif w.wtype == wt.PREDICT.value:
-        ret = w.predict()
+        w.log.info("开始%s" % w_str)
+        w.woker_percent(4, 60)
+        if w.wtype == wt.TRAIN.value:
+            ret = w.train()
+        elif w.wtype == wt.PREDICT.value:
+            ret = w.predict()
+    except Exception as ex:
+        w.log.error(str(ex))
+        ret = False
     if ret == True:
         w.done()
         w.log.info("%s完成 %d 工作目录%s" % (w_str, wid, wdir))

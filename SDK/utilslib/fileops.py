@@ -24,13 +24,20 @@ def parse_imgid_xy_from_cellname(cellname):
 
 
 def get_file_lists(dirpath, suffix=['.png']):
-    dir_or_files = os.listdir(dirpath)
     imgs = []
-    for i in dir_or_files:
-        path1 = os.path.join(testdir, i)
-        ext = os.path.splitext(path1)[1]
-        ext = ext.lower()
-        if not ext in suffix:
+    dirs = os.listdir(dirpath)
+    for i in dirs:
+        path1 = os.path.join(dirpath, i)
+        if not os.path.isdir(path1):
             continue
-        imgs.append(path1)
+        dir_or_files = os.listdir(path1)
+        for j in dir_or_files:
+            path2 = os.path.join(path1, j)
+            if os.path.isdir(path2):
+                continue
+            ext = os.path.splitext(path2)[1]
+            ext = ext.lower()
+            if not ext in suffix:
+                continue
+            imgs.append(path2)
     return imgs

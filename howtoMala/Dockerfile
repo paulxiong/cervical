@@ -22,3 +22,5 @@ RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ADD main_SDK.py /tf/data/main_SDK.py
 ADD filter_model.h5 /tf/data/filter_model.h5
 ADD SDK /tf/data/SDK
+ADD libdarknet.so /tf/data/libdarknet.so
+ADD yolov3 /tf/data/yolov3
