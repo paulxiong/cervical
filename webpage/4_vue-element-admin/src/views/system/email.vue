@@ -7,6 +7,9 @@
       <el-tab-pane label="忘记密码邮件" name="password">
         <passwordEmail />
       </el-tab-pane>
+      <el-tab-pane label="邮件参数设置" name="setvariable">
+        <setvariableEmail />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -14,10 +17,11 @@
 <script>
 import registerEmail from './components/register-email'
 import passwordEmail from './components/password-email'
+import setvariableEmail from './components/setvariable-email'
 
 export default {
   name: 'EmailData',
-  components: { registerEmail, passwordEmail },
+  components: { registerEmail, passwordEmail, setvariableEmail },
   data() {
     return {
       activeName: 'register'

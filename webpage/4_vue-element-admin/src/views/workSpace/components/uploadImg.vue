@@ -12,6 +12,7 @@
       :before-upload="beforeUpload"
       :on-success="onSuccess"
       :auto-upload="false"
+      :http-request="uploadSuccess"
     >
       <i class="el-icon-upload" />
       <div class="el-upload__text">将多张/单张图片文件拖到此处</div>
@@ -88,6 +89,17 @@ export default {
         this.$message.error('只能上传图片格式')
       }
       return isPNG || isJPG || isJPEG
+    },
+    uploadSuccess(file) {
+      const formData = new FormData()
+      formData.append('file', file.file)
+      this.filesList = formData
+      this.fileName = file.file.name
+      return ({
+        APIUrl: APIUrl + '/api1/upload',
+        headers: { 'Authorization': getToken() },
+        data: this.filesList
+      })
     }
   }
 }
