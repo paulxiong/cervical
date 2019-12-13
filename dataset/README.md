@@ -411,3 +411,18 @@ cell_filter_data_1204
 ├── invalid_cells(39653)
 └── valid_cells(96102)
 ```
+### bingli_N_cells_fit_1213（训练+测试数据——阴性病例）
+```
+链接：https://pan.baidu.com/s/1uGrfcvGkmFngoXmqtTtvIw
+提取码：y5h4
+说明：2019年12月13日，基于目前所有阴性病例masrcnn切割结果（尺寸：100*100，RGB三通道），随机选出143000个细胞，按照‘人工筛选细胞的标准’人工筛选细胞
+目录结构：
+bingli_N_cells_fit_1213
+├── test_data
+│   ├── invalid_test(1000)
+│   └── valid_test(1000)
+└── train_data
+    ├── invalid(88433)
+    └── valid(54567)
+
+```
