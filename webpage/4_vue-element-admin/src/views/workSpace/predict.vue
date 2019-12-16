@@ -251,6 +251,10 @@ export default {
         {
           value: 200,
           label: '不是细胞'
+        },
+        {
+          value: 201,
+          label: '不是细胞2'
         }
       ],
       checkedOptions: [
@@ -371,9 +375,12 @@ export default {
           this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 51 : v.predict_type === 51)
           break
         case 2:
-          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 200 : v.predict_type === 200)
+          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 100 : v.predict_type === 100)
           break
         case 3:
+          this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 200 : v.predict_type === 200)
+          break
+        case 4:
           this.renderData = this.imgInfo.cells.filter(v => this.filterValue.filterChecked === 1 ? v.true_type === 201 : v.predict_type === 201)
           break
         default:
@@ -383,7 +390,6 @@ export default {
       this.renderLabel(this.renderData)
     },
     updatePredict(value) {
-      console.log(value)
       if (value.length === 1 && (value[0] === 50 || value[0] === 51)) {
         this.$alert('请选择到二级目录（细胞类型）')
         return
@@ -407,6 +413,8 @@ export default {
       this.select = v
     },
     changeFovImg(v, idx) {
+      localStorage.setItem('FOV_IMG', JSON.stringify(v))
+      localStorage.setItem('FOV_IMG_INDEX', idx)
       this.fov_img = v
       this.selectFov = idx
       this.getPredictResult2(v.id, 999, 0, this.filterValue.filterChecked)
@@ -464,7 +472,10 @@ export default {
         this.orgImgList = res.data.data.images
         this.total = res.data.data.total
         if (this.orgImgList.length) {
-          this.fov_img = this.orgImgList[0]
+          const fovImg = JSON.parse(localStorage.getItem('FOV_IMG'))
+          const fovImgIdx = localStorage.getItem('FOV_IMG_INDEX')
+          this.fov_img = fovImg.id ? fovImg : this.orgImgList[0]
+          this.selectFov = fovImgIdx
           this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
         } else {
           this.$alert('所选数据集为空', '提示', {
