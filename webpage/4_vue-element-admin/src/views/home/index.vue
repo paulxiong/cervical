@@ -3,10 +3,10 @@
     <panel-group />
 
     <div class="row-box flex">
-      <transaction-table style="width: 48%;" />
+      <medical-report style="width: 48%;" />
       <best-model style="width: 48%;" />
       <data-sets style="width: 48%; margin: 40px 0;" />
-      <medical-report style="width: 48%; margin: 40px 0;" />
+      <transaction-table style="width: 48%; margin: 40px 0;" />
     </div>
   </div>
 </template>
