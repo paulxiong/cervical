@@ -67,16 +67,23 @@ class mala_predict(worker):
 
     def _copy_train_cells(self, X, y, outdir):
         newX, newy = [], []
-        for i in range(len(X)):
+        total = len(X)
+        for i in range(total):
+            if i % 10000 == 0:
+                self.log.info("%d/%d 拷贝要用来预测的文件" % (i, total))
             cellpath_src, celltype = X[i], int(y[i])
             cells_type_dir = os.path.join(outdir, str(celltype))
             if not os.path.exists(cells_type_dir):
                 os.makedirs(cells_type_dir)
             if not os.path.exists(cellpath_src):
+                self.log.info("拷贝文件时文件缺失：%s" % cellpath_src)
                 continue
             _, shotname, extension = get_filePath_fileName_fileExt(cellpath_src)
             cellpath_dst = os.path.join(cells_type_dir, shotname + extension)
-            shutil.copyfile(cellpath_src, cellpath_dst)
+            ret = shutil.copyfile(cellpath_src, cellpath_dst)
+            if ret == "" or not os.path.exists(ret):
+                self.log.info("拷贝文件失败：%s" % cellpath_src)
+
             newX.append(cellpath_dst)
             newy.append(int(celltype))
         return newX, newy
@@ -233,6 +240,8 @@ class mala_predict(worker):
         return True
 
     def _filter(self, result201):
+        result = []
+        result.extend(result201)
         filter_mod='filter_model.h5'
         self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
 
@@ -261,27 +270,28 @@ class mala_predict(worker):
         for i in range(len(predIdxs)):
             classes_scores.append(float('%.2f'%(max(predIdxs[i]))))
         filenames = testGen_cross_domain.filenames
-        result = []
-        result.extend(result201)
         for f in zip(filenames, classes, classes_scores):
-           cellpath = os.path.join(self.project_resize_predict_dir, f[0])
-           predict_label = 100 #100未知细胞类型 200不是细胞
-           if int(f[1]) == 1:
-               predict_label = 200
-               os.remove(cellpath)
-               cellpath = os.path.join(self.project_predict_dir, f[0])
+            cellpath = os.path.join(self.project_resize_predict_dir, f[0])
+            predict_label = 100 #100未知细胞类型 200不是细胞
+            #只记录过滤掉的，有效细胞在预测时候记录
+            if int(f[1]) == 1:
+                predict_label = 200
+                os.remove(cellpath)
+                cellpath = os.path.join(self.project_predict_dir, f[0])
+            else:
+                continue
 
-           #已经按尺寸滤掉了,201
-           arr = os.path.split(f[0])
-           if arr[0] == "201":
-               predict_label = 201
-           _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
-           imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
+            #已经按尺寸滤掉了,201
+            arr = os.path.split(f[0])
+            if arr[0] == "201":
+                predict_label = 201
 
-           result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
-        return True, df_result
+            result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
+        #df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
+        return True, result
 
     def _filter_yolo(self, result201):
         cfg, metadata = "yolov3/yolov3-voc-predict.cfg", "yolov3/voc.data"
@@ -324,11 +334,10 @@ class mala_predict(worker):
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
         return True, df_result
 
-    def _predict(self, df, remove_cnt_201, remove_cnt_200):
+    def _predict(self, result201_200, remove_cnt_201, remove_cnt_200):
         self.projectinfo['parameter_resize'] = 64 #模型只支持64x64
         #设置预测个数
         self.BS = 128
-        self.totalTest_cross_domain = (df.shape[0] - remove_cnt_201 - remove_cnt_200)
 
         # initialize the testing generator for cross domain
         valAug = ImageDataGenerator(rescale=1 / 255.0)
@@ -339,6 +348,7 @@ class mala_predict(worker):
         	color_mode="rgb",
         	shuffle=False,
         	batch_size=self.BS)
+        self.totalTest_cross_domain = len(testGen_cross_domain.filenames)
 
         if self.modpath != self.projectinfo['modpath'] or self.model is None:
             self.modpath = self.projectinfo['modpath']
@@ -357,22 +367,20 @@ class mala_predict(worker):
             classes_scores.append(float('%.2f'%(max(predIdxs[i]))))
         filenames = testGen_cross_domain.filenames
         result = []
+        result.extend(result201_200)
         for f in zip(filenames, classes, classes_scores):
-           cellpath = os.path.join(self.project_resize_predict_dir, f[0])
-           #FIXME: mala这个模型暂时按照预测阴性/阳性来显示结果
-           predict_label = 51 #阳性
-           if int(f[1]) == 1:
-               predict_label = 50
-           _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
-           imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
+            cellpath = os.path.join(self.project_resize_predict_dir, f[0])
+            #FIXME: mala这个模型暂时按照预测阴性/阳性来显示结果
+            predict_label = 51 #阳性
+            if int(f[1]) == 1:
+                predict_label = 50
+            _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
+            imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-           tmp_df = df.loc[df['cellpath'] == cellpath]
-           if tmp_df is not None and  tmp_df["predict_label"] is not None and \
-              tmp_df["predict_label"].shape[0] > 0 and tmp_df["predict_label"].iloc[0] != 200 and \
-              tmp_df["predict_label"].iloc[0] != 201:
-               df.loc[df['cellpath'] == cellpath] = [cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid]
+            result.append([cellpath, predict_label, predict_label, 1, 1, x1, y1, x2, y2, imgid])
+        df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
 
-        return True, df
+        return True, df_result
 
     def predict(self):
         remove_cnt_201, remove_cnt_200 = 0, 0
@@ -385,20 +393,19 @@ class mala_predict(worker):
         self.log.info("根据像素尺寸删除不是细胞的图片总数%d" % len(result201))
 
         #删除不是细胞的图片
-        ret, df = self._filter_yolo(result201)
-        #ret, df = self._filter(result201)
+        #ret, df = self._filter_yolo(result201)
+        ret, result201_200 = self._filter(result201)
         if ret is False:
             return False
 
-        for predict_label, df1 in df.groupby(['predict_label']):
-            if predict_label == 200 or predict_label == "200" :
-                remove_cnt_200 = df1.shape[0]
-                self.log.info("删除%s 个数　%d" % ( str(predict_label), df1.shape[0] ))
+        remove_cnt_200 = len(result201_200) - remove_cnt_201
+        self.log.info("删除(%s) 的个数　%d" % ( "200", remove_cnt_200 ))
 
         #预测
-        ret, df = self._predict(df, remove_cnt_201, remove_cnt_200)
+        ret, df = self._predict(result201_200, remove_cnt_201, remove_cnt_200)
         if ret is False:
             return False
+        self.log.info("预测结束开始统计预测结果")
 
         #预测结果统计
         ret = self.result_predict(df)
