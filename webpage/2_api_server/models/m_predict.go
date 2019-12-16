@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -52,19 +53,31 @@ func FindPredictbyID(id int64) (*Predict, error) {
 
 // CreatePredicts 新建细胞预测结果，一个很长的数组
 func CreatePredicts(predicts []*Predict, pid int64) (e error) {
+	logger.Info.Println(len(predicts), time.Now())
 	// 删除当前项目的所有预测结果
 	db.Where("pid=?", pid).Delete(Predict{})
-
-	_db := db.Begin()
+	sql1 := "INSERT  INTO `c_predict` (`imgid`,`pid`,`x1`,`y1`,`x2`,`y2`,`cellpath`,`predict_score`,`predict_type`,`predict_p1n0`,`true_type`,`true_p1n0`,`vid`,`status`) VALUES "
+	sql := sql1
 	// 新增预测结果
-	for _, v := range predicts {
-		ret2 := _db.Create(&v)
-		if ret2.Error != nil {
-			logger.Info.Println(ret2.Error)
+	_db := db.Begin()
+	for index, v := range predicts {
+		if index > 0 && index%20000 == 0 {
+			sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d);",
+				v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
+				v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
+			_db.Exec(sql)
+			sql = sql1
+		} else {
+			sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d),",
+				v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
+				v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
 		}
 	}
+	if len(sql) > len(sql1) {
+		_db.Exec(sql)
+	}
 	_db.Commit()
-
+	logger.Info.Println(time.Now(), len(sql))
 	return nil
 }
 

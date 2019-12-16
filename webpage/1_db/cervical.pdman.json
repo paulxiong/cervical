@@ -2427,6 +2427,13 @@
               "defaultValue": "72"
             },
             {
+              "name": "avatar_url",
+              "type": "MiddleString",
+              "remark": "http开头的字符串数组",
+              "chnname": "用户默认头像",
+              "defaultValue": "\"\""
+            },
+            {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",

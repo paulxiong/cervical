@@ -11,6 +11,10 @@ import (
 
 // NewDir 递归创建目录
 func NewDir(dirname string) error {
+	ret, _ := PathExists(dirname)
+	if ret == true {
+		return nil
+	}
 	err := os.MkdirAll(dirname, os.ModePerm)
 	return err
 }
