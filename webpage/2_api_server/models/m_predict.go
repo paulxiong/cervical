@@ -61,7 +61,7 @@ func CreatePredicts(predicts []*Predict, pid int64) (e error) {
 	// 新增预测结果
 	_db := db.Begin()
 	for index, v := range predicts {
-		if index > 0 && index%20000 == 0 {
+		if index > 0 && index%5000 == 0 {
 			sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d);",
 				v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
 				v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
