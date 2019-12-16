@@ -11,14 +11,11 @@
         width="200"
       />
       <el-table-column align="center" prop="variablevalue" width="720" label="变量值">
-        <el-select v-model="value" placeholder="请选择">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+        <el-input
+          v-model="input"
+          placeholder="请输入内容"
+          clearable
+        />
       </el-table-column>
       <el-table-column
         align="center"
@@ -40,7 +37,8 @@ export default {
         variablename: '{$site.mail_type}'
       }, {
         variabletitle: 'SMTP服务器',
-        variablename: '{$site.mail_smtp_host}'
+        variablename: '{$site.mail_smtp_host}',
+        variablevalue: 'xundong.qq.com'
       }, {
         variabletitle: 'SMTP端口',
         variablename: '{$site.mail_smtp_port}'
