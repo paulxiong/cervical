@@ -307,7 +307,7 @@ export default {
       ],
       filterValue: {
         'filterChecked': 0, // 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
-        'filterCellsType': 4
+        'filterCellsType': 1
       },
       report: '',
       imgCellsInfo: {},
