@@ -188,3 +188,66 @@ func GetPredictByImgID(pid int64, iid int64) (p []Predict, e error) {
 	}
 	return _p, ret.Error
 }
+
+type _predictCount struct {
+	ID      int64  `json:"id" `      //ID
+	Name    string `json:"name"`     //用户名
+	Image   string `json:"image"`    //用户头像的URL
+	Status0 int64  `json:"status0" ` //分配给该用户，但是没有审核的细胞个数
+	Status1 int64  `json:"status１" ` //用户已审核的细胞个数
+}
+
+// PredictCount 用户审核的统计
+type PredictCount struct {
+	UserInfo []_predictCount `json:"user"` //用户标注信息
+}
+
+// GetPredictCount 统计医生审核的总次数
+func GetPredictCount() PredictCount {
+	type res1 struct {
+		Vid int64
+	}
+	type res2 struct {
+		Total int64
+	}
+
+	// 检查都有谁做过审核
+	vids := make([]res1, 0)
+	selector1 := "SELECT vid FROM c_predict GROUP BY vid;"
+	ret := db.Raw(selector1).Scan(&vids)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	// 依次统计出审核人员的信息,0 未审核 1 已审核 2 移除 3 管理员确认
+	pcnt := PredictCount{}
+	pcnt.UserInfo = make([]_predictCount, 0)
+	for index, v := range vids {
+		var total0 res2
+		var total1 res2
+		var cnt _predictCount
+		selector1 := "SELECT count(1) AS total FROM c_predict WHERE vid=? AND status=?;"
+		ret := db.Raw(selector1, v.Vid, 0).Scan(&total0)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		selector1 = "SELECT count(1) AS total FROM c_predict WHERE vid=? AND status=?;"
+		ret = db.Raw(selector1, v.Vid, 1).Scan(&total1)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		u, err := FinduserbyID(v.Vid)
+		if err != nil {
+			cnt.ID = 0
+			cnt.Name = fmt.Sprintf("系统%d", index)
+			cnt.Image = ""
+		} else {
+			cnt.ID = u.ID
+			cnt.Name = u.Name
+			cnt.Image = u.Image
+		}
+		cnt.Status0 = total0.Total
+		cnt.Status1 = total1.Total
+		pcnt.UserInfo = append(pcnt.UserInfo, cnt)
+	}
+	return pcnt
+}

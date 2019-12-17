@@ -124,6 +124,7 @@ func Router() *gin.Engine {
 		api1.GET("/datasetimgs", ctr.GetPredictImges)
 		api1.POST("/updatepredict", ctr.UpdatePredict)
 		api1.POST("/reviewpredict", ctr.ReviewPredict)
+		api1.GET("/verificationcnt", ctr.GetPredictCnt)
 
 		// 概览
 		api1.GET("/overview", ctr.GetOverview)

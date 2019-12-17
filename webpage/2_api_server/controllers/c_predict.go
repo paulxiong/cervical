@@ -275,3 +275,19 @@ func GetPredictStatistics(c *gin.Context) {
 	res.ResSucceedStruct(c, ps)
 	return
 }
+
+// GetPredictCnt 统计医生审核的总次数
+// @Summary 统计医生审核的总次数
+// @Description 统计医生审核的总次数
+// @Description status：
+// @tags API1 医疗报告（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} models.PredictCount
+// @Router /api1/verificationcnt [get]
+func GetPredictCnt(c *gin.Context) {
+	pcnt := models.GetPredictCount()
+	res.ResSucceedStruct(c, pcnt)
+	return
+}

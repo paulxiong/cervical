@@ -2093,6 +2093,14 @@
                 "imgid",
                 "status"
               ]
+            },
+            {
+              "name": "verify_id",
+              "isUnique": false,
+              "fields": [
+                "vid",
+                "status"
+              ]
             }
           ],
           "headers": [
