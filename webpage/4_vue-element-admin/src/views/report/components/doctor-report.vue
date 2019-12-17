@@ -81,6 +81,12 @@
             <el-form-item label="结束时间">
               <span>{{ props.row.endtime }}</span>
             </el-form-item>
+            <el-form-item label="细胞类型">
+              <el-table :data="props.row.cellstype" stripe border style="width: 100%">
+                <el-table-column prop="type" width="300" label="类型" />
+                <el-table-column prop="total" label="个数" />
+              </el-table>
+            </el-form-item>
           </el-form>
         </template>
       </el-table-column>
@@ -143,7 +149,7 @@
 
 <script>
 import { getListprojects } from '@/api/cervical'
-import { taskStatus, createdBy, taskType, projectType } from '@/const/const'
+import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
 export default {
@@ -156,6 +162,7 @@ export default {
       currentPageSize: 10,
       loading: false,
       total: undefined,
+      listProjects: {},
       listQuery: {
         desc: undefined,
         type: undefined
@@ -180,6 +187,140 @@ export default {
       ]
     }
   },
+  cellsOptions: [
+    {
+      value: 50,
+      label: '阴性',
+      children: [
+        {
+          value: 1,
+          label: 'Norm正常细胞'
+        },
+        {
+          value: 5,
+          label: 'NILM未见上皮内病变'
+        },
+        {
+          value: 12,
+          label: 'T滴虫'
+        },
+        {
+          value: 13,
+          label: 'M霉菌'
+        },
+        {
+          value: 14,
+          label: 'HSV疱疹'
+        },
+        {
+          value: 15,
+          label: 'X1线索细胞'
+        }
+      ]
+    },
+    {
+      value: 51,
+      label: '阳性',
+      children: [
+        {
+          value: 2,
+          label: 'LSIL鳞状上皮细胞低度病变'
+        },
+        {
+          value: 3,
+          label: 'HSIL鳞状上皮细胞高度病变'
+        },
+        {
+          value: 4,
+          label: 'HPV感染'
+        },
+        {
+          value: 6,
+          label: 'SCC鳞状上皮细胞癌'
+        },
+        {
+          value: 7,
+          label: 'ASCUS不典型鳞状细胞低'
+        },
+        {
+          value: 8,
+          label: 'ASCH不典型鳞状细胞高'
+        },
+        {
+          value: 9,
+          label: 'AGC不典型腺细胞'
+        },
+        {
+          value: 10,
+          label: 'AIS颈管原位腺癌'
+        },
+        {
+          value: 11,
+          label: 'ADC腺癌'
+        }
+      ]
+    },
+    {
+      value: 100,
+      label: '未知类型'
+    },
+    {
+      value: 200,
+      label: '不是细胞'
+    },
+    {
+      value: 201,
+      label: '不是细胞2'
+    }
+  ],
+  checkedOptions: [
+    {
+      value: 0,
+      label: '未审核'
+    },
+    {
+      value: 1,
+      label: '已审核'
+    },
+    {
+      value: 2,
+      label: '移除'
+    },
+    {
+      value: 3,
+      label: '管理员已确认'
+    },
+    {
+      value: 4,
+      label: '全部'
+    }
+  ],
+  CellsTypeOptions: [
+    {
+      value: 0,
+      label: '阴性'
+    },
+    {
+      value: 1,
+      label: '阳性'
+    },
+    {
+      value: 2,
+      label: '未知类型'
+    },
+    {
+      value: 3,
+      label: '不是细胞'
+    },
+    {
+      value: 4,
+      label: '不是细胞2'
+    },
+    {
+      value: 5,
+      label: '全部'
+    }
+  ],
   created() {
     this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 5, 1)
   },
@@ -216,6 +357,11 @@ export default {
           v.status = taskStatus[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
           v.projectType = projectType[v.type]
+          if (v.cellstype.length) {
+            v.cellstype.map(cells => {
+              cells['type'] = cellsType[cells.type]
+            })
+          }
         })
         this.reportlist = res.data.data.projects
         this.total = res.data.data.total
