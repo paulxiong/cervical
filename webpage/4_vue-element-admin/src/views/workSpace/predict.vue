@@ -295,6 +295,7 @@ export default {
         {
           value: 3,
           label: '不是细胞'
+        },
         {
           value: 4,
           label: '全部'
