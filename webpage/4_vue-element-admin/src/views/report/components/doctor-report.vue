@@ -89,9 +89,27 @@
       <el-table-column label="数据集 ID" prop="did" />
       <el-table-column label="创建者">
         <template slot-scope="scope">
-          <el-tooltip :content="scope.row.username" placement="right">
-            <el-image :src="scope.row.userimg" style="width:36px;height:36px;border-radius:7px;" />
+          <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
+            <el-image
+              style="width:36px;height:36px;border-radius:7px;"
+              :src="scope.row.userimg"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" />
+              </div>
+            </el-image>
           </el-tooltip>
+          <el-image
+            v-else
+            style="width:36px;height:36px;border-radius:7px;"
+            :src="scope.row.userimg"
+            lazy
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
         </template>
       </el-table-column>
       <el-table-column label="类型" prop="projectType" />
