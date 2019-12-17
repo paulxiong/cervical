@@ -12,7 +12,6 @@
       :before-upload="beforeUpload"
       :on-success="onSuccess"
       :auto-upload="false"
-      :http-request="uploadSuccess"
     >
       <i class="el-icon-upload" />
       <div class="el-upload__text">将多张/单张图片文件拖到此处</div>
@@ -69,6 +68,7 @@ export default {
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
       this.$nextTick(() => {
         this.$refs.upload.submit()
+        console.log(this.APIUrl)
       })
     },
     onSuccess(response, file, fileList) {
