@@ -31,7 +31,7 @@
       <el-table-column prop="url" label="访问域名" width="260" />
       <el-table-column label="错误日志">
         <template slot-scope="scope">
-          <p>{{ scope.row.stack }}</p>
+          <p style="white-space: pre-wrap;" v-html="scope.row.stack" />
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
@@ -208,6 +208,10 @@ export default {
           v.stack = JSON.parse(v.errlog)[0].stack || ''
           v.url = JSON.parse(v.errlog)[0].url || ''
           v.version = JSON.parse(v.errlog)[0].version || ''
+
+          if (v.stack) {
+            v.stack = v.stack.replace(/\n/g, ' <br/>')
+          }
         })
         this.errLog = res.data.data.Logs
         this.total = res.data.data.total
