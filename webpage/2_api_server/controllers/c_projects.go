@@ -142,38 +142,9 @@ func GetTrainResult(c *gin.Context) {
 	return
 }
 
-// GetPredictResult 根据传递来的项目ID，返回预测的结果
-// @Summary 根据传递来的项目ID，返回预测的结果
-// @Description 创建预测任务
-// @Description status：
-// @Description 200 创建
-// @tags API1 项目（需要认证）
-// @Accept  json
-// @Produce json
-// @Security ApiKeyAuth
-// @Param id query string false "id, default 0, 项目ID"
-// @Param limit query string false "limit, default 500, 细胞图个数上限制"
-// @Param skip query string false "skip, default 0, 细胞图跳过的个数"
-// @Param correct query string false "correct, default 1, 0--预测错误 1--预测正确"
-// @Success 200 {object} function.PredictInfo2
-// @Router /api1/predictresult [get]
-func GetPredictResult(c *gin.Context) {
-	idStr := c.DefaultQuery("id", "0")
-	id, _ := strconv.ParseInt(idStr, 10, 64)
-	limitStr := c.DefaultQuery("limit", "500")
-	skipStr := c.DefaultQuery("skip", "0")
-	correctStr := c.DefaultQuery("correct", "1")
-	limit, _ := strconv.ParseInt(limitStr, 10, 64)
-	skip, _ := strconv.ParseInt(skipStr, 10, 64)
-	correc, _ := strconv.ParseInt(correctStr, 10, 64)
-
-	dinfo, err := models.GetOneProjectByID(int(id))
-	if err != nil {
-		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
-		return
-	}
-
-	j := f.LoadPredictJSONFile(dinfo.Dir)
+// oneProjectPredict 按参数获得一个项目的预测结果
+func oneProjectPredict(pinfo models.Project, limit int64, skip int64, correc int64) *f.PredictInfo2 {
+	j := f.LoadPredictJSONFile(pinfo.Dir)
 	j.CellsTotal = len(j.Cells)
 	if j.CellsTotal > int(limit) {
 		var CellsCrop []f.PredictCell
@@ -200,7 +171,87 @@ func GetPredictResult(c *gin.Context) {
 		j.CorrecTotal = j.CorrecTotal + v.Correct
 		j.CorrecTotal = j.CorrecTotal + (v.Total - v.Correct)
 	}
+	return &j
+}
 
+// GetPredictResult 根据传递来的项目ID，返回预测的结果
+// @Summary 根据传递来的项目ID，返回预测的结果
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id query string false "id, default 0, 项目ID"
+// @Param limit query string false "limit, default 500, 细胞图个数上限制"
+// @Param skip query string false "skip, default 0, 细胞图跳过的个数"
+// @Param correct query string false "correct, default 1, 0--预测错误 1--预测正确"
+// @Success 200 {object} function.PredictInfo2
+// @Router /api1/predictresult [get]
+func GetPredictResult(c *gin.Context) {
+	idStr := c.DefaultQuery("id", "0")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
+	limitStr := c.DefaultQuery("limit", "500")
+	skipStr := c.DefaultQuery("skip", "0")
+	correctStr := c.DefaultQuery("correct", "1")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	correc, _ := strconv.ParseInt(correctStr, 10, 64)
+
+	pinfo, err := models.GetOneProjectByID(int(id))
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
+		return
+	}
+
+	j := oneProjectPredict(pinfo, limit, skip, correc)
 	res.ResSucceedStruct(c, j)
+	return
+}
+
+type allpredictresult struct {
+	Projects []*f.PredictInfo2 `json:"projects"` //项目信息数组
+}
+
+// GetAllPredictResult 返回所有预测完毕项目的细胞个数统计结果
+// @Summary 返回所有预测完毕项目的细胞个数统计结果
+// @Description 创建预测任务
+// @Description status：
+// @Description 200 创建
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 500, 单次获得项目个数上限制"
+// @Param skip query string false "skip, default 0, 项目跳过的个数"
+// @Param status query string false "status, default 100, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100 全部 101 送去审核以及核完成的预测结果"
+// @Param order query string false "order, default 1, 1倒序，0顺序，顺序是指创建时间"
+// @Success 200 {object} function.PredictInfo2
+// @Router /api1/allpredictresult [get]
+func GetAllPredictResult(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "500")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	orderStr := c.DefaultQuery("order", "1")
+	statusStr := c.DefaultQuery("status", "100")
+	_order, _ := strconv.ParseInt(orderStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
+
+	_, p, err := models.ListProject(int(limit), int(skip), int(_order), int(status))
+	if err != nil {
+		logger.Info.Println(err)
+	}
+
+	allp := allpredictresult{}
+	allp.Projects = make([]*f.PredictInfo2, 0)
+	for _, v := range p {
+		j := oneProjectPredict(v, 0, 0, 1)
+		logger.Info.Println(j.PRsult)
+		allp.Projects = append(allp.Projects, j)
+	}
+
+	res.ResSucceedStruct(c, allp)
 	return
 }
