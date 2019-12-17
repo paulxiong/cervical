@@ -28,10 +28,10 @@
       <el-table-column prop="operationlog.name" label="用户" width="150" />
       <el-table-column prop="created_time" label="操作时间" width="200" />
       <el-table-column prop="version" label="版本" width="100" />
-      <el-table-column prop="url" label="访问域名" width="260" />
+      <el-table-column prop="url" label="访问域名" width="340" />
       <el-table-column label="错误日志">
         <template slot-scope="scope">
-          <p style="white-space: pre-wrap;" v-html="scope.row.stack" />
+          <p>{{ scope.row.err }}</p>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
@@ -208,10 +208,6 @@ export default {
           v.stack = JSON.parse(v.errlog)[0].stack || ''
           v.url = JSON.parse(v.errlog)[0].url || ''
           v.version = JSON.parse(v.errlog)[0].version || ''
-
-          if (v.stack) {
-            v.stack = v.stack.replace(/\n/g, ' <br/>')
-          }
         })
         this.errLog = res.data.data.Logs
         this.total = res.data.data.total

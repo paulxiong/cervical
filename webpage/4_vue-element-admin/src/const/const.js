@@ -63,7 +63,6 @@ export const cellsType = {
   51: '51 阳性细胞 P',
   100: '100 未知类型',
   200: '200 不是细胞',
-  201: '201 不是细胞2'
 }
 
 export const projectType = {
