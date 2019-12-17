@@ -61,20 +61,21 @@ func CreatePredicts(predicts []*Predict, pid int64) (e error) {
 	// 新增预测结果
 	_db := db.Begin()
 	for index, v := range predicts {
-		if index > 0 && index%5000 == 0 {
-			sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d);",
-				v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
-				v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
-			_db.Exec(sql)
+		sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,\"%s\",%d,%d,%d,%d,%d,%d,%d)",
+			v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
+			v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
+
+		if index > 0 && index%5000 == 0 || index == len(predicts)-1 {
+			sql += ";"
+			ret := _db.Exec(sql)
+			if ret.Error != nil {
+				logger.Info.Println(ret.Error)
+				logger.Info.Println(sql)
+			}
 			sql = sql1
 		} else {
-			sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%s,%d,%d,%d,%d,%d,%d,%d),",
-				v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
-				v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
+			sql += ","
 		}
-	}
-	if len(sql) > len(sql1) {
-		_db.Exec(sql)
 	}
 	_db.Commit()
 	logger.Info.Println(time.Now(), len(sql))
