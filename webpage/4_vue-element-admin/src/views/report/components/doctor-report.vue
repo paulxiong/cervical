@@ -45,6 +45,9 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
+            <el-form-item label="病例预测结果">
+              <span>{{ props.row.predictType }}</span>
+            </el-form-item>
             <el-form-item label="工作目录">
               <span>{{ props.row.dir }}</span>
             </el-form-item>
@@ -343,6 +346,23 @@ export default {
         path: `/report/details?pid=${val.id}&did=${val.did}&type=${val.type}&report=doctor`
       })
     },
+    // 判断当前病例的阴性阳性
+    PNJudgement(cellstotal, posativetotal) {
+      let positiveRate = 0
+      let predictType = '未知'
+      if (cellstotal > 0 && posativetotal > 0) {
+        positiveRate = posativetotal * 100 / cellstotal
+      }
+      console.log(positiveRate)
+      if (positiveRate === 0) {
+        predictType = '未知'
+      } else if (positiveRate <= 5) {
+        predictType = '阴性'
+      } else if (positiveRate > 5) {
+        predictType = '阳性'
+      }
+      return predictType
+    },
     getListreport(limit, skip, status, order) {
       this.loading = true
       // status 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成 100 全部 101 送去审核以及核完成的预测结果
@@ -357,11 +377,20 @@ export default {
           v.status = taskStatus[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
           v.projectType = projectType[v.type]
+          v.cellstotal = 0
+          v.posativetotal = 0
           if (v.cellstype.length) {
             v.cellstype.map(cells => {
+              if (cells.type === 50 || cells.type === 51) {
+                v.cellstotal += cells.total
+              }
+              if (cells.type === 51) {
+                v.posativetotal += cells.total
+              }
               cells['type'] = cellsType[cells.type]
             })
           }
+          v.predictType = this.PNJudgement(v.cellstotal, v.posativetotal)
         })
         this.reportlist = res.data.data.projects
         this.total = res.data.data.total
@@ -377,8 +406,6 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  .filter-box {
-  }
   .tools {
     background: #fff;
     justify-content: space-around;
