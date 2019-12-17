@@ -12,7 +12,7 @@ from SDK.worker import worker
 from SDK.const.const import wt, mt
 from SDK.utilslib.fileops import parse_imgid_xy_from_cellname, get_file_lists
 import keras.backend.tensorflow_backend as KTF
-from yolov3.predict import yolo_init, detect, _filter2, _filter3
+#from yolov3.predict import yolo_init, detect, _filter2, _filter3
 
 # 自适应分配计算资源
 config = tf.ConfigProto()
