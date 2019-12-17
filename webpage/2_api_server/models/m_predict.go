@@ -118,7 +118,7 @@ func ListPredict(limit int, skip int, pid int, imgid int, status int) (totalNum 
 }
 
 // UpdatePredict 更新审核信息
-func UpdatePredict(id int64, trueType int) (e error) {
+func UpdatePredict(id int64, trueType int, userid int64) (e error) {
 	_, err := FindPredictbyID(id)
 	if err != nil {
 		return err
@@ -131,7 +131,11 @@ func UpdatePredict(id int64, trueType int) (e error) {
 	// 状态 0 未审核 1 已审核 2 移除 3 管理员确认
 	var status int = 1
 
-	ret := db.Model(&Predict{}).Where("id=?", id).Updates(map[string]interface{}{"true_type": trueType, "true_p1n0": trueP1n0, "status": status})
+	ret := db.Model(&Predict{}).Where("id=?", id).Updates(map[string]interface{}{
+		"true_type": trueType,
+		"true_p1n0": trueP1n0,
+		"status":    status,
+		"vid":       userid})
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

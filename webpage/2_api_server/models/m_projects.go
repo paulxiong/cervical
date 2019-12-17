@@ -1,34 +1,57 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/jinzhu/gorm"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
+	"github.com/pkg/errors"
 )
+
+// ProjectCellstype 预测的细胞的个数统计
+type ProjectCellstype struct {
+	Type  int `json:"type"      example:"1"`  //细胞类型
+	Total int `json:"total"     example:"35"` //细胞个数
+}
+
+//cellstype2String string数组转字符串
+func cellstype2String(arr *[]ProjectCellstype) (string, error) {
+	bs, err := json.Marshal(arr)
+	return string(bs), errors.WithStack(err)
+}
+
+//string2cellstype 字符串转string数组
+func string2cellstype(str string) ([]ProjectCellstype, error) {
+	var arr []ProjectCellstype
+	err := json.Unmarshal([]byte(str), &arr)
+	return arr, errors.WithStack(err)
+}
 
 // Project 数据集的信息
 type Project struct {
-	ID              int64     `json:"id"         gorm:"column:id" example:"7"`         //ID
-	DID             int64     `json:"did"        gorm:"column:did"`                    //数据集的id
-	Desc            string    `json:"desc"       gorm:"column:description"`            //描述
-	Dir             string    `json:"dir"        gorm:"column:dir"`                    //项目工作目录
-	Status          int       `json:"status"     gorm:"column:status"`                 //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
-	Type            int       `json:"type"       gorm:"column:type"`                   //项目类型 0 未知 1 训练 2 预测
-	StartTime       time.Time `json:"starttime"  gorm:"column:start_time"`             //开始处理数据时间
-	EndTime         time.Time `json:"endtime"    gorm:"column:end_time"`               //处理数据结束时间
-	Percent         int       `json:"percent"    gorm:"column:percent"`                //处理数据的进度
-	ETA             int       `json:"ETA"        gorm:"column:ETA"`                    //预估还要多长时间结束,单位是秒
-	UserName        string    `json:"username"   gorm:"-"`                             //创建者名字
-	UserImg         string    `json:"userimg"    gorm:"-"`                             //创建者头像
-	CreatedBy       int64     `json:"created_by" gorm:"column:created_by"`             //创建者
-	CreatedAt       time.Time `json:"created_at" gorm:"column:created_at"`             //创建时间
-	UpdatedAt       time.Time `json:"updated_at" gorm:"column:updated_at"`             //更新时间
-	ParameterTime   int       `json:"parameter_time"   gorm:"column:parameter_time"`   //训练使用的最长时间
-	ParameterResize int       `json:"parameter_resize" gorm:"column:parameter_resize"` //训练之前统一的尺寸
-	ParameterMID    int       `json:"parameter_mid"    gorm:"column:parameter_mid"`    //预测使用的模型的id,只有预测时候需要
-	ParameterMType  int       `json:"parameter_mtype"  gorm:"column:parameter_mtype"`  //模型的类型,不是前端传递,创建项目时候根据parameter_mid得到
-	ParameterType   int       `json:"parameter_type"   gorm:"column:parameter_type"`   //预测方式,0没标注的图1有标注的图
+	ID              int64              `json:"id"         gorm:"column:id" example:"7"`         //ID
+	DID             int64              `json:"did"        gorm:"column:did"`                    //数据集的id
+	Desc            string             `json:"desc"       gorm:"column:description"`            //描述
+	Dir             string             `json:"dir"        gorm:"column:dir"`                    //项目工作目录
+	Status          int                `json:"status"     gorm:"column:status"`                 //状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
+	Type            int                `json:"type"       gorm:"column:type"`                   //项目类型 0 未知 1 训练 2 预测
+	StartTime       time.Time          `json:"starttime"  gorm:"column:start_time"`             //开始处理数据时间
+	EndTime         time.Time          `json:"endtime"    gorm:"column:end_time"`               //处理数据结束时间
+	Percent         int                `json:"percent"    gorm:"column:percent"`                //处理数据的进度
+	ETA             int                `json:"ETA"        gorm:"column:ETA"`                    //预估还要多长时间结束,单位是秒
+	UserName        string             `json:"username"   gorm:"-"`                             //创建者名字
+	UserImg         string             `json:"userimg"    gorm:"-"`                             //创建者头像
+	CreatedBy       int64              `json:"created_by" gorm:"column:created_by"`             //创建者
+	CreatedAt       time.Time          `json:"created_at" gorm:"column:created_at"`             //创建时间
+	UpdatedAt       time.Time          `json:"updated_at" gorm:"column:updated_at"`             //更新时间
+	ParameterTime   int                `json:"parameter_time"   gorm:"column:parameter_time"`   //训练使用的最长时间
+	ParameterResize int                `json:"parameter_resize" gorm:"column:parameter_resize"` //训练之前统一的尺寸
+	ParameterMID    int                `json:"parameter_mid"    gorm:"column:parameter_mid"`    //预测使用的模型的id,只有预测时候需要
+	ParameterMType  int                `json:"parameter_mtype"  gorm:"column:parameter_mtype"`  //模型的类型,不是前端传递,创建项目时候根据parameter_mid得到
+	ParameterType   int                `json:"parameter_type"   gorm:"column:parameter_type"`   //预测方式,0没标注的图1有标注的图
+	CellsType1      string             `json:"-"                gorm:"column:cellstype"`        //预测完之后的细胞类型统计
+	CellsType2      []ProjectCellstype `json:"cellstype"        gorm:"-"`                       //预测完之后的细胞类型统计
 }
 
 // BeforeCreate insert 之前的hook
@@ -51,7 +74,7 @@ func (p *Project) BeforeCreate(scope *gorm.Scope) error {
 	} else if p.Type == 1 {
 		p.ParameterMType = 5 //0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
 	}
-
+	p.CellsType1 = "[]"
 	return nil
 }
 
@@ -61,6 +84,12 @@ func (p *Project) AfterFind(scope *gorm.Scope) error {
 		u, _ := FinduserbyID(p.CreatedBy)
 		p.UserName = u.Name
 		p.UserImg = u.Image
+	}
+	if p.CellsType1 != "" {
+		cells, err := string2cellstype(p.CellsType1)
+		if err == nil {
+			p.CellsType2 = cells
+		}
 	}
 	return nil
 }
@@ -102,7 +131,7 @@ func GetOneProjectToProcess(status int, _type int, mtype int) (p Project, e erro
 	return _p, ret2.Error
 }
 
-// UpdateProjectStatus 更新数据集的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
+// UpdateProjectStatus 更新项目的状态, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
 func UpdateProjectStatus(pid int64, status int) (e error) {
 	p := Project{}
 	ret2 := db.Model(&p).Where("id=?", pid).First(&p)
@@ -117,7 +146,24 @@ func UpdateProjectStatus(pid int64, status int) (e error) {
 	}
 	p.Status = status
 
-	ret := db.Model(&p).Where("id=?", pid).Updates(p)
+	ret := db.Model(&p).Where("id=?", pid).Updates(map[string]interface{}{
+		"starttime": p.StartTime,
+		"endtime":   p.EndTime,
+		"status":    p.Status})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}
+
+// UpdateProjectCellsType 更新项目的预测细胞类型统计
+func UpdateProjectCellsType(pid int64, cellstype []ProjectCellstype) (e error) {
+	cellstypestring, err := cellstype2String(&cellstype)
+	if err != nil {
+		return err
+	}
+
+	ret := db.Model(&Project{}).Where("id=?", pid).Updates(map[string]interface{}{"cellstype": cellstypestring})
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

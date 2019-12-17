@@ -248,7 +248,6 @@ func GetAllPredictResult(c *gin.Context) {
 	allp.Projects = make([]*f.PredictInfo2, 0)
 	for _, v := range p {
 		j := oneProjectPredict(v, 0, 0, 1)
-		logger.Info.Println(j.PRsult)
 		allp.Projects = append(allp.Projects, j)
 	}
 

@@ -151,7 +151,9 @@ func UpdatePredict(c *gin.Context) {
 		return
 	}
 
-	models.UpdatePredict(pu.ID, pu.TrueType)
+	usr, _ := models.GetUserFromContext(c)
+
+	models.UpdatePredict(pu.ID, pu.TrueType, usr.ID)
 
 	// 状态0 未审核 1 已审核 2 移除 3 管理员确认
 	// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，

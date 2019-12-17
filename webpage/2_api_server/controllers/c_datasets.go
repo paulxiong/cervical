@@ -488,7 +488,18 @@ func SetJobResult(c *gin.Context) {
 			}
 			models.CreatePredicts(cellpredicts, w.ID)
 			// 状态改为送去审核, 0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成
-			models.UpdateProjectStatus(w.ID, 5)
+			err3 := models.UpdateProjectStatus(w.ID, 5)
+			if err3 == nil {
+				// 把预测细胞类型统计转换成数组存数据库
+				cellstype := make([]models.ProjectCellstype, 0)
+				for _, v := range result.PRsult {
+					cellstype = append(cellstype, models.ProjectCellstype{
+						Type:  v.Type,
+						Total: v.Total,
+					})
+				}
+				models.UpdateProjectCellsType(w.ID, cellstype)
+			}
 		}
 	}
 	res.ResSucceedString(c, "ok")

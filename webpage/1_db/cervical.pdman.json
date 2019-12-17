@@ -1852,6 +1852,13 @@
               "defaultValue": "0"
             },
             {
+              "name": "cellstype",
+              "type": "MiddleString",
+              "remark": "数组，被转成字符串存储",
+              "chnname": "预测完之后的细胞类型统计",
+              "defaultValue": "\"[]\""
+            },
+            {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",
