@@ -65,7 +65,8 @@ export default {
         value: '选项3',
         label: 'Mail'
       }],
-      value: ''
+      value: '',
+      input: ''
     }
   },
   methods: {}

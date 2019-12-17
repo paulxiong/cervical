@@ -1,14 +1,14 @@
 <template>
   <div class="emailData">
     <el-tabs v-model="activeName" class="tabs">
+      <el-tab-pane label="邮件参数设置" name="setvariable">
+        <setvariableEmail />
+      </el-tab-pane>
       <el-tab-pane label="注册验证邮件" name="register">
         <registerEmail />
       </el-tab-pane>
       <el-tab-pane label="忘记密码邮件" name="password">
         <passwordEmail />
-      </el-tab-pane>
-      <el-tab-pane label="邮件参数设置" name="setvariable">
-        <setvariableEmail />
       </el-tab-pane>
     </el-tabs>
   </div>
