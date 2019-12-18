@@ -28,8 +28,8 @@
         </template>
       </el-table-column>
       <el-table-column width="200" label="用户名" prop="name" />
-      <el-table-column label="已审核" prop="status0" />
-      <el-table-column label="未审核" prop="status1" />
+      <el-table-column label="已审核" prop="status1" />
+      <el-table-column label="未审核" prop="status0" />
     </el-table>
   </div>
 </template>
