@@ -194,7 +194,7 @@ type _predictCount struct {
 	Name    string `json:"name"`    //用户名
 	Image   string `json:"image"`   //用户头像的URL
 	Status0 int64  `json:"status0"` //分配给该用户，但是没有审核的细胞个数
-	Status1 int64  `json:"status１"` //用户已审核的细胞个数
+	Status1 int64  `json:"status1"` //用户已审核的细胞个数
 }
 
 // PredictCount 用户审核的统计
