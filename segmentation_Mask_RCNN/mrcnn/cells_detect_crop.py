@@ -1,4 +1,4 @@
-import os, time, cv2
+import os, time, cv2, math
 import pandas as pd
 from SDK.worker import worker
 from SDK.const.const import wt, mt
@@ -104,7 +104,36 @@ class cells_detector():
 
             x1, y1, x2, y2 = xy_x1y1x2y2((x2 + x1) / 2, (y2 + y1) / 2, size)
             _rois.append([x1, y1, x2, y2, celltype])
+        _rois = filter_xy(_rois)
         return _rois
+
+#同一个FOV里面，标注框有重合的只保留第一个
+def filter_xy(_rois):
+    newrois = []
+    for i in range(len(_rois) -1):
+        r = _rois[i]
+        if r[4] == 1100:
+            continue
+        x1_1, y1_1, x1_2, y1_2 = int(r[0]), int(r[1]), int(r[2]), int(r[3])
+        b1x, b1y = int((x1_2 + x1_1) / 2), int((y1_2 + y1_1) / 2)
+        for j in range(i+1, len(_rois)):
+            r2 = _rois[j]
+            if r2[4] == 1100:
+                continue
+            x2_1, y2_1, x2_2, y2_2 = int(r2[0]), int(r2[1]), int(r2[2]), int(r2[3])
+            b2x, b2y = int((x2_2 + x2_1) / 2), int((y2_2 + y2_1) / 2)
+            dst = int(math.sqrt(math.pow((b2x - b1x), 2) + math.pow((b2y - b1y), 2)))
+            if dst <= 50:
+                #print(b1x, b1y, b2x, b2y, dst)
+                _rois[j][4] = 1100#临时变量
+    for i in _rois:
+        if i[4] == 1100:
+            continue
+        i[4] = 100 #恢复临时变量
+        newrois.append(i)
+    #if len(_rois) != len(newrois):
+    #    print(" len(_rois)=%d len(newrois)=%d" % (len(_rois), len(newrois)))
+    return newrois
 
 #xy坐标转x1, y1, x2, y2
 def xy_x1y1x2y2(x, y, w):
