@@ -251,10 +251,6 @@ export default {
         {
           value: 200,
           label: '不是细胞'
-        },
-        {
-          value: 201,
-          label: '不是细胞2'
         }
       ],
       checkedOptions: [
