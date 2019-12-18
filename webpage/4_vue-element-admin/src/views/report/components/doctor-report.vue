@@ -353,7 +353,7 @@ export default {
       if (cellstotal > 0 && posativetotal > 0) {
         positiveRate = posativetotal * 100 / cellstotal
       }
-      console.log(positiveRate)
+      // console.log(positiveRate)
       if (positiveRate === 0) {
         predictType = '未知'
       } else if (positiveRate <= 5) {
