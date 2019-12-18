@@ -1,30 +1,48 @@
 <template>
-  <div class="projectData">
-    <el-table :data="projectlist" max-height="300">
-      <el-table-column width="100" label="项目ID" prop="id" />
-      <el-table-column label="描述" prop="desc" />
-      <el-table-column width="100" label="类型" prop="projectType" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+  <div class="VerificationcntData">
+    <el-table :data="verificationcnt" max-height="300">
+      <el-table-column width="100" label="审核ID" prop="id" />
+      <el-table-column label="创建者">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
+          <el-tooltip v-if="scope.row.name" :content="scope.row.name" placement="right">
+            <el-image
+              style="width:35px;height:35px;border-radius:7px;"
+              :src="scope.row.image"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" />
+              </div>
+            </el-image>
+          </el-tooltip>
+          <el-image
+            v-else
+            style="width:35px;height:35px;border-radius:7px;"
+            :src="scope.row.image"
+            lazy
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
         </template>
       </el-table-column>
+      <el-table-column width="200" label="用户名" prop="name" />
+      <el-table-column label="已审核" prop="status0" />
+      <el-table-column label="未审核" prop="status1" />
     </el-table>
   </div>
 </template>
 
 <script>
-import { getListprojects } from '@/api/cervical'
-import { taskStatus, taskType, projectType } from '@/const/const'
-import { parseTime } from '@/utils/index'
+import { getVerificationcnt } from '@/api/cervical'
 
 export default {
-  name: 'ProjectData',
+  name: 'VerificationcntData',
   components: {},
   data() {
     return {
-      projectlist: [],
+      verificationcnt: [],
       total: undefined,
       dialogFormVisible: false,
       typeOptions: [
@@ -48,21 +66,17 @@ export default {
     }
   },
   created() {
-    this.getListprojects(5, 0, 1)
+    this.getVerificationcnt()
   },
   methods: {
-    getListprojects(limit, skip, order) {
-      this.loading = true
-      getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
-        res.data.data.projects.map(v => {
-          v.created_at = parseTime(v.created_at)
-          v.statusType = taskType[v.status]
-          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
-          v.projectType = projectType[v.type]
+    getVerificationcnt() {
+      // this.loading = true
+      getVerificationcnt({}).then(res => {
+        res.data.data.user.map(v => {
         })
-        this.projectlist = res.data.data.projects
+        this.verificationcnt = res.data.data.user
         this.total = res.data.data.total
-        this.loading = false
+        // this.loading = false
       })
     }
   }

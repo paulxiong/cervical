@@ -256,3 +256,12 @@ export function getOverview(query) {
     params: query
   })
 }
+
+export function getVerificationcnt(query) {
+  return request({
+    url: '/api1/verificationcnt',
+    method: 'get',
+    params: query
+  })
+}
+
