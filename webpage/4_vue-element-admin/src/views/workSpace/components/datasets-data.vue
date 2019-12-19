@@ -251,6 +251,7 @@ export default {
       this.listdatasets(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     goDetail(val) {
+      localStorage.setItem('details_title', val.desc)
       this.$router.push({
         path: `/workSpace/details?did=${val.id}`
       })

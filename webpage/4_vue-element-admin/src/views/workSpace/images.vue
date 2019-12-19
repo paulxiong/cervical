@@ -285,7 +285,7 @@ export default {
     loopGetPercent() {
       timer = setInterval(() => {
         this.getPercent()
-      }, 1500)
+      }, 2000)
     }
   }
 }

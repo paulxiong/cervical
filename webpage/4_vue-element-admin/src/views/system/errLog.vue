@@ -28,7 +28,7 @@
       <el-table-column prop="operationlog.name" label="用户" width="150" />
       <el-table-column prop="created_time" label="操作时间" width="200" />
       <el-table-column prop="version" label="版本" width="100" />
-      <el-table-column prop="url" label="访问域名" width="340" />
+      <el-table-column prop="url" label="访问域名" />
       <el-table-column label="错误日志">
         <template slot-scope="scope">
           <p>{{ scope.row.err }}</p>

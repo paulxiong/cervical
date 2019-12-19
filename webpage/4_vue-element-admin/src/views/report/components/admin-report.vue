@@ -198,6 +198,7 @@ export default {
       this.getListreport(val, (this.currentPage - 1) * this.currentPageSize, 6, 1)
     },
     goDetail(val) {
+      localStorage.setItem('details_title', val.desc)
       this.$router.push({
         path: `/report/details?pid=${val.id}&did=${val.did}&type=${val.type}&report=admin`
       })

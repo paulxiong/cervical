@@ -212,6 +212,7 @@ export default {
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     goDetail(val) {
+      localStorage.setItem('details_title', val.desc)
       this.$router.push({
         path: `/workSpace/details?pid=${val.id}&did=${val.did}&type=${val.type}`
       })

@@ -51,7 +51,7 @@
               @size-change="handleSizeChange2"
             />
           </el-tab-pane>
-          <el-tab-pane v-if="report" type="info" :label="`图 ${total}`" class="img-tab flex">
+          <el-tab-pane v-if="report" type="info" :label="`原图 ${total}`" class="img-tab flex">
             <section class="tools-bar flex">
               <div>总进度:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
               <div class="fitler-tools">
@@ -92,26 +92,40 @@
                 :img="hosturlpath64 + fov_img.imgpath + '?width=1000'"
                 @vmarker:onSelect="onSelect"
               />
-              <div class="check-box" style="width: 200px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
-                <div v-for="v in renderData" :id="`anchor-${v.id}`" :key="v.id" :class="select.id === v.id ? 'item-box-select' : 'item-box'" style="position: relative;">
-                  <el-badge :value="`score=${v.predict_score}`" :type="v.predict_type === 51 ? 'warning': 'info'" class="item">
-                    <el-image class="img-item" :class="select.id === v.id ? 'img-false' : 'img-right'" :src="hosturlpath64 + v.cellpath + '?width=64'" lazy @click="changeLabel(v)" />
+              <div v-if="select.id" class="check-box" style="width: 200px;display:flex;justify-content:space-between;flex-direction:column;align-items:center;" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
+                <div class="item-box-select" style="position: relative;">
+                  <el-badge :value="`${select.predict_score}`" :type="select.predict_type === 51 ? 'warning': 'info'" class="item">
+                    <el-image class="img-item img-right" :src="hosturlpath64 + select.cellpath + '?width=100'" lazy />
                   </el-badge>
-                  <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="v.status === 1 ? 'checked' : v.status === 2 ? 'delete' : v.status === 3 ? 'adminA' : 'unchecked'" />
+                  <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="select.status === 1 ? 'checked' : select.status === 2 ? 'delete' : select.status === 3 ? 'adminA' : 'unchecked'" />
                   <el-cascader
                     :disabled="report === 'admin'"
-                    :value="v.status ? v.true_type : v.predict_type"
+                    :value="select.status ? select.true_type : select.predict_type"
                     :options="cellsOptions"
                     :props="{ checkStrictly: true }"
                     size="mini"
                     :show-all-levels="false"
                     @change="updatePredict"
-                    @focus="selectCells(v)"
                   />
-                  <el-radio-group v-if="report === 'admin'" v-model="v.status" size="mini" style="position: absolute;top: 45px;right: 0;" @change="updateAdminValue">
+                  <el-radio-group v-if="report === 'admin'" v-model="select.status" size="mini" style="position: absolute;top: 45px;right: 0;" @change="updateAdminValue">
                     <el-radio-button label="错误" />
                     <el-radio-button label="正确" />
                   </el-radio-group>
+                </div>
+                <div class="checked-all flex">
+                  <el-dialog
+                    title="提示"
+                    :visible.sync="centerDialogVisible"
+                    width="30%"
+                    center
+                  >
+                    <span>是否将以下 <span style="color:#ff3c43;">{{ renderData.length }}</span> 个细胞一键审核为 <span style="color:#ff3c43;">{{ select.true_type | filtersTrueType }}</span></span>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="centerDialogVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="checkedAll">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-button type="danger" :disabled="!renderData.length" @click="centerDialogVisible = true">一键审核</el-button>
                 </div>
               </div>
             </section>
@@ -143,10 +157,16 @@ let timer
 export default {
   name: 'Predict',
   components: { AIMarker },
+  filters: {
+    filtersTrueType(val) {
+      return cellsType[val]
+    }
+  },
   data() {
     return {
       percentage: 0,
       startPredict: false,
+      centerDialogVisible: false,
       readOnly: true,
       url: APIUrl + '/imgs/',
       fov_img: {},
@@ -317,19 +337,12 @@ export default {
     clearInterval(timer)
   },
   methods: {
-    changeLabel(item) {
-      this.select = item
-      this.$refs['aiPanel-editor'].getMarker().clearData()
-      this.$refs['aiPanel-editor'].getMarker().renderData(this.renderData)
-      this.$refs['aiPanel-editor'].getMarker().renderData([item])
-    },
     updateAdminValue(val) {
       const status = val === '错误' ? 2 : 3
       reviewpredict({
         'id': this.select.id,
         'status': status
       }).then(res => {
-        this.changeLabel(this.select)
         this.$message({
           message: '审核确认成功',
           type: 'success'
@@ -376,7 +389,30 @@ export default {
           this.renderData = this.imgInfo.cells
           break
       }
-      this.renderLabel(this.renderData)
+      setTimeout(() => {
+        this.renderLabel(this.renderData)
+      }, 500)
+    },
+    checkedAll() {
+      this.renderData.map((v, idx) => {
+        updatePredict({
+          'id': v.id,
+          'true_type': v.true_type
+        }).then(res => {
+          if (idx === this.renderData.length - 1) {
+            this.filterSearch()
+            this.imgCellsInfo.imgcellsall = res.data.data.imgcellsall
+            this.imgCellsInfo.imgcellsverified = res.data.data.imgcellsverified
+            this.imgCellsInfo.cellsall = res.data.data.cellsall
+            this.imgCellsInfo.cellsverified = res.data.data.cellsverified
+            this.$message({
+              message: '一键审核修改成功',
+              type: 'success'
+            })
+            this.centerDialogVisible = false
+          }
+        })
+      })
     },
     updatePredict(value) {
       if (value.length === 1 && (value[0] === 50 || value[0] === 51)) {
@@ -410,7 +446,7 @@ export default {
     },
     onSelect(data) {
       this.select = data
-      document.querySelector(`#anchor-${data.id}`).scrollIntoView(true)
+      // document.querySelector(`#anchor-${data.id}`).scrollIntoView(true)
     },
     getPredictResult(limit, skip, correct) {
       getPredictResult({ 'id': this.$route.query.pid, 'limit': limit, 'skip': skip, 'correct': correct }).then(res => {
@@ -439,7 +475,7 @@ export default {
     getPredictResult2(iid, limit, skip, status, select) {
       getPredictResult2({ 'pid': this.$route.query.pid, 'iid': iid, 'limit': limit, 'skip': skip, 'status': status }).then(res => {
         this.imgInfo = res.data.data
-        this.imgInfo.cells.map(v => {
+        this.imgInfo.cells.map((v, idx) => {
           v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
           v.tagName = v.status === 1 ? v.true_type : v.predict_type
           v.position = {
@@ -450,10 +486,8 @@ export default {
           }
           v.uuid = v.id
         })
-        this.filterCellsType()
         this.imgCellsInfo = this.imgInfo.info
-        this.renderLabel(this.renderData, select)
-        if (select) this.changeLabel(this.select)
+        this.filterCellsType()
       })
     },
     getDatasetImgs(did) {
@@ -461,10 +495,12 @@ export default {
         this.orgImgList = res.data.data.images
         this.total = res.data.data.total
         if (this.orgImgList.length) {
-          const fovImg = JSON.parse(localStorage.getItem('FOV_IMG'))
-          const fovImgIdx = localStorage.getItem('FOV_IMG_INDEX')
-          this.fov_img = fovImg.id ? fovImg : this.orgImgList[0]
-          this.selectFov = fovImgIdx
+          // const fovImg = JSON.parse(localStorage.getItem('FOV_IMG'))
+          // const fovImgIdx = localStorage.getItem('FOV_IMG_INDEX')
+          // this.fov_img = fovImg.id ? fovImg : this.orgImgList[0]
+          // this.selectFov = fovImgIdx
+
+          this.fov_img = this.orgImgList[0]
           this.getPredictResult2(this.fov_img.id, 999, 0, this.filterValue.filterChecked)
         } else {
           this.$alert('所选数据集为空', '提示', {
@@ -505,21 +541,24 @@ export default {
     loopGetPercent() {
       timer = setInterval(() => {
         this.getPercent()
-      }, 1500)
+      }, 2000)
     },
     changeCellTypes(val) {
       this.postCelltypes = val
     },
     renderLabel(cells, select) {
+      this.select = {}
       this.$refs['aiPanel-editor'].getMarker().clearData()
-      if (cells.length < 1) return
-      this.$refs['aiPanel-editor'].getMarker().renderData(cells)
-      if (!select) {
+      if (cells.length) {
         this.select = cells[cells.length - 1]
-        this.$nextTick(() => {
-          document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
-        })
+        this.$refs['aiPanel-editor'].getMarker().renderData(cells)
       }
+      // if (!select && cells.length) {
+      //   this.select = cells[cells.length - 1]
+      //   this.$nextTick(() => {
+      //     document.querySelector(`#anchor-${this.select.id}`).scrollIntoView(true)
+      //   })
+      // }
     }
   }
 }
@@ -599,14 +638,17 @@ export default {
     }
   }
   .select-fov {
-    background: rgba(238, 255, 0, 0.5);
+    background: rgb(0, 255, 81);
   }
   .results {
     padding: 7px;
+    .checked-all {
+      margin-bottom: 10px;
+    }
     .item-box-select {
       padding: 10px 10px;
       border-bottom: 1px solid #ccc;
-      background: rgba(238, 255, 0, 0.5);
+      background: rgba(207, 207, 207, 0.5);
     }
     .img-item {
       border: 1px solid #ccc;
@@ -614,14 +656,14 @@ export default {
       // margin-bottom: 10px;
     }
     .img-select {
-      border: 2px solid rgb(238, 255, 0);
+      border: 2px solid rgb(0, 255, 81);
     }
     .img-right {
       border: 2px solid rgb(0, 255, 81);
       border-radius: 5px;
     }
     .img-false {
-      border: 2px solid rgb(238, 255, 0);
+      border: 2px solid rgb(0, 255, 81);
       border-radius: 5px;
     }
   }
