@@ -122,7 +122,7 @@
                     <span>是否将以下 <span style="color:#ff3c43;">{{ renderData.length }}</span> 个细胞一键审核为 <span style="color:#ff3c43;">{{ select.true_type | filtersTrueType }}</span></span>
                     <span slot="footer" class="dialog-footer">
                       <el-button @click="centerDialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="checkedAll">确 定</el-button>
+                      <el-button type="primary" :loading="updateLoading" @click="checkedAll">确 定</el-button>
                     </span>
                   </el-dialog>
                   <el-button type="danger" :disabled="!renderData.length" @click="centerDialogVisible = true">一键审核</el-button>
@@ -167,6 +167,7 @@ export default {
       percentage: 0,
       startPredict: false,
       centerDialogVisible: false,
+      updateLoading: false,
       readOnly: true,
       url: APIUrl + '/imgs/',
       fov_img: {},
@@ -391,9 +392,10 @@ export default {
       }
       setTimeout(() => {
         this.renderLabel(this.renderData)
-      }, 500)
+      }, 200)
     },
     checkedAll() {
+      this.updateLoading = true
       this.renderData.map((v, idx) => {
         updatePredict({
           'id': v.id,
@@ -409,6 +411,7 @@ export default {
               message: '一键审核修改成功',
               type: 'success'
             })
+            this.updateLoading = false
             this.centerDialogVisible = false
           }
         })
