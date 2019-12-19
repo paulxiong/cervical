@@ -161,8 +161,8 @@ export default {
   data() {
     return {
       reportlist: [],
-      currentPage: 1,
-      currentPageSize: 10,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
       total: undefined,
       listProjects: {},
@@ -343,6 +343,8 @@ export default {
     },
     goDetail(val) {
       localStorage.setItem('details_title', val.desc)
+      localStorage.setItem('page_index', this.currentPage)
+      localStorage.setItem('page_size', this.currentPageSize)
       this.$router.push({
         path: `/report/details?pid=${val.id}&did=${val.did}&type=${val.type}&report=doctor`
       })

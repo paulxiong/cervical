@@ -24,7 +24,7 @@ export default {
   components: { registerEmail, passwordEmail, setvariableEmail },
   data() {
     return {
-      activeName: 'register'
+      activeName: 'setvariable'
     }
   }
 }

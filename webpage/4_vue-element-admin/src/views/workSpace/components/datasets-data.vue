@@ -177,8 +177,8 @@ export default {
       upload: false,
       uploadServer: false,
       imgChecked: false,
-      currentPage: 1,
-      currentPageSize: 10,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
       modelChecked: false,
       listQuery: {
@@ -252,6 +252,8 @@ export default {
     },
     goDetail(val) {
       localStorage.setItem('details_title', val.desc)
+      localStorage.setItem('page_index', this.currentPage)
+      localStorage.setItem('page_size', this.currentPageSize)
       this.$router.push({
         path: `/workSpace/details?did=${val.id}`
       })

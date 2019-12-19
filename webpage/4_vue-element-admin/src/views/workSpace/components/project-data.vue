@@ -159,8 +159,8 @@ export default {
       total: undefined,
       dialogFormVisible: false,
       // step: 1,
-      currentPage: 1,
-      currentPageSize: 10,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
       listQuery: {
         desc: undefined,
@@ -213,6 +213,8 @@ export default {
     },
     goDetail(val) {
       localStorage.setItem('details_title', val.desc)
+      localStorage.setItem('page_index', this.currentPage)
+      localStorage.setItem('page_size', this.currentPageSize)
       this.$router.push({
         path: `/workSpace/details?pid=${val.id}&did=${val.did}&type=${val.type}`
       })
