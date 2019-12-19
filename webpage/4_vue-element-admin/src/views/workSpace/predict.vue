@@ -118,14 +118,28 @@
                     :visible.sync="centerDialogVisible"
                     width="30%"
                     center
+                    @close="closeDialog"
                   >
-                    <span>是否将以下 <span style="color:#ff3c43;">{{ renderData.length }}</span> 个细胞一键审核为 <span style="color:#ff3c43;">{{ select.true_type | filtersTrueType }}</span></span>
+                    <span>是否将以下 <span style="color:#ff3c43;">{{ renderData.length }}</span> 个细胞一键审核为
+                      <el-cascader
+                        v-if="report === 'doctor'"
+                        v-model="all_true_type"
+                        :options="cellsOptions"
+                        :props="{ checkStrictly: true }"
+                        size="mini"
+                        :show-all-levels="false"
+                      />
+                      <el-radio-group v-else v-model="all_tf" size="mini">
+                        <el-radio-button label="错误" />
+                        <el-radio-button label="正确" />
+                      </el-radio-group>
+                    </span>
                     <span slot="footer" class="dialog-footer">
                       <el-button @click="centerDialogVisible = false">取 消</el-button>
                       <el-button type="primary" :loading="updateLoading" @click="checkedAll">确 定</el-button>
                     </span>
                   </el-dialog>
-                  <el-button type="danger" :disabled="!renderData.length" @click="centerDialogVisible = true">一键审核</el-button>
+                  <el-button type="danger" :disabled="!renderData.length" @click="showDialogCheckAll">一键审核</el-button>
                 </div>
               </div>
             </section>
@@ -190,7 +204,7 @@ export default {
       select: {},
       selectFov: 0,
       orgImgList: [],
-      adminValue: '错误',
+      adminValue: '正确',
       total: 0,
       cellsOptions: [
         {
@@ -320,9 +334,11 @@ export default {
       ],
       filterValue: {
         'filterChecked': 0, // 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
-        'filterCellsType': 1
+        'filterCellsType': 100
       },
       report: '',
+      all_true_type: 100,
+      all_tf: '正确',
       imgCellsInfo: {},
       currentPage: 1,
       currentPage2: 1,
@@ -394,12 +410,16 @@ export default {
         this.renderLabel(this.renderData)
       }, 200)
     },
+    showDialogCheckAll() {
+      this.centerDialogVisible = true
+      this.all_true_type = this.renderData[0].true_type
+    },
     checkedAll() {
       this.updateLoading = true
       this.renderData.map((v, idx) => {
         updatePredict({
           'id': v.id,
-          'true_type': v.true_type
+          'true_type': this.all_true_type
         }).then(res => {
           if (idx === this.renderData.length - 1) {
             this.filterSearch()
@@ -416,6 +436,10 @@ export default {
           }
         })
       })
+    },
+    closeDialog() {
+      this.all_true_type = 100
+      this.all_tf = '正确'
     },
     updatePredict(value) {
       if (value.length === 1 && (value[0] === 50 || value[0] === 51)) {
