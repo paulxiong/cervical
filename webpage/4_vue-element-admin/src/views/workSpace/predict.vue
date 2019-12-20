@@ -419,7 +419,7 @@ export default {
       this.renderData.map((v, idx) => {
         updatePredict({
           'id': v.id,
-          'true_type': this.all_true_type
+          'true_type': parseInt(this.all_true_type)
         }).then(res => {
           if (idx === this.renderData.length - 1) {
             this.filterSearch()
