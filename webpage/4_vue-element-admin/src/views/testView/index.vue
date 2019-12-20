@@ -1,5 +1,6 @@
 <template>
   <div class="temps">
+    <h2>资源管理</h2>
     <el-table
       :data="tableData"
       border
@@ -12,23 +13,23 @@
       />
       <el-table-column
         prop="name"
-        label="姓名"
-      />
-      <el-table-column
-        prop="province"
-        label="省份"
+        label="用户名"
       />
       <el-table-column
         prop="city"
-        label="市区"
+        label="城市"
       />
       <el-table-column
-        prop="address"
-        label="地址"
+        prop="desc"
+        label="描述"
       />
       <el-table-column
-        prop="zip"
-        label="邮编"
+        prop="dataid"
+        label="数据集"
+      />
+      <el-table-column
+        prop="type"
+        label="类型"
       />
       <el-table-column
         fixed="right"
@@ -51,33 +52,33 @@ export default {
   data() {
     return {
       tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1518 弄',
-        zip: 200333
+        date: '2019-12-02',
+        name: '717138552@qq.com',
+        city: '昆明',
+        desc: '数据集下载',
+        dataid: '10000',
+        type: 'HOWTOMALA'
       }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1517 弄',
-        zip: 200333
+        date: '2019-12-12',
+        name: 'xundong',
+        city: '昆明',
+        desc: '数据集下载',
+        dataid: '10001',
+        type: 'MASKRCNN'
       }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1519 弄',
-        zip: 200333
+        date: '2019-12-20',
+        name: '123456789@qq.com',
+        city: '昆明',
+        desc: '数据集下载',
+        dataid: '10002',
+        type: 'HOWTOMALA'
       }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        province: '上海',
-        city: '普陀区',
-        address: '上海市普陀区金沙江路 1516 弄',
-        zip: 200333
+        date: '2019-12-02',
+        name: 'xundong',
+        city: '昆明',
+        desc: '数据集下载',
+        dataid: '10003',
+        type: 'HOWTOMALA'
       }]
     }
   },
@@ -91,5 +92,6 @@ export default {
 
 <style lang="scss" scoped>
 .temps {
+  padding: 10px;
 }
 </style>
