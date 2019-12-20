@@ -168,6 +168,12 @@ import newDatasets from './newDatasets'
 export default {
   name: 'DatasetsData',
   components: { newDatasets },
+  props: {
+    activename: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       datasetsList: [],
@@ -251,6 +257,7 @@ export default {
       this.listdatasets(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     goDetail(val) {
+      localStorage.setItem('TAB', this.activename)
       localStorage.setItem('details_title', val.desc)
       localStorage.setItem('page_index', this.currentPage)
       localStorage.setItem('page_size', this.currentPageSize)

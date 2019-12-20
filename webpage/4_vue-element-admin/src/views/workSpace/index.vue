@@ -1,11 +1,11 @@
 <template>
   <div class="home">
-    <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
+    <el-tabs v-model="activeName" class="tabs">
       <el-tab-pane label="项目" name="project">
-        <projectData />
+        <projectData :activename="activeName" />
       </el-tab-pane>
       <el-tab-pane label="数据集" name="datasets">
-        <datasetsData />
+        <datasetsData :activename="activeName" />
       </el-tab-pane>
       <el-tab-pane label="模型" name="model">
         <modelData />
@@ -28,15 +28,7 @@ export default {
   components: { projectData, datasetsData, modelData },
   data() {
     return {
-      activeName: 'project'
-    }
-  },
-  mounted() {
-    this.activeName = localStorage.getItem('TAB') || 'project'
-  },
-  methods: {
-    handleClick(tab, event) {
-      localStorage.setItem('TAB', this.activeName)
+      activeName: localStorage.getItem('TAB') || 'project'
     }
   }
 }
