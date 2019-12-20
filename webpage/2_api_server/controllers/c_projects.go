@@ -210,8 +210,18 @@ func GetPredictResult(c *gin.Context) {
 	return
 }
 
+type predictresult struct {
+	ID     int64            `json:"id"     example:"1"`           //预测任务ID
+	DID    int64            `json:"did"    example:"1"`           //用来做预测的数据集的ID
+	DDir   string           `json:"ddir"   example:"dir name"`    //用来做预测的数据集的目录
+	Dir    string           `json:"dir"    example:"dir name"`    //项目目录
+	Desc   string           `json:"desc"   example:"description"` //项目描述
+	FovCnt int              `json:"fovcnt" example:"1"`           //FOV个数
+	PRsult []f.PredictRsult `json:"result"`                       //预测的细胞的个数统计
+}
+
 type allpredictresult struct {
-	Projects []*f.PredictInfo2 `json:"projects"` //项目信息数组
+	Projects []*predictresult `json:"projects"` //项目信息数组
 }
 
 // GetAllPredictResult 返回所有预测完毕项目的细胞个数统计结果
@@ -245,10 +255,21 @@ func GetAllPredictResult(c *gin.Context) {
 	}
 
 	allp := allpredictresult{}
-	allp.Projects = make([]*f.PredictInfo2, 0)
+	allp.Projects = make([]*predictresult, 0)
 	for _, v := range p {
 		j := oneProjectPredict(v, 0, 0, 1)
-		allp.Projects = append(allp.Projects, j)
+		d, _ := models.GetOneDatasetByID(int(v.DID))
+		j2 := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, 1))
+		_pr := &predictresult{
+			ID:     j.ID,
+			DID:    j.DID,
+			DDir:   j.DDir,
+			Dir:    v.Dir,
+			Desc:   v.Desc,
+			FovCnt: j2.FovCnt,
+			PRsult: j.PRsult,
+		}
+		allp.Projects = append(allp.Projects, _pr)
 	}
 
 	res.ResSucceedStruct(c, allp)
