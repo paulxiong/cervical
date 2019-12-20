@@ -222,6 +222,7 @@ type predictresult struct {
 
 type allpredictresult struct {
 	Projects []*predictresult `json:"projects"` //项目信息数组
+	Total    int64            `json:"total"`    //项目个数
 }
 
 // GetAllPredictResult 返回所有预测完毕项目的细胞个数统计结果
@@ -249,7 +250,7 @@ func GetAllPredictResult(c *gin.Context) {
 	_order, _ := strconv.ParseInt(orderStr, 10, 64)
 	status, _ := strconv.ParseInt(statusStr, 10, 64)
 
-	_, p, err := models.ListProject(int(limit), int(skip), int(_order), int(status))
+	total, p, err := models.ListProject(int(limit), int(skip), int(_order), int(status))
 	if err != nil {
 		logger.Info.Println(err)
 	}
@@ -271,6 +272,7 @@ func GetAllPredictResult(c *gin.Context) {
 		}
 		allp.Projects = append(allp.Projects, _pr)
 	}
+	allp.Total = total
 
 	res.ResSucceedStruct(c, allp)
 	return

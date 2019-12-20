@@ -39,6 +39,18 @@
       <el-table-column prop="p1n0" label="结果" width="80" />
 
     </el-table>
+    <footer class="tools flex">
+      <el-pagination
+        class="page"
+        :current-page.sync="currentPage"
+        :page-sizes="[10, 20, 50, 100, 200]"
+        :page-size="currentPageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
+    </footer>
     <div style="margin-top: 20px">
       <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
       <el-button @click="toggleSelection()">取消选择</el-button>
@@ -53,13 +65,16 @@ export default {
   data() {
     return {
       projects: [],
+      total: 0,
+      currentPageSize: 10,
+      currentPage: 0,
       multipleSelection: [],
       threshold1: 5.0, // 5%
       threshold2: 2.0
     }
   },
   mounted() {
-    this.getAllPredictResult(100, 0, 1)
+    this.getAllPredictResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize)
   },
   methods: {
     toggleSelection(rows) {
@@ -73,6 +88,14 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.getAllPredictResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize)
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this.getAllPredictResult(val, (this.currentPage - 1) * this.currentPageSize)
     },
     makeprojectlists(projectdata) {
       projectdata.map(v => {
@@ -102,7 +125,7 @@ export default {
       })
     },
     recheckpn() {
-      this.getAllPredictResult(100, 0, 1)
+      this.getAllPredictResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize)
     },
     checkpn() {
       if (!this.projects || this.projects.length < 1) {
@@ -116,13 +139,14 @@ export default {
         }
       })
     },
-    getAllPredictResult(limit, skip, order) {
+    getAllPredictResult(limit, skip) {
       this.loading = true
-      getAllPredictResult({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+      getAllPredictResult({ 'limit': limit, 'skip': skip, 'order': 1, 'status': 5 }).then(res => {
         this.projects = []
         if (!res.data.data || !res.data.data.projects || res.data.data.projects.length < 1) {
           return
         }
+        this.total = res.data.data.total
         this.makeprojectlists(res.data.data.projects)
         this.checkpn()
       })
