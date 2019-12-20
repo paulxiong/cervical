@@ -1,5 +1,19 @@
 <template>
   <div>
+    <span>阳性判断标准：</span>
+
+    <el-form label-width="auto" class="demo-dynamic">
+      <el-form-item label-width="auto" label="A 阳性细胞在总细胞的占比大于">
+        <el-input-number v-model="threshold1" :precision="2" :step="0.1" :max="20" />
+      </el-form-item>
+      <el-form-item label-width="auto" label="C 平均每个FOV阳性细胞个数大于">
+        <el-input-number v-model="threshold2" :precision="2" :step="0.1" :max="20" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="recheckpn">计算阴阳性</el-button>
+      </el-form-item>
+    </el-form>
+
     <el-table
       ref="multipleTable"
       :data="projects"
@@ -39,7 +53,9 @@ export default {
   data() {
     return {
       projects: [],
-      multipleSelection: []
+      multipleSelection: [],
+      threshold1: 5.0, // 5%
+      threshold2: 2.0
     }
   },
   mounted() {
@@ -67,7 +83,6 @@ export default {
           'cnt200': 0, 'fov': v.fovcnt, 'dir': v.dir, 'desc': v.desc,
           'ddir': v.ddir, 'cellstotal': 0, 'ppercent': 0.00, 'cellspfov': 0.00 }
         v.result.map(v2 => {
-          console.log(v.id, v2)
           if (v2.type === 50) {
             projects.cnt50 = v2.total
           } else if (v2.type === 51) {
@@ -86,12 +101,15 @@ export default {
         this.projects.push(projects)
       })
     },
+    recheckpn() {
+      this.getAllPredictResult(100, 0, 1)
+    },
     checkpn() {
       if (!this.projects || this.projects.length < 1) {
         return
       }
       this.projects.map(v => {
-        if (v.ppercent > 5.0 && v.cellspfov > 2.0) {
+        if (v.ppercent > this.threshold1 && v.cellspfov > this.threshold2) {
           v.p1n0 = '阳性'
         } else {
           v.p1n0 = '阴性'
