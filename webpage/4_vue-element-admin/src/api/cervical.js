@@ -265,3 +265,10 @@ export function getVerificationcnt(query) {
   })
 }
 
+export function getAllPredictResult(query) {
+  return request({
+    url: '/api1/allpredictresult',
+    method: 'get',
+    params: query
+  })
+}

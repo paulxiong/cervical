@@ -1,97 +1,114 @@
 <template>
-  <div class="temps">
-    <h2>资源管理</h2>
+  <div>
     <el-table
-      :data="tableData"
-      border
+      ref="multipleTable"
+      :data="projects"
+      tooltip-effect="dark"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        fixed
-        prop="date"
-        label="日期"
-      />
-      <el-table-column
-        prop="name"
-        label="用户名"
-      />
-      <el-table-column
-        prop="city"
-        label="城市"
-      />
-      <el-table-column
-        prop="desc"
-        label="描述"
-      />
-      <el-table-column
-        prop="dataid"
-        label="数据集"
-      />
-      <el-table-column
-        prop="type"
-        label="类型"
-      />
-      <el-table-column
-        fixed="right"
-        label="操作"
-        width="100"
-      >
-        <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handleClick(scope.row)">查看</el-button>
-          <el-button type="text" size="small">编辑</el-button>
-        </template>
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="id" width="50">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
+      <el-table-column prop="desc" label="描述" width="120" show-overflow-tooltip />
+      <el-table-column prop="dir" label="dir" width="100" show-overflow-tooltip />
+      <el-table-column prop="did" label="did" width="50" />
+      <el-table-column prop="ddir" label="ddir" width="100" show-overflow-tooltip />
+      <el-table-column prop="cnt50" label="阴性" width="80" />
+      <el-table-column prop="cnt51" label="阳性" width="80" />
+      <el-table-column prop="cnt200" label="杂质" width="80" />
+      <el-table-column prop="fov" label="FOV个数" width="80" />
+      <el-table-column prop="cellstotal" label="细胞总数" width="80" />
+      <el-table-column prop="ppercent" label="阳性占比" width="80" />
+      <el-table-column prop="cellspfov" label="阳性/FOV" width="80" />
+      <el-table-column prop="p1n0" label="结果" width="80" />
+
     </el-table>
+    <div style="margin-top: 20px">
+      <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
+      <el-button @click="toggleSelection()">取消选择</el-button>
+    </div>
   </div>
 </template>
 
 <script>
+import { getAllPredictResult } from '@/api/cervical'
+
 export default {
-  name: 'Temps',
-  components: {},
   data() {
     return {
-      tableData: [{
-        date: '2019-12-02',
-        name: '717138552@qq.com',
-        city: '昆明',
-        desc: '数据集下载',
-        dataid: '10000',
-        type: 'HOWTOMALA'
-      }, {
-        date: '2019-12-12',
-        name: 'xundong',
-        city: '昆明',
-        desc: '数据集下载',
-        dataid: '10001',
-        type: 'MASKRCNN'
-      }, {
-        date: '2019-12-20',
-        name: '123456789@qq.com',
-        city: '昆明',
-        desc: '数据集下载',
-        dataid: '10002',
-        type: 'HOWTOMALA'
-      }, {
-        date: '2019-12-02',
-        name: 'xundong',
-        city: '昆明',
-        desc: '数据集下载',
-        dataid: '10003',
-        type: 'HOWTOMALA'
-      }]
+      projects: [],
+      multipleSelection: []
     }
   },
+  mounted() {
+    this.getAllPredictResult(100, 0, 1)
+  },
   methods: {
-    handleClick(row) {
-      console.log(row)
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row)
+        })
+      } else {
+        this.$refs.multipleTable.clearSelection()
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    makeprojectlists(projectdata) {
+      projectdata.map(v => {
+        if (!v.result || v.result.length < 1) {
+          return
+        }
+        const projects = { 'id': v.id, 'did': v.did, 'cnt50': 0, 'cnt51': 0,
+          'cnt200': 0, 'fov': v.fovcnt, 'dir': v.dir, 'desc': v.desc,
+          'ddir': v.ddir, 'cellstotal': 0, 'ppercent': 0.00, 'cellspfov': 0.00 }
+        v.result.map(v2 => {
+          console.log(v.id, v2)
+          if (v2.type === 50) {
+            projects.cnt50 = v2.total
+          } else if (v2.type === 51) {
+            projects.cnt51 = v2.total
+          } else if (v2.type === 200) {
+            projects.cnt200 = v2.total
+          }
+        })
+        projects.cellstotal = projects.cnt50 + projects.cnt51
+        if (projects.cellstotal > 0) {
+          projects.ppercent = (projects.cnt51 / projects.cellstotal * 100).toFixed(2)
+        }
+        if (projects.fov > 0) {
+          projects.cellspfov = (projects.cnt51 / projects.fov).toFixed(2)
+        }
+        this.projects.push(projects)
+      })
+    },
+    checkpn() {
+      if (!this.projects || this.projects.length < 1) {
+        return
+      }
+      this.projects.map(v => {
+        if (v.ppercent > 5.0 && v.cellspfov > 2.0) {
+          v.p1n0 = '阳性'
+        } else {
+          v.p1n0 = '阴性'
+        }
+      })
+    },
+    getAllPredictResult(limit, skip, order) {
+      this.loading = true
+      getAllPredictResult({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        this.projects = []
+        if (!res.data.data || !res.data.data.projects || res.data.data.projects.length < 1) {
+          return
+        }
+        this.makeprojectlists(res.data.data.projects)
+        this.checkpn()
+      })
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.temps {
-  padding: 10px;
-}
-</style>
