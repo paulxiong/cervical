@@ -110,7 +110,10 @@ export default {
 .upload {
   .upload-imgs {
     max-height: 500px;
+  }
+  /deep/.el-upload-list {
     overflow-y: auto;
+    height: 360px;
   }
 }
 </style>
