@@ -228,7 +228,7 @@ export default {
     },
     getListprojects(limit, skip, order) {
       this.loading = true
-      getListprojects({ 'limit': limit, 'skip': skip, 'order': order, 'status': 5 }).then(res => {
+      getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.projects.map(v => {
           v.created_at = parseTime(v.created_at)
           v.updated_at = parseTime(v.updated_at)
