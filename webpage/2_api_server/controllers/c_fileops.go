@@ -104,7 +104,7 @@ func UploadDatasetHandler(c *gin.Context) {
 		return
 	}
 
-	file, _, err := c.Request.FormFile("file")
+	file, err := c.FormFile("file")
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadGetFileNameFailed"])
 		return
@@ -116,14 +116,7 @@ func UploadDatasetHandler(c *gin.Context) {
 	filename := u.GetUUID()
 	filepath := path.Join(dirpath, filename)
 
-	out, err := os.Create(filepath)
-	if err != nil {
-		res.ResFailedStatus(c, e.Errors["UploadMkdirFailed"])
-		return
-	}
-	defer out.Close()
-	_, err = io.Copy(out, file)
-	if err != nil {
+	if err := c.SaveUploadedFile(file, filepath); err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}
