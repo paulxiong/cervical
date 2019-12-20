@@ -3,7 +3,7 @@
     <span>阳性判断标准：</span>
 
     <el-form label-width="auto" class="demo-dynamic">
-      <el-form-item label-width="auto" label="A 阳性细胞在总细胞的占比大于">
+      <el-form-item label-width="auto" label="A 阳性细胞在总细胞的占比大于%">
         <el-input-number v-model="threshold1" :precision="2" :step="0.1" :max="20" />
       </el-form-item>
       <el-form-item label-width="auto" label="C 平均每个FOV阳性细胞个数大于">
@@ -34,7 +34,7 @@
       <el-table-column prop="cnt200" label="杂质" width="80" />
       <el-table-column prop="fov" label="FOV个数" width="80" />
       <el-table-column prop="cellstotal" label="细胞总数" width="80" />
-      <el-table-column prop="ppercent" label="阳性占比" width="80" />
+      <el-table-column prop="ppercent" label="阳性占比%" width="80" />
       <el-table-column prop="cellspfov" label="阳性/FOV" width="80" />
       <el-table-column prop="p1n0" label="结果" width="80" />
 
