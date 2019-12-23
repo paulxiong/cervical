@@ -121,7 +121,13 @@ class mala_predict(worker):
             cellto_dir = os.path.join(outdir, str(celltype))
             if not os.path.exists(cellto_dir):
                 os.makedirs(cellto_dir)
+            if not os.path.exists(cellpath):
+                self.log.info("image not found %s" % cellpath)
+                continue
             img = cv2.imread(cellpath)
+            if img is None:
+                self.log.info("invalid image file %s" % cellpath)
+                continue
             if img.shape[0] != img.shape[1]:
                 self.log.info("skip this image w != h: %s" % cellpath)
                 continue
