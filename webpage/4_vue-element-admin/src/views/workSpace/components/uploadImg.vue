@@ -9,7 +9,6 @@
       drag
       multiple
       show-file-list
-      :file-list="imgList"
       :before-upload="beforeUpload"
       :on-success="onSuccess"
       :auto-upload="false"
