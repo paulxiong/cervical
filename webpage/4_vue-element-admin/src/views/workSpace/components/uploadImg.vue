@@ -9,13 +9,14 @@
       drag
       multiple
       show-file-list
-      :before-upload="beforeUpload"
       :on-success="onSuccess"
       :auto-upload="false"
+      :on-error="onError"
+      :on-change="onChange"
     >
       <i class="el-icon-upload" />
-      <div class="el-upload__text">将多张/单张图片文件拖到此处</div>
-      <div slot="tip" class="el-upload__tip">只能上传png/jpg/png文件</div>
+      <div class="el-upload__text">将多张/单张图片文件拖到此处,只能上传png/jpg/png文件</div>
+      <!-- <div slot="tip" class="el-upload__tip">只能上传png/jpg/png文件</div> -->
       <el-button
         style="margin: 10px 0 0 20px;"
         size="mini"
@@ -78,17 +79,26 @@ export default {
         this.$emit('checkUpload', true)
       }
     },
+    onChange(file) {
+      console.log(file.type, file.raw.type)
+      const isPNG = file.raw.type === 'image/png'
+      const isJPG = file.raw.type === 'image/jpg'
+      const isJPEG = file.raw.type === 'image/jpeg'
+      if (!isPNG && !isJPG && !isJPEG) {
+        this.$message.error('只能上传png/jpg/png文件')
+        return isPNG || isJPG || isJPEG
+      } else {
+        document.querySelector('.el-upload-list').className += ' list-container'
+      }
+    },
+    onError(response, file, fileList) {
+      console.log(response, file, fileList)
+      console.log('上传失败！')
+    },
     abortUpload() {
       this.$refs.upload.abort()
-    },
-    beforeUpload(file) {
-      const isPNG = file.type === 'image/png'
-      const isJPG = file.type === 'image/jpg'
-      const isJPEG = file.type === 'image/jpeg'
-      if (!isPNG && !isJPG && !isJPEG) {
-        this.$message.error('只能上传图片格式')
-      }
-      return isPNG || isJPG || isJPEG
+      this.$refs.upload.clearFiles()
+      document.querySelector('.el-upload-list').remove('list-container')
     },
     uploadSuccess(file) {
       const formData = new FormData()
@@ -110,9 +120,9 @@ export default {
   .upload-imgs {
     max-height: 500px;
   }
-  /deep/.el-upload-list {
+  /deep/.list-container {
     overflow-y: auto;
-    height: 360px;
+    height: 300px;
   }
 }
 </style>

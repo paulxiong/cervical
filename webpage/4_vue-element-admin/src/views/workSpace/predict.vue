@@ -99,8 +99,19 @@
                   </el-badge>
                   <svg-icon style="width:30px;height:30px;" class="check-icon" :icon-class="select.status === 1 ? 'checked' : select.status === 2 ? 'delete' : select.status === 3 ? 'adminA' : 'unchecked'" />
                   <el-cascader
+                    v-if="select.status"
+                    v-model="select.true_type"
                     :disabled="report === 'admin'"
-                    :value="select.status ? select.true_type : select.predict_type"
+                    :options="cellsOptions"
+                    :props="{ checkStrictly: true }"
+                    size="mini"
+                    :show-all-levels="false"
+                    @change="updatePredict"
+                  />
+                  <el-cascader
+                    v-else
+                    v-model="select.predict_type"
+                    :disabled="report === 'admin'"
                     :options="cellsOptions"
                     :props="{ checkStrictly: true }"
                     size="mini"
@@ -578,6 +589,7 @@ export default {
       this.$refs['aiPanel-editor'].getMarker().clearData()
       if (cells.length) {
         this.select = cells[cells.length - 1]
+        console.log(this.select)
         this.$refs['aiPanel-editor'].getMarker().renderData(cells)
       }
       // if (!select && cells.length) {
