@@ -2151,6 +2151,227 @@
           ],
           "chnname": "predict",
           "remark": "预测完之后的信息"
+        },
+        {
+          "title": "review",
+          "fields": [
+            {
+              "name": "id",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "ID",
+              "autoIncrement": true,
+              "pk": true,
+              "notNull": true
+            },
+            {
+              "name": "predictid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "预测信息ID",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "imgid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "所属图片的ID",
+              "notNull": true
+            },
+            {
+              "name": "pid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "所属项目的ID",
+              "notNull": true
+            },
+            {
+              "name": "x1",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "左上角X坐标",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "y1",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "左上角Y坐标",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "x2",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "右下角X坐标",
+              "pk": false,
+              "notNull": true,
+              "relationNoShow": false,
+              "defaultValue": "0"
+            },
+            {
+              "name": "y2",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "右下角Y坐标",
+              "pk": false,
+              "notNull": true,
+              "relationNoShow": false,
+              "defaultValue": "0"
+            },
+            {
+              "name": "cellpath",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "上述坐标切割出来的细胞",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "imgpath",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "原图路径",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "predict_score",
+              "type": "Integer",
+              "remark": "50表示50%",
+              "chnname": "预测得分",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "predict_type",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "预测的细胞类型",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "predict_p1n0",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "预测阴/阳性",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "true_type",
+              "type": "Integer",
+              "remark": "默认等于predict_type",
+              "chnname": "医生标注的细胞类型",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "true_p1n0",
+              "type": "Integer",
+              "remark": "默认等于predict_p1n0",
+              "chnname": "医生标注的阴/阳性",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "vid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "谁去做审核(verify)的用户ID",
+              "notNull": false,
+              "defaultValue": "0"
+            },
+            {
+              "name": "status",
+              "type": "Integer",
+              "remark": "0 未审核 1 已审核 2 移除 3 管理员确认",
+              "chnname": "状态",
+              "defaultValue": "0"
+            },
+            {
+              "name": "created_by",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "创建者",
+              "defaultValue": "0"
+            },
+            {
+              "name": "created_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "创建时间",
+              "relationNoShow": true
+            },
+            {
+              "name": "updated_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "更新时间",
+              "relationNoShow": true
+            }
+          ],
+          "indexs": [
+            {
+              "name": "predictid",
+              "isUnique": false,
+              "fields": [
+                "predictid"
+              ]
+            }
+          ],
+          "headers": [
+            {
+              "fieldName": "chnname",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "name",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "type",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "dataType",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "remark",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "pk",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "notNull",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "autoIncrement",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "defaultValue",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "relationNoShow",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
+            }
+          ],
+          "chnname": "review",
+          "remark": "医生审核细胞的信息"
         }
       ],
       "graphCanvas": {

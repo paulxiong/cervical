@@ -189,6 +189,18 @@ func GetPredictByImgID(pid int64, iid int64) (p []Predict, e error) {
 	return _p, ret.Error
 }
 
+// GetPredictByPID 通过项目ID获得所有的预测及标注结果,status 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
+func GetPredictByPID(pid int64, status int, limit int, skip int) (p []Predict, t int64, e error) {
+	var _p []Predict
+	var total int64
+	db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Count(&total)
+	ret := db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Find(&_p)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return _p, total, ret.Error
+}
+
 type _predictCount struct {
 	ID      int64  `json:"id" `     //ID
 	Name    string `json:"name"`    //用户名

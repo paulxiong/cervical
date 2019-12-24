@@ -128,6 +128,10 @@ func Router() *gin.Engine {
 
 		// 概览
 		api1.GET("/overview", ctr.GetOverview)
+
+		// 医生检查细胞类型
+		api1.GET("/predictsbypid", ctr.GetPredictsByPID)
+		api1.POST("/setpredictsreview", ctr.SetPredictsReview)
 	}
 	return r
 }

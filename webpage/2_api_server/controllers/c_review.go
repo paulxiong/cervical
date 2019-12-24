@@ -1,0 +1,140 @@
+package controllers
+
+import (
+	"strconv"
+
+	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
+	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
+	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
+	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
+
+	"github.com/gin-gonic/gin"
+)
+
+type _predictsByPID struct {
+	ID          int64 `json:"id" `                         //ID
+	PredictType int   `json:"predict_type"  example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
+	TrueType    int   `json:"true_type"     example:"100"` //医生标注的细胞类型 默认等于predict_type
+}
+
+// PredictCount 用户审核的统计
+type predictsByPID struct {
+	Predicts []_predictsByPID `json:"predicts"` //预测结果
+	Total    int64            `json:"total" `   //预测总数
+}
+
+// GetPredictsByPID 通过项目ID取出所有预测信息
+// @Summary 通过项目ID取出所有预测信息
+// @Description 通过项目ID取出所有预测信息
+// @Description status：
+// @Description 200 创建
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param pid query string false "pid, default 0, 所属项目的ID"
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Param status query string false "status, default 1, 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/predictsbypid [get]
+func GetPredictsByPID(c *gin.Context) {
+	pidStr := c.DefaultQuery("pid", "0")
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	statusStr := c.DefaultQuery("status", "1")
+	pid, _ := strconv.ParseInt(pidStr, 10, 64)
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
+
+	p, total, _ := models.GetPredictByPID(pid, int(status), int(limit), int(skip))
+
+	_predicts := predictsByPID{}
+	_predicts.Predicts = make([]_predictsByPID, 0)
+	_predicts.Total = total
+	for _, v := range p {
+		//已经添加到细胞审核的就不需要重复添加了
+		_r, err1 := models.GetReviewByPRID(v.ID)
+		if err1 == nil || _r.ID > 0 {
+			continue
+		}
+		_predicts.Predicts = append(_predicts.Predicts, _predictsByPID{
+			ID:          v.ID,
+			PredictType: v.PredictType,
+			TrueType:    v.TrueType,
+		})
+	}
+
+	res.ResSucceedStruct(c, _predicts)
+	return
+}
+
+type setreview struct {
+	PredictsID []int64 `json:"predicts"`              //预测的ID的数组
+	PID        int64   `json:"pid"       example:"7"` //所属项目的ID
+	VID        int64   `json:"vid" `                  //指定给哪个用户去审核
+}
+
+// SetPredictsReview 把项目下的指定预测结果分配给指定的人员做审核
+// @Summary 把项目下的指定预测结果分配给指定的人员做审核
+// @Description 把项目下的指定预测结果分配给指定的人员做审核
+// @Description status：
+// @Description 200 创建
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param setreview body controllers.setreview true "把哪些预测指定给谁去审核"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/setpredictsreview [post]
+func SetPredictsReview(c *gin.Context) {
+	sr := setreview{}
+	err := c.ShouldBindJSON(&sr)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	reviews := make([]*models.Review, 0)
+
+	for _, v := range sr.PredictsID {
+		//已经添加到细胞审核的就不需要重复添加了
+		_r, err1 := models.GetReviewByPRID(v)
+		if err1 == nil || _r.ID > 0 {
+			continue
+		}
+		p, err1 := models.FindPredictbyID(v)
+		if err1 != nil {
+			continue
+		}
+		img, err2 := models.GetImageByID(p.ImgID)
+		if err2 != nil {
+			continue
+		}
+
+		reviews = append(reviews, &models.Review{
+			ID:           0,
+			PRID:         p.ID,
+			ImgID:        p.ImgID,
+			PID:          p.PID,
+			X1:           p.X1,
+			Y1:           p.Y1,
+			X2:           p.X2,
+			Y2:           p.Y2,
+			CellPath:     p.CellPath,
+			ImgPath:      f.Imgpath(img.Batchid, img.Medicalid, img.Imgpath, img.Type),
+			PredictScore: p.PredictScore,
+			PredictType:  p.PredictType,
+			PredictP1n0:  p.PredictP1n0,
+			TrueType:     p.TrueType,
+			TrueP1n0:     p.TrueP1n0,
+			VID:          p.VID,
+			Status:       0, //0 未审核 1 已审核 2 移除 3 管理员已确认
+		})
+	}
+	models.CreateReviews(reviews)
+
+	res.ResSucceedString(c, "ok")
+	return
+}
