@@ -3,7 +3,7 @@ import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken, setToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -18,7 +18,13 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
-  const hasToken = getToken()
+  let hasToken = getToken()
+  // 特殊路由可以使用querystring自动登录
+  if (to.path === '/review/list' && to.query && to.query.token && to.query.token.length > 1) {
+    const token = to.query.token
+    setToken(`token ${token}`)
+    hasToken = getToken()
+  }
 
   if (hasToken) {
     if (to.path === '/login') {
