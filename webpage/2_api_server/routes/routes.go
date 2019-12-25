@@ -132,6 +132,8 @@ func Router() *gin.Engine {
 		// 医生检查细胞类型
 		api1.GET("/predictsbypid", ctr.GetPredictsByPID)
 		api1.POST("/setpredictsreview", ctr.SetPredictsReview)
+		api1.GET("/reviews", ctr.GetReviews)
+		api1.POST("/review", ctr.UpdateReview)
 	}
 	return r
 }

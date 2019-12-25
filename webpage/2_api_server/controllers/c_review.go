@@ -82,8 +82,6 @@ type setreview struct {
 // SetPredictsReview 把项目下的指定预测结果分配给指定的人员做审核
 // @Summary 把项目下的指定预测结果分配给指定的人员做审核
 // @Description 把项目下的指定预测结果分配给指定的人员做审核
-// @Description status：
-// @Description 200 创建
 // @tags API1 医生检查细胞类型（需要认证）
 // @Accept  json
 // @Produce json
@@ -138,6 +136,70 @@ func SetPredictsReview(c *gin.Context) {
 	}
 	models.CreateReviews(reviews)
 
+	res.ResSucceedString(c, "ok")
+	return
+}
+
+// reviewslist 用户审核的统计
+type reviewslist struct {
+	Reviews []models.Review `json:"reviews"` //预测结果
+	Total   int64           `json:"total" `  //预测总数
+}
+
+// GetReviews 依次获得等待审核的细胞信息
+// @Summary 依次获得等待审核的细胞信息
+// @Description 依次获得等待审核的细胞信息
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Param status query string false "status, default 0, 0 未审核 1 已审核"
+// @Success 200 {object} controllers.reviewslist
+// @Router /api1/reviews [get]
+func GetReviews(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	statusStr := c.DefaultQuery("status", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
+
+	usr, _ := models.GetUserFromContext(c)
+
+	rl := reviewslist{}
+	rl.Total, rl.Reviews, _ = models.ListReviews(int(limit), int(skip), int(status), usr.ID)
+	res.ResSucceedStruct(c, rl)
+	return
+}
+
+type reviewupdate struct {
+	ID       int64 `json:"id"`        // 细胞预测的ID
+	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
+}
+
+// UpdateReview 医生审核细胞信息写回数据库
+// @Summary 医生审核信息写回数据库
+// @Description 医生审核信息写回数据库
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param predictupdate body controllers.reviewupdate true "医生审核信息"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/review [post]
+func UpdateReview(c *gin.Context) {
+	ru := reviewupdate{}
+	err := c.ShouldBindJSON(&ru)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	usr, _ := models.GetUserFromContext(c)
+
+	models.UpdateReview(ru.ID, ru.TrueType, usr.ID)
 	res.ResSucceedString(c, "ok")
 	return
 }

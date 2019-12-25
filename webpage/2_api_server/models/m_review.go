@@ -81,3 +81,43 @@ func CreateReviews(reviews []*Review) (e error) {
 	logger.Info.Println(time.Now(), len(sql))
 	return nil
 }
+
+// ListReviews 依次列出审核的细胞
+func ListReviews(limit int, skip int, status int, userid int64) (totalNum int64, r []Review, e error) {
+	var total int64 = 0
+	var _r []Review
+	ret := db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Count(&total)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	ret = db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Find(&_r)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _r, ret.Error
+}
+
+// UpdateReview 更新审核信息
+func UpdateReview(id int64, trueType int, userid int64) (e error) {
+	_, err := GetReviewByPRID(id)
+	if err != nil {
+		return err
+	}
+
+	// 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
+	// TODO: 类型计算
+	var trueP1n0 int = 0
+
+	// 状态 0 未审核 1 已审核 2 移除 3 管理员确认
+	var status int = 1
+
+	ret := db.Model(&Review{}).Where("id=?", id).Updates(map[string]interface{}{
+		"true_type": trueType,
+		"true_p1n0": trueP1n0,
+		"status":    status,
+		"vid":       userid})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}
