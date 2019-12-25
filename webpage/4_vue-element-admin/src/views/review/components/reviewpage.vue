@@ -9,8 +9,8 @@
         :img="hosturlpath64 + imgInfo.imgpath + '?width=850'"
       />
       <el-badge
-        :value="`${imgInfo.predict_score}`"
-        :type="imgInfo.predict_type === 51 ? 'warning': 'info'"
+        :value="`${imgInfo.predict_type}`"
+        type="info"
         class="item"
       >
         <el-image
@@ -26,6 +26,7 @@
     <section v-else class="flex">
       已审核完成，暂无其他审核任务...
     </section>
+    <canvas id="myCanvas" ref="myCanvas" />
   </div>
 </template>
 
@@ -54,6 +55,13 @@ export default {
   },
   created() {
     this.getLabelReviews(1, this.skip, 0)
+  },
+  mounted() {
+    const canvas = this.$refs.myCanvas
+    const ctx = canvas.getContext('2d')
+    ctx.moveTo(100, 100)
+    ctx.lineTo(200, 100)
+    ctx.stroke()
   },
   methods: {
     getLabelReviews(limit, skip, status) {
@@ -108,7 +116,14 @@ export default {
 
 <style lang="scss" scoped>
 .temps {
+  .mycanvas {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    z-index: 999;
+  }
   .ai-observer {
+    position: relative;
     border: 2px solid rgb(0, 255, 81);
     border-radius: 5px;
   }
