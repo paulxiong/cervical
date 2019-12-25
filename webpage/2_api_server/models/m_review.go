@@ -20,6 +20,8 @@ type Review struct {
 	Y2           int       `json:"y2"            gorm:"column:y2"              example:"100"` //预右下角Y坐标 单位是像素
 	CellPath     string    `json:"cellpath"      gorm:"column:cellpath"        example:"100"` //上述坐标切割出来的细胞
 	ImgPath      string    `json:"imgpath"       gorm:"column:imgpath"         example:"100"` //原图路径
+	W            int       `json:"w"             gorm:"column:w"`                             //原图的宽
+	H            int       `json:"h"             gorm:"column:h"`                             //原图的高
 	PredictScore int       `json:"predict_score" gorm:"column:predict_score"   example:"100"` //预测得分 50表示50%
 	PredictType  int       `json:"predict_type"  gorm:"column:predict_type"    example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
 	PredictP1n0  int       `json:"predict_p1n0"  gorm:"column:predict_p1n0"    example:"100"` //预测阴/阳性
@@ -56,13 +58,13 @@ func CreateReviews(reviews []*Review) (e error) {
 		return nil
 	}
 	logger.Info.Println(len(reviews), time.Now())
-	sql1 := "INSERT  INTO `c_review` (`predictid`, `imgid`,`pid`,`x1`,`y1`,`x2`,`y2`,`cellpath`,`imgpath`,`predict_score`,`predict_type`,`predict_p1n0`,`true_type`,`true_p1n0`,`vid`,`status`) VALUES "
+	sql1 := "INSERT  INTO `c_review` (`predictid`, `imgid`,`pid`,`x1`,`y1`,`x2`,`y2`,`cellpath`,`imgpath`,`w`,`h`,`predict_score`,`predict_type`,`predict_p1n0`,`true_type`,`true_p1n0`,`vid`,`status`) VALUES "
 	sql := sql1
 	// 新增预测结果
 	_db := db.Begin()
 	for index, v := range reviews {
-		sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%d,\"%s\",\"%s\",%d,%d,%d,%d,%d,%d,%d)",
-			v.PRID, v.ImgID, v.PID, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.ImgPath, v.PredictScore,
+		sql += fmt.Sprintf("(%d,%d,%d,%d,%d,%d,%d,\"%s\",\"%s\",%d,%d,%d,%d,%d,%d,%d,%d,%d)",
+			v.PRID, v.ImgID, v.PID, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.ImgPath, v.W, v.H, v.PredictScore,
 			v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
 
 		if index > 0 && index%5000 == 0 || index == len(reviews)-1 {

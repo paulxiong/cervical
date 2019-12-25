@@ -2239,6 +2239,22 @@
               "defaultValue": "\"\""
             },
             {
+              "name": "w",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "原图的宽",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "h",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "原图的高",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
               "name": "predict_score",
               "type": "Integer",
               "remark": "50表示50%",

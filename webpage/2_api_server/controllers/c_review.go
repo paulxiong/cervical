@@ -125,6 +125,8 @@ func SetPredictsReview(c *gin.Context) {
 			Y2:           p.Y2,
 			CellPath:     p.CellPath,
 			ImgPath:      f.Imgpath(img.Batchid, img.Medicalid, img.Imgpath, img.Type),
+			W:            img.W,
+			H:            img.H,
 			PredictScore: p.PredictScore,
 			PredictType:  p.PredictType,
 			PredictP1n0:  p.PredictP1n0,
