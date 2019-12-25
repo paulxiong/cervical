@@ -65,7 +65,7 @@
                   />
                 </el-select>
                 <span>细胞类型: {{ renderData.length }}个</span>
-                <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
+                <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType" @blur="blurEvents" @focus="focusEvents">
                   <el-option
                     v-for="item in CellsTypeOptions"
                     :key="item.value"
@@ -194,6 +194,7 @@ export default {
       centerDialogVisible: false,
       updateLoading: false,
       readOnly: true,
+      url: APIUrl + '/imgs/',
       fov_img: {},
       imgInfo: {},
       renderData: [],
@@ -420,6 +421,14 @@ export default {
         this.renderLabel(this.renderData)
       }, 200)
     },
+    blurEvents() {
+      this.visible = false
+      this.$refs.reference.blurEvents()
+    },
+    focusEvents() {
+      this.visible = false
+      this.$refs.reference.focusEvents()
+    },
     showDialogCheckAll() {
       this.centerDialogVisible = true
       this.all_true_type = this.renderData[0].true_type
@@ -514,8 +523,7 @@ export default {
         this.imgInfo = res.data.data
         this.imgInfo.cells.map((v, idx) => {
           v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
-          // v.tagName = v.status === 1 ? v.true_type : v.predict_type
-          v.tagName = ''
+          v.tagName = v.status === 1 ? v.true_type : v.predict_type
           v.position = {
             x: parseFloat(v.x1 / this.fov_img.w) * 100 + '%',
             x1: parseFloat(v.x2 / this.fov_img.w) * 100 + '%',
@@ -589,6 +597,7 @@ export default {
       this.$refs['aiPanel-editor'].getMarker().clearData()
       if (cells.length) {
         this.select = cells[cells.length - 1]
+        console.log(this.select)
         this.$refs['aiPanel-editor'].getMarker().renderData(cells)
       }
       // if (!select && cells.length) {
