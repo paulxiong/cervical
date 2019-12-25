@@ -89,6 +89,22 @@ export function getLabelByImageId(query) {
   })
 }
 
+export function getLabelReviews(query) {
+  return request({
+    url: '/api1/reviews',
+    method: 'get',
+    params: query
+  })
+}
+
+export function updateLabelReview(data) {
+  return request({
+    url: '/api1/review',
+    method: 'post',
+    data
+  })
+}
+
 export function getDatasetImgs(query) {
   return request({
     url: '/api1/datasetimgs',

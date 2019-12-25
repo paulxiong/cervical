@@ -194,7 +194,6 @@ export default {
       centerDialogVisible: false,
       updateLoading: false,
       readOnly: true,
-      url: APIUrl + '/imgs/',
       fov_img: {},
       imgInfo: {},
       renderData: [],
@@ -515,7 +514,8 @@ export default {
         this.imgInfo = res.data.data
         this.imgInfo.cells.map((v, idx) => {
           v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
-          v.tagName = v.status === 1 ? v.true_type : v.predict_type
+          // v.tagName = v.status === 1 ? v.true_type : v.predict_type
+          v.tagName = ''
           v.position = {
             x: parseFloat(v.x1 / this.fov_img.w) * 100 + '%',
             x1: parseFloat(v.x2 / this.fov_img.w) * 100 + '%',
@@ -589,7 +589,6 @@ export default {
       this.$refs['aiPanel-editor'].getMarker().clearData()
       if (cells.length) {
         this.select = cells[cells.length - 1]
-        console.log(this.select)
         this.$refs['aiPanel-editor'].getMarker().renderData(cells)
       }
       // if (!select && cells.length) {

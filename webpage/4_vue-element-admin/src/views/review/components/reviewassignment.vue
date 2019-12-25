@@ -1,45 +1,97 @@
 <template>
-  <div class="reviewAssignment">
-    <el-radio-group v-model="pid" @change="handlepidchange">
-      <el-radio-button v-for="item in projectlist" :key="item.id" :label="item.id" />
-    </el-radio-group>
-    <div class="tools flex">
-      <el-pagination
-        class="page"
-        :current-page.sync="projectcurrentPage"
-        :page-sizes="[20, 30, 50, 100]"
-        :page-size="10"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="projecttotal"
-        @current-change="handleprojectCurrentChange"
-        @size-change="handleprojectSizeChange"
-      />
-    </div>
-
+  <div class="projectData">
     <el-table
-      ref="multipleTable"
-      :data="predicts"
-      tooltip-effect="dark"
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      :data="projectlist"
       style="width: 100%"
-      @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="id" width="100">
-        <template slot-scope="scope">{{ scope.row.id }}</template>
-      </el-table-column>
-      <el-table-column prop="predict_str" label="预测结果" width="200" />
-      <el-table-column prop="true_str" label="初审核结果" width="200" />
+      <el-table-column type="expand">
+        <template>
+          <div class="temp-box flex">
+            <el-table
+              ref="multipleTable"
+              :data="predicts"
+              tooltip-effect="dark"
+              style="width: 50%"
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column label="ID" prop="id" width="120" />
+              <el-table-column label="预测结果" prop="predict_str" width="200" />
+              <el-table-column label="初审核结果" prop="true_str" width="200" show-overflow-tooltip />
+            </el-table>
+            <div class="select-box" style="width:50%;">
+              <h3>分配给</h3>
+              <el-select v-model="vid" placeholder="请选择">
+                <el-option
+                  v-for="item in userList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                  <img :src="item.image" style="float: left;width:25px;height:25px;">
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+                </el-option>
+              </el-select>
+              <el-button type="primary" @click="setPredictsReview">确定</el-button>
+            </div>
+          </div>
 
+          <el-pagination
+            class="page"
+            :current-page.sync="currentPage2"
+            :page-sizes="[10, 20, 30, 50]"
+            :page-size="currentPageSize2"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total2"
+            @current-change="handleCurrentChange2"
+            @size-change="handleSizeChange2"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column width="60" label="ID" prop="id" />
+      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="数据集 ID" prop="did" />
+      <el-table-column label="创建者">
+        <template slot-scope="scope">
+          <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
+            <el-image
+              style="width:36px;height:36px;border-radius:7px;"
+              :src="scope.row.userimg"
+              lazy
+            >
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" />
+              </div>
+            </el-image>
+          </el-tooltip>
+          <el-image
+            v-else
+            style="width:36px;height:36px;border-radius:7px;"
+            :src="scope.row.userimg"
+            lazy
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="类型" prop="projectType" />
+      <el-table-column label="创建时间" prop="created_at" />
+      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
+        </template>
+      </el-table-column>
     </el-table>
-    <div style="margin-top: 20px">
-      <el-button type="primary" @click="setPredictsReview()">生成细胞审核任务</el-button>
-    </div>
     <div class="tools flex">
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
         :page-sizes="[10, 20, 30, 50]"
-        :page-size="10"
+        :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @current-change="handleCurrentChange"
@@ -51,66 +103,68 @@
 
 <script>
 import { getPredictsByPID, getListprojects, setPredictsReview } from '@/api/cervical'
-import { cellsType } from '@/const/const'
+import { getUserLists } from '@/api/user'
+import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
+import { parseTime } from '@/utils/index'
 
 export default {
-  name: 'ReviewAssignment',
+  name: 'ProjectData',
   components: {},
   data() {
     return {
-      currentPageSize: 10,
-      currentPage: 0,
-      predicts: [],
-      multipleSelection: [],
-      pid: 0,
-      total: 0,
       projectlist: [],
-      projecttotal: 0,
-      projectcurrentPageSize: 20,
-      projectcurrentPage: 0
+      predicts: [],
+      userList: [],
+      selectedList: [],
+      pid: 121,
+      vid: '九分香',
+      total: undefined,
+      currentPage: 1,
+      currentPageSize: 10,
+      total2: undefined,
+      currentPage2: 1,
+      currentPageSize2: 10,
+      loading: false
     }
   },
-  mounted() {
-    this.getPredictsByPID(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.pid)
-    this.getListprojects(this.projectcurrentPageSize, (this.projectcurrentPage - 1) * this.projectcurrentPageSize)
+  created() {
+    this.getUserLists(100, 0, 1)
+    this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+    this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
   },
   methods: {
-    filterSearch() {
-    },
-    handlepidchange(val) {
-      this.getPredictsByPID(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.pid)
-    },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getPredictsByPID(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.pid)
+      this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getPredictsByPID(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.pid)
+      this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
+    },
+    handleCurrentChange2(val) {
+      this.currentPage2 = val
+      this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
+    },
+    handleSizeChange2(val) {
+      this.currentPageSize2 = val
+      this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
     },
     handleSelectionChange(val) {
-      this.multipleSelection = []
+      console.log(val)
+      this.selectedList = []
       val.map(v => {
-        this.multipleSelection.push(v.id)
+        this.selectedList.push(v.id)
       })
-    },
-    handleprojectCurrentChange(val) {
-      this.projectcurrentPage = val
-      this.getListprojects(this.projectcurrentPageSize, (this.projectcurrentPage - 1) * this.projectcurrentPageSize)
-    },
-    handleprojectSizeChange(val) {
-      this.projectcurrentPageSize = val
-      this.getListprojects(this.projectcurrentPageSize, (this.projectcurrentPage - 1) * this.projectcurrentPageSize)
+      console.log(this.selectedList)
     },
     getPredictsByPID(limit, skip, pid) {
-      this.loading = true
       getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 1 }).then(res => {
         this.predicts = []
-        this.total = 0
+        this.total2 = 0
         if (!res.data.data || !res.data.data.predicts || res.data.data.predicts.length < 1) {
           return
         }
-        this.total = res.data.data.total
+        this.total2 = res.data.data.total
         this.predicts = res.data.data.predicts
         this.predicts.map(v => {
           v.predict_str = cellsType[v.predict_type]
@@ -121,17 +175,33 @@ export default {
     getListprojects(limit, skip, order) {
       this.loading = true
       getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        res.data.data.projects.map(v => {
+          v.created_at = parseTime(v.created_at)
+          v.updated_at = parseTime(v.updated_at)
+          v.starttime = parseTime(v.starttime)
+          v.endtime = parseTime(v.endtime)
+          v.created_by = createdBy[v.created_by] || '普通用户'
+          v.statusType = taskType[v.status]
+          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
+          v.projectType = projectType[v.type]
+        })
         this.projectlist = res.data.data.projects
-        this.projecttotal = res.data.data.total
+        this.pid = res.data.data.projects[0].id
+        this.total = res.data.data.total
         this.loading = false
+      })
+    },
+    getUserLists(limit, skip, order) {
+      getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        this.userList = res.data.data.users
       })
     },
     setPredictsReview() {
       this.loading = true
       const postData = {
         'pid': this.pid,
-        'predicts': this.multipleSelection,
-        'vid': 0
+        'predicts': this.selectedList,
+        'vid': 12
       }
       setPredictsReview(postData).then(res => {
         this.loading = false
@@ -143,19 +213,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.recycleData {
+.projectData {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  .tools {
-    background: #fff;
-    justify-content: space-around;
-    bottom: 0px;
-    position: fixed;
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
+  .temp-box {
+    justify-content: flex-start;
+    align-items: flex-start;
   }
   .table-expand {
     font-size: 0;
@@ -167,7 +231,7 @@ export default {
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 50%;
+    width: calc(100% / 4);
   }
 }
 </style>

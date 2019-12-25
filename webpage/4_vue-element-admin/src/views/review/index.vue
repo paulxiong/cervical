@@ -20,14 +20,14 @@ export default {
   components: { reviewAssignment, reviewPage },
   data() {
     return {
-      activeName: 'assignment'
+      activeName: 'review'
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.home {
+.review {
   padding: 0 30px;
 }
 </style>
