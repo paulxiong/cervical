@@ -52,6 +52,16 @@ func GetReviewByPRID(prid int64) (p Review, e error) {
 	return _r, ret.Error
 }
 
+// GetReviewByID 通过ID查找审核信息
+func GetReviewByID(id int64) (r Review, e error) {
+	var _r Review
+	ret := db.Model(&_r).Where("id = ?", id).First(&_r)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return _r, ret.Error
+}
+
 // CreateReviews 新建待审核的细胞预测结果，一个很长的数组
 func CreateReviews(reviews []*Review) (e error) {
 	if len(reviews) < 1 {
@@ -101,7 +111,7 @@ func ListReviews(limit int, skip int, status int, userid int64) (totalNum int64,
 
 // UpdateReview 更新审核信息
 func UpdateReview(id int64, trueType int, userid int64) (e error) {
-	_, err := GetReviewByPRID(id)
+	_, err := GetReviewByID(id)
 	if err != nil {
 		return err
 	}
