@@ -212,7 +212,9 @@ export default {
       predictResult: {},
       rightCellsList: [],
       falseCellsList: [],
-      select: {},
+      select: {
+        cellpath: ''
+      },
       selectFov: 0,
       orgImgList: [],
       adminValue: '正确',

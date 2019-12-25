@@ -1,6 +1,6 @@
 <template>
   <div class="temps">
-    <section class="label-img flex">
+    <section v-if="imgInfo.w" class="label-img flex">
       <AIMarker
         ref="aiPanel-editor"
         class="ai-observer"
@@ -18,9 +18,13 @@
           :src="hosturlpath64 + imgInfo.cellpath + '?width=200'"
         />
       </el-badge>
-      <el-radio-group v-model="true_type" style="width: 200px;" @change="updateLabelReview">
-        <el-radio-button v-for="(cells, idx) of cellsType" :key="idx" :label="cells" />
+      <el-radio-group v-model="true_type" class="list">
+        <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
+        <el-button type="primary" :disabled="!true_type" @click="updateLabelReview">确定 <span>剩余 {{ fov_img.total }} 个</span></el-button>
       </el-radio-group>
+    </section>
+    <section v-else class="flex">
+      已审核完成，暂无其他审核任务...
     </section>
   </div>
 </template>
@@ -40,7 +44,10 @@ export default {
       readOnly: true,
       cellsType: cellsType,
       hosturlpath64: APIUrl + '/imgs/',
-      imgInfo: {},
+      imgInfo: {
+        imgpath: '',
+        cellpath: ''
+      },
       skip: 0,
       fov_img: []
     }
@@ -52,17 +59,26 @@ export default {
     getLabelReviews(limit, skip, status) {
       getLabelReviews({ limit: limit, skip: skip, status: status }).then(res => {
         this.fov_img = res.data.data
-        this.fov_img.reviews.map(v => {
-          v.tagName = ''
-          v.position = {
-            x: parseFloat(v.x1 / v.w) * 100 + '%',
-            x1: parseFloat(v.x2 / v.w) * 100 + '%',
-            y: parseFloat(v.y1 / v.h) * 100 + '%',
-            y1: parseFloat(v.y2 / v.h) * 100 + '%'
+        if (this.fov_img.reviews.length) {
+          this.fov_img.reviews.map(v => {
+            v.tagName = ''
+            v.position = {
+              x: parseFloat(v.x1 / v.w) * 100 + '%',
+              x1: parseFloat(v.x2 / v.w) * 100 + '%',
+              y: parseFloat(v.y1 / v.h) * 100 + '%',
+              y1: parseFloat(v.y2 / v.h) * 100 + '%'
+            }
+          })
+          this.imgInfo = this.fov_img.reviews[0]
+          setTimeout(() => {
+            this.renderLabel(this.fov_img.reviews)
+          }, 200)
+        } else {
+          this.imgInfo = {
+            imgpath: '',
+            cellpath: ''
           }
-        })
-        this.imgInfo = this.fov_img.reviews[0]
-        this.renderLabel(this.fov_img.reviews)
+        }
       })
     },
     updateLabelReview() {
@@ -71,6 +87,10 @@ export default {
         true_type: parseInt(this.true_type.split(' ')[0])
       }).then(res => {
         this.true_type = ''
+        this.imgInfo = {
+          imgpath: '',
+          cellpath: ''
+        }
         this.getLabelReviews(1, this.skip++, 0)
         this.$message({
           message: '审核确认成功',
@@ -88,13 +108,25 @@ export default {
 
 <style lang="scss" scoped>
 .temps {
+  .ai-observer {
+    border: 2px solid rgb(0, 255, 81);
+    border-radius: 5px;
+  }
   .label-img {
     justify-content: space-around;
   }
+  .list {
+    display: block;
+    border: 1px dashed #ccc;
+    padding: 10px 20px;
+    .item {
+      display: block;
+      margin: 7px 0;
+      font-size: 24px;
+    }
+  }
   .img-item {
     border: 1px solid #ccc;
-    // margin-right: 10px;
-    // margin-bottom: 10px;
   }
   .img-right {
     border: 2px solid rgb(0, 255, 81);

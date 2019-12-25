@@ -14,6 +14,7 @@
               :data="predicts"
               tooltip-effect="dark"
               style="width: 50%"
+              @expand-change="expandChange"
               @selection-change="handleSelectionChange"
             >
               <el-table-column type="selection" width="55" />
@@ -117,7 +118,7 @@ export default {
       userList: [],
       selectedList: [],
       pid: 121,
-      vid: '九分香',
+      vid: 0,
       total: undefined,
       currentPage: 1,
       currentPageSize: 10,
@@ -150,12 +151,13 @@ export default {
       this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
     },
     handleSelectionChange(val) {
-      console.log(val)
       this.selectedList = []
       val.map(v => {
         this.selectedList.push(v.id)
       })
-      console.log(this.selectedList)
+    },
+    expandChange() {
+      console.log(111)
     },
     getPredictsByPID(limit, skip, pid) {
       getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 1 }).then(res => {
@@ -201,7 +203,7 @@ export default {
       const postData = {
         'pid': this.pid,
         'predicts': this.selectedList,
-        'vid': 12
+        'vid': this.vid
       }
       setPredictsReview(postData).then(res => {
         this.loading = false
