@@ -5,16 +5,16 @@
       element-loading-text="拼命加载中"
       :data="projectlist"
       style="width: 100%"
+      @expand-change="expandChange"
     >
       <el-table-column type="expand">
-        <template>
+        <template slot-scope="scope">
           <div class="temp-box flex">
             <el-table
               ref="multipleTable"
-              :data="predicts"
+              :data="scope.row.predictsList"
               tooltip-effect="dark"
               style="width: 50%"
-              @expand-change="expandChange"
               @selection-change="handleSelectionChange"
             >
               <el-table-column type="selection" width="55" />
@@ -45,7 +45,7 @@
             :page-sizes="[10, 20, 30, 50]"
             :page-size="currentPageSize2"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="total2"
+            :total="scope.row.total"
             @current-change="handleCurrentChange2"
             @size-change="handleSizeChange2"
           />
@@ -156,21 +156,26 @@ export default {
         this.selectedList.push(v.id)
       })
     },
-    expandChange() {
-      console.log(111)
+    expandChange(val, event) {
+      if (event.length) {
+        this.pid = val.id
+        this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, val.id)
+      }
     },
     getPredictsByPID(limit, skip, pid) {
       getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 1 }).then(res => {
-        this.predicts = []
-        this.total2 = 0
         if (!res.data.data || !res.data.data.predicts || res.data.data.predicts.length < 1) {
           return
         }
-        this.total2 = res.data.data.total
-        this.predicts = res.data.data.predicts
-        this.predicts.map(v => {
-          v.predict_str = cellsType[v.predict_type]
-          v.true_str = cellsType[v.true_type]
+        this.projectlist.map(v => {
+          if (v.id === this.pid) {
+            res.data.data.predicts.map(item => {
+              item.predict_str = cellsType[item.predict_type]
+              item.true_str = cellsType[item.true_type]
+            })
+            v.predictsList = res.data.data.predicts
+            v.total = res.data.data.total
+          }
         })
       })
     },
