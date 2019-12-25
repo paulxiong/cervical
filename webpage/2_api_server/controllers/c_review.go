@@ -130,7 +130,7 @@ func SetPredictsReview(c *gin.Context) {
 			PredictP1n0:  p.PredictP1n0,
 			TrueType:     p.TrueType,
 			TrueP1n0:     p.TrueP1n0,
-			VID:          p.VID,
+			VID:          sr.VID,
 			Status:       0, //0 未审核 1 已审核 2 移除 3 管理员已确认
 		})
 	}
