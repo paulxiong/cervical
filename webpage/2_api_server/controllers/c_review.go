@@ -36,7 +36,7 @@ type predictsByPID struct {
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
 // @Param status query string false "status, default 1, 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
-// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Success 200 {object} controllers.predictsByPID
 // @Router /api1/predictsbypid [get]
 func GetPredictsByPID(c *gin.Context) {
 	pidStr := c.DefaultQuery("pid", "0")
@@ -48,12 +48,15 @@ func GetPredictsByPID(c *gin.Context) {
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	status, _ := strconv.ParseInt(statusStr, 10, 64)
 
-	p, total, _ := models.GetPredictByPID(pid, int(status), int(limit), int(skip))
+	p, total, _ := models.GetPredictByPID(pid, int(status), 1000000, 0)
 
 	_predicts := predictsByPID{}
 	_predicts.Predicts = make([]_predictsByPID, 0)
 	_predicts.Total = total
-	for _, v := range p {
+	for index, v := range p {
+		if index < int(skip) || len(_predicts.Predicts) >= int(limit) {
+			continue
+		}
 		//已经添加到细胞审核的就不需要重复添加了
 		_r, err1 := models.GetReviewByPRID(v.ID)
 		if err1 == nil || _r.ID > 0 {

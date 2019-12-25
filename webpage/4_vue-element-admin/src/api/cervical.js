@@ -272,3 +272,19 @@ export function getAllPredictResult(query) {
     params: query
   })
 }
+
+export function getPredictsByPID(query) {
+  return request({
+    url: '/api1/predictsbypid',
+    method: 'get',
+    params: query
+  })
+}
+
+export function setPredictsReview(data) {
+  return request({
+    url: '/api1/setpredictsreview',
+    method: 'post',
+    data
+  })
+}

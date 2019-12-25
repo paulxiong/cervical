@@ -194,7 +194,7 @@ func GetPredictByPID(pid int64, status int, limit int, skip int) (p []Predict, t
 	var _p []Predict
 	var total int64
 	db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Count(&total)
-	ret := db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Find(&_p)
+	ret := db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

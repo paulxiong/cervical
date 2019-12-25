@@ -129,6 +129,21 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/review',
+    component: Layout,
+    redirect: '/review/list',
+    name: '审核细胞',
+    meta: { title: '审核细胞', icon: 'nested' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/review/index'),
+        name: '审核细胞',
+        meta: { title: '审核细胞', icon: 'documentation', affix: true }
+      }
+    ]
+  },
+  {
     path: '/label',
     component: Layout,
     redirect: '/label',
