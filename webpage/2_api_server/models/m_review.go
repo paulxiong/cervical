@@ -92,7 +92,7 @@ func ListReviews(limit int, skip int, status int, userid int64) (totalNum int64,
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
-	ret = db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Find(&_r)
+	ret = db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Limit(limit).Offset(skip).Find(&_r)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
