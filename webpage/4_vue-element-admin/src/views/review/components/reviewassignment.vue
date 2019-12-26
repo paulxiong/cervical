@@ -41,9 +41,9 @@
 
           <el-pagination
             class="page"
-            :current-page.sync="currentPage2"
+            :current-page.sync="scope.row.currentPage"
             :page-sizes="[10, 20, 30, 50]"
-            :page-size="currentPageSize2"
+            :page-size="scope.row.currentPageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="scope.row.total"
             @current-change="handleCurrentChange2"
@@ -174,6 +174,10 @@ export default {
               item.true_str = cellsType[item.true_type]
             })
             v.predictsList = res.data.data.predicts
+            v.currentPage = 1
+            v.currentPageSize = 10
+            // v.handleCurrentChange = this.handleCurrentChange2
+            // v.handleSizeChange = this.handleSizeChange2
             v.total = res.data.data.total
           }
         })
