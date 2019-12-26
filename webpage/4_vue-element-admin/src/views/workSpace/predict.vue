@@ -525,7 +525,8 @@ export default {
         this.imgInfo = res.data.data
         this.imgInfo.cells.map((v, idx) => {
           v.tag = `${v.imgid}-${v.status === 1 ? v.true_type : v.predict_type}`
-          v.tagName = v.status === 1 ? v.true_type : v.predict_type
+          // v.tagName = v.status === 1 ? v.true_type : v.predict_type
+          v.tagName = ''
           v.position = {
             x: parseFloat(v.x1 / this.fov_img.w) * 100 + '%',
             x1: parseFloat(v.x2 / this.fov_img.w) * 100 + '%',

@@ -26,7 +26,7 @@
     <section v-else class="flex">
       已审核完成，暂无其他审核任务...
     </section>
-    <canvas id="myCanvas" ref="myCanvas" />
+    <!-- <canvas id="myCanvas" ref="myCanvas" /> -->
   </div>
 </template>
 
@@ -56,13 +56,13 @@ export default {
   created() {
     this.getLabelReviews(1, this.skip, 0)
   },
-  mounted() {
-    const canvas = this.$refs.myCanvas
-    const ctx = canvas.getContext('2d')
-    ctx.moveTo(100, 100)
-    ctx.lineTo(200, 100)
-    ctx.stroke()
-  },
+  // mounted() {
+  //   const canvas = this.$refs.myCanvas
+  //   const ctx = canvas.getContext('2d')
+  //   ctx.moveTo(100, 100)
+  //   ctx.lineTo(200, 100)
+  //   ctx.stroke()
+  // },
   methods: {
     getLabelReviews(limit, skip, status) {
       getLabelReviews({ limit: limit, skip: skip, status: status }).then(res => {
