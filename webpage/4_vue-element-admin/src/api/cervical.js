@@ -297,6 +297,14 @@ export function getPredictsByPID(query) {
   })
 }
 
+export function getPredictsByPID2(query) {
+  return request({
+    url: '/api1/predictsbypid2',
+    method: 'get',
+    params: query
+  })
+}
+
 export function setPredictsReview(data) {
   return request({
     url: '/api1/setpredictsreview',
