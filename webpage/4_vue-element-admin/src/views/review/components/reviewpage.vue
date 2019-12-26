@@ -2,6 +2,14 @@
   <div class="temps">
     <section v-if="imgInfo.w" class="label-img flex">
       <AIMarker
+        v-if="isPhone"
+        ref="aiPanel-editor"
+        class="ai-observer"
+        :read="readOnly"
+        :img="hosturlpath64 + imgInfo.imgpath + '?width=850'"
+      />
+      <AIMarker
+        v-else
         ref="aiPanel-editor"
         class="ai-observer"
         :style="{width: imgInfo.w < 850 ? imgInfo.w + 'px' : 850 + 'px',height: imgInfo.w < 850 ? imgInfo.h + 'px' : (imgInfo.h*(850/imgInfo.w)) + 'px'}"
@@ -18,8 +26,8 @@
           :src="hosturlpath64 + imgInfo.cellpath + '?width=200'"
         />
       </el-badge>
-      <el-radio-group v-model="true_type" class="list">
-        <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
+      <el-radio-group v-model="true_type" class="radio-list">
+        <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="radio-item">{{ cell }}</el-radio>
         <el-button type="primary" :disabled="!true_type" @click="updateLabelReview">确定</el-button>
         <el-link type="info" disabled style="margin-left: 10px;">剩余 {{ fov_img.total }} 个</el-link>
       </el-radio-group>
@@ -45,6 +53,7 @@ export default {
       true_type: '',
       readOnly: true,
       cellsType: cellsType,
+      isPhone: false,
       hosturlpath64: APIUrl + '/imgs/',
       imgInfo: {
         imgpath: '',
@@ -57,13 +66,17 @@ export default {
   created() {
     this.getLabelReviews(1, this.skip, 0)
   },
-  // mounted() {
-  //   const canvas = this.$refs.myCanvas
-  //   const ctx = canvas.getContext('2d')
-  //   ctx.moveTo(100, 100)
-  //   ctx.lineTo(200, 100)
-  //   ctx.stroke()
-  // },
+  mounted() {
+    console.log(document.body.clientWidth)
+    if (document.body.clientWidth < 600) {
+      this.isPhone = true
+    }
+    // const canvas = this.$refs.myCanvas
+    // const ctx = canvas.getContext('2d')
+    // ctx.moveTo(100, 100)
+    // ctx.lineTo(200, 100)
+    // ctx.stroke()
+  },
   methods: {
     getLabelReviews(limit, skip, status) {
       getLabelReviews({ limit: limit, skip: skip, status: status }).then(res => {
@@ -116,6 +129,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media screen and (min-width: 300px) and (max-width: 600px) {
+  .label-img {
+    flex-direction: column;
+    .ai-observer {
+      // display: none;
+      width: 100%;
+      height: 300px;
+    }
+    .item {
+      margin: 5px 0;
+    }
+  }
+}
+@media screen and (min-width: 600px) and (max-width: 800px) {
+  .label-img {
+    flex-direction: column;
+    .ai-observer {
+      // display: none;
+      width: 100%;
+      height: 400px;
+    }
+    .item {
+      margin: 10px;
+    }
+  }
+}
 .temps {
   .mycanvas {
     width: 100px;
@@ -131,13 +170,13 @@ export default {
   .label-img {
     justify-content: space-around;
   }
-  .list {
+  .radio-list {
     display: block;
     border: 1px dashed #ccc;
-    padding: 10px 20px;
-    .item {
+    padding: 5px 10px;
+    .radio-item {
       display: block;
-      margin: 7px 0;
+      margin: 5px 0;
       font-size: 24px;
     }
   }
