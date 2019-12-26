@@ -201,6 +201,25 @@ func GetPredictByPID(pid int64, status int, limit int, skip int) (p []Predict, t
 	return _p, total, ret.Error
 }
 
+// GetPredictByPIDAndType 通过项目ID和预测类型获得所有的预测及标注结果,status 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
+func GetPredictByPIDAndType(pid int64, status int, limit int, skip int, predictType int, order int) (p []Predict, t int64, e error) {
+	var _p []Predict
+	var total int64
+
+	orderStr := "predict_score DESC"
+	//order, default 1, 1倒序，0顺序
+	if order == 0 {
+		orderStr = "predict_score ASC"
+	}
+
+	db.Model(&Predict{}).Where("pid=? AND status=? AND predict_type=?", pid, status, predictType).Count(&total)
+	ret := db.Model(&Predict{}).Where("pid=? AND status=? AND predict_type=?", pid, status, predictType).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return _p, total, ret.Error
+}
+
 type _predictCount struct {
 	ID      int64  `json:"id" `     //ID
 	Name    string `json:"name"`    //用户名

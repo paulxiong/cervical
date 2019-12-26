@@ -12,9 +12,10 @@ import (
 )
 
 type _predictsByPID struct {
-	ID          int64 `json:"id" `                         //ID
-	PredictType int   `json:"predict_type"  example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
-	TrueType    int   `json:"true_type"     example:"100"` //医生标注的细胞类型 默认等于predict_type
+	ID           int64 `json:"id" `                         //ID
+	PredictType  int   `json:"predict_type"  example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
+	TrueType     int   `json:"true_type"     example:"100"` //医生标注的细胞类型 默认等于predict_type
+	PredictScore int   `json:"predict_score" example:"100"` //预测得分 50表示50%
 }
 
 // PredictCount 用户审核的统计
@@ -26,8 +27,6 @@ type predictsByPID struct {
 // GetPredictsByPID 通过项目ID取出所有预测信息
 // @Summary 通过项目ID取出所有预测信息
 // @Description 通过项目ID取出所有预测信息
-// @Description status：
-// @Description 200 创建
 // @tags API1 医生检查细胞类型（需要认证）
 // @Accept  json
 // @Produce json
@@ -63,9 +62,65 @@ func GetPredictsByPID(c *gin.Context) {
 			continue
 		}
 		_predicts.Predicts = append(_predicts.Predicts, _predictsByPID{
-			ID:          v.ID,
-			PredictType: v.PredictType,
-			TrueType:    v.TrueType,
+			ID:           v.ID,
+			PredictType:  v.PredictType,
+			TrueType:     v.TrueType,
+			PredictScore: v.PredictScore,
+		})
+	}
+
+	res.ResSucceedStruct(c, _predicts)
+	return
+}
+
+// GetPredictsByPIDSortByScore 通过项目ID和预测类型取出所有预测信息，按照得分排序
+// @Summary 通过项目ID和预测类型取出所有预测信息，按照得分排序
+// @Description 通过项目ID和预测类型取出所有预测信息，按照得分排序
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param pid query string false "pid, default 0, 所属项目的ID"
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Param status query string false "status, default 1, 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
+// @Param type query string false "type, default 50,　细胞预测类型"
+// @Param order query string false "order, default 0, 1倒序，0顺序"
+// @Success 200 {object} controllers.predictsByPID
+// @Router /api1/predictsbypid2 [get]
+func GetPredictsByPIDSortByScore(c *gin.Context) {
+	pidStr := c.DefaultQuery("pid", "0")
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	statusStr := c.DefaultQuery("status", "1")
+	typeStr := c.DefaultQuery("type", "50")
+	orderStr := c.DefaultQuery("order", "0")
+	pid, _ := strconv.ParseInt(pidStr, 10, 64)
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
+	_type, _ := strconv.ParseInt(typeStr, 10, 64)
+	order, _ := strconv.ParseInt(orderStr, 10, 64)
+
+	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), 300, 0, int(_type), int(order))
+
+	_predicts := predictsByPID{}
+	_predicts.Predicts = make([]_predictsByPID, 0)
+	_predicts.Total = total
+	for index, v := range p {
+		if index < int(skip) || len(_predicts.Predicts) >= int(limit) {
+			continue
+		}
+		//已经添加到细胞审核的就不需要重复添加了
+		_r, err1 := models.GetReviewByPRID(v.ID)
+		if err1 == nil || _r.ID > 0 {
+			continue
+		}
+		_predicts.Predicts = append(_predicts.Predicts, _predictsByPID{
+			ID:           v.ID,
+			PredictType:  v.PredictType,
+			TrueType:     v.TrueType,
+			PredictScore: v.PredictScore,
 		})
 	}
 
