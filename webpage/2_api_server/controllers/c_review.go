@@ -117,15 +117,10 @@ func SetPredictsReview(c *gin.Context) {
 		//　拷贝FOV和细胞图到审核专门用的目录
 		imgpath := f.Imgpath(img.Batchid, img.Medicalid, img.Imgpath, img.Type)
 		imgnewpath := f.ReviewImgPath(imgpath)
-		ret, err3 := f.PathExists(imgnewpath)
-		if ret != true || err3 != nil {
-			f.CopyFile(imgpath, imgnewpath)
-		}
+		f.CopyFile(imgpath, imgnewpath)
+
 		cellnewpath := f.ReviewCellPath(p.CellPath, imgnewpath)
-		ret, err3 = f.PathExists(cellnewpath)
-		if ret != true || err3 != nil {
-			f.CopyFile(p.CellPath, cellnewpath)
-		}
+		f.CopyFile(p.CellPath, cellnewpath)
 
 		reviews = append(reviews, &models.Review{
 			ID:           0,

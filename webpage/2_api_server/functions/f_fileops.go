@@ -23,7 +23,7 @@ func NewDir(dirname string) error {
 // CopyFile 文件拷贝
 func CopyFile(srcName string, dstName string) (written int64, err error) {
 	ret, err := PathExists(dstName)
-	if ret == true || err == nil {
+	if ret == true {
 		return
 	}
 	src, err := os.Open(srcName)

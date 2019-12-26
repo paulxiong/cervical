@@ -78,10 +78,7 @@ func ReviewImgPath(src string) (imgpth string) {
 	// scratch/img/b157521600000025/m157527753898025/Images/076ca419a04b446d9e88d8fe03a85d69
 	newimgpath := strings.Replace(src, "img", "review", 1)
 	newimgdir, _ := filepath.Split(newimgpath)
-	ret, err := PathExists(newimgdir)
-	if ret != true || err != nil {
-		NewDir(newimgdir)
-	}
+	NewDir(newimgdir)
 	return newimgpath
 }
 
@@ -91,10 +88,7 @@ func ReviewCellPath(src string, fovpath string) (cellpath string) {
 	_, fileName := filepath.Split(src)
 	fovdir, _ := filepath.Split(fovpath)
 	celldir := strings.Replace(fovdir, "Images", "Cells", 1)
-	ret, err := PathExists(celldir)
-	if ret != true || err != nil {
-		NewDir(celldir)
-	}
+	NewDir(celldir)
 	_cellpath := path.Join(celldir, fileName)
 	return _cellpath
 }
