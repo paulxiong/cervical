@@ -212,8 +212,8 @@ func GetPredictByPIDAndType(pid int64, status int, limit int, skip int, predictT
 		orderStr = "predict_score ASC"
 	}
 
-	db.Model(&Predict{}).Where("pid=? AND status=? AND predict_type=?", pid, status, predictType).Count(&total)
-	ret := db.Model(&Predict{}).Where("pid=? AND status=? AND predict_type=?", pid, status, predictType).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
+	db.Model(&Predict{}).Where("pid=? AND predict_type=? AND status=?", pid, predictType, status).Count(&total)
+	ret := db.Model(&Predict{}).Where("pid=? AND predict_type=? AND status=?", pid, predictType, status).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

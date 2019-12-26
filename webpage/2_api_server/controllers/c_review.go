@@ -12,10 +12,11 @@ import (
 )
 
 type _predictsByPID struct {
-	ID           int64 `json:"id" `                         //ID
-	PredictType  int   `json:"predict_type"  example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
-	TrueType     int   `json:"true_type"     example:"100"` //医生标注的细胞类型 默认等于predict_type
-	PredictScore int   `json:"predict_score" example:"100"` //预测得分 50表示50%
+	ID           int64  `json:"id" `                         //ID
+	PredictType  int    `json:"predict_type"  example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
+	TrueType     int    `json:"true_type"     example:"100"` //医生标注的细胞类型 默认等于predict_type
+	PredictScore int    `json:"predict_score" example:"100"` //预测得分 50表示50%
+	CellPath     string `json:"cellpath"      example:"100"` //上述坐标切割出来的细胞
 }
 
 // PredictCount 用户审核的统计
@@ -65,7 +66,7 @@ func GetPredictsByPID(c *gin.Context) {
 			ID:           v.ID,
 			PredictType:  v.PredictType,
 			TrueType:     v.TrueType,
-			PredictScore: v.PredictScore,
+			PredictScore: 0,
 		})
 	}
 
@@ -85,7 +86,7 @@ func GetPredictsByPID(c *gin.Context) {
 // @Param skip query string false "skip, default 0"
 // @Param status query string false "status, default 1, 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
 // @Param type query string false "type, default 50,　细胞预测类型"
-// @Param order query string false "order, default 0, 1倒序，0顺序"
+// @Param order query string false "order, default 0, 0倒序，1顺序"
 // @Success 200 {object} controllers.predictsByPID
 // @Router /api1/predictsbypid2 [get]
 func GetPredictsByPIDSortByScore(c *gin.Context) {
@@ -102,7 +103,7 @@ func GetPredictsByPIDSortByScore(c *gin.Context) {
 	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 	order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), 300, 0, int(_type), int(order))
+	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), 150, 0, int(_type), int(order))
 
 	_predicts := predictsByPID{}
 	_predicts.Predicts = make([]_predictsByPID, 0)
@@ -121,6 +122,7 @@ func GetPredictsByPIDSortByScore(c *gin.Context) {
 			PredictType:  v.PredictType,
 			TrueType:     v.TrueType,
 			PredictScore: v.PredictScore,
+			CellPath:     v.CellPath,
 		})
 	}
 
