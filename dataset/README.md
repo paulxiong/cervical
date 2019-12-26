@@ -440,3 +440,17 @@ bingli_P2_cells_fit_1213
     ├── invalid（42294）
     └── valid（35359）
 ```
+### bingli_N_V2_1220（训练+测试数据2次筛选——阴性病例）
+```
+链接：https://pan.baidu.com/s/1PhuFwSMV7TZTHzbqsFHBKQ 
+提取码：koio
+说明：2019年12月25日，基于目前数据bingli_N_cells_fit_1213，按照‘人工筛选细胞的标准V2’人工筛选细胞
+目录结构：
+bingli_N_V2_1220
+├── test_data
+│   ├── invalid_test(1000)
+│   └── valid_test(1000)
+└── train_data
+    ├── invalid(91765)
+    └── valid(51235)
+```
