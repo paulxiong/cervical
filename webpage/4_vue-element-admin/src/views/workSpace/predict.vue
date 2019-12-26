@@ -65,7 +65,7 @@
                   />
                 </el-select>
                 <span>细胞类型: {{ renderData.length }}个</span>
-                <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType" @blur="blurEvents" @focus="focusEvents">
+                <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
                   <el-option
                     v-for="item in CellsTypeOptions"
                     :key="item.value"
@@ -422,14 +422,6 @@ export default {
       setTimeout(() => {
         this.renderLabel(this.renderData)
       }, 200)
-    },
-    blurEvents() {
-      this.visible = false
-      this.$refs.reference.blurEvents()
-    },
-    focusEvents() {
-      this.visible = false
-      this.$refs.reference.focusEvents()
     },
     showDialogCheckAll() {
       this.centerDialogVisible = true
