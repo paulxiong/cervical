@@ -454,3 +454,17 @@ bingli_N_V2_1220
     ├── invalid(91765)
     └── valid(51235)
 ```
+### bingli_P2_V2_1225（训练+测试数据2次筛选——阳性病例）
+```
+链接：https://pan.baidu.com/s/16_-siABexMsPT2uCJ7NueQ 
+提取码：6to2
+说明：2019年12月25日，基于目前数据bingli_P2_cells_fit_1213，按照‘人工筛选细胞的标准V2’人工筛选细胞
+目录结构：
+bingli_P2_V2_1225
+├── test_data
+│   ├── invalid_test(1000)
+│   └── valid_test(1000)
+└── train_data
+    ├── invalid(46323)
+    └── valid(31330)
+```
