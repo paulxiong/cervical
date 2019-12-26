@@ -20,7 +20,8 @@
       </el-badge>
       <el-radio-group v-model="true_type" class="list">
         <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="item">{{ cell }}</el-radio>
-        <el-button type="primary" :disabled="!true_type" @click="updateLabelReview">确定 <span>剩余 {{ fov_img.total }} 个</span></el-button>
+        <el-button type="primary" :disabled="!true_type" @click="updateLabelReview">确定</el-button>
+        <el-link type="info" disabled style="margin-left: 10px;">剩余 {{ fov_img.total }} 个</el-link>
       </el-radio-group>
     </section>
     <section v-else class="flex">
