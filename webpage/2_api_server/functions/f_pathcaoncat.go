@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 )
@@ -69,4 +71,30 @@ func HeaderImgPathURL(filename string) (string, string) {
 		return _dirpath, _imgURL
 	}
 	return _imgpath, _imgURL
+}
+
+// ReviewImgPath 获得存放FOV的路径
+func ReviewImgPath(src string) (imgpth string) {
+	// scratch/img/b157521600000025/m157527753898025/Images/076ca419a04b446d9e88d8fe03a85d69
+	newimgpath := strings.Replace(src, "img", "review", 1)
+	newimgdir, _ := filepath.Split(newimgpath)
+	ret, err := PathExists(newimgdir)
+	if ret != true || err != nil {
+		NewDir(newimgdir)
+	}
+	return newimgpath
+}
+
+// ReviewCellPath 获得存放细胞的路径
+func ReviewCellPath(src string, fovpath string) (cellpath string) {
+	// projects/ek1roy1R/resize_predict/100/b157521600000025.m157527753898025.6005.076ca419a04b446d9e88d8fe03a85d69_1_100_0_2_2348_772_2448_872_100.png
+	_, fileName := filepath.Split(src)
+	fovdir, _ := filepath.Split(fovpath)
+	celldir := strings.Replace(fovdir, "Images", "Cells", 1)
+	ret, err := PathExists(celldir)
+	if ret != true || err != nil {
+		NewDir(celldir)
+	}
+	_cellpath := path.Join(celldir, fileName)
+	return _cellpath
 }
