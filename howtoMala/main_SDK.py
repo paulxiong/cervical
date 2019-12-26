@@ -383,7 +383,7 @@ class mala_predict(worker):
             _, shotname, extension = get_filePath_fileName_fileExt(cellpath)
             imgid, x1, y1, x2, y2 = parse_imgid_xy_from_cellname(shotname)
 
-            result.append([cellpath, predict_label, predict_label, 1, 1, x1, y1, x2, y2, imgid])
+            result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
         df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
 
         return True, df_result
