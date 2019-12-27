@@ -14,7 +14,7 @@
         class="ai-observer"
         :style="{width: imgInfo.w < 850 ? imgInfo.w + 'px' : 850 + 'px',height: imgInfo.w < 850 ? imgInfo.h + 'px' : (imgInfo.h*(850/imgInfo.w)) + 'px'}"
         :read="readOnly"
-        :img="hosturlpath64 + imgInfo.imgpath + '?width=850'"
+        :img="hosturlpath64 + imgInfo.imgpath2"
       />
       <el-badge
         :value="`${imgInfo.predict_type}`"
@@ -59,6 +59,10 @@ export default {
         imgpath: '',
         cellpath: ''
       },
+      x1: 0,
+      x2: 0,
+      y1: 0,
+      y2: 0,
       skip: 0,
       fov_img: []
     }
@@ -78,17 +82,40 @@ export default {
     // ctx.stroke()
   },
   methods: {
+    // 计算需要框出来的正方形区域
+    calculateSquare(_x1, _x2, _y1, _y2, w, h) {
+      const sidehalf = 300 // 边长600
+      const x = parseInt((_x1 + _x2) / 2)
+      const y = parseInt((_y1 + _y2) / 2)
+      let x1 = x - sidehalf
+      let x2 = x + sidehalf
+      let y1 = y - sidehalf
+      let y2 = y + sidehalf
+
+      x1 = (x1 >= 0) ? x1 : 0
+      y1 = (y1 >= 0) ? y1 : 0
+      x2 = (x2 < w) ? x2 : (w - 1)
+      y2 = (y2 < h) ? y2 : (h - 1)
+
+      const neww = ((x1 + x2) / 2).toFixed(0)
+      const newh = ((y1 + y2) / 2).toFixed(0)
+      return { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'w': neww, 'h': newh }
+    },
     getLabelReviews(limit, skip, status) {
       getLabelReviews({ limit: limit, skip: skip, status: status }).then(res => {
         this.fov_img = res.data.data
         if (this.fov_img.reviews.length) {
           this.fov_img.reviews.map(v => {
+            const xywh = this.calculateSquare(v.x1, v.x2, v.y1, v.y2, v.w, v.h)
+
+            v.imgpath2 = v.imgpath + '?crop=' + xywh.x1 + ',' + xywh.y1 + '|' + xywh.x2 + ',' + xywh.y2 + '&quality=100'
             v.tagName = ''
             v.position = {
-              x: parseFloat(v.x1 / v.w) * 100 + '%',
-              x1: parseFloat(v.x2 / v.w) * 100 + '%',
-              y: parseFloat(v.y1 / v.h) * 100 + '%',
-              y1: parseFloat(v.y2 / v.h) * 100 + '%'
+              // 如果靠边框的会框错
+              x: parseFloat(v.xmin / v.neww) * 100 + '%',
+              x1: parseFloat(v.xmax / v.neww) * 100 + '%',
+              y: parseFloat(v.ymin / v.newh) * 100 + '%',
+              y1: parseFloat(v.ymax / v.newh) * 100 + '%'
             }
           })
           this.imgInfo = this.fov_img.reviews[0]
