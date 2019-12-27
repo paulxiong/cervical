@@ -118,7 +118,7 @@ export default {
       userList: [],
       selectedList: [],
       pid: 121,
-      vid: 0,
+      vid: undefined,
       total: undefined,
       currentPage: 1,
       currentPageSize: 10,
@@ -143,10 +143,12 @@ export default {
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange2(val) {
+      console.log(val, 'curpage')
       this.currentPage2 = val
       this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
     },
     handleSizeChange2(val) {
+      console.log(val, 'cursize')
       this.currentPageSize2 = val
       this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
     },
@@ -164,9 +166,6 @@ export default {
     },
     getPredictsByPID(limit, skip, pid) {
       getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 1 }).then(res => {
-        if (!res.data.data || !res.data.data.predicts || res.data.data.predicts.length < 1) {
-          return
-        }
         this.projectlist.map(v => {
           if (v.id === this.pid) {
             res.data.data.predicts.map(item => {
@@ -176,8 +175,22 @@ export default {
             v.predictsList = res.data.data.predicts
             v.currentPage = 1
             v.currentPageSize = 10
-            // v.handleCurrentChange = this.handleCurrentChange2
-            // v.handleSizeChange = this.handleSizeChange2
+            const _this = this
+            v.handleCurrentChange = function(val) {
+              console.log(val, _this.pid)
+              v.predictsList = []
+              _this.$forceUpdate()
+
+              getPredictsByPID({ 'limit': 10, 'skip': (val - 1) * 10, 'pid': _this.pid, 'status': 1 }).then(res => {
+                res.data.data.predicts.map(item => {
+                  item.predict_str = cellsType[item.predict_type]
+                  item.true_str = cellsType[item.true_type]
+                })
+                v.predictsList = res.data.data.predicts
+                console.log(v.predictsList)
+                _this.$forceUpdate()
+              })
+            }
             v.total = res.data.data.total
           }
         })
