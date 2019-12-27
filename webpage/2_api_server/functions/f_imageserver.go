@@ -14,6 +14,8 @@ import (
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	"github.com/pierrre/imageserver"
 
+	imageserver_http_rectangle "github.com/paulxiong/cervical/webpage/2_api_server/plugins/rectangle/http"
+	imageserver_image_rectangle "github.com/paulxiong/cervical/webpage/2_api_server/plugins/rectangle/image"
 	imageserver_cache "github.com/pierrre/imageserver/cache"
 	imageserver_cache_file "github.com/pierrre/imageserver/cache/file"
 	imageserver_cache_memory "github.com/pierrre/imageserver/cache/memory"
@@ -59,6 +61,7 @@ func newServerImage(srv imageserver.Server, maxWidth int, maxHeight int) imagese
 		Processor: imageserver_image_gamma.NewCorrectionProcessor(
 			imageserver_image.ListProcessor([]imageserver_image.Processor{
 				&imageserver_image_crop.Processor{},
+				&imageserver_image_rectangle.Processor{},
 				&imageserver_image_gift.RotateProcessor{
 					DefaultInterpolation: gift.CubicInterpolation,
 				},
@@ -76,6 +79,7 @@ func newServerImage(srv imageserver.Server, maxWidth int, maxHeight int) imagese
 			Processor: &imageserver_image_gif.SimpleProcessor{
 				Processor: imageserver_image.ListProcessor([]imageserver_image.Processor{
 					&imageserver_image_crop.Processor{},
+					&imageserver_image_rectangle.Processor{},
 					&imageserver_image_gift.RotateProcessor{
 						DefaultInterpolation: gift.NearestNeighborInterpolation,
 					},
@@ -160,6 +164,7 @@ func ImageServer(cfg *ImageServerSettings) http.Handler {
 		Parser: imageserver_http.ListParser([]imageserver_http.Parser{
 			&imageserver_http.SourcePathParser{},
 			&imageserver_http_crop.Parser{},
+			&imageserver_http_rectangle.Parser{},
 			&imageserver_http_gift.RotateParser{},
 			&imageserver_http_gift.ResizeParser{},
 			&imageserver_http_image.FormatParser{},

@@ -20,6 +20,7 @@ require (
 	github.com/lionsoul2014/ip2region v1.8.0-release
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/pierrre/imageserver v0.0.0-20190609201707-8c89cbc7ecdb
+	github.com/pierrre/imageutil v1.0.0
 	github.com/pkg/errors v0.8.1
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect
