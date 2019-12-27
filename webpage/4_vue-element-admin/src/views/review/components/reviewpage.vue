@@ -6,7 +6,7 @@
         ref="aiPanel-editor"
         class="ai-observer"
         :read="readOnly"
-        :img="hosturlpath64 + imgInfo.imgpath + '?width=850'"
+        :img="hosturlpath64 + imgInfo.imgpath2"
       />
       <AIMarker
         v-else
@@ -85,8 +85,8 @@ export default {
     // 计算需要框出来的正方形区域
     calculateSquare(_x1, _x2, _y1, _y2, w, h) {
       const sidehalf = 300 // 边长600
-      const x = parseInt((_x1 + _x2) / 2)
-      const y = parseInt((_y1 + _y2) / 2)
+      const x = parseFloat((_x1 + _x2) / 2)
+      const y = parseFloat((_y1 + _y2) / 2)
       let x1 = x - sidehalf
       let x2 = x + sidehalf
       let y1 = y - sidehalf
@@ -97,8 +97,9 @@ export default {
       x2 = (x2 < w) ? x2 : (w - 1)
       y2 = (y2 < h) ? y2 : (h - 1)
 
-      const neww = ((x1 + x2) / 2).toFixed(0)
-      const newh = ((y1 + y2) / 2).toFixed(0)
+      const neww = parseFloat(x2 - x1)
+      const newh = parseFloat(y2 + y1)
+
       return { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'w': neww, 'h': newh }
     },
     getLabelReviews(limit, skip, status) {
@@ -110,12 +111,13 @@ export default {
 
             v.imgpath2 = v.imgpath + '?crop=' + xywh.x1 + ',' + xywh.y1 + '|' + xywh.x2 + ',' + xywh.y2 + '&quality=100'
             v.tagName = ''
+            console.log(xywh)
             v.position = {
               // 如果靠边框的会框错
-              x: parseFloat(v.xmin / v.neww) * 100 + '%',
-              x1: parseFloat(v.xmax / v.neww) * 100 + '%',
-              y: parseFloat(v.ymin / v.newh) * 100 + '%',
-              y1: parseFloat(v.ymax / v.newh) * 100 + '%'
+              x: parseFloat((xywh.w * 1 / 3) / xywh.w) * 100 + '%',
+              x1: parseFloat((xywh.w * 2 / 3) / xywh.w) * 100 + '%',
+              y: parseFloat((xywh.h * 1 / 3) / xywh.h) * 100 + '%',
+              y1: parseFloat((xywh.h * 2 / 3) / xywh.h) * 100 + '%'
             }
           })
           this.imgInfo = this.fov_img.reviews[0]
