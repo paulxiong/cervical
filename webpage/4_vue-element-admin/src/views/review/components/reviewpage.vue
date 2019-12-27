@@ -16,16 +16,22 @@
         :read="readOnly"
         :img="hosturlpath64 + imgInfo.imgpath2"
       />
-      <el-badge
-        :value="`${imgInfo.predict_type}`"
-        type="info"
-        class="item"
-      >
-        <el-image
-          class="img-item img-right"
-          :src="hosturlpath64 + imgInfo.cellpath + '?width=200'"
-        />
-      </el-badge>
+      <section class="fov-img-box flex">
+        <el-button type="primary" size="mini" style="margin: 10px 0;" @click="show">查看原图</el-button>
+        <viewer ref="viewer" :images="images" @inited="inited">
+          <img v-for="src in images" :key="src" :src="src" class="fov-img">
+        </viewer>
+        <el-badge
+          :value="`${imgInfo.predict_type}`"
+          type="info"
+          class="item"
+        >
+          <el-image
+            class="img-item img-right"
+            :src="hosturlpath64 + imgInfo.cellpath + '?width=200'"
+          />
+        </el-badge>
+      </section>
       <el-radio-group v-model="true_type" class="radio-list">
         <el-radio v-for="(cell, idx) in cellsType" :key="idx" :label="idx" class="radio-item">{{ cell }}</el-radio>
         <el-button type="primary" :disabled="!true_type" @click="updateLabelReview">确定</el-button>
@@ -40,6 +46,10 @@
 </template>
 
 <script>
+import 'viewerjs/dist/viewer.css'
+import Viewer from 'v-viewer'
+import Vue from 'vue'
+Vue.use(Viewer)
 import { APIUrl } from '@/const/config'
 import { getLabelReviews, updateLabelReview } from '@/api/cervical'
 import { cellsType } from '@/const/const'
@@ -64,11 +74,12 @@ export default {
       y1: 0,
       y2: 0,
       skip: 0,
-      fov_img: []
+      fov_img: [],
+      images: []
     }
   },
   created() {
-    this.getLabelReviews(1, this.skip, 0)
+    this.getLabelReviews(1, 0)
   },
   mounted() {
     console.log(document.body.clientWidth)
@@ -124,13 +135,20 @@ export default {
 
       return { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'w': neww, 'h': newh, 'cellx1': cellx1, 'cellx2': cellx2, 'celly1': celly1, 'celly2': celly2 }
     },
-    getLabelReviews(limit, skip, status) {
-      getLabelReviews({ limit: limit, skip: skip, status: status }).then(res => {
+    inited(viewer) {
+      this.$viewer = viewer
+    },
+    show() {
+      // this.$viewer.view(2)
+      this.$viewer.show()
+    },
+    getLabelReviews(limit, status) {
+      getLabelReviews({ limit: limit, skip: 0, status: status }).then(res => {
         this.fov_img = res.data.data
         if (this.fov_img.reviews.length) {
           this.fov_img.reviews.map(v => {
             const xywh = this.calculateSquare(v.x1, v.x2, v.y1, v.y2, v.w, v.h)
-
+            this.images.push(this.hosturlpath64 + v.imgpath)
             v.imgpath2 = v.imgpath + '?crop=' + xywh.x1 + ',' + xywh.y1 + '|' + xywh.x2 + ',' + xywh.y2 + '&quality=100'
             v.tagName = ''
             console.log(xywh)
@@ -164,7 +182,7 @@ export default {
           imgpath: '',
           cellpath: ''
         }
-        this.getLabelReviews(1, this.skip++, 0)
+        this.getLabelReviews(1, 0)
         this.$message({
           message: '审核确认成功',
           type: 'success'
@@ -207,6 +225,12 @@ export default {
   }
 }
 .temps {
+  .fov-img-box {
+    flex-direction: column;
+  }
+  .fov-img {
+    display: none;
+  }
   .mycanvas {
     width: 100px;
     height: 100px;
