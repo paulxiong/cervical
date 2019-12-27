@@ -234,7 +234,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.projectData {
+.reviewAssignment2 {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
