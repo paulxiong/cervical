@@ -157,7 +157,6 @@ func drawrect(bds image.Rectangle, img image.Image, thickness int) (newimg image
 				if x >= bds.Min.X+thickness && x < bds.Max.X-thickness && y >= bds.Min.Y+thickness && y < bds.Max.Y-thickness {
 					continue
 				}
-				// red
 				r, g, b, a := uint32(64971), uint32(299), uint32(549), uint32(65535)
 				set(x, y, r, g, b, a)
 			}
@@ -171,7 +170,7 @@ func (prc *Processor) rectangle(im image.Image, bds image.Rectangle) (image.Imag
 		image.Image
 		SubImage(image.Rectangle) image.Image
 	}
-	newimg := drawrect(bds, im, 4)
+	newimg := drawrect(bds, im, 1)
 	return newimg, nil
 }
 

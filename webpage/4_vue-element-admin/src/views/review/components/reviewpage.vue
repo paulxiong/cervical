@@ -143,7 +143,7 @@ export default {
           this.fov_img.reviews.map(v => {
             const xywh = this.calculateSquare(v.x1, v.x2, v.y1, v.y2, v.w, v.h)
             const images = []
-            images.push(this.hosturlpath64 + v.imgpath)
+            images.push(this.hosturlpath64 + v.imgpath + '?rect=' + v.x1 + ',' + v.y1 + '|' + v.x2 + ',' + v.y2 + '&quality=100')
             this.images = images
             v.imgpath2 = v.imgpath + '?crop=' + xywh.x1 + ',' + xywh.y1 + '|' + xywh.x2 + ',' + xywh.y2 + '&quality=100'
             v.tagName = ''
