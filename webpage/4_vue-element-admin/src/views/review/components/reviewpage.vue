@@ -85,22 +85,44 @@ export default {
     // 计算需要框出来的正方形区域
     calculateSquare(_x1, _x2, _y1, _y2, w, h) {
       const sidehalf = 300 // 边长600
+      const cellsidehalf = 50 // 边长600
+
       const x = parseFloat((_x1 + _x2) / 2)
       const y = parseFloat((_y1 + _y2) / 2)
+
+      // 600x600图片的坐标
       let x1 = x - sidehalf
       let x2 = x + sidehalf
       let y1 = y - sidehalf
       let y2 = y + sidehalf
 
-      x1 = (x1 >= 0) ? x1 : 0
-      y1 = (y1 >= 0) ? y1 : 0
-      x2 = (x2 < w) ? x2 : (w - 1)
-      y2 = (y2 < h) ? y2 : (h - 1)
+      // 100x100细胞坐标
+      let cellx1 = sidehalf - cellsidehalf
+      let celly1 = sidehalf - cellsidehalf
+      let cellx2 = sidehalf + cellsidehalf
+      let celly2 = sidehalf + cellsidehalf
+
+      // 超出图片的要平移进来
+      const deltax = (x1 < 0) ? (0 - x1) : (x2 > w) ? (w - x2) : 0
+      const deltay = (y1 < 0) ? (0 - y1) : (y2 > h) ? (h - y2) : 0
+      if (deltax !== 0) {
+        x1 += deltax
+        x2 += deltax
+        // 还原细胞坐标
+        cellx1 -= deltax
+        cellx2 -= deltax
+      }
+      if (deltay !== 0) {
+        y1 += deltay
+        y2 += deltay
+        celly1 -= deltay
+        celly2 -= deltay
+      }
 
       const neww = parseFloat(x2 - x1)
-      const newh = parseFloat(y2 + y1)
+      const newh = parseFloat(y2 - y1)
 
-      return { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'w': neww, 'h': newh }
+      return { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'w': neww, 'h': newh, 'cellx1': cellx1, 'cellx2': cellx2, 'celly1': celly1, 'celly2': celly2 }
     },
     getLabelReviews(limit, skip, status) {
       getLabelReviews({ limit: limit, skip: skip, status: status }).then(res => {
@@ -114,10 +136,10 @@ export default {
             console.log(xywh)
             v.position = {
               // 如果靠边框的会框错
-              x: parseFloat((xywh.w * 1 / 3) / xywh.w) * 100 + '%',
-              x1: parseFloat((xywh.w * 2 / 3) / xywh.w) * 100 + '%',
-              y: parseFloat((xywh.h * 1 / 3) / xywh.h) * 100 + '%',
-              y1: parseFloat((xywh.h * 2 / 3) / xywh.h) * 100 + '%'
+              x: parseFloat(xywh.cellx1 / xywh.w) * 100 + '%',
+              x1: parseFloat(xywh.cellx2 / xywh.w) * 100 + '%',
+              y: parseFloat(xywh.celly1 / xywh.h) * 100 + '%',
+              y1: parseFloat(xywh.celly2 / xywh.h) * 100 + '%'
             }
           })
           this.imgInfo = this.fov_img.reviews[0]
