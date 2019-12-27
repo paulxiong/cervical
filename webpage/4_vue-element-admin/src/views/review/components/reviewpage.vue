@@ -17,7 +17,7 @@
         :img="hosturlpath64 + imgInfo.imgpath2"
       />
       <section class="fov-img-box flex">
-        <el-button type="info" size="mini" style="margin: 10px 0;" @click="show">查看完整原图</el-button>
+        <el-button type="primary" size="mini" style="margin: 10px 0;" @click="show">查看完整原图</el-button>
         <viewer ref="viewer" :images="images" @inited="inited">
           <img v-for="src in images" :key="src" :src="src" class="fov-img">
         </viewer>
@@ -136,27 +136,6 @@ export default {
     show() {
       this.$viewer.show()
     },
-    // drawScreen() {
-    //   const canvas = this.$refs.myCanvas
-    //   const ctx = canvas.getContext('2d')
-    //   ctx.strokeStyle = '#00'
-    //   ctx.fillStyle = '#9f9'
-    //   ctx.lineWidth = 4
-    //   ctx.beginPath()
-    //   ctx.moveTo(30, 30)
-    //   ctx.lineTo(230, 30)
-    //   ctx.lineTo(230, 200)
-    //   ctx.lineTo(30, 200)
-    //   ctx.closePath()
-    //   ctx.stroke()
-    //   ctx.beginPath()
-    //   ctx.moveTo(300, 30)
-    //   ctx.lineTo(500, 30)
-    //   ctx.lineTo(500, 200)
-    //   ctx.lineTo(300, 200)
-    //   ctx.closePath()
-    //   ctx.fill()
-    // },
     getLabelReviews(limit, status) {
       getLabelReviews({ limit: limit, skip: 0, status: status }).then(res => {
         this.fov_img = res.data.data
