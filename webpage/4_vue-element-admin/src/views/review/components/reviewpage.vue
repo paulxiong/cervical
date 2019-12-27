@@ -17,7 +17,7 @@
         :img="hosturlpath64 + imgInfo.imgpath2"
       />
       <section class="fov-img-box flex">
-        <el-button type="primary" size="mini" style="margin: 10px 0;" @click="show">查看原图</el-button>
+        <el-button type="info" size="mini" style="margin: 10px 0;" @click="show">查看完整原图</el-button>
         <viewer ref="viewer" :images="images" @inited="inited">
           <img v-for="src in images" :key="src" :src="src" class="fov-img">
         </viewer>
@@ -41,7 +41,7 @@
     <section v-else class="flex">
       已审核完成，暂无其他审核任务...
     </section>
-    <!-- <canvas id="myCanvas" ref="myCanvas" /> -->
+    <canvas id="myCanvas" ref="myCanvas" />
   </div>
 </template>
 
@@ -86,11 +86,6 @@ export default {
     if (document.body.clientWidth < 600) {
       this.isPhone = true
     }
-    // const canvas = this.$refs.myCanvas
-    // const ctx = canvas.getContext('2d')
-    // ctx.moveTo(100, 100)
-    // ctx.lineTo(200, 100)
-    // ctx.stroke()
   },
   methods: {
     // 计算需要框出来的正方形区域
@@ -139,16 +134,38 @@ export default {
       this.$viewer = viewer
     },
     show() {
-      // this.$viewer.view(2)
       this.$viewer.show()
     },
+    // drawScreen() {
+    //   const canvas = this.$refs.myCanvas
+    //   const ctx = canvas.getContext('2d')
+    //   ctx.strokeStyle = '#00'
+    //   ctx.fillStyle = '#9f9'
+    //   ctx.lineWidth = 4
+    //   ctx.beginPath()
+    //   ctx.moveTo(30, 30)
+    //   ctx.lineTo(230, 30)
+    //   ctx.lineTo(230, 200)
+    //   ctx.lineTo(30, 200)
+    //   ctx.closePath()
+    //   ctx.stroke()
+    //   ctx.beginPath()
+    //   ctx.moveTo(300, 30)
+    //   ctx.lineTo(500, 30)
+    //   ctx.lineTo(500, 200)
+    //   ctx.lineTo(300, 200)
+    //   ctx.closePath()
+    //   ctx.fill()
+    // },
     getLabelReviews(limit, status) {
       getLabelReviews({ limit: limit, skip: 0, status: status }).then(res => {
         this.fov_img = res.data.data
         if (this.fov_img.reviews.length) {
           this.fov_img.reviews.map(v => {
             const xywh = this.calculateSquare(v.x1, v.x2, v.y1, v.y2, v.w, v.h)
-            this.images.push(this.hosturlpath64 + v.imgpath)
+            const images = []
+            images.push(this.hosturlpath64 + v.imgpath)
+            this.images = images
             v.imgpath2 = v.imgpath + '?crop=' + xywh.x1 + ',' + xywh.y1 + '|' + xywh.x2 + ',' + xywh.y2 + '&quality=100'
             v.tagName = ''
             console.log(xywh)
