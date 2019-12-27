@@ -40,7 +40,6 @@
           </div>
 
           <el-pagination
-            v-if="pageshow"
             class="page"
             :current-page.sync="scope.row.currentPage"
             :page-sizes="[10, 20, 30, 50]"
@@ -133,7 +132,6 @@ export default {
     this.getUserLists(100, 0, 1)
     this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
-    this.pageshow = false
   },
   methods: {
     handleCurrentChange(val) {
