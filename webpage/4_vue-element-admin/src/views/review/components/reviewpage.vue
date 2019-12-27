@@ -220,6 +220,7 @@ export default {
   }
   .label-img {
     justify-content: space-around;
+    flex-wrap: wrap;
   }
   .radio-list {
     display: block;
