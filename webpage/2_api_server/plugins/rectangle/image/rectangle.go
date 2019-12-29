@@ -170,7 +170,7 @@ func (prc *Processor) rectangle(im image.Image, bds image.Rectangle) (image.Imag
 		image.Image
 		SubImage(image.Rectangle) image.Image
 	}
-	newimg := drawrect(bds, im, 1)
+	newimg := drawrect(bds, im, 2)
 	return newimg, nil
 }
 

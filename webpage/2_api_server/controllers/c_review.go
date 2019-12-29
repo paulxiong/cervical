@@ -5,6 +5,7 @@ import (
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 
@@ -267,6 +268,31 @@ func UpdateReview(c *gin.Context) {
 	usr, _ := models.GetUserFromContext(c)
 
 	models.UpdateReview(ru.ID, ru.TrueType, usr.ID)
+	res.ResSucceedString(c, "ok")
+	return
+}
+
+type reviewsid struct {
+	ReviewsID []int64 `json:"reviews"` //审核的ID数组
+}
+
+// DownloadReviews 下载选中的审核完成的细胞
+// @Summary 下载选中的审核完成的细胞
+// @Description 下载选中的审核完成的细胞
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} controllers.reviewslist
+// @Router /api1/downloadreviews [get]
+func DownloadReviews(c *gin.Context) {
+	rids := reviewsid{}
+	err := c.ShouldBindJSON(&rids)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+	logger.Info.Println(rids.ReviewsID)
 	res.ResSucceedString(c, "ok")
 	return
 }

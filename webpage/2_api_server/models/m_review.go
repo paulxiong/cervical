@@ -31,6 +31,8 @@ type Review struct {
 	Status       int       `json:"status"        gorm:"column:status"          example:"100"` //状态 0 未审核 1 已审核 2 移除 3 管理员确认
 	CreatedBy    int64     `json:"created_by"    gorm:"column:created_by"`                    //创建者
 	CreatedAt    time.Time `json:"created_at"    gorm:"column:created_at"`                    //创建时间
+	UserName     string    `json:"username"      gorm:"-"`                                    //创建者名字
+	UserImg      string    `json:"userimg"       gorm:"-"`                                    //创建者头像
 	UpdatedAt    time.Time `json:"updated_at"    gorm:"column:updated_at"`                    //更新时间
 }
 
@@ -41,6 +43,16 @@ func (r *Review) BeforeCreate(scope *gorm.Scope) error {
 	}
 	if r.UpdatedAt.IsZero() {
 		r.UpdatedAt = time.Now()
+	}
+	return nil
+}
+
+// AfterFind 添加审核账号信息
+func (r *Review) AfterFind(scope *gorm.Scope) error {
+	if r.VID > 0 {
+		u, _ := FinduserbyID(r.VID)
+		r.UserName = u.Name
+		r.UserImg = u.Image
 	}
 	return nil
 }
