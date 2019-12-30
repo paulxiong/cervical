@@ -34,6 +34,7 @@
         {"status": 120, "key": "ModelInfoNotFound",      "content": "模型文件信息没找到或加载失败"},
         {"status": 121, "key": "ModelAlreadySaved",      "content": "该模型文件已经保存过了"},
         {"status": 122, "key": "ModelSaveFailed",        "content": "模型文件保存失败"},
+        {"status": 123, "key": "ModelSaveNoDescription", "content": "模型文件保存失败,模型描述信息不能为空"},
 
         {"status": 130, "key": "BatchListFailed",        "content": "获取批次信息失败"},
 

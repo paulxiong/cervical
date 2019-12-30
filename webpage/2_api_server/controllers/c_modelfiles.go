@@ -8,6 +8,7 @@ import (
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
 
 type listMods struct {
@@ -91,5 +92,62 @@ func SaveModelInfo(c *gin.Context) {
 	} else {
 		res.ResFailedStatus(c, e.Errors["ModelSaveFailed"])
 	}
+	return
+}
+
+// UploadModelHandler 上传模型文件,并记录到数据集
+// @Summary 上传模型文件,并记录到数据集
+// @Description 上传模型文件,并记录到数据集
+// @tags API1 模型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/uploadmodel [post]
+func UploadModelHandler(c *gin.Context) {
+	_typeStr := c.DefaultPostForm("type", "") // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
+	_pidStr := c.DefaultPostForm("pid", "0")
+	_description := c.DefaultPostForm("description", "")
+	_precision1Str := c.DefaultPostForm("precision1", "0")
+	_recallStr := c.DefaultPostForm("recall", "0")
+	_type, _ := strconv.ParseInt(_typeStr, 10, 64)
+	_pid, _ := strconv.ParseInt(_pidStr, 10, 64)
+	_precision1, _ := strconv.ParseFloat(_precision1Str, 64)
+	_recall, _ := strconv.ParseFloat(_recallStr, 64)
+
+	if len(_description) < 1 {
+		res.ResFailedStatus(c, e.Errors["ModelSaveNoDescription"])
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["UploadGetFileNameFailed"])
+		return
+	}
+
+	filename := u.GetUUID() + ".h5"
+	modpath := f.NewModulePath(int(_type), filename)
+	if err := c.SaveUploadedFile(file, modpath); err != nil {
+		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
+		return
+	}
+
+	_u, _ := models.GetUserFromContext(c)
+
+	// 保存模型信息到数据库
+	md := models.Model{
+		ID:        0,
+		Type:      int(_type),
+		PID:       _pid,
+		Path:      modpath,
+		Desc:      _description,
+		Precision: float32(_precision1),
+		Recall:    float32(_recall),
+		CreatedBy: _u.ID,
+	}
+	md.CreateModelInfo()
+
+	res.ResSucceedString(c, "ok")
 	return
 }

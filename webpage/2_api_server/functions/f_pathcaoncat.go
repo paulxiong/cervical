@@ -16,6 +16,7 @@ const (
 	datasetsDir   = "datasets"
 	projectsDir   = "projects"
 	csvRoot       = "csv"
+	modulesDir    = "modules"
 )
 
 // PathExists 判断路径对应的文件是否存在
@@ -91,4 +92,15 @@ func ReviewCellPath(src string, fovpath string) (cellpath string) {
 	NewDir(celldir)
 	_cellpath := path.Join(celldir, fileName)
 	return _cellpath
+}
+
+// NewModulePath 新上传的模型文件保存的路径
+func NewModulePath(_type int, filename string) string {
+	// 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
+	if _type == 6 {
+		return path.Join(modulesDir, "classifier", filename)
+	}
+
+	// 目前只支持6MALA的模型上传
+	return ""
 }
