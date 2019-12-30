@@ -40,6 +40,7 @@
           </div>
 
           <el-pagination
+            v-if="paginationShow"
             class="page"
             :current-page.sync="scope.row.currentPage"
             :page-sizes="[10, 20, 30, 50]"
@@ -117,6 +118,7 @@ export default {
       predicts: [],
       userList: [],
       selectedList: [],
+      paginationShow: true,
       pid: 121,
       vid: undefined,
       total: undefined,
@@ -142,14 +144,24 @@ export default {
       this.currentPageSize = val
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
+    search() {
+      this.paginationShow = false
+      this.handleCurrentChange(1)
+      this.$nextTick(function() {
+        this.paginationShow = true
+      })
+    },
     handleCurrentChange2(val) {
       console.log(val, 'curpage')
       this.currentPage2 = val
+      this.getlist(val, this.currentPageSize2)
       this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
     },
     handleSizeChange2(val) {
       console.log(val, 'cursize')
-      this.currentPageSize2 = val
+      const _this = this
+      _this.pagination.currentPage2 = val
+      this.getlist(this.currentPage2, val)
       this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
     },
     handleSelectionChange(val) {
@@ -173,7 +185,7 @@ export default {
               item.true_str = cellsType[item.true_type]
             })
             v.predictsList = res.data.data.predicts
-            v.currentPage = 1
+            v.currentPage = this.currentPage2
             v.currentPageSize = 10
             const _this = this
             v.handleCurrentChange = function(val) {
@@ -219,6 +231,8 @@ export default {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         this.userList = res.data.data.users
       })
+    },
+    getlist() {
     },
     setPredictsReview() {
       this.loading = true
