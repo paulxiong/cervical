@@ -317,6 +317,7 @@ export function downloadReviews(data) {
   return request({
     url: '/api1/downloadreviews',
     method: 'post',
+    responseType: 'blob',
     data
   })
 }
