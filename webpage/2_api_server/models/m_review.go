@@ -107,14 +107,27 @@ func CreateReviews(reviews []*Review) (e error) {
 }
 
 // ListReviews 依次列出审核的细胞
-func ListReviews(limit int, skip int, status int, userid int64) (totalNum int64, r []Review, e error) {
+func ListReviews(limit int, skip int, status int, userid int64, owner int) (totalNum int64, r []Review, e error) {
 	var total int64 = 0
 	var _r []Review
-	ret := db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Count(&total)
+	// 0 只看属于自己的, 1 查看所有用户的
+	if owner == 0 {
+		ret := db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Count(&total)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		ret = db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Limit(limit).Offset(skip).Find(&_r)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		return total, _r, ret.Error
+	}
+
+	ret := db.Model(&Review{}).Where("status=?", status).Count(&total)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
-	ret = db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Limit(limit).Offset(skip).Find(&_r)
+	ret = db.Model(&Review{}).Where("status=?", status).Limit(limit).Offset(skip).Find(&_r)
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}

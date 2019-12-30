@@ -71,7 +71,7 @@ export default {
     },
     getLabelReviews(limit, status) {
       this.loading = true
-      getLabelReviews({ limit: limit, skip: 0, status: status }).then(res => {
+      getLabelReviews({ limit: limit, skip: 0, status: status, owner: 1 }).then(res => {
         this.reviews = []
         if (res.data.data.reviews.length) {
           this.reviews = res.data.data.reviews

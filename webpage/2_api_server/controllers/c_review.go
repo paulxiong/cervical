@@ -225,6 +225,7 @@ type reviewslist struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 1"
 // @Param skip query string false "skip, default 0"
+// @Param owner query string false "owner, default 0, 0 只看属于自己的, 1 查看所有用户的"
 // @Param status query string false "status, default 0, 0 未审核 1 已审核"
 // @Success 200 {object} controllers.reviewslist
 // @Router /api1/reviews [get]
@@ -232,14 +233,16 @@ func GetReviews(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "1")
 	skipStr := c.DefaultQuery("skip", "0")
 	statusStr := c.DefaultQuery("status", "0")
+	ownerStr := c.DefaultQuery("owner", "0")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	status, _ := strconv.ParseInt(statusStr, 10, 64)
+	owner, _ := strconv.ParseInt(ownerStr, 10, 64)
 
 	usr, _ := models.GetUserFromContext(c)
 
 	rl := reviewslist{}
-	rl.Total, rl.Reviews, _ = models.ListReviews(int(limit), int(skip), int(status), usr.ID)
+	rl.Total, rl.Reviews, _ = models.ListReviews(int(limit), int(skip), int(status), usr.ID, int(owner))
 	res.ResSucceedStruct(c, rl)
 	return
 }
