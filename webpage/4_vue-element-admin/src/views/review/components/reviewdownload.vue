@@ -52,16 +52,16 @@ export default {
     }
   },
   created() {
-    this.getLabelReviews(this.currentPageSize, 1)
+    this.getLabelReviews(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
   },
   methods: {
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getLabelReviews(this.currentPageSize, 1)
+      this.getLabelReviews(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getLabelReviews(this.currentPageSize, 1)
+      this.getLabelReviews(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSelectionChange(val) {
       this.selectedList = []
@@ -69,9 +69,9 @@ export default {
         this.selectedList.push(v.id)
       })
     },
-    getLabelReviews(limit, status) {
+    getLabelReviews(limit, skip, status) {
       this.loading = true
-      getLabelReviews({ limit: limit, skip: 0, status: status, owner: 1 }).then(res => {
+      getLabelReviews({ limit: limit, skip: skip, status: status, owner: 1 }).then(res => {
         this.reviews = []
         if (res.data.data.reviews.length) {
           this.reviews = res.data.data.reviews
