@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
@@ -8,6 +9,7 @@ import (
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -283,8 +285,8 @@ type reviewsid struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 {object} controllers.reviewslist
-// @Router /api1/downloadreviews [get]
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/downloadreviews [post]
 func DownloadReviews(c *gin.Context) {
 	rids := reviewsid{}
 	err := c.ShouldBindJSON(&rids)
@@ -292,7 +294,46 @@ func DownloadReviews(c *gin.Context) {
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
-	logger.Info.Println(rids.ReviewsID)
-	res.ResSucceedString(c, "ok")
+
+	// 创建目录作为临时存储文件使用
+	dirname := u.GetRandomStringNum(6)
+	zipname := fmt.Sprintf("%s.zip", dirname)
+
+	filesname := make([]string, 0)
+	filestype := make([]string, 0)
+	for _, v := range rids.ReviewsID {
+		_r, err1 := models.GetReviewByID(v)
+		if err1 != nil {
+			continue
+		}
+		ret, _ := f.PathExists(_r.CellPath)
+		if ret != true {
+			logger.Info.Printf("cell file not found %s", _r.CellPath)
+			continue
+		}
+		filesname = append(filesname, _r.CellPath)
+		filestype = append(filestype, fmt.Sprintf("%d", _r.TrueType))
+	}
+
+	//打包zip
+	err = f.ZipCompressReviews(filesname, filestype, zipname)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["ZipFailed"])
+		return
+	}
+
+	filesize := f.GetFileSize(zipname)
+	if filesize < 1 {
+		res.ResFailedStatus(c, e.Errors["ZipFailed"])
+		return
+	}
+
+	//下载
+	contentDisposition := fmt.Sprintf("attachment; filename=%s", zipname)
+	c.Writer.Header().Add("Content-Disposition", contentDisposition)
+	c.Writer.Header().Add("Content-Type", "application/zip")
+	c.Writer.Header().Add("Accept-Length", fmt.Sprintf("%d", filesize))
+	c.Writer.Header().Add("Content-Length", fmt.Sprintf("%d", filesize))
+	c.File(zipname)
 	return
 }

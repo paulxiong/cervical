@@ -312,3 +312,11 @@ export function setPredictsReview(data) {
     data
   })
 }
+
+export function downloadReviews(data) {
+  return request({
+    url: '/api1/downloadreviews',
+    method: 'post',
+    data
+  })
+}

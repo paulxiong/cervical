@@ -39,8 +39,8 @@ func CopyFile(srcName string, dstName string) (written int64, err error) {
 	return io.Copy(dst, src)
 }
 
-// ZipCompress 创建zip压缩文件
-func ZipCompress(dirname string, dest string) error {
+// ZipCompressDatasets 创建zip压缩文件
+func ZipCompressDatasets(dirname string, dest string) error {
 	cellslist := datasetsDir + "/" + dirname + "/cellslist.csv"
 	file, err := os.Open(cellslist)
 	if err != nil {
@@ -93,10 +93,20 @@ func ZipCompress(dirname string, dest string) error {
 
 // GetFileSize 返回文件大小byte
 func GetFileSize(filename string) int64 {
+	ret, _ := PathExists(filename)
+	if ret != true {
+		return 0
+	}
 	var result int64
 	filepath.Walk(filename, func(path string, f os.FileInfo, err error) error {
 		result = f.Size()
 		return nil
 	})
 	return result
+}
+
+// ZipCompressReviews 创建zip压缩文件, filesnames　要压缩的文件列表，　filestype　对应的细胞类型
+func ZipCompressReviews(filesnames []string, filestype []string, dest string) error {
+	err := u.ZipCompress(filesnames, filestype, dest)
+	return err
 }

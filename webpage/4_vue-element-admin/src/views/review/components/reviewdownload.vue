@@ -15,7 +15,7 @@
       <el-table-column label="审核用户" prop="username" width="100" />
       <el-table-column label="审核时间" prop="updated_at" width="150" />
     </el-table>
-    <el-button type="primary" @click="donwloadReviews">下载选中细胞</el-button>
+    <el-button type="primary" @click="downloadReviews">下载选中细胞</el-button>
     <div class="tools flex">
       <el-pagination
         class="page"
@@ -33,7 +33,7 @@
 
 <script>
 import { APIUrl } from '@/const/config'
-import { getLabelReviews } from '@/api/cervical'
+import { getLabelReviews, downloadReviews } from '@/api/cervical'
 import { parseTime } from '@/utils/index'
 import { cellsType } from '@/const/const'
 
@@ -86,9 +86,30 @@ export default {
         this.loading = false
       })
     },
-    donwloadReviews() {
+    downloadReviews() {
       this.loading = true
-      this.loading = false
+      const postData = { 'reviews': this.selectedList }
+      downloadReviews(postData).then(res => {
+        const blob = new Blob([res.data])
+        if (window.navigator.msSaveOrOpenBlob) {
+          navigator.msSaveBlob(blob, 'nb')
+        } else {
+          const link = document.createElement('a')
+          const evt = document.createEvent('HTMLEvents')
+          evt.initEvent('click', false, false)
+          link.href = URL.createObjectURL(blob)
+          link.download = '已审核细胞图.zip'
+          link.style.display = 'none'
+          document.body.appendChild(link)
+          link.click()
+          window.URL.revokeObjectURL(link.href)
+        }
+        this.$message({
+          message: '下载成功',
+          type: 'success'
+        })
+        this.downloadLoading = false
+      })
     }
   }
 }

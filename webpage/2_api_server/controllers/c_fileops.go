@@ -47,7 +47,7 @@ func FileDownload(c *gin.Context) {
 	filename := fmt.Sprintf("%d_%s_%s.zip", id, dt.Dir, randomsreing)
 
 	//打包zip
-	err = f.ZipCompress(dt.Dir, filename)
+	err = f.ZipCompressDatasets(dt.Dir, filename)
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["ZipFailed"])
 		return
