@@ -4,16 +4,16 @@
       ref="multipleTable"
       :data="reviews"
       tooltip-effect="dark"
-      style="width: 50%"
+      style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="ID" prop="id" width="50" />
-      <el-table-column label="项目ID" prop="pid" width="50" />
-      <el-table-column label="预测结果" prop="predict_str" width="150" />
-      <el-table-column label="审核结果" prop="true_str" width="150" show-overflow-tooltip />
-      <el-table-column label="审核用户" prop="username" width="100" />
-      <el-table-column label="审核时间" prop="updated_at" width="150" />
+      <el-table-column type="selection" width="120" />
+      <el-table-column label="ID" prop="id" width="100" />
+      <el-table-column label="项目ID" prop="pid" width="150" />
+      <el-table-column label="预测结果" prop="predict_str" width="300" />
+      <el-table-column label="审核结果" prop="true_str" width="300" show-overflow-tooltip />
+      <el-table-column label="审核用户" prop="username" width="200" />
+      <el-table-column label="审核时间" prop="updated_at" />
     </el-table>
     <el-button type="primary" @click="downloadReviews">下载选中细胞</el-button>
     <div class="tools flex">
@@ -116,7 +116,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.reviewAssignment2 {
+.reviewDownload {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
