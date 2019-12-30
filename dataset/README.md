@@ -468,3 +468,18 @@ bingli_P2_V2_1225
     ├── invalid(46323)
     └── valid(31330)
 ```
+#### 细胞预测
+### cells_towclass_1230
+```
+链接：https://pan.baidu.com/s/1ukzCHX3IUHGzEmCpYlHLRA 
+提取码：6f61
+说明：2019年12月30日，基于目前所有医生标记过的细胞（RGB，100×100），具体cells_N: 1 5 12 13 15 / cells_P: 2 3 4 7 8 9 14（14分类本是阴性细胞，但由于形态非常接近且数量只有4个，暂归为阳性分类）
+目录结构：
+cells_towclass_1230
+├── data_test
+│   ├── cells_N_test(1000)
+│   └── cells_P_test(1000)
+└── data_train
+    ├── cells_N(26986)
+    └── cells_P(14364)
+```
