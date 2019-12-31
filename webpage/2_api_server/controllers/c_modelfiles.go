@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
+	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
@@ -97,7 +98,12 @@ func SaveModelInfo(c *gin.Context) {
 
 // UploadModelHandler 上传模型文件,并记录到数据集
 // @Summary 上传模型文件,并记录到数据集
-// @Description 上传模型文件,并记录到数据集
+// @Description 上传模型文件,并记录到数据集，postdata的参数：
+// @Description type　0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
+// @Description pid  从那个项目训练的，不知道就给0
+// @Description description 模型描述的字符串
+// @Description precision1 模型的准确率
+// @Description recall 模型的召回率
 // @tags API1 模型（需要认证）
 // @Accept  json
 // @Produce json
@@ -128,7 +134,9 @@ func UploadModelHandler(c *gin.Context) {
 
 	filename := u.GetUUID() + ".h5"
 	modpath := f.NewModulePath(int(_type), filename)
-	if err := c.SaveUploadedFile(file, modpath); err != nil {
+	err2 := c.SaveUploadedFile(file, modpath)
+	if err2 != nil {
+		logger.Info.Println(err2)
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}

@@ -1,6 +1,6 @@
 <template>
   <div class="modelData">
-    <!-- <div class="filter-box">
+    <div class="filter-box">
       <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
@@ -32,10 +32,10 @@
         class="filter-btn"
         style="margin-left: 10px;"
         type="success"
-        icon="el-icon-edit"
+        icon="el-icon-upload"
         @click="createModel"
       >新增模型</el-button>
-    </div> -->
+    </div>
     <el-table
       :data="modelLists"
       style="width: 100%"
@@ -100,6 +100,15 @@
         @size-change="handleSizeChange"
       />
     </div>
+    <el-dialog
+      :title="'上传模型'"
+      :visible.sync="dialogFormVisible"
+      @closed="closedDialog"
+    >
+      <div slot="footer" class="dialog-footer">
+        <uploadModel v-if="upload" @checkUpload="checkUpload" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -107,10 +116,11 @@
 import { getListmodel } from '@/api/cervical'
 import { taskStatus, createdBy, taskType, modelType } from '@/const/const'
 import { parseTime } from '@/utils/index'
+import uploadModel from './uploadModel'
 
 export default {
   name: 'ModelData',
-  components: {},
+  components: { uploadModel },
   data() {
     return {
       step: 1,
@@ -119,6 +129,7 @@ export default {
       total: undefined,
       modelLists: [],
       dialogFormVisible: false,
+      upload: false,
       listQuery: {
         desc: undefined,
         type: undefined
@@ -143,10 +154,22 @@ export default {
     this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
   },
   methods: {
+    createModel() {
+      this.dialogFormVisible = true
+      this.upload = true
+    },
+    uploadModel() {
+      this.dialogFormVisible = true
+      this.upload = true
+    },
+    checkUpload(val) {
+      this.$emit('checkUpload', val)
+    },
+    closedDialog() {
+      this.$refs.newDatasets.step = 1
+    },
     filterSearch() {
       this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 52)
-    },
-    createModel() {
     },
     handleCurrentChange(val) {
       this.currentPage = val

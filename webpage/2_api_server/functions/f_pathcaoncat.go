@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	rootdir       = "/ai/thumbor/data/loader"
 	inputDatasets = "origin_imgs"
 	scratchRoot   = "scratch"
 	datasetsDir   = "datasets"
@@ -98,7 +99,7 @@ func ReviewCellPath(src string, fovpath string) (cellpath string) {
 func NewModulePath(_type int, filename string) string {
 	// 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
 	if _type == 6 {
-		return path.Join(modulesDir, "classifier", filename)
+		return path.Join(rootdir, modulesDir, "classifier", filename)
 	}
 
 	// 目前只支持6MALA的模型上传
