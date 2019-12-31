@@ -138,8 +138,8 @@ export const constantRoutes = [
       {
         path: 'list',
         component: () => import('@/views/review/index'),
-        name: '审核细胞',
-        meta: { title: '审核细胞', icon: 'documentation', affix: true }
+        name: '审核细胞概览',
+        meta: { title: '审核细胞概览', icon: 'cellspredict', affix: true }
       }
     ]
   },
