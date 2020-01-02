@@ -1,13 +1,23 @@
 <template>
   <div class="upload flex">
-    <el-input
-      v-model="args.description"
-      autofocus
-      placeholder="输入模型描述"
-      show-word-limit
-      maxlength="30"
-      class="input-name"
-    />
+    <div class="change-type">
+      <el-input
+        v-model="args.description"
+        autofocus
+        placeholder="输入模型描述"
+        show-word-limit
+        maxlength="30"
+        class="input-name"
+      />
+      <el-select v-model="args.type" placeholder="请选择类型">
+        <el-option
+          v-for="item in options"
+          :key="item.type"
+          :label="item.label"
+          :value="item.type"
+        />
+      </el-select>
+    </div>
     <el-upload
       ref="upload"
       class="upload-models"
@@ -32,14 +42,6 @@
       >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button>
       <el-button style="margin-left: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
-    <el-select v-model="args.type" placeholder="请选择">
-      <el-option
-        v-for="item in options"
-        :key="item.type"
-        :label="item.label"
-        :value="item.type"
-      />
-    </el-select>
   </div>
 </template>
 
@@ -58,7 +60,7 @@ export default {
         'Authorization': getToken()
       },
       args: {
-        'type': 0,
+        'type': undefined,
         'pid': 0,
         'description': '',
         'precision1': 0.0,
@@ -136,12 +138,15 @@ export default {
 
 <style lang="scss" scoped>
 .upload {
-  .upload-imgs {
+  .upload-models {
     max-height: 500px;
   }
   /deep/.list-container {
     overflow-y: auto;
     height: 300px;
+  }
+  .change-type {
+    margin-right: 5%;
   }
 }
 </style>
