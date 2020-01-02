@@ -167,7 +167,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			goto ERR
 		}
 		str := string(data)
-		if len(str) != 5 || str == "getsm" {
+		if len(str) != 5 || str != "getsm" {
 			logger.Info.Println(str)
 			continue
 		}
