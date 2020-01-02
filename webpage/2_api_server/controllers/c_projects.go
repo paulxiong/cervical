@@ -277,3 +277,30 @@ func GetAllPredictResult(c *gin.Context) {
 	res.ResSucceedStruct(c, allp)
 	return
 }
+
+// RemoveProject 删除项目记录及项目相关的文件
+// @Summary 删除项目记录及项目相关的文件
+// @Description 删除项目记录及项目相关的文件
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param pid query string false "pid, default 0, 项目ID"
+// @Param dropdt query string false "dropdt, default 0, 1删除数据集，0不删除数据集"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/removeproject [get]
+func RemoveProject(c *gin.Context) {
+	pidStr := c.DefaultQuery("pid", "0")
+	dropdtStr := c.DefaultQuery("dropdt", "0")
+	pid, _ := strconv.ParseInt(pidStr, 10, 64)
+	dropdt, _ := strconv.ParseInt(dropdtStr, 10, 64)
+
+	pinfo, err := models.GetOneProjectByID(int(pid))
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
+		return
+	}
+	logger.Info.Println(pinfo, dropdt)
+
+	res.ResSucceedString(c, "ok")
+}

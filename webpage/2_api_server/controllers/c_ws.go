@@ -166,7 +166,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		if data, err = conn.ReadMessage(); err != nil {
 			goto ERR
 		}
-		logger.Info.Println(data)
+		str := string(data)
+		if len(str) != 5 || str == "getsm" {
+			logger.Info.Println(str)
+			continue
+		}
 		// 只要有消息写回来就把系统信息发出去
 		jsonBytes, _ := json.Marshal(sm)
 		if err = conn.WriteMessage(jsonBytes); err != nil {
