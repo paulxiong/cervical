@@ -106,7 +106,13 @@
       @closed="closedDialog"
     >
       <div slot="footer" class="dialog-footer">
-        <uploadModel v-if="upload" @checkUpload="checkUpload" />
+        <uploadModel
+          v-if="upload"
+          ref="uploadModel"
+          style="margin-top:-30px;"
+          @checkUpload="checkUpload"
+          @checkModel="checkModel"
+        />
       </div>
     </el-dialog>
   </div>
@@ -165,8 +171,11 @@ export default {
     checkUpload(val) {
       this.$emit('checkUpload', val)
     },
+    checkModel(val) {
+      this.modelChecked = val
+    },
     closedDialog() {
-      this.$refs.newDatasets.step = 1
+      this.$refs.uploadModel.step = 1
     },
     filterSearch() {
       this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 52)
@@ -188,6 +197,7 @@ export default {
           v.statusType = taskType[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
           v.modelType = modelType[v.type]
+          v.precision = parseFloat(v.precision).toFixed(2)
         })
         this.modelLists = res.data.data.models
         this.total = res.data.data.total

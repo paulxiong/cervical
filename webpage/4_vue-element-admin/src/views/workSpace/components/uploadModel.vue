@@ -10,7 +10,7 @@
     />
     <el-upload
       ref="upload"
-      class="upload-imgs"
+      class="upload-models"
       :action="APIUrl"
       :headers="headers"
       :data="args"
