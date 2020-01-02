@@ -1,0 +1,14 @@
+github.com/kardianos/service v1.0.0 h1:HgQS3mFfOlyntWX8Oke98JcJLqt1DBcHR4kxShpYef0=
+github.com/kardianos/service v1.0.0/go.mod h1:8CzDhVuCuugtsHyZoTvsOBuvonN/UDBvl0kH+BUxvbo=
+github.com/lambda-zhang/systemmonitor v0.0.0-20200102044107-139182cb3c88 h1:mZ2yPzGgRi7UYMN6+MXNgRO9eS5XC+Se4nep0oR/8G0=
+github.com/lambda-zhang/systemmonitor v0.0.0-20200102044107-139182cb3c88/go.mod h1:EGkN3RZDv2W8Yax9fEbWVMCcDqvZFBTwUZe4JaMt33c=
+github.com/lambda-zhang/systemmonitor v0.0.0-20200102053348-8f4a2272556a h1:rFs1Q6aXUy88cRhQyJ+V3gorZV8pVnbiyyPzfI3EPnM=
+github.com/lambda-zhang/systemmonitor v0.0.0-20200102053348-8f4a2272556a/go.mod h1:EGkN3RZDv2W8Yax9fEbWVMCcDqvZFBTwUZe4JaMt33c=
+github.com/lambda-zhang/systemmonitor v0.0.0-20200102055152-88958a26a482 h1:VGCAvayI/UwjyVJoMvZtdm1rFgbkyV9OptYLpTjn4Ik=
+github.com/lambda-zhang/systemmonitor v0.0.0-20200102055152-88958a26a482/go.mod h1:EGkN3RZDv2W8Yax9fEbWVMCcDqvZFBTwUZe4JaMt33c=
+github.com/robfig/cron v1.2.0 h1:ZjScXvvxeQ63Dbyxy76Fj3AT3Ut0aKsyd2/tl3DTMuQ=
+github.com/robfig/cron v1.2.0/go.mod h1:JGuDeoQd7Z6yL4zQhZ3OPEVHB7fL6Ka6skscFHfmt2k=
+golang.org/x/sys v0.0.0-20190204203706-41f3e6584952 h1:FDfvYgoVsA7TTZSbgiqjAbfPbK47CNHdWl3h/PJtii0=
+golang.org/x/sys v0.0.0-20190204203706-41f3e6584952/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8 h1:JA8d3MPx/IToSyXZG/RhwYEtfrKO1Fxrqe8KrkiLXKM=
+golang.org/x/sys v0.0.0-20191228213918-04cbcbbfeed8/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

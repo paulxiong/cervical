@@ -40,7 +40,7 @@ func Router() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
 
 	r.Use(ctr.History)
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping", "/api1/job", "/api1/jobresult", "/api1/upload", "/api1/jobpercent"}}))
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping", "/api1/job", "/api1/jobresult", "/api1/upload", "/api1/jobpercent", "/api1/smonitor"}}))
 
 	/* 用户相关的API */
 	user := r.Group("/user")
@@ -66,6 +66,10 @@ func Router() *gin.Engine {
 
 	// 临时测试使用
 	api1.GET("/predictstatistics", ctr.GetPredictStatistics)
+
+	// 系统监视器
+	api1.POST("/smonitor", ctr.SystemMonitor)
+	api1.GET("/ws", ctr.WsHandler)
 
 	api1.Use(ctr.CheckAuth)
 	{
