@@ -5,7 +5,7 @@
       <el-input
         v-model="args.description"
         autofocus
-        placeholder="输入模型描述"
+        placeholder="请输入模型描述"
         show-word-limit
         maxlength="30"
         class="input-name"
@@ -38,7 +38,7 @@
       :on-change="onChange"
     >
       <i class="el-icon-upload" />
-      <div class="el-upload__text" style="color: red;"><b>*3.将模型文件拖到此处,只能上传h5/H5文件</b></div>
+      <div class="el-upload__text" style="color: red;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
       <el-button
         style="margin: 10px 0 0 20px;"
         size="mini"
@@ -50,7 +50,7 @@
     <div class="successupload">
       <el-button
         type="primary"
-        :disabled="!uploadServer && !modelChecked"
+        :disabled="!uploadServer"
         @click="closeWindows"
       >确定</el-button>
     </div>
@@ -103,8 +103,6 @@ export default {
       this.postData.description = this.inputName
       this.postData.precision1 = 0.0
       this.postData.recall = 0.0
-      this.uploadServer = true
-      this.modelChecked = true
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
       this.$nextTick(() => {
         this.$refs.upload.submit()
@@ -112,6 +110,7 @@ export default {
       })
     },
     onSuccess(response, file, fileList) {
+      this.uploadServer = true
       this.fileList = fileList.length
       this.finishedFileList = fileList.filter(v => v.percentage === 100).length
       if (fileList[fileList.length - 1].percentage === 100) {
@@ -139,8 +138,10 @@ export default {
     },
     closeWindows() {
       this.$refs.upload.clearFiles()
+      this.$router.go(0)
     },
     uploadSuccess(file) {
+      this.uploadServer = true
       const formData = new FormData()
       formData.append('file', file.file)
       this.filesList = formData
