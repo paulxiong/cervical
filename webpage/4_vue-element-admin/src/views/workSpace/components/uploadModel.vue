@@ -1,6 +1,7 @@
 <template>
   <div class="upload flex">
     <div class="change-type">
+      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: red; margin-bottom: 5px; margin-right:100px;">*请输入上传模型描述信息</span>
       <el-input
         v-model="args.description"
         autofocus
@@ -8,8 +9,11 @@
         show-word-limit
         maxlength="30"
         class="input-name"
+        style="margin-bottom: 50px; margin-right:50px;"
+        clearable
       />
-      <el-select v-model="args.type" placeholder="请选择类型">
+      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: red; margin-bottom: 5px; margin-top:5px; margin-right:100px;">*请选择上传模型类型</span>
+      <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;">
         <el-option
           v-for="item in options"
           :key="item.type"
