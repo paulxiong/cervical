@@ -101,7 +101,7 @@
       />
     </div>
     <el-dialog
-      :title="'上传模型'"
+      :title="'上传模型(根据指定步骤上传模型)'"
       :visible.sync="dialogFormVisible"
       @closed="closedDialog"
     >

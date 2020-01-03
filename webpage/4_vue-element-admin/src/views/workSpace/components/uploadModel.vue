@@ -1,7 +1,7 @@
 <template>
   <div class="upload flex">
     <div class="change-type">
-      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: red; margin-bottom: 5px; margin-right:100px;">*请输入上传模型描述信息</span>
+      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: blue; margin-bottom: 5px; margin-right:80px;">*1.请输入上传模型描述信息</span>
       <el-input
         v-model="args.description"
         autofocus
@@ -12,7 +12,7 @@
         style="margin-bottom: 50px; margin-right:50px;"
         clearable
       />
-      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: red; margin-bottom: 5px; margin-top:5px; margin-right:100px;">*请选择上传模型类型</span>
+      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: blue; margin-bottom: 5px; margin-top:5px; margin-right:100px;">*2.请选择上传模型类型</span>
       <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;">
         <el-option
           v-for="item in options"
@@ -38,7 +38,7 @@
       :on-change="onChange"
     >
       <i class="el-icon-upload" />
-      <div class="el-upload__text">将模型文件拖到此处,只能上传h5/H5文件</div>
+      <div class="el-upload__text" style="color: red;"><b>*3.将模型文件拖到此处,只能上传h5/H5文件</b></div>
       <el-button
         style="margin: 10px 0 0 20px;"
         size="mini"
@@ -47,6 +47,13 @@
       >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button>
       <el-button style="margin-left: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
+    <div class="successupload">
+      <el-button
+        type="primary"
+        :disabled="!uploadServer && !modelChecked"
+        @click="closeWindows"
+      >确定</el-button>
+    </div>
   </div>
 </template>
 
@@ -76,6 +83,8 @@ export default {
       postData: {},
       inputName: '',
       modeltype: 0,
+      uploadServer: false,
+      modelChecked: false,
       options: [{
         type: 4,
         label: '切割'
@@ -94,6 +103,8 @@ export default {
       this.postData.description = this.inputName
       this.postData.precision1 = 0.0
       this.postData.recall = 0.0
+      this.uploadServer = true
+      this.modelChecked = true
       localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
       this.$nextTick(() => {
         this.$refs.upload.submit()
@@ -126,6 +137,9 @@ export default {
       this.$refs.upload.clearFiles()
       document.querySelector('.el-upload-list').remove('list-container')
     },
+    closeWindows() {
+      this.$refs.upload.clearFiles()
+    },
     uploadSuccess(file) {
       const formData = new FormData()
       formData.append('file', file.file)
@@ -152,6 +166,11 @@ export default {
   }
   .change-type {
     margin-right: 5%;
+  }
+  .successupload {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
   }
 }
 </style>
