@@ -25,6 +25,7 @@
     <el-upload
       ref="upload"
       class="upload-models"
+      accept=".h5,.H5"
       :action="APIUrl"
       :headers="headers"
       :data="args"
