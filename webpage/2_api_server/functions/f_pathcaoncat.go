@@ -105,3 +105,23 @@ func NewModulePath(_type int, filename string) string {
 	// 目前只支持6MALA的模型上传
 	return ""
 }
+
+// GetProjectPath 获得项目的绝对路径
+func GetProjectPath(pdir string) string {
+	if len(pdir) < 2 {
+		return ""
+	}
+	return path.Join(rootdir, projectsDir, pdir)
+}
+
+// GetDatasetPath 获得数据集的绝对路径以及切割缓存路径
+func GetDatasetPath(ddir string, medicalid string, batchid string) (string, string, string) {
+	if len(ddir) < 2 {
+		return "", "", ""
+	}
+
+	dpath := path.Join(rootdir, datasetsDir, ddir)
+	cellpath := path.Join(rootdir, scratchRoot, batchid, medicalid)
+	imgpath := path.Join(rootdir, scratchRoot, "img", batchid, medicalid)
+	return dpath, cellpath, imgpath
+}

@@ -538,3 +538,13 @@ func GetOneDatasetByID(id int) (dt Dataset, e error) {
 	}
 	return d, ret2.Error
 }
+
+// RemoveDatasetByID 删除数据集
+func RemoveDatasetByID(did int64) (e error) {
+	// 删除当前项目的所有预测结果
+	ret := db.Where("id=?", did).Delete(Dataset{})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}

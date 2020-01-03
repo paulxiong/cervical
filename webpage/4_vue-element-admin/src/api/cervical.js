@@ -321,3 +321,11 @@ export function downloadReviews(data) {
     data
   })
 }
+
+export function removeProject(query) {
+  return request({
+    url: '/api1/removeproject',
+    method: 'get',
+    params: query
+  })
+}

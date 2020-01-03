@@ -282,3 +282,13 @@ func GetPredictCount() PredictCount {
 	}
 	return pcnt
 }
+
+// RemovePredictsByPid 删除项目下的所有预测
+func RemovePredictsByPid(pid int64) (e error) {
+	// 删除当前项目的所有预测结果
+	ret := db.Where("pid=?", pid).Delete(Predict{})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}

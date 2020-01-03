@@ -4,6 +4,7 @@
       <li>系统信息更新时间 {{ systeminfo.updatedat }}</li>
       <li />
       <li>CPU使用千分率 {{ systeminfo.cpu }}</li>
+      <li>CPU核心数 {{ systeminfo.numcpu }}</li>
       <li>1分钟之内CPU负载 {{ systeminfo.avg1 }}</li>
       <li>5分钟之内CPU负载 {{ systeminfo.avg5 }}</li>
       <li>15分钟之内CPU负载 {{ systeminfo.avg15 }}</li>
@@ -31,8 +32,12 @@
     </ul>
 
     <el-table
+      v-loading="loading"
       :data="projectlist"
       style="width: 100%"
+      element-loading-text="正在删除项目请稍等, 请不要刷新页面 不要关闭页面 ！！"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
     >
       <el-table-column
         label="id"
@@ -95,19 +100,20 @@
 </template>
 
 <script>
-import { getListprojects } from '@/api/cervical'
+import { getListprojects, removeProject } from '@/api/cervical'
 import { taskStatus, createdBy, taskType, projectType } from '@/const/const'
 import { parseTime } from '@/utils/index'
+import { WSURL } from '@/const/config'
 
 export default {
   data() {
     return {
-      path: 'ws://192.168.1.100:9000/api1/ws',
+      path: WSURL + '/api1/ws',
       socket: null,
       systeminfo: {},
       projectlist: [],
       currentPageSize: 20,
-      currentPage: 0,
+      currentPage: 1,
       total: 0,
       loading: false
     }
@@ -127,6 +133,19 @@ export default {
   methods: {
     handleDelete(index, row) {
       console.log(index, row)
+      const pid = row.id
+      const dropdataset = (row.dropdataset === true) ? 1 : 0
+      const content = (row.dropdataset === true) ? '此操作将永久删除该项目及相应数据集' : '此操作将永久删除该项目'
+      this.$confirm(content + ', 是否继续?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({ type: 'success', message: '开始删除' })
+        this.removeProject(pid, dropdataset)
+      }).catch(() => {
+        this.$message({ type: 'info', message: '已取消删除' })
+      })
     },
     handleCurrentChange(val) {
       this.currentPage = val
@@ -192,6 +211,13 @@ export default {
         this.projectlist = res.data.data.projects
         this.total = res.data.data.total
         this.loading = false
+      })
+    },
+    removeProject(pid, dropdt) {
+      this.loading = true
+      removeProject({ 'pid': pid, 'dropdt': dropdt }).then(res => {
+        this.loading = false
+        this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
       })
     }
   }

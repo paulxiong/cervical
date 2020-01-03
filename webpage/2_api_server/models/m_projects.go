@@ -233,3 +233,13 @@ func GetOneProjectByID(id int) (p Project, e error) {
 	}
 	return _p, ret2.Error
 }
+
+// RemoveProjectByID 删除项目
+func RemoveProjectByID(pid int64) (e error) {
+	// 删除当前项目的所有预测结果
+	ret := db.Where("id=?", pid).Delete(Project{})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}

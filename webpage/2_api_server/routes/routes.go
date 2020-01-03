@@ -98,6 +98,7 @@ func Router() *gin.Engine {
 		api1.POST("/createproject", ctr.CreateProject)
 		api1.GET("/listprojects", ctr.ListProjects)
 		api1.GET("/allpredictresult", ctr.GetAllPredictResult)
+		api1.GET("/removeproject", ctr.RemoveProject)
 
 		// 任务
 		api1.GET("/jobresult", ctr.GetJobResult)

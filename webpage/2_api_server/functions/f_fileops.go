@@ -110,3 +110,15 @@ func ZipCompressReviews(filesnames []string, filestype []string, dest string) er
 	err := u.ZipCompress(filesnames, filestype, dest)
 	return err
 }
+
+// RemoveDir 删除文件夹
+func RemoveDir(dir string) {
+	ret, _ := PathExists(dir)
+	if ret != true {
+		return
+	}
+	err := os.RemoveAll(dir)
+	if err != nil {
+		logger.Info.Println(err)
+	}
+}

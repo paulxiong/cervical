@@ -300,7 +300,23 @@ func RemoveProject(c *gin.Context) {
 		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
 	}
-	logger.Info.Println(pinfo, dropdt)
+	projectdir := f.GetProjectPath(pinfo.Dir)
+	f.RemoveDir(projectdir)
+	models.RemovePredictsByPid(pid)
+	models.RemoveProjectByID(pid)
+
+	if dropdt == 1 {
+		dinfo, err2 := models.GetOneDatasetByID(int(pinfo.DID))
+		if err2 != nil || len(dinfo.MedicalIDs1) < 1 || len(dinfo.BatchIDs1) < 1 {
+			res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
+			return
+		}
+		dpath, cellpath, imgpath := f.GetDatasetPath(dinfo.Dir, dinfo.MedicalIDs1[0], dinfo.BatchIDs1[0])
+		f.RemoveDir(cellpath)
+		f.RemoveDir(imgpath)
+		f.RemoveDir(dpath)
+		models.RemoveDatasetByID(pinfo.DID)
+	}
 
 	res.ResSucceedString(c, "ok")
 }
