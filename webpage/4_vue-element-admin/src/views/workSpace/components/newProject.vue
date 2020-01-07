@@ -98,7 +98,7 @@ export default {
   },
   created() {
     this.getListmodel(10, 0, 1)
-    this.getListdatasets(20, 0, 1)
+    this.getListdatasets(1000, 0, 1)
   },
   methods: {
     getListmodel(limit, skip, type) {
