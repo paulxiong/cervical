@@ -6,7 +6,7 @@
 ```
 docker地址&密码:
 http://2j592d3300.wicp.vip:8888/terminals/2
-223a00e2eb47dc78412c618a55916aefaea195f4f8ac07d7
+27cc8d67714f9e7a3f62c970e90085e41b850bd0f6f928b7
 进入项目目录:
 # cd //notebooks/cervical/Tensorflow-MultiGPU-VAE-GAN/
 清理h5模型存放的目录:
