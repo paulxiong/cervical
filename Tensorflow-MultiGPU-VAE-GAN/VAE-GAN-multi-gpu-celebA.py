@@ -16,6 +16,10 @@ import h5py # for reading our dataset
 import ipywidgets as widgets
 from ipywidgets import interact, interactive, fixed
 
+config = tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess = tf.Session(config=config)
+
 dim1 = 64 # first dimension of input data
 dim2 = 64 # second dimension of input data
 dim3 = 3 # third dimension of input data (colors)
