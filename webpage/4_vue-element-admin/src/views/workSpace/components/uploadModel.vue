@@ -138,7 +138,7 @@ export default {
     },
     closeWindows() {
       this.$refs.upload.clearFiles()
-      this.$router.go(0)
+      this.$router.go({ path: '/workSpace' })
     },
     uploadSuccess(file) {
       this.uploadServer = true
