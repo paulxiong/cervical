@@ -201,6 +201,18 @@ func GetPredictByPID(pid int64, status int, limit int, skip int) (p []Predict, t
 	return _p, total, ret.Error
 }
 
+// GetPredictAllByPID 通过项目ID获得所有的预测及标注结果
+func GetPredictAllByPID(pid int64) (p []Predict, t int64, e error) {
+	var _p []Predict
+	var total int64
+	db.Model(&Predict{}).Where("pid=?", pid).Count(&total)
+	ret := db.Model(&Predict{}).Where("pid=?", pid).Find(&_p)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return _p, total, ret.Error
+}
+
 // GetPredictByPIDAndType 通过项目ID和预测类型获得所有的预测及标注结果,status 0 未审核 1 已审核 2 移除 3 管理员已确认 4 未审核+已审核"
 func GetPredictByPIDAndType(pid int64, status int, limit int, skip int, predictType int, order int) (p []Predict, t int64, e error) {
 	var _p []Predict

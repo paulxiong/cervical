@@ -265,6 +265,18 @@ func ListImagesByMedicalID2(medicalid string) (totalnum int, imgs []Image, e err
 	return total, _i, ret.Error
 }
 
+// RemoveImagesByIDs 删除所有数组包含ID的图片
+func RemoveImagesByIDs(ids []int64) (e error) {
+	if len(ids) < 1 {
+		return nil
+	}
+	ret := db.Where("id in (?)", ids).Delete(Image{})
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}
+
 // Category 标注、细胞的分类信息
 type Category struct {
 	ID        int64     `json:"id"     gorm:"column:ID"`           //分类ID
