@@ -1,5 +1,5 @@
 <template>
-  <div class="testData">
+  <div class="testData2">
     <ul>
       <li>系统信息更新时间 {{ systeminfo.updatedat }}</li>
       <li />
@@ -35,6 +35,7 @@
       v-loading="loading"
       :data="projectlist"
       style="width: 100%"
+      class="content"
       element-loading-text="正在删除项目请稍等, 请不要刷新页面 不要关闭页面 ！！"
       element-loading-spinner="el-icon-loading"
       element-loading-background="rgba(0, 0, 0, 0.8)"
@@ -225,10 +226,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.testData {
+.testData2 {
   overflow: auto;
   height: 100%;
-  padding-bottom: 30px;
+  padding-bottom: 3px;
   .tools {
     background: #fff;
     justify-content: space-around;
@@ -238,6 +239,9 @@ export default {
     right: 0;
     margin-left: auto;
     margin-right: auto;
+  }
+  .content {
+    padding-bottom: 30px;
   }
 }
 </style>
