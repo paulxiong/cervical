@@ -2388,6 +2388,149 @@
           ],
           "chnname": "review",
           "remark": "医生审核细胞的信息"
+        },
+        {
+          "title": "result",
+          "fields": [
+            {
+              "name": "id",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "ID",
+              "autoIncrement": true,
+              "pk": true,
+              "notNull": true
+            },
+            {
+              "name": "did",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "数据集ID",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "pid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "所属项目的ID",
+              "notNull": true,
+              "defaultValue": "０"
+            },
+            {
+              "name": "description",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "项目描述",
+              "notNull": true,
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "cellcnt",
+              "type": "MiddleString",
+              "remark": "json转成字符串存储",
+              "chnname": "预测的各个细胞分类的个数",
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "fovcnt",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "FOV的个数",
+              "notNull": true,
+              "defaultValue": "０"
+            },
+            {
+              "name": "p1n0",
+              "type": "Integer",
+              "remark": "50阴性51阳性100未知",
+              "chnname": "病例预测的阴阳性",
+              "notNull": true
+            },
+            {
+              "name": "truep1n0",
+              "type": "Integer",
+              "remark": "50阴性51阳性100未知",
+              "chnname": "病例实际的阴阳性"
+            },
+            {
+              "name": "remark",
+              "type": "MiddleString",
+              "remark": "",
+              "chnname": "备注",
+              "defaultValue": "\"\""
+            },
+            {
+              "name": "created_by",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "创建者",
+              "defaultValue": "0"
+            },
+            {
+              "name": "created_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "创建时间",
+              "relationNoShow": true
+            },
+            {
+              "name": "updated_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "更新时间",
+              "relationNoShow": true
+            }
+          ],
+          "indexs": [],
+          "headers": [
+            {
+              "fieldName": "chnname",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "name",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "type",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "dataType",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "remark",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "pk",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "notNull",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "autoIncrement",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "defaultValue",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "relationNoShow",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
+            }
+          ],
+          "chnname": "result",
+          "remark": "项目预测结果统计"
         }
       ],
       "graphCanvas": {
