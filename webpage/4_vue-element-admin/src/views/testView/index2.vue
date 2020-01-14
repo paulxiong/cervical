@@ -174,10 +174,7 @@ export default {
       currentPageSize: 20,
       currentPage: 1,
       total: 0,
-      loading: false,
-      nowDate: null,
-      nowTime: null,
-      nowWeek: null
+      loading: false
     }
   },
   created() {
@@ -186,18 +183,11 @@ export default {
   mounted() {
     // 初始化
     this.init()
-    this.currentTime()
   },
   destroyed() {
     // 销毁监听
     this.socket.onclose = this.close
     this.socket.close()
-  },
-  beforeDestroy: function() {
-    if (this.getDate) {
-      console.log('销毁定时器')
-      clearInterval(this.getDate)
-    }
   },
   methods: {
     handleDelete(index, row) {
@@ -288,42 +278,6 @@ export default {
         this.loading = false
         this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
       })
-    },
-    currentTime() {
-      setInterval(this.getDate, 500)
-    },
-    getDate: function() {
-      var _this = this
-      const yy = new Date().getFullYear()
-      const mm = new Date().getMonth() + 1
-      const dd = new Date().getDate()
-      const week = new Date().getDay()
-      const hh = new Date().getHours()
-      const mf =
-          new Date().getMinutes() < 10
-            ? '0' + new Date().getMinutes()
-            : new Date().getMinutes()
-      const ss =
-          new Date().getSeconds() < 10
-            ? '0' + new Date().getSeconds()
-            : new Date().getSeconds()
-      if (week === 1) {
-        this.nowWeek = '星期一'
-      } else if (week === 2) {
-        this.nowWeek = '星期二'
-      } else if (week === 3) {
-        this.nowWeek = '星期三'
-      } else if (week === 4) {
-        this.nowWeek = '星期四'
-      } else if (week === 5) {
-        this.nowWeek = '星期五'
-      } else if (week === 6) {
-        this.nowWeek = '星期六'
-      } else {
-        this.nowWeek = '星期日'
-      }
-      _this.nowTime = hh + ':' + mf + ':' + ss
-      _this.nowDate = yy + '/' + mm + '/' + dd
     }
   }
 }
