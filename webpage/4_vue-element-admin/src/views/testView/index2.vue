@@ -1,5 +1,63 @@
 <template>
   <div class="testData2">
+    <el-tabs type="border-card">
+      <el-tab-pane>
+        <span slot="label"><i class="el-icon-date" /> CPU</span>
+        <table class="tftable" border="1">
+          <tr>
+            <th class="td-1">CPU使用千分率</th>
+            <th>{{ systeminfo.cpu }}</th>
+          </tr>
+          <tr>
+            <td class="td-1">CPU核心数</td>
+            <td>{{ systeminfo.numcpu }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">1分钟之内CPU负载</td>
+            <td>{{ systeminfo.avg1 }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">5分钟之内CPU负载</td>
+            <td>{{ systeminfo.avg5 }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">15分钟之内CPU负载</td>
+            <td>{{ systeminfo.avg15 }}</td>
+          </tr>
+        </table>
+      </el-tab-pane>
+      <el-tab-pane label="内存">
+        <span slot="label"><i class="el-icon-date" /> 内存</span>
+        <table class="tftable" border="1">
+          <tr>
+            <th class="td-1">总内存大小(单位字节)</th>
+            <th>{{ systeminfo.mt }}</th>
+          </tr>
+          <tr>
+            <td class="td-1">可用存大小(单位字节)</td>
+            <td>{{ systeminfo.ma }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">内存使用千分率</td>
+            <td>{{ systeminfo.mperm }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">总交换分区大小</td>
+            <td>{{ systeminfo.st }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">可用交换分区大小</td>
+            <td>{{ systeminfo.sf }}</td>
+          </tr>
+          <tr>
+            <td class="td-1">交换分区使用千分率</td>
+            <td>{{ systeminfo.sperm }}</td>
+          </tr>
+        </table>
+      </el-tab-pane>
+      <el-tab-pane label="磁盘">磁盘</el-tab-pane>
+      <el-tab-pane label="网卡">网卡</el-tab-pane>
+    </el-tabs>
     <ul>
       <li>系统信息更新时间 {{ systeminfo.updatedat }}</li>
       <li />
@@ -111,12 +169,15 @@ export default {
     return {
       path: WSURL + '/api1/ws',
       socket: null,
-      systeminfo: {},
+      systeminfo: [],
       projectlist: [],
       currentPageSize: 20,
       currentPage: 1,
       total: 0,
-      loading: false
+      loading: false,
+      nowDate: null,
+      nowTime: null,
+      nowWeek: null
     }
   },
   created() {
@@ -125,11 +186,18 @@ export default {
   mounted() {
     // 初始化
     this.init()
+    this.currentTime()
   },
   destroyed() {
     // 销毁监听
     this.socket.onclose = this.close
     this.socket.close()
+  },
+  beforeDestroy: function() {
+    if (this.getDate) {
+      console.log('销毁定时器')
+      clearInterval(this.getDate)
+    }
   },
   methods: {
     handleDelete(index, row) {
@@ -220,6 +288,42 @@ export default {
         this.loading = false
         this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
       })
+    },
+    currentTime() {
+      setInterval(this.getDate, 500)
+    },
+    getDate: function() {
+      var _this = this
+      const yy = new Date().getFullYear()
+      const mm = new Date().getMonth() + 1
+      const dd = new Date().getDate()
+      const week = new Date().getDay()
+      const hh = new Date().getHours()
+      const mf =
+          new Date().getMinutes() < 10
+            ? '0' + new Date().getMinutes()
+            : new Date().getMinutes()
+      const ss =
+          new Date().getSeconds() < 10
+            ? '0' + new Date().getSeconds()
+            : new Date().getSeconds()
+      if (week === 1) {
+        this.nowWeek = '星期一'
+      } else if (week === 2) {
+        this.nowWeek = '星期二'
+      } else if (week === 3) {
+        this.nowWeek = '星期三'
+      } else if (week === 4) {
+        this.nowWeek = '星期四'
+      } else if (week === 5) {
+        this.nowWeek = '星期五'
+      } else if (week === 6) {
+        this.nowWeek = '星期六'
+      } else {
+        this.nowWeek = '星期日'
+      }
+      _this.nowTime = hh + ':' + mf + ':' + ss
+      _this.nowDate = yy + '/' + mm + '/' + dd
     }
   }
 }
