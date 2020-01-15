@@ -145,10 +145,11 @@ func GetTrainResult(c *gin.Context) {
 // oneProjectPredict 按参数获得一个项目的预测结果
 func oneProjectPredict(pinfo models.Project, limit int64, skip int64, correc int64) *f.PredictInfo2 {
 	j := f.LoadPredictJSONFile(pinfo.Dir, 0)
-	if limit > 0 {
+	if j.ID < 1 || limit > 0 {
 		// limit>0 说明需要细胞列表，要从predict2.json读取
 		j = f.LoadPredictJSONFile(pinfo.Dir, 1)
 	}
+
 	j.CellsTotal = len(j.Cells)
 	if j.CellsTotal > int(limit) {
 		var CellsCrop []f.PredictCell
