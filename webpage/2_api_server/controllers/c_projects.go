@@ -260,7 +260,11 @@ func GetAllPredictResult(c *gin.Context) {
 	for _, v := range p {
 		j := oneProjectPredict(v, 0, 0, 1)
 		d, _ := models.GetOneDatasetByID(int(v.DID))
-		j2 := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, 1))
+		// 从数据集的配置文件info.json查找FOV个数，如果查不到再从info2.json查找, 因为之前的老代码只在info2.json里面有FOV个数
+		j2 := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, 0))
+		if j2.FovCnt < 1 {
+			j2 = f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, 1))
+		}
 		_pr := &predictresult{
 			ID:     j.ID,
 			DID:    j.DID,
