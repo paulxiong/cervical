@@ -294,6 +294,11 @@ class cells_detect_crop(worker):
 
         self.save_info_json(job_info, self.info2_json)
 
+        #把处理之后的信息写回info.json，加速前端拉数据
+        job_info['origin_imgs'] = []
+        job_info['cells_crop'] = []
+        self.save_info_json(job_info, self.info_json)
+
     def crop_images(self):
         """
         裁剪方式：
