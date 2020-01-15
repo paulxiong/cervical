@@ -46,6 +46,7 @@ class worker_fs():
             self.project_dir = os.path.join(self.projects_dir, self.wdir)
             self.logfile = os.path.join(self.project_dir, 'log.txt')
             self.info_json = os.path.join(self.project_dir, 'info.json')
+            self.predict_json = os.path.join(self.project_dir, 'predict.json')
             self.predict2_json = os.path.join(self.project_dir, 'predict2.json')
             self.project_predict_dir = os.path.join(self.project_dir, 'predict')
             self.project_resize_predict_dir = os.path.join(self.project_dir, 'resize_predict')

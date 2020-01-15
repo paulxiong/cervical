@@ -243,6 +243,10 @@ class mala_predict(worker):
         predict_info['crop_cells'] = result['crop_cells']
         predict_info['result'] = result['result']
         self.save_info_json(predict_info, self.predict2_json)
+
+        #记录一份到predict.json，加速后端统计预测结果
+        predict_info['crop_cells'] = []
+        self.save_info_json(predict_info, self.predict_json)
         return True
 
     def _filter(self, result201):

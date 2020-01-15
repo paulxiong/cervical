@@ -463,7 +463,7 @@ func SetJobResult(c *gin.Context) {
 	if w.Type == 3 && w.Status == 4 {
 		_p, err2 := models.GetOneProjectByID(int(w.ID))
 		if err2 == nil && len(_p.Dir) > 0 {
-			result := f.LoadPredictJSONFile(_p.Dir)
+			result := f.LoadPredictJSONFile(_p.Dir, 1)
 
 			var cellpredicts []*models.Predict
 			for _, v := range result.Cells {

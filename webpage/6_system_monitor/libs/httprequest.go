@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var url string = "http://192.168.1.100:9000/api1/smonitor"
+var url string = "http://127.0.0.1:3000/api1/smonitor"
 
 func httpPostJSON(sysinfo SysStateInfo) {
 	jsons, _ := json.Marshal(sysinfo)

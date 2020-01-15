@@ -155,9 +155,12 @@ type PredictInfo2 struct {
 	ParameterType   int            `json:"parameter_type"   example:"3"`    //预测方式,0没标注的图1有标注的图
 }
 
-// LoadPredictJSONFile 加载json文件内容成struct
-func LoadPredictJSONFile(dirname string) PredictInfo2 {
+// LoadPredictJSONFile 加载json文件内容成struct, done--0 predict.json, 1---predict2.json，二者区别只是predict2.json有预测细胞结果, predict.json没有
+func LoadPredictJSONFile(dirname string, done int) PredictInfo2 {
 	filename := projectsDir + "/" + dirname + "/predict2.json"
+	if done == 0 {
+		filename = projectsDir + "/" + dirname + "/predict.json"
+	}
 	j := PredictInfo2{}
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
