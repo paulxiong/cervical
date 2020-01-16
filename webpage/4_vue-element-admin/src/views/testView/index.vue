@@ -40,7 +40,7 @@
         <el-table-column prop="p1n0" label="结果" width="80" />
 
       </el-table>
-      <div style="margin-top: 20px">
+      <div style="margin-top: 20px;" class="selectAll">
         <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>
         <el-button @click="toggleSelection()">取消选择</el-button>
       </div>
@@ -162,6 +162,9 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
+  .selectAll {
+    margin-bottom: 5px;
+  }
   .filter-box {
   }
   .tools {
