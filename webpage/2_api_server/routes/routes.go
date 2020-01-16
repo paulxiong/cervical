@@ -99,6 +99,8 @@ func Router() *gin.Engine {
 		api1.GET("/listprojects", ctr.ListProjects)
 		api1.GET("/allpredictresult", ctr.GetAllPredictResult)
 		api1.GET("/removeproject", ctr.RemoveProject)
+		api1.POST("/result", ctr.CreateProjectResult)
+		api1.GET("/result", ctr.GetProjectResult)
 
 		// 任务
 		api1.GET("/jobresult", ctr.GetJobResult)
@@ -106,6 +108,7 @@ func Router() *gin.Engine {
 		api1.GET("/joblog", ctr.GetJobLog)
 		api1.GET("/trainresult", ctr.GetTrainResult)
 		api1.GET("/predictresult", ctr.GetPredictResult)
+
 		// 模型
 		api1.GET("/listmodel", ctr.GetModelLists)
 		api1.POST("/savemodel", ctr.SaveModelInfo)

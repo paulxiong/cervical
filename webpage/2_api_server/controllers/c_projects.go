@@ -335,4 +335,89 @@ func RemoveProject(c *gin.Context) {
 	}
 
 	res.ResSucceedString(c, "ok")
+	return
+}
+
+// projectResult 预测项目的结果记录
+type projectResult struct {
+	DID      int64  `json:"did"      example:"2"`           //数据集的id
+	PID      int64  `json:"pid"      example:"3"`           //项目的id
+	Desc     string `json:"desc"     example:"description"` //项目的描述
+	PCnt     int    `json:"pcnt"     example:"100"`         //阳性细胞个数
+	NCnt     int    `json:"ncnt"     example:"100"`         //阴性细胞个数
+	UCnt     int    `json:"ucnt"     example:"100"`         //不是细胞个数
+	FOVCnt   int    `json:"fovcnt"   example:"100"`         //FOV的个数
+	P1N0     int    `json:"p1n0"     example:"50"`          //例预测的阴阳性 50阴性51阳性100未知
+	TrueP1N0 int    `json:"truep1n0" example:"51"`          //病例实际的阴阳性 50阴性51阳性100未知
+	Remark   string `json:"remark"   example:"remark"`      //备注
+}
+
+// CreateProjectResult 新建预测项目的结果记录
+// @Summary 新建预测项目的结果记录
+// @Description 新建预测项目的结果记录
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param projectResult body controllers.projectResult true "预测项目的结果"
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/result [post]
+func CreateProjectResult(c *gin.Context) {
+	pr := projectResult{}
+	err := c.BindJSON(&pr)
+	if err != nil {
+		logger.Info.Println(err)
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	usr, _ := models.GetUserFromContext(c)
+
+	r := models.Result{
+		ID:        0,
+		DID:       pr.DID,
+		PID:       pr.PID,
+		Desc:      pr.Desc,
+		PCnt:      pr.PCnt,
+		NCnt:      pr.NCnt,
+		UCnt:      pr.UCnt,
+		FOVCnt:    pr.FOVCnt,
+		P1N0:      pr.P1N0,
+		TrueP1N0:  pr.TrueP1N0,
+		Remark:    pr.Remark,
+		CreatedBy: usr.ID,
+	}
+	r.CreateOrUpdateResult()
+
+	res.ResSucceedString(c, "ok")
+	return
+}
+
+// projectResult 预测项目的结果记录
+type projectResults struct {
+	Total    int64           `json:"total"`   //预测项目的结果记录个数
+	Projects []models.Result `json:"results"` //预测项目的结果记录
+}
+
+// GetProjectResult 返回所有新建预测项目的结果记录
+// @Summary 返回所有新建预测项目的结果记录
+// @Description 返回所有新建预测项目的结果记录
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 500, 预测项目的结果记录个数上限制"
+// @Param skip query string false "skip, default 0, 预测项目的结果记录跳过的个数"
+// @Success 200 {object} function.PredictInfo2
+// @Router /api1/result [get]
+func GetProjectResult(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "500")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+
+	allresults := projectResults{}
+	allresults.Total, allresults.Projects, _ = models.ListResult(limit, skip)
+	res.ResSucceedStruct(c, allresults)
+	return
 }

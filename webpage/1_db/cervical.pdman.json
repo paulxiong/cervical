@@ -2415,7 +2415,7 @@
               "remark": "",
               "chnname": "所属项目的ID",
               "notNull": true,
-              "defaultValue": "０"
+              "defaultValue": "0"
             },
             {
               "name": "description",
@@ -2426,11 +2426,25 @@
               "defaultValue": "\"\""
             },
             {
-              "name": "cellcnt",
-              "type": "MiddleString",
-              "remark": "json转成字符串存储",
-              "chnname": "预测的各个细胞分类的个数",
-              "defaultValue": "\"\""
+              "name": "pcnt",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "阳性细胞个数",
+              "defaultValue": "0"
+            },
+            {
+              "name": "ncnt",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "阴性细胞个数",
+              "defaultValue": "0"
+            },
+            {
+              "name": "ucnt",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "不是细胞个数",
+              "defaultValue": "0"
             },
             {
               "name": "fovcnt",
@@ -2438,7 +2452,7 @@
               "remark": "",
               "chnname": "FOV的个数",
               "notNull": true,
-              "defaultValue": "０"
+              "defaultValue": "0"
             },
             {
               "name": "p1n0",

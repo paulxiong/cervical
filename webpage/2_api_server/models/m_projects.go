@@ -243,3 +243,119 @@ func RemoveProjectByID(pid int64) (e error) {
 	}
 	return ret.Error
 }
+
+// Result 预测结果信息统计，目前只有内部测试使用
+type Result struct {
+	ID        int64     `json:"id"         gorm:"column:id; primary_key" example:"1"`           //ID
+	DID       int64     `json:"did"        gorm:"column:did"             example:"2"`           //数据集的id
+	PID       int64     `json:"pid"        gorm:"column:pid"             example:"3"`           //项目的id
+	Desc      string    `json:"desc"       gorm:"column:description"     example:"description"` //项目的描述
+	PCnt      int       `json:"pcnt"       gorm:"column:pcnt"            example:"100"`         //阳性细胞个数
+	NCnt      int       `json:"ncnt"       gorm:"column:ncnt"            example:"100"`         //阴性细胞个数
+	UCnt      int       `json:"ucnt"       gorm:"column:ucnt"            example:"100"`         //不是细胞个数
+	FOVCnt    int       `json:"fovcnt"     gorm:"column:fovcnt"          example:"100"`         //FOV的个数
+	P1N0      int       `json:"p1n0"       gorm:"column:p1n0"            example:"50"`          //例预测的阴阳性 50阴性51阳性100未知
+	TrueP1N0  int       `json:"truep1n0"   gorm:"column:truep1n0"        example:"51"`          //病例实际的阴阳性 50阴性51阳性100未知
+	Remark    string    `json:"remark"     gorm:"column:remark"          example:"remark"`      //备注
+	CreatedBy int64     `json:"-"          gorm:"column:created_by"      example:"7"`           //创建者
+	CreatedAt time.Time `json:"created_at" gorm:"column:created_at"      example:"7"`           //创建时间
+	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at"      example:"7"`           //更新时间
+	UserName  string    `json:"username"   gorm:"-"`                                            //创建者名字
+	UserImg   string    `json:"userimg"    gorm:"-"`                                            //创建者头像
+}
+
+// BeforeCreate insert 之前的hook
+func (r *Result) BeforeCreate(scope *gorm.Scope) error {
+	if r.CreatedAt.IsZero() {
+		r.CreatedAt = time.Now()
+	}
+	if r.UpdatedAt.IsZero() {
+		r.UpdatedAt = time.Now()
+	}
+	if r.P1N0 == 0 {
+		r.P1N0 = 100
+	}
+	if r.TrueP1N0 == 0 {
+		r.TrueP1N0 = 100
+	}
+	return nil
+}
+
+// AfterFind 把数据库里面存的字符串转成数组返回
+func (r *Result) AfterFind(scope *gorm.Scope) error {
+	if r.CreatedBy > 0 {
+		u, _ := FinduserbyID(r.CreatedBy)
+		r.UserName = u.Name
+		r.UserImg = u.Image
+	}
+	return nil
+}
+
+// UpdateResult 更新项目的预测结果记录
+func (r *Result) UpdateResult() (e error) {
+	updater := make(map[string]interface{})
+
+	if r.Desc != "" {
+		updater["description"] = r.Desc
+	}
+	if r.PCnt > 0 {
+		updater["pcnt"] = r.PCnt
+	}
+	if r.NCnt > 0 {
+		updater["ncnt"] = r.NCnt
+	}
+	if r.UCnt > 0 {
+		updater["ucnt"] = r.UCnt
+	}
+	if r.FOVCnt > 0 {
+		updater["fovcnt"] = r.FOVCnt
+	}
+	if r.P1N0 > 0 {
+		updater["p1n0"] = r.P1N0
+	}
+	if r.TrueP1N0 > 0 {
+		updater["truep1n0"] = r.TrueP1N0
+	}
+	if r.Remark != "" {
+		updater["remark"] = r.Remark
+	}
+	ret := db.Model(&Result{}).Where("pid=?", r.PID).Updates(updater)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return ret.Error
+}
+
+// CreateOrUpdateResult 新建一个项目的预测结果记录,如果已经存在就更新
+func (r *Result) CreateOrUpdateResult() (e error) {
+	r.ID = 0
+	var total int64
+
+	ret := db.Model(&Result{}).Where("pid=?", r.PID).Count(&total)
+	if ret.Error == nil && total > 0 {
+		err := r.UpdateResult()
+		if err != nil {
+			logger.Info.Println(err)
+		}
+		return err
+	}
+
+	ret2 := db.Model(r).Create(&r)
+	if ret2.Error != nil {
+		logger.Info.Println(ret2.Error)
+	}
+	return ret2.Error
+}
+
+// ListResult 依次列出项目的预测结果记录
+func ListResult(limit int64, skip int64) (totalNum int64, c []Result, e error) {
+	var _r []Result
+	var total int64 = 0
+
+	ret := db.Model(&Result{}).Count(&total)
+	ret = db.Model(&Result{}).Limit(limit).Offset(skip).Find(&_r)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _r, ret.Error
+}

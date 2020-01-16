@@ -329,3 +329,19 @@ export function removeProject(query) {
     params: query
   })
 }
+
+export function createProjectResult(data) {
+  return request({
+    url: '/api1/result',
+    method: 'post',
+    data
+  })
+}
+
+export function listProjectResult(query) {
+  return request({
+    url: '/api1/result',
+    method: 'get',
+    params: query
+  })
+}
