@@ -222,6 +222,7 @@ type predictresult struct {
 	Dir    string           `json:"dir"    example:"dir name"`    //项目目录
 	Desc   string           `json:"desc"   example:"description"` //项目描述
 	FovCnt int              `json:"fovcnt" example:"1"`           //FOV个数
+	Saved  int              `json:"saved"  example:"1"`           //该项目结果是否已经保存过，0 -- 未保存 1-- 已经
 	PRsult []f.PredictRsult `json:"result"`                       //预测的细胞的个数统计
 }
 
@@ -270,6 +271,13 @@ func GetAllPredictResult(c *gin.Context) {
 		if j2.FovCnt < 1 {
 			j2 = f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, 1))
 		}
+
+		Saved := 0
+		r, err2 := models.GetOneResultByPID(j.ID)
+		if err2 == nil && r.ID > 0 {
+			Saved = 1
+		}
+
 		_pr := &predictresult{
 			ID:     j.ID,
 			DID:    j.DID,
@@ -277,6 +285,7 @@ func GetAllPredictResult(c *gin.Context) {
 			Dir:    v.Dir,
 			Desc:   v.Desc,
 			FovCnt: j2.FovCnt,
+			Saved:  Saved,
 			PRsult: j.PRsult,
 		}
 		allp.Projects = append(allp.Projects, _pr)

@@ -76,11 +76,8 @@
         <el-table-column prop="p1n0name" label="结果" width="80" />
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleBeforeSaveResult(scope.$index, scope.row)"
-            >结果录入</el-button>
+            <el-button v-if="scope.row.saved === 1" size="mini" type="success" @click="handleBeforeSaveResult(scope.$index, scope.row)">更新记录</el-button>
+            <el-button v-else size="mini" type="danger" @click="handleBeforeSaveResult(scope.$index, scope.row)">录入记录</el-button>
           </template>
         </el-table-column>
 
@@ -139,7 +136,6 @@ export default {
   },
   methods: {
     handleBeforeSaveResult(index, val) {
-      console.log(this.currentproject)
       this.currentproject = val
       this.dialogVisible = true
     },
@@ -172,7 +168,7 @@ export default {
           return
         }
         const projects = { 'id': v.id, 'did': v.did, 'cnt50': 0, 'cnt51': 0,
-          'cnt200': 0, 'fov': v.fovcnt, 'dir': v.dir, 'desc': v.desc,
+          'cnt200': 0, 'fov': v.fovcnt, 'dir': v.dir, 'desc': v.desc, 'saved': v.saved,
           'ddir': v.ddir, 'cellstotal': 0, 'ppercent': 0.00, 'cellspfov': 0.00 }
         v.result.map(v2 => {
           if (v2.type === 50) {

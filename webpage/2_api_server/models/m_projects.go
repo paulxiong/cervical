@@ -359,3 +359,13 @@ func ListResult(limit int64, skip int64) (totalNum int64, c []Result, e error) {
 	}
 	return total, _r, ret.Error
 }
+
+// GetOneResultByPID 通过PID查找项目记录
+func GetOneResultByPID(pid int64) (p Result, e error) {
+	_p := Result{}
+	ret2 := db.Model(&_p).Where("pid=?", pid).First(&_p)
+	if ret2.Error != nil {
+		return _p, ret2.Error
+	}
+	return _p, ret2.Error
+}
