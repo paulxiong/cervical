@@ -60,18 +60,8 @@ func Router() *gin.Engine {
 
 	api1 := r.Group("/api1")
 	api1.GET("/ping", ctr.Pong) //不需要登录就能ping的API
-
 	// 任务
-	jobqueue := make(chan *gin.Context)
-	go func() {
-		for {
-			c := <-jobqueue
-			ctr.GetOneJob(c)
-		}
-	}()
-	api1.POST("/job", func(c *gin.Context) {
-		jobqueue <- c
-	})
+	api1.POST("/job", ctr.GetOneJob)
 	api1.POST("/jobresult", ctr.SetJobResult)
 
 	// 临时测试使用
