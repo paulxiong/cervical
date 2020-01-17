@@ -92,7 +92,7 @@
       <el-pagination
         class="page"
         :current-page.sync="currentPage"
-        :page-sizes="[10, 20, 30, 50]"
+        :page-sizes="[20, 30, 50]"
         :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -131,7 +131,7 @@ export default {
     return {
       step: 1,
       currentPage: 1,
-      currentPageSize: 10,
+      currentPageSize: 20,
       total: undefined,
       modelLists: [],
       dialogFormVisible: false,
