@@ -1,11 +1,7 @@
 import cv2
 import numpy as np
-import math
-import time
-import os
-import shutil
 
-def get_cell_cnt(img_):  # 单张FOV 2.1ms
+def get_cell_cnt(img_, area_limit=12):  # 单张FOV 2.1ms
     x, y = img_.shape[0:2]
     img_ = cv2.resize(img_, (int(y/4), int(x/4)))
     ret, binary = cv2.threshold(img_, 95, 255, cv2.THRESH_BINARY)
@@ -23,14 +19,14 @@ def get_cell_cnt(img_):  # 单张FOV 2.1ms
     for n in range(len(contours)):
         cnt = contours[n]
         area = cv2.contourArea(cnt)
-        if area > 12:
+        if area > area_limit:
             cnt_cells = cnt_cells + 1
     return cnt_cells
 
-def get_FOV_sign(img):
+def get_FOV_sign(img, limit=2):
     cnt = get_cell_cnt(img)
     sign = 0 # sign=1时，该FOV无效
-    if cnt < 2:
+    if cnt < limit:
         sign = 1
     return sign
 
