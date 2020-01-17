@@ -13,7 +13,7 @@
         <el-tabs tab-position="left" class="img-tabs">
           <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${predictResult.correc_total ? predictResult.correc_total : ''}`" class="img-tab">
             <div class="img-div flex" style="overflow-y: auto;height:600px;">
-              <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 20px;">
+              <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 30px;">
                 <el-badge :value="`${v.type}-${v.score}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
                   <el-image class="img-item img-right" :src="hosturlpath64 + v.url + '?width=64'" lazy />
                 </el-badge>
