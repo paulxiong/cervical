@@ -3,6 +3,7 @@ package controllers
 import (
 	"strconv"
 	"strings"
+	"sync"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
@@ -385,9 +386,11 @@ type jobResult struct {
 	Percent int   `json:"percent"` // 完成百分比
 }
 
+var jobgetmutex sync.Mutex
+
 // GetOneJob python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @Summary python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
-// @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型。注意文档的返回值有２中，为了区分其中一种code写成了2000，其实应该是200
+// @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型。注意文档的返回值有２种，为了区分其中一种code写成了2000，其实应该是200
 // @tags API1 任务（需要认证）
 // @Accept  json
 // @Produce json
@@ -396,8 +399,18 @@ type jobResult struct {
 // @Success 2000 {object} models.Project
 // @Router /api1/job [post]
 func GetOneJob(c *gin.Context) {
+	// 使用互斥锁保证请求任务不会冲突
+	jobgetmutex.Lock()
+	defer func() {
+		jobgetmutex.Unlock()
+	}()
+
 	w := jobResult{}
-	c.BindJSON(&w)
+	err1 := c.ShouldBindJSON(&w)
+	if err1 != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
 
 	//数据处理
 	if w.Type == 1 {
