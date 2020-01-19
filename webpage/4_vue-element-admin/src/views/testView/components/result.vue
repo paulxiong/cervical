@@ -25,6 +25,7 @@
       </el-table>
       <div style="margin-top: 20px">
         <el-button @click="toggleSelection()">取消选择</el-button>
+        <el-button type="primary" @click="downloadResults">下载选中记录</el-button>
       </div>
       <div class="tools flex">
         <el-pagination
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import { listProjectResult } from '@/api/cervical'
+import { listProjectResult, downloadResults } from '@/api/cervical'
 
 export default {
   name: 'ResultLists',
@@ -51,9 +52,9 @@ export default {
     return {
       results: [],
       total: 0,
-      currentPageSize: 10,
+      currentPageSize: 200,
       currentPage: 0,
-      multipleSelection: []
+      selectedList: []
     }
   },
   mounted() {
@@ -70,7 +71,10 @@ export default {
       }
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      this.selectedList = []
+      val.map(v => {
+        this.selectedList.push(v.id)
+      })
     },
     handleCurrentChange(val) {
       this.currentPage = val
@@ -89,6 +93,31 @@ export default {
         }
         this.results = res.data.data.results
         this.total = res.data.data.total
+      })
+    },
+    downloadResults() {
+      this.loading = true
+      const postData = { 'ids': this.selectedList }
+      downloadResults(postData).then(res => {
+        const blob = new Blob([res.data])
+        if (window.navigator.msSaveOrOpenBlob) {
+          navigator.msSaveBlob(blob, 'nb')
+        } else {
+          const link = document.createElement('a')
+          const evt = document.createEvent('HTMLEvents')
+          evt.initEvent('click', false, false)
+          link.href = URL.createObjectURL(blob)
+          link.download = 'result.csv'
+          link.style.display = 'none'
+          document.body.appendChild(link)
+          link.click()
+          window.URL.revokeObjectURL(link.href)
+        }
+        this.$message({
+          message: '下载成功',
+          type: 'success'
+        })
+        this.downloadLoading = false
       })
     }
   }

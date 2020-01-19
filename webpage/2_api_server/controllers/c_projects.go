@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"encoding/csv"
+	"fmt"
+	"os"
 	"strconv"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
@@ -428,5 +431,76 @@ func GetProjectResult(c *gin.Context) {
 	allresults := projectResults{}
 	allresults.Total, allresults.Projects, _ = models.ListResult(limit, skip)
 	res.ResSucceedStruct(c, allresults)
+	return
+}
+
+// downloadResultIDs 要下载的记录ID
+type downloadResultIDs struct {
+	IDs []int64 `json:"ids"` //要下载的记录ID
+}
+
+// DownloadResult 下载预测项目的结果记录为csv文件
+// @Summary 下载预测项目的结果记录为csv文件
+// @Description 下载预测项目的结果记录为csv文件
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param downloadResultIDs body controllers.downloadResultIDs true "要下载的记录ID"
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/downloadresult [post]
+func DownloadResult(c *gin.Context) {
+	dr := downloadResultIDs{}
+	err1 := c.ShouldBindJSON(&dr)
+	if err1 != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	filename := u.GetRandomStringNum(6)
+	csvname := fmt.Sprintf("%s.csv", filename)
+
+	fd, err1 := os.OpenFile(csvname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err1 != nil {
+		logger.Info.Println(csvname, err1)
+	}
+	w := csv.NewWriter(fd)
+	w.Write([]string{"编号", "项目ID", "数据集ID", "批次和病例号", "阴性细胞数", "阳性细胞数", "过滤杂质数", "FOV数", "模型预测结果", "医生诊断结果", "备注"})
+	w.Flush()
+	for _, v := range dr.IDs {
+		r, err2 := models.GetOneResultByID(v)
+		if err2 != nil || r.ID < 1 {
+			continue
+		}
+		w.Write([]string{
+			fmt.Sprintf("%d", r.ID),
+			fmt.Sprintf("%d", r.PID),
+			fmt.Sprintf("%d", r.DID),
+			r.Desc,
+			fmt.Sprintf("%d", r.NCnt),
+			fmt.Sprintf("%d", r.PCnt),
+			fmt.Sprintf("%d", r.UCnt),
+			fmt.Sprintf("%d", r.FOVCnt),
+			fmt.Sprintf("%d", r.P1N0),
+			fmt.Sprintf("%d", r.TrueP1N0),
+			r.Remark,
+		})
+		w.Flush()
+	}
+	fd.Close()
+
+	filesize := f.GetFileSize(csvname)
+	if filesize < 1 {
+		res.ResFailedStatus(c, e.Errors["CsvFailed"])
+		return
+	}
+
+	//下载
+	contentDisposition := fmt.Sprintf("attachment; filename=%s", csvname)
+	c.Writer.Header().Add("Content-Disposition", contentDisposition)
+	c.Writer.Header().Add("Content-Type", "application/zip")
+	c.Writer.Header().Add("Accept-Length", fmt.Sprintf("%d", filesize))
+	c.Writer.Header().Add("Content-Length", fmt.Sprintf("%d", filesize))
+	c.File(csvname)
 	return
 }

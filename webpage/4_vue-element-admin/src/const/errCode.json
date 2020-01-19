@@ -59,6 +59,8 @@
 
         {"status": 200, "key": "VerifyInvalied",   "content": "验证码错误，请重新输入或者获取"},
         {"status": 201, "key": "VerifyExpired",   "content": "验证码过期，请重新获取"},
-        {"status": 202, "key": "VerifyEmailNotFound",   "content": "该邮箱未找到"}
+        {"status": 202, "key": "VerifyEmailNotFound",   "content": "该邮箱未找到"},
+
+        {"status": 210, "key": "CsvFailed",   "content": "创建CSV失败"}
 	]
 }

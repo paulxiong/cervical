@@ -369,3 +369,13 @@ func GetOneResultByPID(pid int64) (p Result, e error) {
 	}
 	return _p, ret2.Error
 }
+
+// GetOneResultByID 通过ID查找项目记录
+func GetOneResultByID(id int64) (p Result, e error) {
+	_p := Result{}
+	ret2 := db.Model(&_p).Where("id=?", id).First(&_p)
+	if ret2.Error != nil {
+		return _p, ret2.Error
+	}
+	return _p, ret2.Error
+}

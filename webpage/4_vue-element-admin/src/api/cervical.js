@@ -345,3 +345,12 @@ export function listProjectResult(query) {
     params: query
   })
 }
+
+export function downloadResults(data) {
+  return request({
+    url: '/api1/downloadresult',
+    method: 'post',
+    responseType: 'blob',
+    data
+  })
+}
