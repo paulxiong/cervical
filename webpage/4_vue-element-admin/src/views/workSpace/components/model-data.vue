@@ -130,8 +130,8 @@ export default {
   data() {
     return {
       step: 1,
-      currentPage: 1,
-      currentPageSize: 20,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       total: undefined,
       modelLists: [],
       dialogFormVisible: false,
@@ -187,6 +187,15 @@ export default {
     handleSizeChange(val) {
       this.currentPageSize = val
       this.getListmodel(val, (this.currentPage - 1) * this.currentPageSize, 52)
+    },
+    goDetail(val) {
+      localStorage.setItem('TAB', this.activename)
+      localStorage.setItem('details_title', val.desc)
+      localStorage.setItem('page_index', this.currentPage)
+      localStorage.setItem('page_size', this.currentPageSize)
+      this.$router.push({
+        path: `/workSpace/details?did=${val.id}`
+      })
     },
     getListmodel(limit, skip, type) {
       // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型
