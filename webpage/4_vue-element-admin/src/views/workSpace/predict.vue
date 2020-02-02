@@ -612,6 +612,9 @@ export default {
   justify-content: flex-start;
   align-items: flex-start;
 }
+/deep/ .item-box {
+  margin-bottom: 5px;
+}
 .tools-bar {
   width: 1310px;
   justify-content: space-between;

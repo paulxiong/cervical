@@ -300,6 +300,9 @@ export default {
     color: #00c764;
   }
 }
+/deep/ .el-image__inner {
+  margin-right: 10px;
+}
 .time-info {
   margin-left: 30px;
 }
