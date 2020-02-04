@@ -270,7 +270,7 @@ func RemoveImagesByIDs(ids []int64) (e error) {
 	if len(ids) < 1 {
 		return nil
 	}
-	ret := db.Where("id in (?)", ids).Delete(Image{})
+	ret := db.Where("ID in (?)", ids).Delete(Image{})
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
