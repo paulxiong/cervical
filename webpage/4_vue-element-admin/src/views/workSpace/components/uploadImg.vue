@@ -4,6 +4,7 @@
       ref="upload"
       class="upload-imgs"
       :action="APIUrl"
+      accept="image/jpeg,image/jpg,image/png"
       :headers="headers"
       :data="args"
       drag
