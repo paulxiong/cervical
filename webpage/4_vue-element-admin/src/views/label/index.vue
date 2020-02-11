@@ -230,10 +230,15 @@ export default {
       const updatearr = idArr.filter(function(v) {
         return orgIdArr.indexOf(v) !== -1
       })
+      // 移动
+      const movearr = orgIdArr.filter(function(v) {
+        return idArr.indexOf(v) !== -1
+      })
 
       const addArr = []
       const delArr = []
       const changeArr = []
+      const moveArr = []
       // 新增
       newarr.map(v => {
         const v1 = idTree[v]
@@ -267,6 +272,29 @@ export default {
           'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
         }
         delArr.push(obj)
+      })
+
+      // 移动
+      movearr.map(v => {
+        const v1 = orgIdTree[v]
+        const v2 = idTree[v]
+        if (v1.position.x1 !== v2.position.x1 || v1.position.y1 !== v2.position.y1 ||
+        v1.position.x2 !== v2.position.x2 || v1.position.y2 !== v2.position.y2 || v1.type !== v2.type) {
+          const obj = {
+            'imgid': parseInt(this.imgid),
+            'op': 3, // 0未知 1增加 2删除 3修改
+            'labelid': parseInt(v2.id),
+            'typeid': parseInt(v2.type),
+            'x1': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x)) / 100),
+            'x2': parseInt((this.imgInfo.imgw * parseFloat(v2.position.x1)) / 100),
+            'y1': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y)) / 100),
+            'y2': parseInt((this.imgInfo.imgh * parseFloat(v2.position.y1)) / 100)
+          }
+          if (obj.typeid === 0) {
+            obj.typeid === 100 // 未知类型
+          }
+          moveArr.push(obj)
+        }
       })
 
       // 更新
