@@ -222,6 +222,10 @@ export default {
       const newarr = idArr.filter(function(v) {
         return orgIdArr.indexOf(v) === -1
       })
+      // 删除
+      const delarr = orgIdArr.filter(function(v) {
+        return idArr.indexOf(v) === -1
+      })
       // 没变或者更新
       const updatearr = idArr.filter(function(v) {
         return orgIdArr.indexOf(v) !== -1
@@ -247,6 +251,22 @@ export default {
           obj.typeid === 100 // 未知类型
         }
         addArr.push(obj)
+      })
+
+      // 删除
+      delarr.map(v => {
+        const v1 = orgIdTree[v]
+        const obj = {
+          'imgid': parseInt(this.imgid),
+          'op': 2, // 0未知 1增加 2删除 3修改
+          'labelid': parseInt(v1.id),
+          'typeid': parseInt(v1.type),
+          'x1': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x)) / 100),
+          'x2': parseInt((this.imgInfo.imgw * parseFloat(v1.position.x1)) / 100),
+          'y1': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y)) / 100),
+          'y2': parseInt((this.imgInfo.imgh * parseFloat(v1.position.y1)) / 100)
+        }
+        delArr.push(obj)
       })
 
       // 更新
