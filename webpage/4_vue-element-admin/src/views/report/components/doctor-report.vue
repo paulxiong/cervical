@@ -94,8 +94,8 @@
         </template>
       </el-table-column>
       <el-table-column width="60" label="ID" prop="id" />
-      <el-table-column label="描述" prop="desc" />
-      <el-table-column label="数据集 ID" prop="did" />
+      <el-table-column width="350" label="描述" prop="desc" />
+      <el-table-column width="150" label="数据集 ID" prop="did" />
       <el-table-column label="创建者">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
