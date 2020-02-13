@@ -483,3 +483,7 @@ cells_towclass_1230
     ├── cells_N(26986)
     └── cells_P(14364)
 ```
+#### 厦参数据
+### cells_xiacan_0213_torun（第一批20200213）
+链接：https://pan.baidu.com/s/16YQa3XCBOf4aRq5WZC8ZOg 
+提取码：8jrx
