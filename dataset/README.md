@@ -484,8 +484,9 @@ cells_towclass_1230
     └── cells_P(14364)
 ```
 #### 厦参数据
-### cells_xiacan_0213_torun（第一批20200213）
+### cells_xc0216_2class_onecell（第一批20200216）
 ```
-链接：https://pan.baidu.com/s/16YQa3XCBOf4aRq5WZC8ZOg 
-提取码：8jrx
+链接：https://pan.baidu.com/s/1TPzWNsD8SZ_NeqPVwYNazQ 
+提取码：fum8
+厦参导出数据，经整理现为2分类，阳性4181，阴性14w
 ```
