@@ -484,13 +484,13 @@ cells_towclass_1230
     └── cells_P(14364)
 ```
 #### 厦参数据
-### cells_xc0216_2class_onecell（第一批20200216）
+### cells_xc0216_2class_onecell（第一批）
 ```
 链接：https://pan.baidu.com/s/1TPzWNsD8SZ_NeqPVwYNazQ 
 提取码：fum8
 厦参导出数据，经整理现为2分类，阳性4181，阴性14w
 ```
-### cells_xc_center_0225(20200225)
+### cells_xc_center_0225(第一批)
 ```
 链接：https://pan.baidu.com/s/12GxWG5ptk2X-eSYD4xFotg 
 提取码：fref
