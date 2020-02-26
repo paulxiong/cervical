@@ -490,3 +490,9 @@ cells_towclass_1230
 提取码：fum8
 厦参导出数据，经整理现为2分类，阳性4181，阴性14w
 ```
+### cells_xc_center_0225(20200225)
+```
+链接：https://pan.baidu.com/s/12GxWG5ptk2X-eSYD4xFotg 
+提取码：fref
+基于cells_xc0216_2class_onecell经过maskrcnn切割模型和人工筛选，使细胞核均在图像中心，阳性细胞数量3754:3754
+```
