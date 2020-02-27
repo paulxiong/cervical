@@ -88,6 +88,13 @@
               <el-table :data="props.row.cellstype" stripe border style="width: 100%">
                 <el-table-column prop="type" width="300" label="类型" />
                 <el-table-column prop="total" label="个数" />
+                <el-table-column label="操作">
+                  <template slot-scope="scope">
+                    <el-button size="mini" type="success" @click="downloadCells(scope.row)">
+                      下载
+                    </el-button>
+                  </template>
+                </el-table-column>
               </el-table>
             </el-form-item>
           </el-form>
@@ -151,7 +158,7 @@
 </template>
 
 <script>
-import { getListprojects } from '@/api/cervical'
+import { getListprojects, downloadCells } from '@/api/cervical'
 import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
@@ -164,6 +171,7 @@ export default {
       currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
       currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
+      downloadLoading: false,
       total: undefined,
       listProjects: {},
       listQuery: {
@@ -390,6 +398,8 @@ export default {
               if (cells.type === 51) {
                 v.posativetotal += cells.total
               }
+              cells['pid'] = v.id
+              cells['_type'] = cells.type
               cells['type'] = cellsType[cells.type]
             })
           }
@@ -398,6 +408,37 @@ export default {
         this.reportlist = res.data.data.projects
         this.total = res.data.data.total
         this.loading = false
+      })
+    },
+    downloadCells(cell) {
+      if (!cell || !cell._type || !cell.pid) {
+        this.$message.error('下载失败，请刷新网页然后重试')
+        return
+      }
+      this.$message({ type: 'success', message: '开始下载' })
+
+      this.downloadLoading = true
+      const postData = { 'celltype': cell._type, 'pid': cell.pid }
+      downloadCells(postData).then(res => {
+        const blob = new Blob([res.data])
+        if (window.navigator.msSaveOrOpenBlob) {
+          navigator.msSaveBlob(blob, 'nb')
+        } else {
+          const link = document.createElement('a')
+          const evt = document.createEvent('HTMLEvents')
+          evt.initEvent('click', false, false)
+          link.href = URL.createObjectURL(blob)
+          link.download = 'cells-' + cell.pid + '-' + cell._type + '.zip'
+          link.style.display = 'none'
+          document.body.appendChild(link)
+          link.click()
+          window.URL.revokeObjectURL(link.href)
+        }
+        this.$message({
+          message: '下载成功',
+          type: 'success'
+        })
+        this.downloadLoading = false
       })
     }
   }

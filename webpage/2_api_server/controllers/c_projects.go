@@ -504,3 +504,87 @@ func DownloadResult(c *gin.Context) {
 	c.File(csvname)
 	return
 }
+
+// downloadCells 要下载的细胞的
+type downloadCells struct {
+	PID  int `json:"pid"`      //要下载的项目ID
+	Type int `json:"celltype"` //要下载的细胞类型
+}
+
+// DownloadCells 下载指定预测结束之后项目的指定细胞类型的所有细胞
+// @Summary 下载指定预测结束之后项目的指定细胞类型的所有细胞
+// @Description 下载指定预测结束之后项目的指定细胞类型的所有细胞
+// @tags API1 项目（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param downloadResultIDs body controllers.downloadResultIDs true "要下载的记录ID"
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/downloadresult [post]
+func DownloadCells(c *gin.Context) {
+	dc := downloadCells{}
+	err1 := c.ShouldBindJSON(&dc)
+	if err1 != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+	logger.Info.Println(dc)
+
+	pinfo, err := models.GetOneProjectByID(int(dc.PID))
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
+		return
+	}
+	var skip int64 = 0
+	var limit int64 = 1000000 //这里偷懒了，应该用遍历的方法
+	var correc int64 = 0
+	filesname := make([]string, 0)
+	filestype := make([]string, 0)
+	filesscore := make([]float32, 0)
+	j := oneProjectPredict(pinfo, limit, skip, correc)
+	for _, v := range j.Cells {
+		if v.Predict != dc.Type {
+			continue
+		}
+		filesname = append(filesname, v.URL)
+		filestype = append(filestype, fmt.Sprintf("%d", v.Predict))
+		filesscore = append(filesscore, v.Score)
+	}
+
+	correc = 1
+	j = oneProjectPredict(pinfo, limit, skip, correc)
+	for _, v := range j.Cells {
+		if v.Predict != dc.Type {
+			continue
+		}
+		filesname = append(filesname, v.URL)
+		filestype = append(filestype, fmt.Sprintf("%d", v.Predict))
+		filesscore = append(filesscore, v.Score)
+	}
+
+	// 创建目录作为临时存储文件使用
+	dirname := u.GetRandomStringNum(6)
+	zipname := fmt.Sprintf("cell-%d-%d-%s.zip", dc.PID, dc.Type, dirname)
+
+	//打包zip
+	err = f.ZipCompressReviews(filesname, filestype, zipname)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["ZipFailed"])
+		return
+	}
+
+	filesize := f.GetFileSize(zipname)
+	if filesize < 1 {
+		res.ResFailedStatus(c, e.Errors["ZipFailed"])
+		return
+	}
+
+	//下载
+	contentDisposition := fmt.Sprintf("attachment; filename=%s", zipname)
+	c.Writer.Header().Add("Content-Disposition", contentDisposition)
+	c.Writer.Header().Add("Content-Type", "application/zip")
+	c.Writer.Header().Add("Accept-Length", fmt.Sprintf("%d", filesize))
+	c.Writer.Header().Add("Content-Length", fmt.Sprintf("%d", filesize))
+	c.File(zipname)
+	return
+}

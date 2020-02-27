@@ -354,3 +354,12 @@ export function downloadResults(data) {
     data
   })
 }
+
+export function downloadCells(data) {
+  return request({
+    url: '/api1/downloadcells',
+    method: 'post',
+    responseType: 'blob',
+    data
+  })
+}
