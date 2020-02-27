@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 var url string = "http://127.0.0.1:3000/api1/smonitor"
@@ -16,7 +17,7 @@ func httpPostJSON(sysinfo SysStateInfo) {
 
 	req, err := http.NewRequest("POST", url, jsoninfo)
 	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
+	client := &http.Client{Timeout: time.Duration(2 * time.Second)}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)

@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
@@ -69,6 +71,7 @@ type SysStateInfo struct {
 
 // 这个是controler里面的全局量
 var sm SysStateInfo
+var smmutex sync.Mutex
 
 // SystemMonitor 更新系统监控信息
 // @Summary 更新系统监控信息
@@ -80,6 +83,12 @@ var sm SysStateInfo
 // @Success 200 {string} json "{"data": "ok",	"status": 200}"
 // @Router /api1/smonitor [POST]
 func SystemMonitor(c *gin.Context) {
+	// 使用互斥锁保证请下面的代码不会冲突
+	smmutex.Lock()
+	defer func() {
+		smmutex.Unlock()
+	}()
+
 	err := c.ShouldBindJSON(&sm)
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
