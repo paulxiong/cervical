@@ -8,5 +8,5 @@ export const WSURL =
     ? 'ws://medical.raidcdn.cn:3000'
     : 'ws://dev.medical.raidcdn.cn:3000'
 // for local debug
-// export const APIUrl = 'http://1668u455y4.imwork.net:9000/'
+// export const WSURL = 'http://medical.raidcdn.cn:3000'
 // export const APIUrl = 'http://medical.raidcdn.cn:3000'

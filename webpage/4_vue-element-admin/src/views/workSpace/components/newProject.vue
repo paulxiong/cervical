@@ -145,6 +145,7 @@ export default {
         type: 2
       }
       createProject(postData).then(res => {
+        localStorage.setItem('details_title', this.inputName)
         this.$router.push({
           path: `/workSpace/details?pid=${res.data.data}&did=${this.datasetsInfo.id}&type=${this.predictType === '预测' ? 3 : 2}`
         })

@@ -33,27 +33,28 @@
       :limit="parseInt('1')"
       show-file-list
       :on-success="onSuccess"
-      :auto-upload="false"
+      :auto-upload="true"
       :on-error="onError"
+      :before-upload="beforeUpload"
       :on-change="onChange"
     >
       <i class="el-icon-upload" />
-      <div class="el-upload__text" style="color: red;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
-      <el-button
+      <div class="el-upload__text" style="color: blue;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
+      <!-- <el-button
         style="margin: 10px 0 0 20px;"
         size="mini"
         type="success"
         @click.stop="submitUpload"
-      >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button>
-      <el-button style="margin-left: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
+      >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button> -->
+      <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
-    <div class="successupload">
+    <!-- <div class="successupload">
       <el-button
         type="primary"
         :disabled="!uploadServer"
         @click="closeWindows"
       >确定</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -97,6 +98,14 @@ export default {
   created() {
   },
   methods: {
+    beforeUpload() {
+      this.postData.type = this.modeltype
+      this.postData.pid = 0
+      this.postData.description = this.inputName
+      this.postData.precision1 = 0.0
+      this.postData.recall = 0.0
+      localStorage.setItem('POST_DATA', JSON.stringify(this.postData))
+    },
     submitUpload() {
       this.postData.type = this.modeltype
       this.postData.pid = 0
@@ -118,8 +127,8 @@ export default {
       }
     },
     onChange(file) {
-      console.log(file.type, file.raw.type)
-      const isH5 = file.raw.type === 'application/x-hdf'
+      console.log(file)
+      const isH5 = file.name.slice(-3) === '.h5' || file.name.slice(-3) === '.H5'
       if (!isH5) {
         this.$message.error('只能上传h5/H5文件')
         return isH5
@@ -135,9 +144,12 @@ export default {
       this.$refs.upload.abort()
       this.$refs.upload.clearFiles()
       document.querySelector('.el-upload-list').remove('list-container')
+      localStorage.setItem('TAB', 'model')
+      this.$router.go({ path: '/workSpace' })
     },
     closeWindows() {
       this.$refs.upload.clearFiles()
+      localStorage.setItem('TAB', 'model')
       this.$router.go({ path: '/workSpace' })
     },
     uploadSuccess(file) {

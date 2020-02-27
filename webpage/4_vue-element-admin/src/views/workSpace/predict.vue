@@ -11,7 +11,7 @@
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="!report" type="info" :label="`正确细胞 ${predictResult.correc_total ? predictResult.correc_total : ''}`" class="img-tab">
+          <el-tab-pane v-if="!report" type="info" :label="`${predictResult.parameter_type ? '正确细胞' : '预测细胞'} ${predictResult.correc_total ? predictResult.correc_total : ''}`" class="img-tab">
             <div class="img-div flex" style="overflow-y: auto;height:600px;">
               <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 30px;">
                 <el-badge :value="`${v.type}-${v.score}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
@@ -31,7 +31,7 @@
               @size-change="handleSizeChange"
             />
           </el-tab-pane>
-          <el-tab-pane v-if="!report" :label="`错误细胞 ${predictResult.incorrec_total ? predictResult.incorrec_total : ''}`" class="img-tab flex">
+          <el-tab-pane v-if="!report" :label="`${predictResult.parameter_type ? '错误细胞' : '未预测细胞'} ${predictResult.incorrec_total ? predictResult.incorrec_total : ''}`" class="img-tab flex">
             <div class="img-div" style="overflow-y: auto;height:600px;">
               <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
                 <el-badge :value="`${v.type}>${v.predict}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
