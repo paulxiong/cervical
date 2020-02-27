@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
@@ -528,13 +529,29 @@ func DownloadCells(c *gin.Context) {
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
-	logger.Info.Println(dc)
 
 	pinfo, err := models.GetOneProjectByID(int(dc.PID))
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
 	}
+
+	// 创建目录作为临时存储文件使用
+	dirname := u.GetRandomStringNum(6)
+	zipname := fmt.Sprintf("cell-%d-%d-%s.zip", dc.PID, dc.Type, dirname)
+	csvname := fmt.Sprintf("cell-%d-%d-%s.csv", dc.PID, dc.Type, dirname)
+
+	//初始化CSv
+	fd, err1 := os.OpenFile(csvname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err1 != nil {
+		logger.Info.Println(csvname, err1)
+		res.ResFailedStatus(c, e.Errors["ZipFailed"])
+		return
+	}
+	w := csv.NewWriter(fd)
+	w.Write([]string{"cell", "type", "score"})
+	w.Flush()
+
 	var skip int64 = 0
 	var limit int64 = 1000000 //这里偷懒了，应该用遍历的方法
 	var correc int64 = 0
@@ -549,6 +566,8 @@ func DownloadCells(c *gin.Context) {
 		filesname = append(filesname, v.URL)
 		filestype = append(filestype, fmt.Sprintf("%d", v.Predict))
 		filesscore = append(filesscore, v.Score)
+		_, fileName := filepath.Split(v.URL)
+		w.Write([]string{fileName, fmt.Sprintf("%d", v.Predict), fmt.Sprintf("%f", v.Score)})
 	}
 
 	correc = 1
@@ -560,11 +579,15 @@ func DownloadCells(c *gin.Context) {
 		filesname = append(filesname, v.URL)
 		filestype = append(filestype, fmt.Sprintf("%d", v.Predict))
 		filesscore = append(filesscore, v.Score)
+
+		_, fileName := filepath.Split(v.URL)
+		w.Write([]string{fileName, fmt.Sprintf("%d", v.Predict), fmt.Sprintf("%f", v.Score)})
 	}
 
-	// 创建目录作为临时存储文件使用
-	dirname := u.GetRandomStringNum(6)
-	zipname := fmt.Sprintf("cell-%d-%d-%s.zip", dc.PID, dc.Type, dirname)
+	w.Flush()
+	fd.Close()
+	filesname = append(filesname, csvname)
+	filestype = append(filestype, "csv")
 
 	//打包zip
 	err = f.ZipCompressReviews(filesname, filestype, zipname)
