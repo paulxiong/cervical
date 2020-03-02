@@ -158,9 +158,11 @@
 </template>
 
 <script>
-import { getListprojects, downloadCells } from '@/api/cervical'
+import { getListprojects, downloadCellsURL } from '@/api/cervical'
 import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
 import { parseTime } from '@/utils/index'
+import { APIUrl } from '@/const/config'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'DoctorReport',
@@ -417,29 +419,9 @@ export default {
       }
       this.$message({ type: 'success', message: '开始下载' })
 
-      this.downloadLoading = true
-      const postData = { 'celltype': cell._type, 'pid': cell.pid }
-      downloadCells(postData).then(res => {
-        const blob = new Blob([res.data])
-        if (window.navigator.msSaveOrOpenBlob) {
-          navigator.msSaveBlob(blob, 'nb')
-        } else {
-          const link = document.createElement('a')
-          const evt = document.createEvent('HTMLEvents')
-          evt.initEvent('click', false, false)
-          link.href = URL.createObjectURL(blob)
-          link.download = 'cells-' + cell.pid + '-' + cell._type + '.zip'
-          link.style.display = 'none'
-          document.body.appendChild(link)
-          link.click()
-          window.URL.revokeObjectURL(link.href)
-        }
-        this.$message({
-          message: '下载成功',
-          type: 'success'
-        })
-        this.downloadLoading = false
-      })
+      const token = getToken().replace('token ', '')
+      // 直接跳转下载页面
+      window.location.href = APIUrl + downloadCellsURL + '?pid=' + cell.pid + '&celltype=' + cell._type + '&token=' + token
     }
   }
 }

@@ -355,11 +355,5 @@ export function downloadResults(data) {
   })
 }
 
-export function downloadCells(data) {
-  return request({
-    url: '/api1/downloadcells',
-    method: 'post',
-    responseType: 'blob',
-    data
-  })
-}
+// 跳转页面下载
+export const downloadCellsURL = '/api1/downloadcells'

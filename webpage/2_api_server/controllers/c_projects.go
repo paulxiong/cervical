@@ -506,12 +506,6 @@ func DownloadResult(c *gin.Context) {
 	return
 }
 
-// downloadCells 要下载的细胞的
-type downloadCells struct {
-	PID  int `json:"pid"`      //要下载的项目ID
-	Type int `json:"celltype"` //要下载的细胞类型
-}
-
 // DownloadCells 下载指定预测结束之后项目的指定细胞类型的所有细胞
 // @Summary 下载指定预测结束之后项目的指定细胞类型的所有细胞
 // @Description 下载指定预测结束之后项目的指定细胞类型的所有细胞
@@ -519,18 +513,17 @@ type downloadCells struct {
 // @Accept  json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param downloadResultIDs body controllers.downloadResultIDs true "要下载的记录ID"
+// @Param pid query string false "pid, default 0, 要现在细胞所在的项目ID"
+// @Param celltype query string false "celltype, default 0, 要现在细胞所属的预测类型"
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
-// @Router /api1/downloadresult [post]
+// @Router /api1/downloadresult [get]
 func DownloadCells(c *gin.Context) {
-	dc := downloadCells{}
-	err1 := c.ShouldBindJSON(&dc)
-	if err1 != nil {
-		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
-		return
-	}
+	pidStr := c.DefaultQuery("pid", "0")
+	pid, _ := strconv.ParseInt(pidStr, 10, 64)
+	_typeStr := c.DefaultQuery("celltype", "0")
+	_type, _ := strconv.ParseInt(_typeStr, 10, 64)
 
-	pinfo, err := models.GetOneProjectByID(int(dc.PID))
+	pinfo, err := models.GetOneProjectByID(int(pid))
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
@@ -538,8 +531,8 @@ func DownloadCells(c *gin.Context) {
 
 	// 创建目录作为临时存储文件使用
 	dirname := u.GetRandomStringNum(6)
-	zipname := fmt.Sprintf("cell-%d-%d-%s.zip", dc.PID, dc.Type, dirname)
-	csvname := fmt.Sprintf("cell-%d-%d-%s.csv", dc.PID, dc.Type, dirname)
+	zipname := fmt.Sprintf("cell-%d-%d-%s.zip", pid, _type, dirname)
+	csvname := fmt.Sprintf("cell-%d-%d-%s.csv", pid, _type, dirname)
 
 	//初始化CSv
 	fd, err1 := os.OpenFile(csvname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
@@ -560,7 +553,7 @@ func DownloadCells(c *gin.Context) {
 	filesscore := make([]float32, 0)
 	j := oneProjectPredict(pinfo, limit, skip, correc)
 	for _, v := range j.Cells {
-		if v.Predict != dc.Type {
+		if v.Predict != int(_type) {
 			continue
 		}
 		filesname = append(filesname, v.URL)
@@ -573,7 +566,7 @@ func DownloadCells(c *gin.Context) {
 	correc = 1
 	j = oneProjectPredict(pinfo, limit, skip, correc)
 	for _, v := range j.Cells {
-		if v.Predict != dc.Type {
+		if v.Predict != int(_type) {
 			continue
 		}
 		filesname = append(filesname, v.URL)
