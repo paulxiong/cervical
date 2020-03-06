@@ -7,6 +7,9 @@
       <el-tab-pane label="项目历史记录" name="result">
         <result :activename="activeName" />
       </el-tab-pane>
+      <el-tab-pane label="数据集列表" name="datalist">
+        <dataList :activename="activeName" />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -14,9 +17,10 @@
 <script>
 import project from './components/project'
 import result from './components/result'
+import dataList from './components/datalist'
 
 export default {
-  components: { project, result },
+  components: { project, result, dataList },
   data() {
     return {
       activeName: localStorage.getItem('TAB') || 'project'
