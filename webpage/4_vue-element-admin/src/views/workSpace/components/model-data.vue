@@ -130,8 +130,8 @@ export default {
   data() {
     return {
       step: 1,
-      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
-      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
+      currentPage: 1,
+      currentPageSize: 10,
       total: undefined,
       modelLists: [],
       dialogFormVisible: false,
@@ -178,15 +178,15 @@ export default {
       this.$refs.uploadModel.step = 1
     },
     filterSearch() {
-      this.getListmodel(10, (this.currentPage - 1) * this.currentPageSize, 52)
+      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getListmodel(this.currentPageSize, (this.currentPageSize - 1) * this.currentPageSize, 52)
+      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListmodel(val, (this.currentPage - 1) * this.currentPageSize, 52)
+      this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     goDetail(val) {
       localStorage.setItem('TAB', this.activename)
