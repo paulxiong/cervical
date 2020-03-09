@@ -31,8 +31,8 @@
         <h4>裁剪大小(像素)</h4>
         <el-radio-group v-model="cutInput">
           <el-radio-button label="100" />
-          <el-radio-button label="120" />
           <el-radio-button label="150" />
+          <el-radio-button label="224" />
         </el-radio-group>
       </section>
       <section class="param">
