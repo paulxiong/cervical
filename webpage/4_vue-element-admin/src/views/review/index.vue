@@ -1,5 +1,9 @@
 <template>
   <div class="review">
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive" />
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive" />
     <el-tabs v-model="activeName" class="tabs">
       <el-tab-pane label="细胞类型审核" name="review">
         <reviewPage :activename="activeName" />

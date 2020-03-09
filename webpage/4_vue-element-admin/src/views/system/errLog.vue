@@ -24,6 +24,10 @@
       </el-select>
       <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
     </div> -->
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive" />
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive" />
     <el-table :data="errLog" style="width: 100%">
       <el-table-column prop="operationlog.name" label="用户" width="150" />
       <el-table-column prop="created_time" label="操作时间" width="200" />

@@ -85,7 +85,7 @@ export const constantRoutes = [
         path: 'home',
         component: () => import('@/views/home/index'),
         name: '首页',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'dashboard', affix: true, keepAlive: true }
       }
     ]
   },
@@ -94,7 +94,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/workSpace/list',
     name: '工作台',
-    meta: { title: '工作台', icon: 'component' },
+    meta: { title: '工作台', icon: 'component', keepAlive: true },
     children: [
       {
         path: 'list',
@@ -116,7 +116,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/report/list',
     name: '审核报告',
-    meta: { title: '审核报告', icon: 'nested' },
+    meta: { title: '审核报告', icon: 'nested', keepAlive: true },
     children: [
       {
         path: 'list',
@@ -144,7 +144,7 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/views/review/index'),
         name: '审核细胞概览',
-        meta: { title: '审核细胞概览', icon: 'cellspredict', affix: true }
+        meta: { title: '审核细胞概览', icon: 'cellspredict', affix: true, keepAlive: true }
       }
     ]
   },
@@ -168,7 +168,8 @@ export const constantRoutes = [
     name: '权限管理',
     meta: {
       title: '权限管理',
-      icon: 'peoples'
+      icon: 'peoples',
+      keepAlive: true
     },
     children: [
       {
@@ -199,7 +200,8 @@ export const constantRoutes = [
     name: '系统设置',
     meta: {
       title: '系统设置',
-      icon: 'table'
+      icon: 'table',
+      keepAlive: true
     },
     children: [
       {

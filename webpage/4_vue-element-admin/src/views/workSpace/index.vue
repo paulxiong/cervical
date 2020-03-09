@@ -1,5 +1,9 @@
 <template>
   <div class="home">
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive" />
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive" />
     <el-tabs v-model="activeName" class="tabs">
       <el-tab-pane label="项目" name="project">
         <projectData :activename="activeName" />
