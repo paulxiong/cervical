@@ -60,7 +60,7 @@
           @cellsTypeChange="cellsTypeChange"
         />
         <modelCard
-          v-show="predictType === '预测'"
+          v-if="predictType === '预测'"
           :model-info="modelInfo"
           :model-list="modelList"
           @modelChange="modelChange"
@@ -97,7 +97,7 @@ export default {
     }
   },
   created() {
-    this.getListmodel(100, 0, 1)
+    this.getListmodel(1000, 0, 1)
     this.getListdatasets(10000, 0, 1)
   },
   methods: {
