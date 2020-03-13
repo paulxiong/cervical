@@ -48,13 +48,6 @@
       >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button> -->
       <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
-    <div class="successupload">
-      <el-button
-        type="primary"
-        :disabled="!uploadServer"
-        @click="closeWindows"
-      >确定</el-button>
-    </div>
   </div>
 </template>
 
@@ -179,6 +172,7 @@ export default {
   }
   .change-type {
     margin-right: 5%;
+    position: relative;
   }
   .successupload {
     position: absolute;

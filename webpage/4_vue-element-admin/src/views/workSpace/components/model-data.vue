@@ -1,7 +1,7 @@
 <template>
   <div class="modelData">
     <div class="filter-box">
-      <el-input
+      <!-- <el-input
         v-model="listQuery.desc"
         placeholder="请输入描述搜索"
         style="width:200px;"
@@ -21,13 +21,13 @@
           :label="item.name"
           :value="item.key"
         />
-      </el-select>
+      </el-select> -->
       <el-button
         class="filter-btn"
         type="primary"
-        icon="el-icon-search"
+        :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
         @click="filterSearch"
-      >搜索</el-button>
+      >刷新</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
@@ -37,6 +37,8 @@
       >新增模型</el-button>
     </div>
     <el-table
+      v-loading="loading"
+      element-loading-text="拼命加载中"
       :data="modelLists"
       style="width: 100%"
     >
@@ -132,6 +134,7 @@ export default {
       step: 1,
       currentPage: 1,
       currentPageSize: 10,
+      loading: false,
       total: undefined,
       modelLists: [],
       dialogFormVisible: false,
@@ -198,6 +201,7 @@ export default {
       })
     },
     getListmodel(limit, skip, type) {
+      this.loading = true
       // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型
       getListmodel({ 'limit': limit, 'skip': skip, 'type': type }).then(res => {
         res.data.data.models.map(v => {
@@ -210,6 +214,7 @@ export default {
         })
         this.modelLists = res.data.data.models
         this.total = res.data.data.total
+        this.loading = false
       })
     }
   }
@@ -243,7 +248,7 @@ export default {
   .table-expand .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
-    width: 50%;
+    width: calc(100% / 4);
   }
 }
 </style>
