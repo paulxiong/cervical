@@ -97,13 +97,13 @@ class cells_detector():
             roi = final_rois[i]
             if int(threshold*100) > int(score*100):
                 continue
-            y1, x1, y2, x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
+            _y1, _x1, _y2, _x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
             ##FIXME:细胞尺寸过滤
             #if (x2 - x1) <= 17 or  (y2 - y1) <= 17:
             #    celltype = 201 #201表示不是细胞(尺寸太小)
 
-            x1, y1, x2, y2 = xy_x1y1x2y2((x2 + x1) / 2, (y2 + y1) / 2, size)
-            _rois.append([x1, y1, x2, y2, celltype])
+            x1, y1, x2, y2 = xy_x1y1x2y2((_x2 + _x1) / 2, (_y2 + _y1) / 2, size)
+            _rois.append([x1, y1, x2, y2, celltype, _x1, _y1, _x2, _y2])
         _rois = filter_xy(_rois)
         return _rois
 
@@ -175,7 +175,7 @@ class cells_detect_crop(worker):
         self.log.info("初始化一个数据预处理的worker")
         self.mtype = mt.MASKRCNN.value
 
-    def cell_name(self, imginfo, x1, y1, x2, y2, celltype):
+    def cell_name(self, imginfo, x1, y1, x2, y2, celltype, kx1, ky1, kx2, ky2):
         batchid, medicalid, imgname, imgid = str(imginfo['batchid']), str(imginfo['medicalid']), str(imginfo['imgname']), int(imginfo['imgid'])
         cellname = getcellname(
             batchid, medicalid, imgid, imgname,
@@ -183,7 +183,7 @@ class cells_detect_crop(worker):
             str(self.datasetinfo["parameter_size"]),
             str(self.datasetinfo["parameter_type"]),
             str(self.datasetinfo["parameter_mid"]),
-            x1, y1, x2, y2, celltype)
+            x1, y1, x2, y2, celltype, kx1, ky1, kx2, ky2)
         return cellname
 
     def get_cells_info(self, imginfo, cellsinfo):
@@ -192,13 +192,14 @@ class cells_detect_crop(worker):
         """
         columns = ['batchid', 'medicalid', 'imgid', 'imgname', 'imgpath', 'p1n0', 'parameter_gray',
                    'parameter_size', 'parameter_type', 'parameter_mid', 'parameter_cache',
-                   'cellpath', 'x1', 'y1', 'x2', 'y2', 'celltype']
+                   'cellpath', 'x1', 'y1', 'x2', 'y2', 'celltype', 'kx1', 'ky1', 'kx2', 'ky2']
         cellsinfo2 = []
         for c in cellsinfo:
-            x1, y1, x2, y2, celltype = int(c[0]), int(c[1]), int(c[2]), int(c[3]), int(c[4])
+            _x1, _y1, _x2, _y2 = int(c[5]), int(c[6]), int(c[7]), int(c[8])  #细胞核的框在FOV的位置
+            x1, y1, x2, y2, celltype = int(c[0]), int(c[1]), int(c[2]), int(c[3]), int(c[4]) #100x100框在FOV的位置
             x1, y1, x2, y2 = make_square(x1, y1, x2, y2, int(imginfo['w']), int(imginfo['h']))
 
-            _cell_name = self.cell_name(imginfo, x1, y1, x2, y2, celltype)
+            _cell_name = self.cell_name(imginfo, x1, y1, x2, y2, celltype, _x1, _y1, _x2, _y2)
             cellpath = os.path.join(self.scratch_dir, str(imginfo['batchid']), str(imginfo['medicalid']), 'cells', _cell_name)
             if (x2 - x1) != (y2 - y1):
                 self.log.info("not square!")
@@ -223,6 +224,10 @@ class cells_detect_crop(worker):
             _cellsinfo2.append(int(x2))
             _cellsinfo2.append(int(y2))
             _cellsinfo2.append(int(celltype))
+            _cellsinfo2.append(int(_x1))
+            _cellsinfo2.append(int(_y1))
+            _cellsinfo2.append(int(_x2))
+            _cellsinfo2.append(int(_y2))
 
             cellsinfo2.append(_cellsinfo2)
         df = pd.DataFrame(cellsinfo2, columns=columns)
