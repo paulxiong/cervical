@@ -78,11 +78,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getAllPredictResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize)
+      this.listProjectResult(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getAllPredictResult(val, (this.currentPage - 1) * this.currentPageSize)
+      this.listProjectResult(val, (this.currentPage - 1) * this.currentPageSize)
     },
     listProjectResult(limit, skip) {
       this.loading = true
