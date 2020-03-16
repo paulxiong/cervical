@@ -65,12 +65,11 @@ func CreatePredicts(predicts []*Predict, pid int64) (e error) {
 			v.ImgID, pid, v.X1, v.Y1, v.X2, v.Y2, v.CellPath, v.PredictScore,
 			v.PredictType, v.PredictP1n0, v.TrueType, v.TrueP1n0, v.VID, v.Status)
 
-		if index > 0 && index%5000 == 0 || index == len(predicts)-1 {
+		if index > 0 && index%1000 == 0 || index == len(predicts)-1 {
 			sql += ";"
 			ret := _db.Exec(sql)
 			if ret.Error != nil {
 				logger.Info.Println(ret.Error)
-				logger.Info.Println(sql)
 			}
 			sql = sql1
 		} else {
