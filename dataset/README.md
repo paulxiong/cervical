@@ -528,3 +528,10 @@ cells_towclass_1230
 
 ```
 
+
+#### 0318筛出来的杂质和细胞核小的
+```
+链接: https://pan.baidu.com/s/1P52tuIgHevRKXInuxhKkJg 提取码: aqw7
+remove 下面存放筛出来的，valied存放留下的
+
+```
