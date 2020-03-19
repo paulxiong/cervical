@@ -1,5 +1,5 @@
 <template>
-  <div class="testData">
+  <div class="resultData">
     <div class="filter-box">
       <el-table
         ref="multipleTable"
@@ -125,7 +125,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.testData {
+.resultData {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;

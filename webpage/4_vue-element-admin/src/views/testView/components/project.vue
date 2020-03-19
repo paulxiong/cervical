@@ -1,5 +1,5 @@
 <template>
-  <div class="testData">
+  <div class="projectData">
     <div class="filter-box">
       <span>阳性判断标准：</span>
 
@@ -242,7 +242,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.testData {
+.projectData {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
