@@ -24,7 +24,7 @@
         type="success"
         @click.stop="submitUpload"
       >上传到服务器 {{ finishedFileList }} / {{ fileList }}</el-button>
-      <el-button style="margin-left: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
+      <el-button style="margin-left: 15px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
     </el-upload>
   </div>
 </template>
