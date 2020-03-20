@@ -18,6 +18,7 @@ import './permission' // permission control
 import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
+import uploader from 'vue-simple-uploader'
 
 /**
  * If you don't want to use mock-server
@@ -33,6 +34,8 @@ if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
 */
+
+Vue.use(uploader)
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
