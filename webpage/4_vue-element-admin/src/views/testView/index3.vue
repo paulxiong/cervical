@@ -1,32 +1,49 @@
 <template>
-  <uploader :options="options" class="uploader-example">
-    <uploader-unsupport />
-    <uploader-drop>
-      <p>Drop files here to upload or</p>
-      <el-link href="https://github.com/simple-uploader/vue-uploader/blob/master/README_zh-CN.md">上传组件文档地址</el-link>
-      <uploader-btn>select files</uploader-btn>
-      <uploader-btn :attrs="attrs">select images</uploader-btn>
-      <uploader-btn :directory="true">select folder</uploader-btn>
-    </uploader-drop>
-    <uploader-list />
-  </uploader>
+  <div>
+    <uploader :options="options" class="uploader-example">
+      <uploader-unsupport />
+      <uploader-drop>
+        <p>Drop files here to upload or</p>
+        <el-link href="https://github.com/simple-uploader/vue-uploader/blob/master/README_zh-CN.md">上传组件文档地址</el-link>
+        <uploader-btn>select files</uploader-btn>
+        <uploader-btn :attrs="attrs">select images</uploader-btn>
+        <uploader-btn :directory="true">select folder</uploader-btn>
+      </uploader-drop>
+      <uploader-list />
+    </uploader>
+    <lmap style="width: 50%" />
+  </div>
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        options: {
-          // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
-          target: '//localhost:3000/upload',
-          testChunks: false
-        },
-        attrs: {
-          accept: 'image/*'
-        }
+import lmap from '@/components/leafletMap/leafletMap'
+import { Icon } from 'leaflet'
+// Import the whole Leaflet CSS
+import 'leaflet/dist/leaflet.css'
+
+// Resolve an issue where the markers would not appear
+delete Icon.Default.prototype._getIconUrl
+Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+})
+
+export default {
+  components: { lmap },
+  data() {
+    return {
+      options: {
+        // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
+        target: '//localhost:3000/upload',
+        testChunks: false
+      },
+      attrs: {
+        accept: 'image/*'
       }
     }
   }
+}
 </script>
 
 <style>
