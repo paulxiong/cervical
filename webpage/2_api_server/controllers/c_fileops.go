@@ -110,10 +110,12 @@ func UploadDatasetHandler(c *gin.Context) {
 		return
 	}
 
+	// 文件名比较URL编码前后，如果变了直接用变了的，没变就用原来的名字(可能有问题，部分病例文件带汉字或特殊字符)
+	filename := u.URLEncodeFileName(file.Filename)
+
 	// 新建批次病例目录
 	dirpath := f.NewMedicalDir(_bid, _mid)
 	f.NewDir(dirpath)
-	filename := u.GetUUID()
 	filepath := path.Join(dirpath, filename)
 
 	if err := c.SaveUploadedFile(file, filepath); err != nil {
