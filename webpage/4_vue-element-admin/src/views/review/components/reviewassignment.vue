@@ -5,6 +5,9 @@
       element-loading-text="拼命加载中"
       :data="projectlist"
       style="width: 100%"
+      :row-key="getRowKeys"
+      :expand-row-keys="expands"
+      @row-click="clickRowHandle"
       @expand-change="expandChange"
     >
       <el-table-column type="expand">
@@ -125,7 +128,13 @@ export default {
       total2: undefined,
       currentPage2: 1,
       currentPageSize2: 10,
-      loading: false
+      loading: false,
+      // 获取row的key值
+      getRowKeys(row) {
+        return row.id
+      },
+      // 要展开的行，数值的元素是row的key值
+      expands: []
     }
   },
   created() {
@@ -134,6 +143,13 @@ export default {
     this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
   },
   methods: {
+    clickRowHandle(row, column, event) {
+      if (this.expands.includes(row.id)) {
+        this.expands = this.expands.filter(val => val !== row.id)
+      } else {
+        this.expands.push(row.id)
+      }
+    },
     handleCurrentChange(val) {
       this.currentPage = val
       this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
