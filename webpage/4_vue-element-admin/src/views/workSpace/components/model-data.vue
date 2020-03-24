@@ -42,15 +42,9 @@
       :data="modelLists"
       style="width: 100%"
     >
-      <el-table-column type="expand">
+      <!-- <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="描述">
-              <span>{{ props.row.desc }}</span>
-            </el-form-item>
-            <el-form-item label="类型">
-              <span>{{ props.row.modelType }}</span>
-            </el-form-item>
             <el-form-item label="准确度">
               <span>{{ props.row.precision }}</span>
             </el-form-item>
@@ -66,12 +60,9 @@
             <el-form-item label="类型">
               <span>{{ props.row.types }}</span>
             </el-form-item>
-            <el-form-item label="创建时间">
-              <span>{{ props.row.created_at }}</span>
-            </el-form-item>
           </el-form>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         label="模型ID"
         prop="id"
@@ -82,12 +73,32 @@
         prop="desc"
       />
       <el-table-column
-        label="类型"
+        label="模型类型"
         prop="modelType"
       />
       <el-table-column
         label="准确度"
         prop="precision"
+      />
+      <el-table-column
+        label="创建时间"
+        prop="created_at"
+      />
+      <el-table-column
+        label="召回率"
+        prop="recall"
+      />
+      <el-table-column
+        label="损失"
+        prop="loss"
+      />
+      <el-table-column
+        label="训练用图数"
+        prop="n_train"
+      />
+      <el-table-column
+        label="类型"
+        prop="types"
       />
     </el-table>
     <div class="tools flex">
