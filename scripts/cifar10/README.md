@@ -1,11 +1,11 @@
 ## cifar10 数据自定义创建/解压成图片
-### 1 CIFAR-10 Matlab version  (fixmatch使用的)
-### 2 CIFAR-10 python version  (auto-GAN使用的, 只是auto-GAN不能直接用自定义的，自定义之后要修改代码里检查文件的md5sum才能用)
-### 3 CIFAR-10 binary version
+-  1 CIFAR-10 Matlab version  (fixmatch使用的)
+-  2 CIFAR-10 python version  (auto-GAN不能直接用自定义的，要修改代码里检查文件md5sum才能用)
+-  3 CIFAR-10 binary version
 
 ## 1 CIFAR-10 Matlab version
 ### 1-1 用自定义数据创建
-拷贝你的数据到当前目录, 病命名为input
+拷贝你的数据到当前目录, 命名为input
 ```
 $ cd cervical.git/scripts/cifar10
 $ cp /your/path/input . -a
@@ -144,7 +144,7 @@ cifar10_untar/
 
 ## 2 CIFAR-10 python version
 ### 2-1 解压
-拷贝你的数据到当前目录, 病命名为input
+拷贝你的数据到当前目录, 命名为input
 ```
 $ cd cervical.git/scripts/cifar10
 $ cp /your/path/cifar-10-python.tar.gz  .
@@ -321,4 +321,152 @@ $ gzip cifar-10-python.tar
 ```
 
 ## 3 CIFAR-10 binary version
-### 脚本没整理完
+### 3-1 解压
+拷贝数据到当前目录
+```
+$ cd cervical.git/scripts/cifar10
+$ cp /your/path/cifar-10-binary.tar.gz  .
+
+$ tar -zxmf cifar-10-binary.tar.gz
+```
+得到如下文件
+```
+$ ls cifar-10-batches-bin/ -lh
+总用量 176M
+-rw-r--r-- 1 lambda lambda  61 3月  24 16:18 batches.meta.txt
+-rw-r--r-- 1 lambda lambda 30M 3月  24 16:18 data_batch_1.bin
+-rw-r--r-- 1 lambda lambda 30M 3月  24 16:18 data_batch_2.bin
+-rw-r--r-- 1 lambda lambda 30M 3月  24 16:18 data_batch_3.bin
+-rw-r--r-- 1 lambda lambda 30M 3月  24 16:18 data_batch_4.bin
+-rw-r--r-- 1 lambda lambda 30M 3月  24 16:18 data_batch_5.bin
+-rw-r--r-- 1 lambda lambda  88 3月  24 16:18 readme.html
+-rw-r--r-- 1 lambda lambda 30M 3月  24 16:18 test_batch.bin
+```
+
+执行解压命令
+```
+$ python3 untar_binary.py
+```
+
+解压之后的目录结构如下
+```
+$ tree  binary_untar/
+binary_untar/
+├── 1
+│   ├── airplane
+│   │   ├── 1.png
+│   │   ├── ...
+│   ├── automobile
+│   ├── bird
+│   ├── cat
+│   ├── deer
+│   ├── dog
+│   ├── frog
+│   ├── horse
+│   ├── ship
+│   └── truck
+├── 2
+│   ...
+├── 3
+│   ...
+├── 4
+│   ...
+├── 5
+│   ...
+│
+└── test
+    ├── airplane
+    │   ├── 1.png
+    │   ├── ...
+    ├── automobile
+    ├── bird
+    ├── cat
+```
+
+
+### 3-2 自定义数据创建
+拷贝自定义数据到当前文件夹
+```
+$ cd cervical.git/scripts/cifar10
+$ cp /your/path/input  .
+```
+
+input的目录结构如下
+```
+$ tree -d input/
+input/
+├── 1
+│   ├── airplane
+│   │   ├── xx.png
+│   │   ├── ...
+│   │
+│   └── automobile
+│       ├── xx.png
+│       ├── ...
+├── 2
+│   ├── airplane
+│   │   ├── xx.png
+│   │   ├── ...
+│   │
+│   └── automobile
+│       ├── xx.png
+│       ├── ...
+├── 3
+│   ├── airplane
+│   │   ├── xx.png
+│   │   ├── ...
+│   │
+│   └── automobile
+│       ├── xx.png
+│       ├── ...
+├── 4
+│   ├── airplane
+│   │   ├── xx.png
+│   │   ├── ...
+│   │
+│   └── automobile
+│       ├── xx.png
+│       ├── ...
+├── 5
+│   ├── airplane
+│   │   ├── xx.png
+│   │   ├── ...
+│   │
+│   └── automobile
+│       ├── xx.png
+│       ├── ...
+└── test
+    ├── airplane
+    │   ├── xx.png
+    │   ├── ...
+    │
+    └── automobile
+        ├── xx.png
+        ├── ...
+```
+
+开始创建
+```
+$ python3 create_binary.py
+```
+
+生成如下目录
+```
+$ ls binary_tar/ -lh
+总用量 44M
+-rw-rw-r-- 1 lambda lambda   60 3月  24 19:01 batches.meta.txt
+-rw-rw-r-- 1 lambda lambda 3.0M 3月  24 19:02 data_batch_1.bin
+-rw-rw-r-- 1 lambda lambda 3.0M 3月  24 19:02 data_batch_2.bin
+-rw-rw-r-- 1 lambda lambda 3.0M 3月  24 19:02 data_batch_3.bin
+-rw-rw-r-- 1 lambda lambda 3.0M 3月  24 19:02 data_batch_4.bin
+-rw-rw-r-- 1 lambda lambda 3.0M 3月  24 19:02 data_batch_5.bin
+-rw-rw-r-- 1 lambda lambda  30M 3月  24 19:03 test_batch.bin
+```
+
+创建压缩包
+```
+$ rm -rf cifar-10-batches-bin
+$ mv binary_tar cifar-10-batches-bin
+$ tar -cmf cifar-10-binary.tar cifar-10-batches-bin
+$ gzip cifar-10-binary.tar
+```
