@@ -25,6 +25,7 @@ func History() gin.HandlerFunc {
 			"/api1/upload",
 			"/imgs",
 			"/api1/smonitor",
+			"/api1/uploaddir",
 		}
 		skippath2 := [...]string{
 			"/imgs",

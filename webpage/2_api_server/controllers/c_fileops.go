@@ -190,3 +190,48 @@ func UploadImgHandler(c *gin.Context) {
 	res.ResSucceedString(c, fileURL)
 	return
 }
+
+// UploadDirHandler 上传病例文件夹
+// @Summary 上传病例文件夹
+// @Description 上传病例文件夹
+// @tags API1 文件（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/uploaddir [post]
+func UploadDirHandler(c *gin.Context) {
+	_mid := c.DefaultPostForm("mid", "")
+	_bid := c.DefaultPostForm("bid", "")
+	if len(_mid) < 1 || len(_bid) < 1 {
+		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["UploadGetFileNameFailed"])
+		return
+	}
+
+	// 文件名比较URL编码前后，如果变了直接用变了的，没变就用原来的名字(可能有问题，部分病例文件带汉字或特殊字符)
+	filename := u.URLEncodeFileName(file.Filename)
+	if filename != "Scan.txt" {
+		res.ResSucceedString(c, "ok")
+		return
+	}
+
+	filepath := "Scan.txt"
+	if err := c.SaveUploadedFile(file, filepath); err != nil {
+		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
+		return
+	}
+	logger.Info.Println(filename)
+	st, err2 := f.ParseScanTXT(filename)
+	if err2 == nil {
+		logger.Info.Println(st.Boundx2, st.Boundy2)
+	}
+
+	res.ResSucceedString(c, "ok")
+	return
+}

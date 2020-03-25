@@ -1,24 +1,14 @@
 <template>
   <div>
-    <uploader :options="options" class="uploader-example">
-      <uploader-unsupport />
-      <uploader-drop>
-        <p>Drop files here to upload or</p>
-        <el-link href="https://github.com/simple-uploader/vue-uploader/blob/master/README_zh-CN.md">上传组件文档地址</el-link>
-        <uploader-btn>select files</uploader-btn>
-        <uploader-btn :attrs="attrs">select images</uploader-btn>
-        <uploader-btn :directory="true">select folder</uploader-btn>
-      </uploader-drop>
-      <uploader-list />
-    </uploader>
+    <diruploader />
     <lmap style="width: 50%" />
   </div>
 </template>
 
 <script>
+import diruploader from './components/diruploader'
 import lmap from '@/components/leafletMap/leafletMap'
 import { Icon } from 'leaflet'
-// Import the whole Leaflet CSS
 import 'leaflet/dist/leaflet.css'
 
 // Resolve an issue where the markers would not appear
@@ -30,7 +20,7 @@ Icon.Default.mergeOptions({
 })
 
 export default {
-  components: { lmap },
+  components: { lmap, diruploader },
   data() {
     return {
       options: {

@@ -40,7 +40,8 @@ func Router() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "RELEASE"))
 
 	r.Use(ctr.History)
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping", "/api1/job", "/api1/jobresult", "/api1/upload", "/api1/jobpercent", "/api1/smonitor"}}))
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/api1/ping", "/api1/job", "/api1/jobresult",
+		"/api1/upload", "/api1/jobpercent", "/api1/smonitor", "/api1/uploaddir"}}))
 
 	/* 用户相关的API */
 	user := r.Group("/user")
@@ -121,6 +122,7 @@ func Router() *gin.Engine {
 		api1.POST("/upload", ctr.UploadDatasetHandler)
 		api1.POST("/uploadimg", ctr.UploadImgHandler)
 		api1.POST("/uploadmodel", ctr.UploadModelHandler)
+		api1.POST("/uploaddir", ctr.UploadDirHandler)
 
 		// 系统
 		api1.POST("/errorlog", ctr.CreateErrorLog)
