@@ -18,7 +18,7 @@
               :data="scope.row.predictsList"
               tooltip-effect="dark"
               style="width: 50%"
-              @selection-change="handleSelectionChange"
+              @selection-change="handleSelectionChange(scope.row)"
             >
               <el-table-column type="selection" width="55" />
               <el-table-column label="ID" prop="id" width="120" />
@@ -44,19 +44,20 @@
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
                 </el-option>
               </el-select>
-              <el-button type="primary" @click="setPredictsReview">确定</el-button>
+              <el-button type="primary" @click="setPredictsReview(scope.row)">确定</el-button>
             </div>
           </div>
 
           <el-pagination
+            v-if="total != 0"
             class="page"
             :current-page.sync="scope.row.currentPage"
             :page-sizes="[10, 20, 30, 50]"
             :page-size="scope.row.currentPageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="scope.row.total"
-            @current-change="handleCurrentChange2"
-            @size-change="handleSizeChange2"
+            @current-change="handleCurrentChange2(scope.row)"
+            @size-change="handleSizeChange2(scope.row)"
           />
         </template>
       </el-table-column>
@@ -133,9 +134,6 @@ export default {
       total: undefined,
       currentPage: 1,
       currentPageSize: 10,
-      total2: undefined,
-      currentPage2: 1,
-      currentPageSize2: 10,
       loading: false,
       // 获取row的key值
       getRowKeys(row) {
@@ -148,7 +146,6 @@ export default {
   created() {
     this.getUserLists(100, 0, 1)
     this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
-    this.getPredictsByPID2(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
   },
   methods: {
     clickRowHandle(row, column, event) {
@@ -166,15 +163,15 @@ export default {
       this.currentPageSize = val
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
-    handleCurrentChange2(val) {
-      this.currentPage2 = val
-      this.getPredictsByPID2(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
+    handleCurrentChange2(project) {
+      console.log(project)
+      this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
     },
-    handleSizeChange2(val) {
-      this.currentPageSize2 = val
-      this.getPredictsByPID2(val, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
+    handleSizeChange2(project) {
+      this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
     },
-    handleSelectionChange(val) {
+    handleSelectionChange(event) {
+      console.log(event, this.$refs.multipleTable)
       this.selectedList = []
       val.map(v => {
         this.selectedList.push(v.id)
@@ -183,24 +180,37 @@ export default {
     expandChange(val, event) {
       if (event.length) {
         this.pid = val.id
-        this.getPredictsByPID2(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, val.id)
+        this.projectlist.map(v => {
+          if (v.id === val.id) {
+            this.getPredictsByPID2(v.currentPageSize, (v.currentPage - 1) * v.currentPageSize, v.id)
+          }
+        })
       }
     },
     getPredictsByPID2(limit, skip, pid) {
       getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 50, 'order': 0 }).then(res => {
-        if (!res.data.data || !res.data.data.predicts || res.data.data.predicts.length < 1) {
+        this.projectlist.map(v => {
+          if (v.id === pid) {
+            v.pid = pid
+            v.predictsList = []
+            v.currentPagetmp = v.currentPage
+            v.currentPage = 1
+            v.total = 0
+          }
+        })
+        if (!res.data.data) {
           return
         }
         this.projectlist.map(v => {
-          if (v.id === this.pid) {
+          if (v.id === pid) {
             res.data.data.predicts.map(item => {
               item.predict_str = cellsType[item.predict_type]
               item.true_str = cellsType[item.true_type]
             })
+            v.pid = pid
             v.predictsList = res.data.data.predicts
-            v.currentPage = this.currentPage2
-            v.currentPageSize = 10
             v.total = res.data.data.total
+            v.currentPage = v.currentPagetmp
           }
         })
       })
@@ -217,6 +227,9 @@ export default {
           v.statusType = taskType[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
           v.projectType = projectType[v.type]
+          v.currentPage = 0
+          v.currentPageSize = 10
+          v.selectedList = []
         })
         this.projectlist = res.data.data.projects
         this.pid = res.data.data.projects[0].id
@@ -229,16 +242,17 @@ export default {
         this.userList = res.data.data.users
       })
     },
-    setPredictsReview() {
+    setPredictsReview(project) {
+      console.log(project)
       this.loading = true
       const postData = {
-        'pid': this.pid,
+        'pid': project.id,
         'predicts': this.selectedList,
-        'vid': this.vid
+        'vid': project.id
       }
       setPredictsReview(postData).then(res => {
         this.loading = false
-        this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.pid)
+        this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
       })
     }
   }
