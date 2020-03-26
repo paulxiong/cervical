@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strconv"
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	"github.com/toolkits/file"
+	"github.com/zhnxin/csvreader"
 )
 
 // JobInfo 存在硬盘的JSON文件，描述每个任务的属性，info.json是初始化时候，info2.json是裁剪结束之后
@@ -53,11 +55,11 @@ func writeJSON(cfg string, jsonByte []byte) {
 
 // GetInfoJSONPath 拿出info.json的路径, isDone=1表示拿出裁剪完之后的细胞统计信息，isDone=0表示拿出裁剪之前的标注信息
 func GetInfoJSONPath(dirname string, isDone int64) string {
-	infopath := datasetsDir + "/" + dirname + "/"
+	infopath := path.Join(datasetsDir, dirname)
 	if isDone == 0 {
-		infopath = infopath + "info.json"
+		infopath = path.Join(infopath, "info.json")
 	} else {
-		infopath = infopath + "info2.json"
+		infopath = path.Join(infopath, "info2.json")
 	}
 	return infopath
 }
@@ -66,9 +68,9 @@ func GetInfoJSONPath(dirname string, isDone int64) string {
 func GetLogContent(dirname string, _type int) string {
 	logpath := ""
 	if _type == 1 { // 0 未知 1 数据集处理 2 训练 3 预测
-		logpath = datasetsDir + "/" + dirname + "/log.txt"
+		logpath = path.Join(datasetsDir, dirname, "log.txt")
 	} else {
-		logpath = projectsDir + "/" + dirname + "/log.txt"
+		logpath = path.Join(projectsDir, dirname, "log.txt")
 	}
 	data, err := ioutil.ReadFile(logpath)
 	if err != nil {
@@ -103,19 +105,18 @@ func NewJSONFile(d models.Dataset, batchids []string, medicalids []string, cntn 
 		log.Println("ERROR:", err)
 	}
 
-	info := datasetsDir + "/" + d.Dir + "/info.json"
+	info := path.Join(datasetsDir, d.Dir, "info.json")
 	writeJSON(info, data)
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
 func CreateDataset(imgs []models.Image, dt *models.Dataset) (n int, p int) {
-	dirname := dt.Dir
-	err := os.MkdirAll(datasetsDir+"/"+dirname, os.ModePerm) //创建多级目录
+	err := os.MkdirAll(path.Join(datasetsDir, dt.Dir), os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info.Println(err)
 	}
 
-	filelist := FileListCSVPath(dirname)
+	filelist := FileListCSVPath(dt.Dir)
 	fd, err1 := os.OpenFile(filelist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
 		logger.Info.Println(filelist, err1)
@@ -135,6 +136,28 @@ func CreateDataset(imgs []models.Image, dt *models.Dataset) (n int, p int) {
 	}
 	fd.Close()
 	return cntn, cntp
+}
+
+type imginfo struct {
+	Imgid     int64
+	Imgpath   string
+	Csvpath   string
+	P1n0      int
+	Batchid   string
+	Medicalid string
+	Imgname   string
+}
+
+// GetDatasetFileList 获得数据集的所有图片的ID
+func GetDatasetFileList(dt *models.Dataset) (ids []int64) {
+	csvpath := FileListCSVPath(dt.Dir)
+	_ids := make([]int64, 0)
+	infos := []imginfo{}
+	_ = csvreader.New().UnMarshalFile(csvpath, &infos)
+	for _, v := range infos {
+		_ids = append(_ids, v.Imgid)
+	}
+	return _ids
 }
 
 // LoadJSONFile 加载json文件内容成struct

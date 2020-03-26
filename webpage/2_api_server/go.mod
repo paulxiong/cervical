@@ -33,6 +33,7 @@ require (
 	github.com/tidwall/gjson v1.3.2 // indirect
 	github.com/toolkits/file v0.0.0-20160325033739-a5b3c5147e07
 	github.com/ugorji/go v1.1.7 // indirect
+	github.com/zhnxin/csvreader v0.0.0-20190606083136-f9e31b1bce61
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
 	golang.org/x/sys v0.0.0-20190825160603-fb81701db80f // indirect

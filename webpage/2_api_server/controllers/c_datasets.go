@@ -810,3 +810,46 @@ func GetImgTree(c *gin.Context) {
 	return
 }
 */
+
+func removeDatasetByID(did int64) error {
+	dinfo, err2 := models.GetOneDatasetByID(int(did))
+	if err2 != nil || len(dinfo.MedicalIDs1) < 1 || len(dinfo.BatchIDs1) < 1 {
+		return err2
+	}
+	// 删除图片在数据库的记录
+	imgIDs := f.GetDatasetFileList(&dinfo)
+	models.RemoveImagesByIDs(imgIDs)
+
+	// 删除原图目录、细胞图目录、数据集目录
+	dpath, cellpath, imgpath := f.GetDatasetPath(dinfo.Dir, dinfo.MedicalIDs1[0], dinfo.BatchIDs1[0])
+	f.RemoveDir(cellpath)
+	f.RemoveDir(imgpath)
+	f.RemoveDir(dpath)
+	// 删除数据集在数据库的记录
+	models.RemoveDatasetByID(did)
+	return nil
+}
+
+// RemoveDataset 删除数据集记录及项目相关的文件
+// @Summary 删除数据集记录及项目相关的文件
+// @Description 删除数据集记录及项目相关的文件
+// @tags API1 数据集（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param did query string false "did, default 0, 数据集ID"
+// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Router /api1/removedataset [get]
+func RemoveDataset(c *gin.Context) {
+	didStr := c.DefaultQuery("did", "0")
+	did, _ := strconv.ParseInt(didStr, 10, 64)
+
+	err2 := removeDatasetByID(did)
+	if err2 != nil {
+		res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
+		return
+	}
+
+	res.ResSucceedString(c, "ok")
+	return
+}
