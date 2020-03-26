@@ -12,53 +12,7 @@
     >
       <el-table-column type="expand">
         <template slot-scope="scope">
-          <div class="temp-box flex">
-            <el-table
-              ref="multipleTable"
-              :data="scope.row.predictsList"
-              tooltip-effect="dark"
-              style="width: 50%"
-              @selection-change="handleSelectionChange(scope.row)"
-            >
-              <el-table-column type="selection" width="55" />
-              <el-table-column label="ID" prop="id" width="120" />
-              <el-table-column label="预测结果" prop="predict_str" width="150" />
-              <el-table-column label="初审核结果" prop="true_str" width="150" />
-              <el-table-column label="预测得分" prop="predict_score" width="100" />
-              <el-table-column label="细胞图" prop="cellpath" width="100">
-                <template slot-scope="scope2">
-                  <img :src="hosturlpath64 + scope2.row.cellpath + '?width=100'" width="100" height="100">
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="select-box" style="width:50%;">
-              <h3>分配给</h3>
-              <el-select v-model="vid" placeholder="请选择">
-                <el-option
-                  v-for="item in userList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                >
-                  <img :src="item.image" style="float: left;width:25px;height:25px;">
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-                </el-option>
-              </el-select>
-              <el-button type="primary" @click="setPredictsReview(scope.row)">确定</el-button>
-            </div>
-          </div>
-
-          <el-pagination
-            v-if="total != 0"
-            class="page"
-            :current-page.sync="scope.row.currentPage"
-            :page-sizes="[10, 20, 30, 50]"
-            :page-size="scope.row.currentPageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="scope.row.total"
-            @current-change="handleCurrentChange2(scope.row)"
-            @size-change="handleSizeChange2(scope.row)"
-          />
+          <expand-two :pid="scope.row.id" :predicts="scope.row.predictsList" :page="scope.row.currentPage" :pagesize="scope.row.currentPageSize" :total="scope.row.total" />
         </template>
       </el-table-column>
       <el-table-column width="60" label="ID" prop="id" />
@@ -114,14 +68,15 @@
 
 <script>
 import { APIUrl } from '@/const/config'
-import { getPredictsByPID2, getListprojects, setPredictsReview } from '@/api/cervical'
+import { getPredictsByPID2, getListprojects } from '@/api/cervical'
 import { getUserLists } from '@/api/user'
 import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
 import { parseTime } from '@/utils/index'
+import expandTwo from './expandTwo'
 
 export default {
   name: 'ReviewAssignment2',
-  components: {},
+  components: { expandTwo },
   data() {
     return {
       hosturlpath64: APIUrl + '/imgs/',
@@ -163,19 +118,12 @@ export default {
       this.currentPageSize = val
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
-    handleCurrentChange2(project) {
-      console.log(project)
-      this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
-    },
-    handleSizeChange2(project) {
-      this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
-    },
     handleSelectionChange(event) {
       console.log(event, this.$refs.multipleTable)
       this.selectedList = []
-      val.map(v => {
-        this.selectedList.push(v.id)
-      })
+      // val.map(v => {
+      //   this.selectedList.push(v.id)
+      // })
     },
     expandChange(val, event) {
       if (event.length) {
@@ -240,19 +188,6 @@ export default {
     getUserLists(limit, skip, order) {
       getUserLists({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         this.userList = res.data.data.users
-      })
-    },
-    setPredictsReview(project) {
-      console.log(project)
-      this.loading = true
-      const postData = {
-        'pid': project.id,
-        'predicts': this.selectedList,
-        'vid': project.id
-      }
-      setPredictsReview(postData).then(res => {
-        this.loading = false
-        this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
       })
     }
   }
