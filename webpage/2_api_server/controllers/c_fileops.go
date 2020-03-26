@@ -214,7 +214,6 @@ func UploadDirHandler(c *gin.Context) {
 	_bid := c.DefaultPostForm("bid", "")
 	_relativePath := c.DefaultPostForm("relativePath", "")
 	_rootdir := c.DefaultPostForm("dir", "")
-	logger.Info.Println(len(_mid), len(_bid), _relativePath, len(_rootdir))
 	if len(_mid) < 1 || len(_bid) < 1 || len(_relativePath) < 1 {
 		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return
@@ -226,9 +225,6 @@ func UploadDirHandler(c *gin.Context) {
 		return
 	}
 
-	if _rootdir == "" {
-		_rootdir, _ = filepath.Split(_relativePath)
-	}
 	_rootdir = path.Join(_rootdir) // 去掉结尾"/"
 	// 找到取出二级目录名称
 	dirname, _ := filepath.Split(_relativePath)
@@ -236,7 +232,7 @@ func UploadDirHandler(c *gin.Context) {
 	if dirname == _rootdir {
 		dirname = ""
 	} else if dirname == path.Join(_rootdir, "Images") {
-		logger.Info.Println("Images")
+		dirname = "Images"
 	} else if dirname == path.Join(_rootdir, "Thumbs") {
 		dirname = "Thumbs"
 	} else {
@@ -247,8 +243,8 @@ func UploadDirHandler(c *gin.Context) {
 
 	// 文件名比较URL编码前后，如果变了直接用变了的，没变就用原来的名字(可能有问题，部分病例文件带汉字或特殊字符)
 	filename := u.URLEncodeFileName(file.Filename)
-	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), filename) // 按照文件夹名字分开存放数据
-	f.NewDir(f.GetMedicalDir(_bid, _mid))
+	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), dirname, filename) // 按照文件夹名字分开存放数据
+	f.NewDir(path.Join(f.GetMedicalDir(_bid, _mid), dirname))
 	if err := c.SaveUploadedFile(file, _filepath); err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return

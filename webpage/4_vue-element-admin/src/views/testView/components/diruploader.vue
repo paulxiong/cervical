@@ -5,7 +5,8 @@
       :options="options"
       class="uploader-example"
       @files-submitted="onfilesSubmitted"
-      @complete="oncomplete"
+      @file-complete="oncomplete"
+      @files-added="onfilesAdded"
     >
       <uploader-unsupport />
       <uploader-drop>
@@ -41,7 +42,9 @@ export default {
         accept: 'image/* text/*'
       },
       uploaderInstance: null,
-      dirname: ''
+      dirname: '',
+      bid: '',
+      mid: ''
     }
   },
   mounted() {
@@ -51,17 +54,19 @@ export default {
   },
   methods: {
     getqueryfunc(val, val2) {
-      console.log('getqueryfunc', val, val2)
-      return { 'mid': `b${dateformat5()}`, 'bid': `b${dateformat4()}`, 'dir': this.dirname }
+      return { 'mid': `b${this.mid}`, 'bid': `b${this.bid}`, 'dir': this.dirname }
     },
-    // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
-    onfilesSubmitted(files, fileList, event) {
+    onfilesAdded(files, fileList, event) {
       if (fileList[0].name) {
         this.dirname = fileList[0].name // 被上传的文件夹的名字
       }
+      this.bid = dateformat4()
+      this.mid = dateformat5()
+    },
+    // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
+    onfilesSubmitted(files, fileList, event) {
       var hasScanTxt = false
       files.map(v => {
-        console.log(v)
         if (v.name === 'Scan.txt' && v.size > 0 && v.fileType === 'text/plain' && v.isFolder === false) {
           hasScanTxt = true
           return
@@ -76,6 +81,7 @@ export default {
       }
     },
     oncomplete() {
+      console.log('oncomplete')
     }
   }
 }
