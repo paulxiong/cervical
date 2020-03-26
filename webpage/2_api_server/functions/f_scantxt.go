@@ -1,6 +1,7 @@
 package function
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"path"
@@ -108,4 +109,23 @@ func ParseScanTXT(scantxt string) (_st Scantxt, _err error) {
 		}
 	}
 	return st, nil
+}
+
+// NewScanTXTJSON Scan.txt信息存到JSON文件
+func NewScanTXTJSON(st Scantxt, middir string) {
+	data, err := json.MarshalIndent(st, "", " ") //这里返回的data值，类型是[]byte
+	if err != nil {
+		log.Println("ERROR:", err)
+	}
+	savpath := path.Join(middir, "Scan.txt.json")
+	writeJSON(savpath, data)
+
+	// 保存一个不带图片的简单版本
+	st.Imgs = make([]ImgROI, 0)
+	data, err = json.MarshalIndent(st, "", " ") //这里返回的data值，类型是[]byte
+	if err != nil {
+		log.Println("ERROR:", err)
+	}
+	savpath = path.Join(middir, "Scan.txt2.json")
+	writeJSON(savpath, data)
 }

@@ -23,3 +23,24 @@ export function dateformat3(ts) {
   const _ts = new Date(ts)
   return (`${_ts.getFullYear()}-${_ts.getMonth() + 1}-${_ts.getDate()} ${_ts.getHours()}:${_ts.getMinutes()}:${_ts.getSeconds()}`)
 }
+
+// 返回时间“天”的开始处, 如 20200326
+export function dateformat4() {
+  const _ts = new Date()
+  const y = ('' + _ts.getFullYear()).padStart(4, '0')
+  const m = ('' + (_ts.getMonth() + 1)).padStart(2, '0')
+  const d = ('' + _ts.getDate()).padStart(2, '0')
+  return (`${y}${m}${d}`)
+}
+
+// 返回时间当前的时间戳，如 20200326155518
+export function dateformat5() {
+  const _ts = new Date()
+  const y = ('' + _ts.getFullYear()).padStart(4, '0')
+  const m = ('' + (_ts.getMonth() + 1)).padStart(2, '0')
+  const d = ('' + _ts.getDate()).padStart(2, '0')
+  const h = ('' + _ts.getHours()).padStart(2, '0')
+  const min = ('' + _ts.getMinutes()).padStart(2, '0')
+  const s = ('' + _ts.getSeconds()).padStart(2, '0')
+  return (`${y}${m}${d}${h}${min}${s}`)
+}

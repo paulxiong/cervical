@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"image"
+	"path/filepath"
 	"strconv"
 
 	// 支持的格式
@@ -21,6 +22,36 @@ import (
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
+
+// saveMedicalImages 把病例的FOV图片信息写入数据库
+func saveMedicalImages(_filepath string, userID int64, _bid string, _mid string) int {
+	imgfile, err1 := os.Open(_filepath)
+	if err1 != nil {
+		return e.Errors["UploadOpenFailed"]
+	}
+	defer imgfile.Close()
+	imginfo, _, err2 := image.DecodeConfig(imgfile)
+	if err2 != nil {
+		return e.Errors["UploadDecodeFailed"]
+	}
+
+	_, filename := filepath.Split(_filepath)
+	// 保存图片信息到数据库
+	img := &models.Image{
+		ID:        0,
+		Csvpath:   "",
+		Imgpath:   filename,
+		W:         imginfo.Width,
+		H:         imginfo.Height,
+		Batchid:   _bid,
+		Medicalid: _mid,
+		Status:    1,
+		Type:      1,
+		CreatedBy: userID,
+	}
+	img.CreateImage()
+	return e.Errors["Succeed"]
+}
 
 // FileDownload 细胞集合的zip下载
 // @Summary 细胞集合的zip下载
@@ -114,43 +145,21 @@ func UploadDatasetHandler(c *gin.Context) {
 	filename := u.URLEncodeFileName(file.Filename)
 
 	// 新建批次病例目录
-	dirpath := f.NewMedicalDir(_bid, _mid)
+	dirpath := f.GetMedicalImagesDir(_bid, _mid)
 	f.NewDir(dirpath)
-	filepath := path.Join(dirpath, filename)
+	_filepath := path.Join(dirpath, filename)
 
-	if err := c.SaveUploadedFile(file, filepath); err != nil {
+	if err := c.SaveUploadedFile(file, _filepath); err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}
 
-	imgfile, err1 := os.Open(filepath)
-	if err1 != nil {
-		res.ResFailedStatus(c, e.Errors["UploadOpenFailed"])
-		return
-	}
-	defer imgfile.Close()
-	imginfo, _, err2 := image.DecodeConfig(imgfile)
-	if err2 != nil {
-		res.ResFailedStatus(c, e.Errors["UploadDecodeFailed"])
-		return
-	}
-
 	_u, _ := models.GetUserFromContext(c)
-
-	// 保存图片信息到数据库
-	img := &models.Image{
-		ID:        0,
-		Csvpath:   "",
-		Imgpath:   filename,
-		W:         imginfo.Width,
-		H:         imginfo.Height,
-		Batchid:   _bid,
-		Medicalid: _mid,
-		Status:    1,
-		Type:      1,
-		CreatedBy: _u.ID,
+	ret := saveMedicalImages(_filepath, _u.ID, _bid, _mid)
+	if ret != e.Errors["Succeed"] {
+		res.ResFailedStatus(c, ret)
+		return
 	}
-	img.CreateImage()
 
 	res.ResSucceedString(c, "ok")
 	return
@@ -173,9 +182,9 @@ func UploadImgHandler(c *gin.Context) {
 	}
 
 	filename := u.GetUUID()
-	filepath, fileURL := f.HeaderImgPathURL(filename)
+	_filepath, fileURL := f.HeaderImgPathURL(filename)
 
-	out, err := os.Create(filepath)
+	out, err := os.Create(_filepath)
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadMkdirFailed"])
 		return
@@ -203,7 +212,10 @@ func UploadImgHandler(c *gin.Context) {
 func UploadDirHandler(c *gin.Context) {
 	_mid := c.DefaultPostForm("mid", "")
 	_bid := c.DefaultPostForm("bid", "")
-	if len(_mid) < 1 || len(_bid) < 1 {
+	_relativePath := c.DefaultPostForm("relativePath", "")
+	_rootdir := c.DefaultPostForm("dir", "")
+	logger.Info.Println(len(_mid), len(_bid), _relativePath, len(_rootdir))
+	if len(_mid) < 1 || len(_bid) < 1 || len(_relativePath) < 1 {
 		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return
 	}
@@ -214,22 +226,48 @@ func UploadDirHandler(c *gin.Context) {
 		return
 	}
 
-	// 文件名比较URL编码前后，如果变了直接用变了的，没变就用原来的名字(可能有问题，部分病例文件带汉字或特殊字符)
-	filename := u.URLEncodeFileName(file.Filename)
-	if filename != "Scan.txt" {
-		res.ResSucceedString(c, "ok")
+	if _rootdir == "" {
+		_rootdir, _ = filepath.Split(_relativePath)
+	}
+	_rootdir = path.Join(_rootdir) // 去掉结尾"/"
+	// 找到取出二级目录名称
+	dirname, _ := filepath.Split(_relativePath)
+	dirname = path.Join(dirname) // 去掉结尾"/"
+	if dirname == _rootdir {
+		dirname = ""
+	} else if dirname == path.Join(_rootdir, "Images") {
+		logger.Info.Println("Images")
+	} else if dirname == path.Join(_rootdir, "Thumbs") {
+		dirname = "Thumbs"
+	} else {
+		dirname = ""
+		res.ResFailedStatus(c, e.Errors["UploadUnknowFile"])
 		return
 	}
 
-	filepath := "Scan.txt"
-	if err := c.SaveUploadedFile(file, filepath); err != nil {
+	// 文件名比较URL编码前后，如果变了直接用变了的，没变就用原来的名字(可能有问题，部分病例文件带汉字或特殊字符)
+	filename := u.URLEncodeFileName(file.Filename)
+	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), filename) // 按照文件夹名字分开存放数据
+	f.NewDir(f.GetMedicalDir(_bid, _mid))
+	if err := c.SaveUploadedFile(file, _filepath); err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}
-	logger.Info.Println(filename)
-	st, err2 := f.ParseScanTXT(filename)
-	if err2 == nil {
-		logger.Info.Println(st.Boundx2, st.Boundy2)
+
+	// Scan.txt文件做特殊处理
+	if filename == "Scan.txt" {
+		st, err2 := f.ParseScanTXT(_filepath)
+		if err2 == nil {
+			f.NewScanTXTJSON(st, f.GetMedicalDir(_bid, _mid))
+		}
+	}
+	if dirname == "Images" {
+		_u, _ := models.GetUserFromContext(c)
+		ret := saveMedicalImages(_filepath, _u.ID, _bid, _mid)
+		if ret != e.Errors["Succeed"] {
+			res.ResFailedStatus(c, ret)
+			return
+		}
 	}
 
 	res.ResSucceedString(c, "ok")

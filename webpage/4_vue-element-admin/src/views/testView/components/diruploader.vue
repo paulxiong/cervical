@@ -5,7 +5,7 @@
       :options="options"
       class="uploader-example"
       @files-submitted="onfilesSubmitted"
-      @complete="complete"
+      @complete="oncomplete"
     >
       <uploader-unsupport />
       <uploader-drop>
@@ -13,7 +13,7 @@
         <el-link href="https://github.com/simple-uploader/vue-uploader/blob/master/README_zh-CN.md">上传组件文档地址</el-link>
         <uploader-btn>select files</uploader-btn>
         <uploader-btn :attrs="attrs">select images</uploader-btn>
-        <uploader-btn :directory="true">select folder</uploader-btn>
+        <uploader-btn :attrs="attrs" :directory="true">select folder</uploader-btn>
       </uploader-drop>
       <uploader-list />
     </uploader>
@@ -21,40 +21,61 @@
 </template>
 
 <script>
+import { APIUrl } from '@/const/config'
 import { getToken } from '@/utils/auth'
+import { dateformat4, dateformat5 } from '@/utils/dateformat'
 
 export default {
   data() {
     return {
       options: {
-        // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
-        target: '//localhost:9000/api1/uploaddir',
-        query: { 'mid': '', 'bid': '' },
+        target: APIUrl + '/api1/uploaddir',
+        query: this.getqueryfunc,
         headers: {
           'Authorization': getToken()
         },
+        simultaneousUploads: 1, // 只准有一个上传队列
         testChunks: false
       },
       attrs: {
-        accept: 'image/*'
+        accept: 'image/* text/*'
       },
-      uploaderInstance: null
+      uploaderInstance: null,
+      dirname: ''
     }
-  },
-  created() {
-    this.options.query = { 'mid': 3, 'bid': 4 }
   },
   mounted() {
     this.$nextTick(() => {
-      this.uploaderInstance = this.$refs.uploader.uploader
+      this.uploaderInstance = this.$refs.uploader
     })
   },
   methods: {
-    onfilesSubmitted(files, fileList, event) {
-      console.log(files)
+    getqueryfunc(val, val2) {
+      console.log('getqueryfunc', val, val2)
+      return { 'mid': `b${dateformat5()}`, 'bid': `b${dateformat4()}`, 'dir': this.dirname }
     },
-    complete() {
-      console.log(this.uploaderInstance.File.name)
+    // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
+    onfilesSubmitted(files, fileList, event) {
+      if (fileList[0].name) {
+        this.dirname = fileList[0].name // 被上传的文件夹的名字
+      }
+      var hasScanTxt = false
+      files.map(v => {
+        console.log(v)
+        if (v.name === 'Scan.txt' && v.size > 0 && v.fileType === 'text/plain' && v.isFolder === false) {
+          hasScanTxt = true
+          return
+        }
+      })
+      // 没有Scan.txt，直接取消上传，说明病例不对
+      if (hasScanTxt === false) {
+        this.uploaderInstance.uploader.cancel()
+        this.$message.error('所选的病例目录不完整 !')
+      } else {
+        this.$message({ type: 'success', message: '开始上传' })
+      }
+    },
+    oncomplete() {
     }
   }
 }

@@ -463,7 +463,7 @@ func SetJobResult(c *gin.Context) {
 		if w.Status == 4 { //处理完成
 			done := 1 //处理完1 处理之前0
 			d, _ := models.GetOneDatasetByID(int(w.ID))
-			j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, int64(done)))
+			j := f.LoadJSONFileInfoJSON(f.GetInfoJSONPath(d.Dir, int64(done)))
 			models.UpdateDatasetsCellTypes(w.ID, j.Types)
 		}
 	} else if w.Type == 2 || w.Type == 3 {
@@ -589,7 +589,7 @@ func GetJobResult(c *gin.Context) {
 
 	d, _ := models.GetOneDatasetByID(int(did))
 
-	j := f.LoadJSONFile(f.GetInfoJSONPath(d.Dir, done))
+	j := f.LoadJSONFileInfoJSON(f.GetInfoJSONPath(d.Dir, done))
 	j.CellsTotal = len(j.CellsCrop)
 	j.OriginTotal = len(j.OriginImgs)
 	if j.CellsTotal > int(limit) {

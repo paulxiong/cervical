@@ -1,6 +1,6 @@
 {
 	"errs": [
-        {"status": 0,  "key": "Succeed",    "content": "网络请求成功"},
+        {"status": 0,  "key": "Succeed",    "content": "网络请求成功/操作成功"},
         {"status": 1,  "key": "Unknown",    "content": "未知的错误"},
         {"status": 51, "key": "PingFailed", "content": "ping失败(这个绝对不可能出现)"},
 
@@ -48,6 +48,7 @@
         {"status": 162, "key": "UploadSaveFailed",   "content": "保存文件失败"},
         {"status": 163, "key": "UploadOpenFailed",   "content": "读取文件失败"},
         {"status": 164, "key": "UploadDecodeFailed",   "content": "解析图片文件失败"},
+        {"status": 165, "key": "UploadUnknowFile",   "content": "上传文件夹里的文件类型未知"},
 
         {"status": 170, "key": "LabelInvalied",   "content": "标注数据未按照规定格式传递"},
 

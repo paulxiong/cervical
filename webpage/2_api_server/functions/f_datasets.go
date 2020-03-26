@@ -12,7 +12,6 @@ import (
 
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
-	"github.com/toolkits/file"
 	"github.com/zhnxin/csvreader"
 )
 
@@ -41,16 +40,6 @@ type JobInfo struct {
 	Types       []models.CellTypesinfo `json:"types"`                                      //各个type标注次数，初始化时候表示标注的次数，结束时候表示细胞的个数
 	ModPath     string                 `json:"modpath"           example:"mod path"`       //模型文件的路径
 	models.DatasetParameter
-}
-
-func writeJSON(cfg string, jsonByte []byte) {
-	if cfg == "" {
-		logger.Info.Println("please specify json file")
-	}
-	_, err := file.WriteBytes(cfg, jsonByte)
-	if err != nil {
-		logger.Info.Println("write config file:", cfg, "fail:", err)
-	}
 }
 
 // GetInfoJSONPath 拿出info.json的路径, isDone=1表示拿出裁剪完之后的细胞统计信息，isDone=0表示拿出裁剪之前的标注信息
@@ -105,8 +94,8 @@ func NewJSONFile(d models.Dataset, batchids []string, medicalids []string, cntn 
 		log.Println("ERROR:", err)
 	}
 
-	info := path.Join(datasetsDir, d.Dir, "info.json")
-	writeJSON(info, data)
+	jsonpath := path.Join(datasetsDir, d.Dir, "info.json")
+	writeJSON(jsonpath, data)
 }
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
@@ -160,10 +149,10 @@ func GetDatasetFileList(dt *models.Dataset) (ids []int64) {
 	return _ids
 }
 
-// LoadJSONFile 加载json文件内容成struct
-func LoadJSONFile(filename string) JobInfo {
+// LoadJSONFileInfoJSON 加载json文件内容成struct
+func LoadJSONFileInfoJSON(filename string) JobInfo {
 	j := JobInfo{}
-	data, err := ioutil.ReadFile(filename)
+	data, err := LoadJSONFile(filename)
 	if err != nil {
 		return j
 	}

@@ -41,9 +41,19 @@ func Imgpath(batchid string, medicalid string, img string, _type int) string {
 	return fmt.Sprintf("scratch/img/%s/%s/Images/%s", batchid, medicalid, img)
 }
 
-// NewMedicalDir 返回新上传图片的保存目录
-func NewMedicalDir(batchid string, medicalid string) string {
-	return fmt.Sprintf("scratch/img/%s/%s/Images/", batchid, medicalid)
+// GetMedicalDir 返回新上传病例的保存目录
+func GetMedicalDir(batchid string, medicalid string) string {
+	return path.Join("scratch", "img", batchid, medicalid)
+}
+
+// GetMedicalImagesDir 返回新上传病例图片的保存目录
+func GetMedicalImagesDir(batchid string, medicalid string) string {
+	return path.Join("scratch", "img", batchid, medicalid, "Images")
+}
+
+// GetMedicalThumbsDir 返回新上传病例图片的保存目录
+func GetMedicalThumbsDir(batchid string, medicalid string) string {
+	return path.Join("scratch", "img", batchid, medicalid, "Thumbs")
 }
 
 // FileListCSVPath 返回filelist.csv的保存目录
