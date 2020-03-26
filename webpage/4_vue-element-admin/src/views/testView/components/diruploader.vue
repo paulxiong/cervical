@@ -36,7 +36,8 @@ export default {
           'Authorization': getToken()
         },
         simultaneousUploads: 1, // 只准有一个上传队列
-        testChunks: false
+        testChunks: false,
+        chunkSize: 4 * 1024 * 1024 // 分块时按照该值来分，文件大于这个值时候居然会把文件传坏！？
       },
       attrs: {
         accept: 'image/* text/*'
