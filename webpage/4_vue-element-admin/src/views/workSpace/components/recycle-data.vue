@@ -223,8 +223,6 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  .filter-box {
-  }
   .tools {
     background: #fff;
     justify-content: space-around;
