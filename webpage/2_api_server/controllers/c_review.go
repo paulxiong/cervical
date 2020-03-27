@@ -19,6 +19,10 @@ type _predictsByPID struct {
 	PredictType  int    `json:"predict_type"  example:"100"` //预测的细胞类型,1到15是细胞类型, 50阴性 51阳性 100 未知, 200 不是细胞
 	TrueType     int    `json:"true_type"     example:"100"` //医生标注的细胞类型 默认等于predict_type
 	PredictScore int    `json:"predict_score" example:"100"` //预测得分 50表示50%
+	X1           int    `json:"x1"            example:"100"` //在当前FOV的x1
+	Y1           int    `json:"y1"            example:"100"` //在当前FOV的y1
+	X2           int    `json:"x2"            example:"100"` //在当前FOV的x2
+	Y2           int    `json:"y2"            example:"100"` //在当前FOV的y2
 	CellPath     string `json:"cellpath"      example:"100"` //上述坐标切割出来的细胞
 }
 
@@ -70,6 +74,10 @@ func GetPredictsByPID(c *gin.Context) {
 			PredictType:  v.PredictType,
 			TrueType:     v.TrueType,
 			PredictScore: 0,
+			X1:           v.X1,
+			Y1:           v.Y1,
+			X2:           v.X2,
+			Y2:           v.Y2,
 		})
 	}
 
@@ -126,6 +134,10 @@ func GetPredictsByPIDSortByScore(c *gin.Context) {
 			TrueType:     v.TrueType,
 			PredictScore: v.PredictScore,
 			CellPath:     v.CellPath,
+			X1:           v.X1,
+			Y1:           v.Y1,
+			X2:           v.X2,
+			Y2:           v.Y2,
 		})
 	}
 
