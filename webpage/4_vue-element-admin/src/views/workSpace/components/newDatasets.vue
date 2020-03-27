@@ -9,7 +9,8 @@
     </section>
 
     <section class="main">
-      <uploadImg v-if="upload && step===1" @checkUpload="checkUpload" />
+      <uploadImg v-if="false" @checkUpload="checkUpload" />
+      <uploadDir v-if="upload && step===1" @checkUpload="checkUpload" />
       <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
       <checkModel v-if="step===2" ref="checkModel" :upload="upload" @checkModel="checkModel" />
       <startTrain v-if="step===3" />
@@ -19,13 +20,14 @@
 
 <script>
 import uploadImg from './uploadImg'
+import uploadDir from './uploadData'
 import checkImg from './step1-img'
 import checkModel from './step2-model'
 import startTrain from './step3-train'
 
 export default {
   name: 'Newdatasets',
-  components: { checkImg, checkModel, startTrain, uploadImg },
+  components: { checkImg, checkModel, startTrain, uploadImg, uploadDir },
   props: {
     upload: {
       type: Boolean,
@@ -65,9 +67,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.train {
-  .step {
-    margin-bottom: 10px;
-  }
+.step {
+  margin-bottom: 10px;
 }
 </style>
