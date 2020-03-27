@@ -52,14 +52,18 @@ export default {
   },
   methods: {
     getqueryfunc(val, val2) {
-      return { 'mid': `b${this.mid}`, 'bid': `b${this.bid}`, 'dir': this.dirname }
+      return { 'mid': this.mid, 'bid': this.bid, 'dir': this.dirname }
     },
     onfilesAdded(files, fileList, event) {
       if (fileList[0].name) {
         this.dirname = fileList[0].name // 被上传的文件夹的名字
       }
-      this.bid = dateformat4()
-      this.mid = dateformat5()
+      this.bid = `b${dateformat4()}`
+      this.mid = `m${dateformat5()}`
+
+      // 不提倡的做法
+      var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
+      localStorage.setItem('POST_DATA', JSON.stringify(postData))
     },
     // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
     onfilesSubmitted(files, fileList, event) {
