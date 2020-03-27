@@ -95,6 +95,7 @@ func Router() *gin.Engine {
 		api1.POST("/createdataset", ctr.CreateDataset)
 		api1.GET("/listdatasets", ctr.ListDatasets)
 		api1.GET("/removedataset", ctr.RemoveDataset)
+		api1.GET("/scantxtbydid", ctr.GetScanTxtByDID)
 
 		// 项目
 		api1.POST("/createproject", ctr.CreateProject)

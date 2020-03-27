@@ -38,11 +38,12 @@ export default {
     })
   },
   mounted() {
+    console.log(this.args)
     var that = this // 保留vue的this, 方便后面使用
 
     this.mapInstance = this.Map_create()
 
-    var tiles = new L.GridLayer({ 'tileSize': L.point(this.args.ImageWidth, this.args.ImageHeight) })
+    var tiles = new L.GridLayer({ 'tileSize': L.point(this.args.imgwidth, this.args.imgheight) })
     tiles.createTile = function(coords) {
       return that.GridLayer_createTile(coords, this)
     }
@@ -60,7 +61,7 @@ export default {
       k._removeAllTiles = function() {} // 禁止移除图层，因为我们只有一个z-level，不准切换z-level
       return k
     }
-    L.tileLayer.kitten({ 'tileSize': L.point(this.args.ImageWidth, this.args.ImageHeight), 'continuousWorld': true }).addTo(this.mapInstance)
+    L.tileLayer.kitten({ 'tileSize': L.point(this.args.imgwidth, this.args.imgheight), 'continuousWorld': true }).addTo(this.mapInstance)
   },
   beforeDestroy() {
   },
@@ -69,7 +70,7 @@ export default {
       return L.map('map', {
         crs: L.CRS.Simple,
         center: new L.LatLng(0, 0), // 左上角(y, x)
-        maxBounds: this.makebounds(this.args.sceneWidth, this.args.sceneHeight),
+        maxBounds: this.makebounds(this.args.scenewidth, this.args.sceneheight),
         minZoom: -0.49,
         maxZoom: 0.49, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
         maxNativeZoom: 0,
@@ -114,35 +115,30 @@ export default {
       if (coords.x < 0 || coords.y < 0) {
         return ''
       }
-      if (coords.x >= this.args.sceneWidth / this.args.ImageWidth) {
+      if (coords.x >= this.args.scenewidth / this.args.imgwidth) {
         return ''
       }
-      if (coords.y >= this.args.sceneHeight / this.args.ImageHeight) {
+      if (coords.y >= this.args.sceneheight / this.args.imgheight) {
         return ''
       }
-      var img = this.IMGURL + '/scratch/img/' + this.args.bid + '/' + this.args.mid + '/Images'
+      var img = this.IMGURL + '/scratch/img/' + this.args.batchid + '/' + this.args.medicalid + '/Images'
       img = img + '/IMG' + ('' + (coords.y + 1)).padStart(3, '0') + 'x' + ('' + (coords.x + 1)).padStart(3, '0')
-      img = img + this.args.ext
+      img = img + this.args.imgext
       return img
     },
     TileLayer_getAttribution() {
       return "<a href='https://placekitten.com/attribution.html'>提示</a>"
     },
-    makebounds(sceneWidth, sceneHeight) {
+    makebounds(scenewidth, sceneheight) {
       // 要把坐标移动到第四象限，这样保证左上角X,y都是0,从左往右X递增，从上到下Y递减
       // L.CRS.Simple，的latLng的单位是像素点
-      var southWest = [-sceneHeight, 0] // 地图西南点坐标， 左下(y1, x1)
-      var northEast = [0, sceneWidth] // 地图东北点坐标，右上(y2, x2)
+      var southWest = [-sceneheight, 0] // 地图西南点坐标， 左下(y1, x1)
+      var northEast = [0, scenewidth] // 地图东北点坐标，右上(y2, x2)
       var bounds = L.latLngBounds(southWest, northEast) // 地图边界
       return bounds
     },
-    gotolatLng(val) {
-      if (val === 1) {
-        this.mapInstance.setView([-13604, 15502], -0.49)
-      } else {
-        this.mapInstance.setView([-33282.53466523906, 42536.421951476725], -0.49)
-      }
-      console.log(this.mapInstance.getCenter())
+    gotolatLng(x, y) {
+      this.mapInstance.setView([y, x], -0.49)
     }
   }
 }

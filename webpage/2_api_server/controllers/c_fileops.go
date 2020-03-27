@@ -252,7 +252,7 @@ func UploadDirHandler(c *gin.Context) {
 
 	// Scan.txt文件做特殊处理
 	if filename == "Scan.txt" {
-		st, err2 := f.ParseScanTXT(_filepath)
+		st, err2 := f.ParseScanTXT(_filepath, _bid, _mid)
 		if err2 == nil {
 			f.NewScanTXTJSON(st, f.GetMedicalDir(_bid, _mid))
 		}

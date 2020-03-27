@@ -42,6 +42,8 @@ type ImgROI struct {
 
 // Scantxt 显微镜扫描的配置
 type Scantxt struct {
+	Batchid          string   `json:"batchid"`     // 批次号
+	Medicalid        string   `json:"medicalid"`   // 病历号
 	RowCount         int      `json:"rowcnt"`      // 有多少行FOV
 	ColumnCount      int      `json:"colcnt"`      // 有多少列FOV
 	ImageWidth       int      `json:"imgwidth"`    // 单张FOV宽
@@ -60,13 +62,15 @@ type Scantxt struct {
 }
 
 // ParseScanTXT 解析Scan.txt
-func ParseScanTXT(scantxt string) (_st Scantxt, _err error) {
+func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err error) {
 	var st Scantxt
 	cfg, err := goconfig.LoadConfigFile(scantxt)
 	if err != nil {
 		log.Printf("load config failed")
 		return st, err
 	}
+	st.Batchid = bid
+	st.Medicalid = mid
 	st.RowCount, _ = getConfigIntValue(cfg, "General", "RowCount")
 	st.ColumnCount, _ = getConfigIntValue(cfg, "General", "ColumnCount")
 	st.ImageWidth, _ = getConfigIntValue(cfg, "General", "ImageWidth")
@@ -128,4 +132,20 @@ func NewScanTXTJSON(st Scantxt, middir string) {
 	}
 	savpath = path.Join(middir, "Scan.txt2.json")
 	writeJSON(savpath, data)
+}
+
+// LoadScanTXTJSON 读取Scan.txt信息, _type 0--不带图片信息，1--全部信息
+func LoadScanTXTJSON(bid string, mid string, _type int) Scantxt {
+	st := Scantxt{}
+	middir := GetMedicalDir(bid, mid)
+	filename := path.Join(middir, "Scan.txt.json")
+	if _type == 0 {
+		filename = path.Join(middir, "Scan.txt2.json")
+	}
+	data, err := LoadJSONFile(filename)
+	if err != nil {
+		return st
+	}
+	err = json.Unmarshal(data, &st)
+	return st
 }

@@ -365,3 +365,11 @@ export function removeDataSet(query) {
 
 // 跳转页面下载
 export const downloadCellsURL = '/api1/downloadcells'
+
+export function getScantxtByDID(query) {
+  return request({
+    url: '/api1/scantxtbydid',
+    method: 'get',
+    params: query
+  })
+}

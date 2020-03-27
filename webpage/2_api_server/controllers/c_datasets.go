@@ -853,3 +853,30 @@ func RemoveDataset(c *gin.Context) {
 	res.ResSucceedString(c, "ok")
 	return
 }
+
+// GetScanTxtByDID 通过数据集ID获得Scan.txt的信息
+// @Summary 通过数据集ID获得Scan.txt的信息
+// @Description 通过数据集ID获得Scan.txt的信息
+// @tags API1 数据集（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param did query string false "did, default 0, 数据集ID"
+// @Param type query string false "type, default 0, 0--不带图片信息，1--全部信息"
+// @Success 200 {object} function.Scantxt
+// @Router /api1/scantxtbydid [get]
+func GetScanTxtByDID(c *gin.Context) {
+	didStr := c.DefaultQuery("did", "0")
+	did, _ := strconv.ParseInt(didStr, 10, 64)
+	typeStr := c.DefaultQuery("type", "0")
+	_type, _ := strconv.ParseInt(typeStr, 10, 64)
+
+	dinfo, err1 := models.GetOneDatasetByID(int(did))
+	if err1 != nil || len(dinfo.MedicalIDs1) < 1 || len(dinfo.BatchIDs1) < 1 {
+		res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
+		return
+	}
+	st := f.LoadScanTXTJSON(dinfo.BatchIDs1[0], dinfo.MedicalIDs1[0], int(_type))
+	res.ResSucceedStruct(c, st)
+	return
+}

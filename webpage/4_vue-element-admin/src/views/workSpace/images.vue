@@ -38,7 +38,7 @@
         @tab-click="tabClick"
       >
         <el-tab-pane label="原图">
-          <div class="img-div" style="overflow-y: auto;height:600px;">
+          <div class="img-div" style="overflow-y: auto;height:500px;">
             <el-image
               v-for="(img,idx) in origin_imgs"
               :key="idx"
