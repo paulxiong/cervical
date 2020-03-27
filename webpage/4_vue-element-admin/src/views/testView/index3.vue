@@ -1,28 +1,30 @@
 <template>
   <div>
     <diruploader />
-    <lmap style="width: 50%" />
+    <lmap
+      :args="mapargs"
+      style="width: 50%"
+    />
   </div>
 </template>
 
 <script>
 import diruploader from './components/diruploader'
 import lmap from '@/components/leafletMap/leafletMap'
-import { Icon } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
-
-// Resolve an issue where the markers would not appear
-delete Icon.Default.prototype._getIconUrl
-Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-})
 
 export default {
   components: { lmap, diruploader },
   data() {
     return {
+      mapargs: {
+        bid: 'b20200327',
+        mid: 'b20200327095341',
+        ext: '.jpg',
+        ImageWidth: 2448,
+        ImageHeight: 2048,
+        sceneWidth: 72348,
+        sceneHeight: 72104
+      },
       options: {
         // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
         target: '//localhost:3000/upload',
