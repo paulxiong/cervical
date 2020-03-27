@@ -7,13 +7,13 @@
       style="width: 50%"
     />
 
-    <div class="img-div" style="overflow-y: auto;height:140px;">
+    <div class="img-div" style="overflow-y: auto;height:140px;width:1000px">
       <el-image
         v-for="(img) in predictsList"
         :key="img.id"
         class="img"
         :src="hosturlpath32 + img.cellpath + '?width=64'"
-        @click="imgclicked(img.cellpath)"
+        @click="imgclicked(img)"
       >
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline" />
@@ -83,15 +83,14 @@ export default {
       this.currentPageSize = val
     },
     imgclicked(img) {
-      var arr = img.split('IMG')
+      var arr = img.cellpath.split('IMG')
       arr = arr[1].split(this.mapargs.imgext)
       arr = arr[0].split('x')
       var x = parseInt(arr[1])
       var y = parseInt(arr[0])
-      x = x * this.mapargs.imgwidth - this.mapargs.imgwidth / 2
-      y = y * this.mapargs.imgheight - this.mapargs.imgheight / 2
-      this.$refs.map.gotolatLng(y, x)
-      console.log(x, y)
+      y = (y - 1) * this.mapargs.imgheight + img.y1
+      x = (x - 1) * this.mapargs.imgwidth + img.x1
+      this.$refs.map.gotolatLng(x, y)
     }
   }
 }

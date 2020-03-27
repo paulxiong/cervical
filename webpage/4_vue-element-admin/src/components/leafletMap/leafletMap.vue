@@ -58,7 +58,7 @@ export default {
     })
     L.tileLayer.kitten = function(options) {
       var k = new L.TileLayer.Kitten(options)
-      k._removeAllTiles = function() {} // 禁止移除图层，因为我们只有一个z-level，不准切换z-level
+      // k._removeAllTiles = function() {} // 禁止移除图层，因为我们只有一个z-level，不准切换z-level
       return k
     }
     L.tileLayer.kitten({ 'tileSize': L.point(this.args.imgwidth, this.args.imgheight), 'continuousWorld': true }).addTo(this.mapInstance)
@@ -71,10 +71,10 @@ export default {
         crs: L.CRS.Simple,
         center: new L.LatLng(0, 0), // 左上角(y, x)
         maxBounds: this.makebounds(this.args.scenewidth, this.args.sceneheight),
-        minZoom: -0.49,
+        minZoom: 0,
         maxZoom: 0.49, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
         maxNativeZoom: 0,
-        zoom: -0.49,
+        zoom: 0,
         zoomDelta: 0.05, // 变焦增量+-滚轮一下缩放多少,
         zoomSnap: 0.05,
         noWrap: true,
@@ -138,7 +138,11 @@ export default {
       return bounds
     },
     gotolatLng(x, y) {
-      this.mapInstance.setView([y, x], -0.49)
+      y = -y // y轴是负数
+      // console.log(this.mapInstance.getCenter())
+      this.mapInstance.setView([y, x], this.mapInstance.getZoom())
+      var bounds = [[y, x], [y - 100, x + 100]]
+      L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
     }
   }
 }
