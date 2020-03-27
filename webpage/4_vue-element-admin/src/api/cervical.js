@@ -355,5 +355,13 @@ export function downloadResults(data) {
   })
 }
 
+export function removeDataSet(query) {
+  return request({
+    url: '/api1/removedataset',
+    method: 'get',
+    params: query
+  })
+}
+
 // 跳转页面下载
 export const downloadCellsURL = '/api1/downloadcells'

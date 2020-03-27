@@ -72,13 +72,22 @@
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="100">
-          <template slot-scope="">
+          <template slot-scope="scope">
             <!-- <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button> -->
             <!-- <el-button type="warning" style="color: red;" size="mini">删除</el-button> -->
-            <el-button type="danger" icon="el-icon-delete" circle>删除</el-button>
+            <!-- <el-button type="danger" icon="el-icon-delete" circle>删除</el-button> -->
+            <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+        <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="delVisible = false">取 消</el-button>
+          <el-button type="primary" @click="deleteRow">确 定</el-button>
+        </span>
+      </el-dialog>
+
       <div class="tools flex">
         <el-pagination
           class="page"
@@ -120,7 +129,7 @@
 </template>
 
 <script>
-import { listdatasets } from '@/api/cervical'
+import { listdatasets, removeDataSet } from '@/api/cervical'
 import { taskStatus, createdBy, taskType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
@@ -145,6 +154,11 @@ export default {
       currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
       modelChecked: false,
+      removedataset: [],
+      delVisible: false,
+      msg: '',
+      did: '',
+      delarr: [],
       listQuery: {
         desc: undefined,
         type: undefined
@@ -173,6 +187,18 @@ export default {
     this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
   },
   methods: {
+    handleDelete(did) {
+      this.did = did
+      this.delVisible = true
+    },
+    deleteRow() {
+      removeDataSet({ did: this.did }).then(res => {
+        this.$message.success('删除成功')
+        this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+        this.delVisible = false
+      })
+    },
+
     uploadImgs() {
       this.dialogFormVisible = true
       this.upload = true
