@@ -25,7 +25,12 @@ export default {
     return {
       debug: false,
       IMGURL: APIUrl + '/imgs',
-      mapInstance: null
+      mapInstance: null,
+      minZoom: -2,
+      maxZoom: 1, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
+      maxNativeZoom: 0.1,
+      minNativeZoom: 0,
+      zoom: 0
     }
   },
   created() {
@@ -58,10 +63,23 @@ export default {
     })
     L.tileLayer.kitten = function(options) {
       var k = new L.TileLayer.Kitten(options)
-      // k._removeAllTiles = function() {} // 禁止移除图层，因为我们只有一个z-level，不准切换z-level
+      k._removeAllTiles = function() {
+        for (var key in this._tiles) {
+          var zoomlevel = that.mapInstance.getZoom()
+          if (zoomlevel !== 0.00) { // 0缩放级别是原图，大于小于这个都不要删除图层,因为我们只有1层图层，放大缩小都是这层, 删掉就看不到了
+            continue
+          }
+          // that.latLngToCoords(that.mapInstance.getCenter()) // 这个取到的是跳转之前的
+          this._removeTile(key)
+        }
+      } // 禁止移除图层，因为我们只有一个z-level，不准切换z-level
       return k
     }
-    L.tileLayer.kitten({ 'tileSize': L.point(this.args.imgwidth, this.args.imgheight), 'continuousWorld': true }).addTo(this.mapInstance)
+    L.tileLayer.kitten({
+      'tileSize': L.point(this.args.imgwidth, this.args.imgheight),
+      'continuousWorld': true,
+      'maxNativeZoom': this.maxNativeZoom,
+      'minNativeZoom': this.minNativeZoom }).addTo(this.mapInstance)
   },
   beforeDestroy() {
   },
@@ -71,12 +89,13 @@ export default {
         crs: L.CRS.Simple,
         center: new L.LatLng(0, 0), // 左上角(y, x)
         maxBounds: this.makebounds(this.args.scenewidth, this.args.sceneheight),
-        minZoom: 0,
-        maxZoom: 0.49, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
-        maxNativeZoom: 0,
-        zoom: 0,
-        zoomDelta: 0.05, // 变焦增量+-滚轮一下缩放多少,
-        zoomSnap: 0.05,
+        minZoom: this.minZoom,
+        maxZoom: this.maxZoom, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
+        maxNativeZoom: this.maxNativeZoom,
+        minNativeZoom: this.minNativeZoom,
+        zoom: this.zoom,
+        zoomDelta: 0.1, // 变焦增量+-滚轮一下缩放多少,
+        zoomSnap: 0.1,
         noWrap: true,
         detectRetina: false
       })
@@ -140,9 +159,15 @@ export default {
     gotolatLng(x, y) {
       y = -y // y轴是负数
       // console.log(this.mapInstance.getCenter())
-      this.mapInstance.setView([y, x], this.mapInstance.getZoom())
+      this.mapInstance.setView([y, x], this.zoom)
       var bounds = [[y, x], [y - 100, x + 100]]
       L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
+    },
+    latLngToCoords(latLng) {
+      var y = parseInt(latLng.lat / this.args.imgheight)
+      y = -y
+      var x = parseInt(latLng.lng / this.args.imgwidth)
+      console.log(x, y)
     }
   }
 }
