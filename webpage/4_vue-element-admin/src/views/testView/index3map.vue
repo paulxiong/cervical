@@ -88,8 +88,8 @@ export default {
       arr = arr[0].split('x')
       var x = parseInt(arr[1])
       var y = parseInt(arr[0])
-      y = (y - 1) * this.mapargs.imgheight + img.y1
-      x = (x - 1) * this.mapargs.imgwidth + img.x1
+      y = (y - 1) * this.mapargs.realimgheight + img.y1
+      x = (x - 1) * this.mapargs.realimgwidth + img.x1
       this.$refs.map.gotolatLng(x, y)
     }
   }

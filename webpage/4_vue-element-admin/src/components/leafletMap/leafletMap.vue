@@ -48,7 +48,7 @@ export default {
 
     this.mapInstance = this.Map_create()
 
-    var tiles = new L.GridLayer({ 'tileSize': L.point(this.args.imgwidth, this.args.imgheight) })
+    var tiles = new L.GridLayer({ 'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight) })
     tiles.createTile = function(coords) {
       return that.GridLayer_createTile(coords, this)
     }
@@ -76,7 +76,7 @@ export default {
       return k
     }
     L.tileLayer.kitten({
-      'tileSize': L.point(this.args.imgwidth, this.args.imgheight),
+      'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight),
       'continuousWorld': true,
       'maxNativeZoom': this.maxNativeZoom,
       'minNativeZoom': this.minNativeZoom }).addTo(this.mapInstance)
@@ -134,15 +134,15 @@ export default {
       if (coords.x < 0 || coords.y < 0) {
         return ''
       }
-      if (coords.x >= this.args.scenewidth / this.args.imgwidth) {
+      if (coords.x >= this.args.scenewidth / this.args.realimgwidth) {
         return ''
       }
-      if (coords.y >= this.args.sceneheight / this.args.imgheight) {
+      if (coords.y >= this.args.sceneheight / this.args.realimgheight) {
         return ''
       }
       var img = this.IMGURL + '/scratch/img/' + this.args.batchid + '/' + this.args.medicalid + '/Images'
       img = img + '/IMG' + ('' + (coords.y + 1)).padStart(3, '0') + 'x' + ('' + (coords.x + 1)).padStart(3, '0')
-      img = img + this.args.imgext + '?width=2000'
+      img = img + this.args.imgext + '?crop=0,0|' + this.args.realimgwidth + ',' + this.args.realimgheight + '&quality=80'
       return img
     },
     TileLayer_getAttribution() {
@@ -164,9 +164,9 @@ export default {
       L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
     },
     latLngToCoords(latLng) {
-      var y = parseInt(latLng.lat / this.args.imgheight)
+      var y = parseInt(latLng.lat / this.args.realimgheight)
       y = -y
-      var x = parseInt(latLng.lng / this.args.imgwidth)
+      var x = parseInt(latLng.lng / this.args.realimgwidth)
       console.log(x, y)
     }
   }

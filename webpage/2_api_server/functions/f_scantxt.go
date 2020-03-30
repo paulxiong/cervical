@@ -42,23 +42,25 @@ type ImgROI struct {
 
 // Scantxt 显微镜扫描的配置
 type Scantxt struct {
-	Batchid          string   `json:"batchid"`     // 批次号
-	Medicalid        string   `json:"medicalid"`   // 病历号
-	RowCount         int      `json:"rowcnt"`      // 有多少行FOV
-	ColumnCount      int      `json:"colcnt"`      // 有多少列FOV
-	ImageWidth       int      `json:"imgwidth"`    // 单张FOV宽
-	ImageHeight      int      `json:"imgheight"`   // 单张FOV高
-	SceneWidth       int      `json:"scenewidth"`  // FOV拼成全图的宽
-	SceneHeight      int      `json:"sceneheight"` // FOV拼成全图的高
-	ImageFileNameExt string   `json:"imgext"`      // FOV文件的后缀
-	SlideID          string   `json:"slideid"`     // 玻片ID
-	Result           string   `json:"result"`      // FOV拼成全图的缩略图
-	Preview          string   `json:"preview"`     // 玻片外观照片
-	Imgs             []ImgROI `json:"imgs"`        // 所有FOV坐标信息
-	Boundx1          int      `json:"bx1"`         // FOV拼接成的全图的左上角X
-	Boundy1          int      `json:"by1"`         // FOV拼接成的全图的左上角y
-	Boundx2          int      `json:"bx2"`         // FOV拼接成的全图的右下角X
-	Boundy2          int      `json:"by2"`         // FOV拼接成的全图的右下角y
+	Batchid          string   `json:"batchid"`       // 批次号
+	Medicalid        string   `json:"medicalid"`     // 病历号
+	RowCount         int      `json:"rowcnt"`        // 有多少行FOV
+	ColumnCount      int      `json:"colcnt"`        // 有多少列FOV
+	ImageWidth       int      `json:"imgwidth"`      // 单张FOV宽
+	ImageHeight      int      `json:"imgheight"`     // 单张FOV高
+	RealImageWidth   int      `json:"realimgwidth"`  // 单张FOV宽，拼接时候要去掉重复的边
+	RealImageHeight  int      `json:"realimgheight"` // 单张FOV高，拼接时候要去掉重复的边
+	SceneWidth       int      `json:"scenewidth"`    // FOV拼成全图的宽
+	SceneHeight      int      `json:"sceneheight"`   // FOV拼成全图的高
+	ImageFileNameExt string   `json:"imgext"`        // FOV文件的后缀
+	SlideID          string   `json:"slideid"`       // 玻片ID
+	Result           string   `json:"result"`        // FOV拼成全图的缩略图
+	Preview          string   `json:"preview"`       // 玻片外观照片
+	Imgs             []ImgROI `json:"imgs"`          // 所有FOV坐标信息
+	Boundx1          int      `json:"bx1"`           // FOV拼接成的全图的左上角X
+	Boundy1          int      `json:"by1"`           // FOV拼接成的全图的左上角y
+	Boundx2          int      `json:"bx2"`           // FOV拼接成的全图的右下角X
+	Boundy2          int      `json:"by2"`           // FOV拼接成的全图的右下角y
 }
 
 // ParseScanTXT 解析Scan.txt
@@ -85,16 +87,24 @@ func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err err
 	st.Imgs = make([]ImgROI, 0)
 
 	cnt := 0
+	_rowpre := 0
+	_colpre := 0
 	for i := 1; i <= st.RowCount; i++ {
+		_row := 0
 		for j := 1; j <= st.ColumnCount; j++ {
 			row := fmt.Sprintf("Row%3.3dx%3.3d", i, j)
-			_row, _ := getConfigIntValue(cfg, "Images", row)
+			_row, _ = getConfigIntValue(cfg, "Images", row)
 			col := fmt.Sprintf("Col%3.3dx%3.3d", i, j)
 			_col, _ := getConfigIntValue(cfg, "Images", col)
 
 			if i == 1 && j == 1 {
 				st.Boundx1 = _col
 				st.Boundy1 = _row
+			}
+			if i == 2 && j == 2 {
+				// 计算拼接大图时候的有效图片
+				st.RealImageHeight = _row - _rowpre
+				st.RealImageWidth = _col - _colpre
 			}
 
 			if i == st.RowCount && j == st.ColumnCount {
@@ -110,7 +120,9 @@ func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err err
 				Index:     cnt,
 				ImageFile: img,
 			})
+			_colpre = _col
 		}
+		_rowpre = _row
 	}
 	return st, nil
 }
