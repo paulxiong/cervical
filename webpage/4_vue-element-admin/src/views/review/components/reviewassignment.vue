@@ -1,5 +1,5 @@
 <template>
-  <div class="reviewAssigment">
+  <div class="reviewAssignment">
     <el-table
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -83,7 +83,7 @@ export default {
       userList: [],
       selectedList: [],
       pid: 121,
-      vid: undefined,
+      vid: 0,
       total: undefined,
       currentPage: 1,
       currentPageSize: 10,
@@ -173,6 +173,9 @@ export default {
           v.statusType = taskType[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
           v.projectType = projectType[v.type]
+          v.currentPage = 0
+          v.currentPageSize = 10
+          v.selectedList = []
         })
         this.projectlist = res.data.data.projects
         this.pid = res.data.data.projects[0].id
@@ -202,7 +205,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.reviewAssigment {
+.reviewAssignment {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
