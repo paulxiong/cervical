@@ -97,14 +97,18 @@ func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err err
 			col := fmt.Sprintf("Col%3.3dx%3.3d", i, j)
 			_col, _ := getConfigIntValue(cfg, "Images", col)
 
+			// 每行每列不是完全水平或者垂直，所以算实际宽高只能相邻的图片之间计算
 			if i == 1 && j == 1 {
 				st.Boundx1 = _col
 				st.Boundy1 = _row
+				_rowpre = _row
+				_colpre = _col
 			}
-			if i == 2 && j == 2 {
-				// 计算拼接大图时候的有效图片
-				st.RealImageHeight = _row - _rowpre
-				st.RealImageWidth = _col - _colpre
+			if i == 1 && j == 2 {
+				st.RealImageWidth = _col - _colpre // 计算拼接大图时候的有效图片
+			}
+			if i == 2 && j == 1 {
+				st.RealImageHeight = _row - _rowpre // 计算拼接大图时候的有效图片
 			}
 
 			if i == st.RowCount && j == st.ColumnCount {
@@ -120,9 +124,7 @@ func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err err
 				Index:     cnt,
 				ImageFile: img,
 			})
-			_colpre = _col
 		}
-		_rowpre = _row
 	}
 	return st, nil
 }
