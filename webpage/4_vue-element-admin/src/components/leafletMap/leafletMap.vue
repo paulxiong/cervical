@@ -1,6 +1,6 @@
 <template>
   <div class="vue-leaflet">
-    <div id="map" style="width:1000px; height:800px;" />
+    <div id="map" :style="{width: curWidth, height: curHeight}" />
   </div>
 </template>
 
@@ -23,6 +23,8 @@ export default {
   },
   data() {
     return {
+      curWidth: (window.innerWidth - 510) + 'px',
+      curHeight: window.innerHeight + 'px',
       debug: false,
       IMGURL: APIUrl + '/imgs',
       mapInstance: null,
@@ -34,6 +36,8 @@ export default {
     }
   },
   created() {
+    console.log(this.curWidth, this.curHeight)
+    console.log(window.innerWidth, window.innerHeight)
     // Resolve an issue where the markers would not appear
     delete Icon.Default.prototype._getIconUrl
     Icon.Default.mergeOptions({
@@ -45,7 +49,6 @@ export default {
   mounted() {
     console.log(this.args)
     var that = this // 保留vue的this, 方便后面使用
-
     this.mapInstance = this.Map_create()
 
     var tiles = new L.GridLayer({ 'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight) })

@@ -1,36 +1,36 @@
 <template>
-  <div style="width:100%; height:100%;">
+  <div class="leaflet flex" style="width:100%;height:100%;">
     <lmap
       v-if="mapargs.batchid"
       ref="map"
       :args="mapargs"
-      style="width: 50%"
     />
 
-    <div class="img-div" style="overflow-y: auto;height:140px;width:1000px">
-      <el-image
-        v-for="(img) in predictsList"
-        :key="img.id"
-        class="img"
-        :src="hosturlpath32 + img.cellpath + '?width=64'"
-        @click="imgclicked(img)"
-      >
-        <div slot="error" class="image-slot">
-          <i class="el-icon-picture-outline" />
-        </div>
-      </el-image>
+    <div class="cells-box">
+      <div class="img-div" style="max-height:600px;overflow-y: auto;">
+        <el-image
+          v-for="(img) in predictsList"
+          :key="img.id"
+          class="img"
+          :src="hosturlpath32 + img.cellpath + '?width=64'"
+          @click="imgclicked(img)"
+        >
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline" />
+          </div>
+        </el-image>
+      </div>
+      <el-pagination
+        v-if="total"
+        class="page"
+        :current-page.sync="currentPage"
+        :page-size="currentPageSize"
+        layout="total, pager, jumper"
+        :total="total"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
-    <el-pagination
-      v-if="total"
-      class="page"
-      :current-page.sync="currentPage"
-      :page-sizes="[10, 50, 100]"
-      :page-size="currentPageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @current-change="handleCurrentChange"
-      @size-change="handleSizeChange"
-    />
   </div>
 </template>
 
@@ -50,7 +50,7 @@ export default {
       predictsList: [],
       total: 0,
       currentPage: 1,
-      currentPageSize: 50,
+      currentPageSize: 30,
       hosturlpath32: '' + APIUrl + '/imgs/'
     }
   },
@@ -96,21 +96,18 @@ export default {
 }
 </script>
 
-<style>
-  .uploader-example {
-    width: 880px;
-    padding: 15px;
-    margin: 40px auto 0;
-    font-size: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+<style lang="scss" scoped>
+.leaflet {
+  justify-content: space-between;
+  .cells-box {
+    width: 500px;
+    margin-left: 10px;
+    overflow: hidden;
   }
-  .uploader-example .uploader-btn {
-    margin-right: 4px;
+  .img-div {
+    .img {
+      margin: 0 3px;
+    }
   }
-  .uploader-example .uploader-list {
-    max-height: 440px;
-    overflow: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
+}
 </style>
