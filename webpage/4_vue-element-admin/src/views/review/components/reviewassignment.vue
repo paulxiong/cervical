@@ -1,5 +1,5 @@
 <template>
-  <div class="projectData">
+  <div class="reviewAssigment">
     <el-table
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -12,46 +12,7 @@
     >
       <el-table-column type="expand">
         <template slot-scope="scope">
-          <div class="temp-box flex">
-            <el-table
-              ref="multipleTable"
-              :data="scope.row.predictsList"
-              tooltip-effect="dark"
-              style="width: 50%"
-              @selection-change="handleSelectionChange"
-            >
-              <el-table-column type="selection" width="55" />
-              <el-table-column label="ID" prop="id" width="120" />
-              <el-table-column label="预测结果" prop="predict_str" width="200" />
-              <el-table-column label="初审核结果" prop="true_str" width="200" show-overflow-tooltip />
-            </el-table>
-            <div class="select-box" style="width:50%;">
-              <h3>分配给</h3>
-              <el-select v-model="vid" placeholder="请选择">
-                <el-option
-                  v-for="item in userList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                >
-                  <img :src="item.image" style="float: left;width:25px;height:25px;">
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-                </el-option>
-              </el-select>
-              <el-button type="primary" @click="setPredictsReview">确定</el-button>
-            </div>
-          </div>
-
-          <el-pagination
-            class="page"
-            :current-page.sync="scope.row.currentPage"
-            :page-sizes="[10, 20, 30, 50]"
-            :page-size="scope.row.currentPageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="scope.row.total"
-            @current-change="handleCurrentChange2"
-            @size-change="handleSizeChange2"
-          />
+          <expand-one :pid="scope.row.id" :predicts="scope.row.predictsList" :page="scope.row.currentPage" :pagesize="scope.row.currentPageSize" :total="scope.row.total" />
         </template>
       </el-table-column>
       <el-table-column width="60" label="ID" prop="id" />
@@ -110,10 +71,11 @@ import { getPredictsByPID, getListprojects, setPredictsReview } from '@/api/cerv
 import { getUserLists } from '@/api/user'
 import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
 import { parseTime } from '@/utils/index'
+import expandOne from './expandOne'
 
 export default {
-  name: 'ProjectData',
-  components: {},
+  name: 'ReviewAssignment',
+  components: { expandOne },
   data() {
     return {
       projectlist: [],
@@ -125,9 +87,6 @@ export default {
       total: undefined,
       currentPage: 1,
       currentPageSize: 10,
-      total2: undefined,
-      currentPage2: 1,
-      currentPageSize2: 10,
       loading: false,
       // 获取row的key值
       getRowKeys(row) {
@@ -140,7 +99,6 @@ export default {
   created() {
     this.getUserLists(100, 0, 1)
     this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
-    this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
   },
   methods: {
     clickRowHandle(row, column, event) {
@@ -158,54 +116,47 @@ export default {
       this.currentPageSize = val
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
-    handleCurrentChange2(val) {
-      this.currentPage2 = val
-      this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
-    },
-    handleSizeChange2(val) {
-      this.currentPageSize2 = val
-      this.getPredictsByPID(val, (this.currentPage2 - 1) * this.currentPageSize2, this.pid)
-    },
-    handleSelectionChange(val) {
+    handleSelectionChange(event) {
+      console.log(event, this.$refs.multipleTable)
       this.selectedList = []
-      val.map(v => {
-        this.selectedList.push(v.id)
-      })
+      // val.map(v => {
+      //   this.selectedList.push(v.id)
+      // })
     },
     expandChange(val, event) {
       if (event.length) {
         this.pid = val.id
-        this.getPredictsByPID(this.currentPageSize2, (this.currentPage2 - 1) * this.currentPageSize2, val.id)
+        this.projectlist.map(v => {
+          if (v.id === val.id) {
+            this.getPredictsByPID(v.currentPageSize, (v.currentPage - 1) * v.currentPageSize, v.id)
+          }
+        })
       }
     },
     getPredictsByPID(limit, skip, pid) {
-      getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 1 }).then(res => {
+      getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 50, 'order': 0 }).then(res => {
         this.projectlist.map(v => {
-          if (v.id === this.pid) {
+          if (v.id === pid) {
+            v.pid = pid
+            v.predictsList = []
+            v.currentPagetmp = v.currentPage
+            v.currentPage = 1
+            v.total = 0
+          }
+        })
+        if (!res.data.data) {
+          return
+        }
+        this.projectlist.map(v => {
+          if (v.id === pid) {
             res.data.data.predicts.map(item => {
               item.predict_str = cellsType[item.predict_type]
               item.true_str = cellsType[item.true_type]
             })
+            v.pid = pid
             v.predictsList = res.data.data.predicts
-            v.currentPage = this.currentPage2
-            v.currentPageSize = this.currentPageSize2
-            const _this = this
-            v.handleCurrentChange = function(val) {
-              console.log(val, _this.pid)
-              v.predictsList = []
-              _this.$forceUpdate()
-
-              getPredictsByPID({ 'limit': 10, 'skip': (val - 1) * 10, 'pid': _this.pid, 'status': 1 }).then(res => {
-                res.data.data.predicts.map(item => {
-                  item.predict_str = cellsType[item.predict_type]
-                  item.true_str = cellsType[item.true_type]
-                })
-                v.predictsList = res.data.data.predicts
-                console.log(v.predictsList)
-                _this.$forceUpdate()
-              })
-            }
             v.total = res.data.data.total
+            v.currentPage = v.currentPagetmp
           }
         })
       })
@@ -251,7 +202,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.projectData {
+.reviewAssigment {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;

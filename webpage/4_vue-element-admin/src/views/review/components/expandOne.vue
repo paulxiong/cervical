@@ -1,5 +1,5 @@
 <template>
-  <div class="expandtwo">
+  <div class="expandone">
     <div class="temp-box flex">
       <el-table
         ref="multipleTable"
@@ -11,12 +11,6 @@
         <el-table-column label="ID" prop="id" width="120" />
         <el-table-column label="预测结果" prop="predict_str" width="200" />
         <el-table-column label="初审核结果" prop="true_str" width="200" />
-        <el-table-column label="预测得分" prop="predict_score" width="100" />
-        <el-table-column label="细胞图" prop="cellpath" width="200">
-          <template slot-scope="scope2">
-            <img :src="hosturlpath64 + scope2.row.cellpath + '?width=100'" width="100" height="100">
-          </template>
-        </el-table-column>
       </el-table>
       <div class="select-box" style="width:25%;">
         <h3>分配给</h3>
@@ -48,9 +42,8 @@
   </div>
 </template>
 <script>
-import { APIUrl } from '@/const/config'
 import { getUserLists } from '@/api/user'
-import { getPredictsByPID2, setPredictsReview } from '@/api/cervical'
+import { getPredictsByPID, setPredictsReview } from '@/api/cervical'
 import { cellsType } from '@/const/const'
 
 export default {
@@ -89,7 +82,6 @@ export default {
   },
   data() {
     return {
-      hosturlpath64: APIUrl + '/imgs/',
       cpage: 1,
       cpagesize: 10,
       cpredicts: [],
@@ -126,7 +118,7 @@ export default {
     }
   },
   mounted() {
-    this.getPredictsByPID2(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
+    this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
   },
   created() {
     this.getUserLists(100, 0, 1)
@@ -136,8 +128,8 @@ export default {
       console.log(val)
       this.isChange = false
     },
-    getPredictsByPID2(limit, skip, pid) {
-      getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 50, 'order': 0 }).then(res => {
+    getPredictsByPID(limit, skip, pid) {
+      getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 50, 'order': 0 }).then(res => {
         res.data.data.predicts.map(item => {
           item.predict_str = cellsType[item.predict_type]
           item.true_str = cellsType[item.true_type]
@@ -149,12 +141,12 @@ export default {
     handleCurrentChange(val) {
       this.cpage = val
       // console.log(this.cpage, this.cpagesize, this.pid)
-      this.getPredictsByPID2(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
+      this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
     },
     handleSizeChange(val) {
       this.cpagesize = val
       // console.log(this.cpage, this.cpagesize, this.pid)
-      this.getPredictsByPID2(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
+      this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
     },
     setPredictsReview(project) {
       console.log(project)
@@ -166,7 +158,7 @@ export default {
       }
       setPredictsReview(postData).then(res => {
         this.loading = false
-        this.getPredictsByPID2(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
+        this.getPredictsByPID(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
       })
     },
     getUserLists(limit, skip, order) {
