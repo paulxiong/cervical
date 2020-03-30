@@ -4,6 +4,7 @@
       ref="uploader"
       :options="options"
       class="uploader-example"
+      :show-file-list="true"
       @files-submitted="onfilesSubmitted"
       @file-complete="oncomplete"
       @files-added="onfilesAdded"
@@ -11,6 +12,7 @@
       <uploader-unsupport />
       <uploader-drop>
         <p>拖动文件到此处或点击上传</p>
+        <!-- <el-button style="border:none;" :disabled="isContinue"><uploader-btn :attrs="attrs" :directory="true">选择文件夹</uploader-btn></el-button> -->
         <uploader-btn :attrs="attrs" :directory="true">选择文件夹</uploader-btn>
       </uploader-drop>
       <uploader-list />
@@ -29,6 +31,7 @@ export default {
       options: {
         target: APIUrl + '/api1/uploaddir',
         query: this.getqueryfunc,
+        isContinue: false,
         headers: {
           'Authorization': getToken()
         },
@@ -55,9 +58,9 @@ export default {
       return { 'mid': this.mid, 'bid': this.bid, 'dir': this.dirname }
     },
     onfilesAdded(files, fileList, event) {
-      if (fileList[0].name) {
-        this.dirname = fileList[0].name // 被上传的文件夹的名字
-      }
+      // if (fileList[0].name) {
+      //   this.dirname = fileList[0].name // 被上传的文件夹的名字
+      // }
       this.bid = `b${dateformat4()}`
       this.mid = `m${dateformat5()}`
 
@@ -80,6 +83,7 @@ export default {
         this.$message.error('所选的病例目录不完整 !')
       } else {
         this.$message({ type: 'success', message: '开始上传' })
+        this.isContinue = true
       }
     },
     oncomplete() {
