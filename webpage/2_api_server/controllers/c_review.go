@@ -114,7 +114,8 @@ func GetPredictsByPIDSortByScore(c *gin.Context) {
 	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 	order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), 150, 0, int(_type), int(order))
+	// 第3个参数limit给了100+limit，因为下面要过滤，不能保证最后返回的就是limit个数
+	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), int(limit+100), int(skip), int(_type), int(order))
 
 	_predicts := predictsByPID{}
 	_predicts.Predicts = make([]_predictsByPID, 0)
@@ -255,6 +256,40 @@ func GetReviews(c *gin.Context) {
 
 	rl := reviewslist{}
 	rl.Total, rl.Reviews, _ = models.ListReviews(int(limit), int(skip), int(status), usr.ID, int(owner))
+	res.ResSucceedStruct(c, rl)
+	return
+}
+
+// GetReviewsByPID 通过项目ID依次获得项目下等待审核的细胞信息
+// @Summary 通过项目ID依次获得项目下等待审核的细胞信息
+// @Description 通过项目ID依次获得项目下等待审核的细胞信息
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Param pid query string false "pid, default 0"
+// @Param owner query string false "owner, default 0, 0 只看属于自己的, 1 查看所有用户的"
+// @Param status query string false "status, default 0, 0 未审核 1 已审核"
+// @Success 200 {object} controllers.reviewslist
+// @Router /api1/reviewsbypid [get]
+func GetReviewsByPID(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	statusStr := c.DefaultQuery("status", "0")
+	ownerStr := c.DefaultQuery("owner", "0")
+	pidStr := c.DefaultQuery("pid", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	status, _ := strconv.ParseInt(statusStr, 10, 64)
+	owner, _ := strconv.ParseInt(ownerStr, 10, 64)
+	pid, _ := strconv.ParseInt(pidStr, 10, 64)
+
+	usr, _ := models.GetUserFromContext(c)
+
+	rl := reviewslist{}
+	rl.Total, rl.Reviews, _ = models.ListReviews2(int(pid), int(limit), int(skip), int(status), usr.ID, int(owner))
 	res.ResSucceedStruct(c, rl)
 	return
 }

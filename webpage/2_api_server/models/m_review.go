@@ -134,6 +134,34 @@ func ListReviews(limit int, skip int, status int, userid int64, owner int) (tota
 	return total, _r, ret.Error
 }
 
+// ListReviews2 依次列出审核的细胞
+func ListReviews2(pid int, limit int, skip int, status int, userid int64, owner int) (totalNum int64, r []Review, e error) {
+	var total int64 = 0
+	var _r []Review
+	// 0 只看属于自己的, 1 查看所有用户的
+	if owner == 0 {
+		ret := db.Model(&Review{}).Where("status=? AND pid=? AND vid=?", status, pid, userid).Count(&total)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		ret = db.Model(&Review{}).Where("status=? AND pid=? AND vid=?", status, pid, userid).Limit(limit).Offset(skip).Find(&_r)
+		if ret.Error != nil {
+			logger.Info.Println(ret.Error)
+		}
+		return total, _r, ret.Error
+	}
+
+	ret := db.Model(&Review{}).Where("status=? AND pid=?", status, pid).Count(&total)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	ret = db.Model(&Review{}).Where("status=? AND pid=?", status, pid).Limit(limit).Offset(skip).Find(&_r)
+	if ret.Error != nil {
+		logger.Info.Println(ret.Error)
+	}
+	return total, _r, ret.Error
+}
+
 // UpdateReview 更新审核信息
 func UpdateReview(id int64, trueType int, userid int64) (e error) {
 	_, err := GetReviewByID(id)
