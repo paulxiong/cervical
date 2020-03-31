@@ -10,7 +10,7 @@
       @files-added="onfilesAdded"
     >
       <uploader-unsupport />
-      <uploader-drop>
+      <uploader-drop v-show="!once">
         <p>拖动文件到此处或点击上传</p>
         <!-- <el-button style="border:none;" :disabled="isContinue"><uploader-btn :attrs="attrs" :directory="true">选择文件夹</uploader-btn></el-button> -->
         <uploader-btn :attrs="attrs" :directory="true" :single="true">选择文件夹</uploader-btn>
@@ -31,16 +31,17 @@ export default {
       options: {
         target: APIUrl + '/api1/uploaddir',
         query: this.getqueryfunc,
+        simultaneousUploads: 1, // 只准有一个上传队列
         headers: {
           'Authorization': getToken()
         },
-        simultaneousUploads: 1, // 只准有一个上传队列
         testChunks: false,
         chunkSize: 4 * 1024 * 1024 // 分块时按照该值来分，文件大于这个值时候居然会把文件传坏！？
       },
       attrs: {
         accept: 'image/* text/*'
       },
+      once: false,
       uploaderInstance: null,
       dirname: '',
       bid: '',
@@ -57,6 +58,7 @@ export default {
       return { 'mid': this.mid, 'bid': this.bid, 'dir': this.dirname }
     },
     onfilesAdded(files, fileList, event) {
+      console.log(this.$refs.uploader)
       // if (fileList[0].name) {
       //   this.dirname = fileList[0].name // 被上传的文件夹的名字
       // }
@@ -69,6 +71,10 @@ export default {
     },
     // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
     onfilesSubmitted(files, fileList, event) {
+      if (this.$refs.uploader.fileList > 1) {
+        this.once = true
+        return
+      }
       var hasScanTxt = false
       files.map(v => {
         if (v.name === 'Scan.txt' && v.size > 0 && v.fileType === 'text/plain' && v.isFolder === false) {
@@ -85,7 +91,7 @@ export default {
       }
     },
     oncomplete() {
-      console.log('oncomplete')
+      this.once = true
       this.$emit('checkUpload', true)
     }
   }
