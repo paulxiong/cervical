@@ -6,11 +6,11 @@
       :data="projectlist"
       style="width: 100%"
     >
-      <el-table-column type="expand">
+      <!-- <el-table-column type="expand">
         <template slot-scope="scope">
           <expand-two :pid="scope.row.id" :predicts="scope.row.predictsList" :page="scope.row.currentPage" :pagesize="scope.row.currentPageSize" :total="scope.row.total" />
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column width="60" label="ID" prop="id" />
       <el-table-column label="描述" prop="desc" />
       <el-table-column label="数据集 ID" prop="did" />
