@@ -7,51 +7,44 @@
     />
 
     <div class="cells-box">
-      <div class="img-div" style="max-height:600px;overflow-y: auto;">
-        <el-image
-          v-for="(img) in predictsList"
-          :key="img.id"
-          class="img"
-          :src="hosturlpath32 + img.cellpath + '?width=64'"
-          @click="imgclicked(img)"
-        >
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline" />
+      <div class="slt-box flex">
+        <img src="../../assets/slt.jpg" class="slt-img">
+        <div class="text-box">
+          <el-button icon="el-icon-arrow-left" size="mini" type="info" @click="goBack">返回上一页</el-button>
+          <div class="text-box-total">
+            <h3>进度：</h3>
+            <p><b>已审核:</b> 36</p>
+            <p><b>未审核:</b> 2</p>
           </div>
-        </el-image>
+          <el-button size="mini" type="primary">查看详情</el-button>
+        </div>
       </div>
-      <el-pagination
-        v-if="total"
-        class="page"
-        :current-page.sync="currentPage"
-        :page-size="currentPageSize"
-        layout="total, pager, jumper"
-        :total="total"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-      />
+      <el-tabs type="border-card" :style="{'min-height': curHeight}" style="overflow-y:auto;">
+        <el-tab-pane label="预测为阳性的细胞">
+          <cellsList @imgclicked="imgclicked" />
+        </el-tab-pane>
+        <el-tab-pane label="预测为阴性的细胞">
+          <cellsList @imgclicked="imgclicked" />
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
 
 <script>
 import lmap from '@/components/leafletMap/leafletMap'
-import { getScantxtByDID, getPredictsByPID2 } from '@/api/cervical'
-import { APIUrl } from '@/const/config'
+import cellsList from '@/components/CellsList/index'
+import { getScantxtByDID } from '@/api/cervical'
 
 export default {
-  components: { lmap },
+  components: { lmap, cellsList },
   data() {
     return {
       did: 0,
       pid: 0,
+      curHeight: (window.innerHeight - 200) + 'px',
       loading: false,
-      mapargs: { },
-      predictsList: [],
-      total: 0,
-      currentPage: 1,
-      currentPageSize: 30,
-      hosturlpath32: '' + APIUrl + '/imgs/'
+      mapargs: { }
     }
   },
   created() {
@@ -59,10 +52,12 @@ export default {
       this.did = this.$route.query.did ? parseInt(this.$route.query.did) : undefined
       this.pid = this.$route.query.pid ? parseInt(this.$route.query.pid) : undefined
       this.getScantxtByDID(this.did, 1)
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.pid)
     })
   },
   methods: {
+    goBack() {
+      this.$router.back(-1)
+    },
     getScantxtByDID(did, type) {
       this.loading = true
       getScantxtByDID({ 'did': did, 'type': type }).then(res => {
@@ -70,24 +65,12 @@ export default {
         this.loading = false
       })
     },
-    getPredictsByPID2(limit, skip, pid) {
-      getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 51, 'order': 0 }).then(res => {
-        this.predictsList = res.data.data.predicts
-        this.total = res.data.data.total
-      })
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val
-    },
-    handleSizeChange(val) {
-      this.currentPageSize = val
-    },
     imgclicked(img) {
-      var arr = img.cellpath.split('IMG')
+      let arr = img.cellpath.split('IMG')
       arr = arr[1].split(this.mapargs.imgext)
       arr = arr[0].split('x')
-      var x = parseInt(arr[1])
-      var y = parseInt(arr[0])
+      let x = parseInt(arr[1])
+      let y = parseInt(arr[0])
       y = (y - 1) * this.mapargs.realimgheight + img.y1
       x = (x - 1) * this.mapargs.realimgwidth + img.x1
       this.$refs.map.gotolatLng(x, y)
@@ -100,14 +83,26 @@ export default {
 .leaflet {
   justify-content: space-between;
   .cells-box {
-    width: 500px;
-    margin-left: 10px;
+    width: 425px;
+    height: 100%;
+    margin: 0 5px;
     overflow: hidden;
   }
-  .img-div {
-    .img {
-      margin: 0 3px;
-    }
+
+  .slt-box {
+    height: 200px;
+    justify-content: flex-start;
+  }
+
+  .text-box {
+    height: 100%;
+    padding-top: 10px;
+    padding-left: 30px;
+  }
+
+  .slt-img {
+    width: 200px;
+    width: 200px;
   }
 }
 </style>

@@ -72,5 +72,86 @@ export const projectType = {
   3: '预测'
 }
 
+export const cellsOptions = [
+  {
+    value: 1,
+    label: 'Norm正常细胞'
+  },
+  {
+    value: 5,
+    label: 'NILM未见上皮内病变'
+  },
+  {
+    value: 12,
+    label: 'T滴虫'
+  },
+  {
+    value: 15,
+    label: 'X1线索细胞'
+  },
+  {
+    value: 14,
+    label: 'HSV疱疹'
+  },
+  {
+    value: 13,
+    label: 'M霉菌'
+  }
+]
+
+export const cellsOptions2 = [
+  {
+    value: 2,
+    label: 'LSIL鳞状上皮细胞低度病变'
+  },
+  {
+    value: 6,
+    label: 'SCC鳞状上皮细胞癌'
+  },
+  {
+    value: 3,
+    label: 'HSIL鳞状上皮细胞高度病变'
+  },
+  {
+    value: 8,
+    label: 'ASCH不典型鳞状细胞高'
+  },
+  {
+    value: 7,
+    label: 'ASCUS不典型鳞状细胞低'
+  },
+  {
+    value: 9,
+    label: 'AGC不典型腺细胞'
+  },
+  {
+    value: 10,
+    label: 'AIS颈管原位腺癌'
+  },
+  {
+    value: 4,
+    label: 'HPV感染'
+  },
+  {
+    value: 11,
+    label: 'ADC腺癌'
+  }
+]
+
+export const cellsOptions3 = [
+  {
+    value: 100,
+    label: '未知类型'
+  },
+  {
+    value: 200,
+    label: '不是细胞'
+  },
+  {
+    value: 201,
+    label: '不是细胞2'
+  }
+]
+
 // 标注页面把原图的宽缩放到几个像素点（原图太大了一个屏幕显示不过来）
 export const page3ImgWidth = 645

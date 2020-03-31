@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      curWidth: (window.innerWidth - 510) + 'px',
+      curWidth: (window.innerWidth - 435) + 'px',
       curHeight: window.innerHeight + 'px',
       debug: false,
       IMGURL: APIUrl + '/imgs',
@@ -36,8 +36,6 @@ export default {
     }
   },
   created() {
-    console.log(this.curWidth, this.curHeight)
-    console.log(window.innerWidth, window.innerHeight)
     // Resolve an issue where the markers would not appear
     delete Icon.Default.prototype._getIconUrl
     Icon.Default.mergeOptions({
@@ -47,7 +45,6 @@ export default {
     })
   },
   mounted() {
-    console.log(this.args)
     var that = this // 保留vue的this, 方便后面使用
     this.mapInstance = this.Map_create()
 
@@ -175,6 +172,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-</style>
