@@ -5,6 +5,9 @@
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive" />
     <el-tabs v-model="activeName" class="tabs">
+      <el-tab-pane label="医生审核" name="doctor">
+        <doctorReport :activename="activeName" />
+      </el-tab-pane>
       <el-tab-pane label="细胞类型审核" name="review">
         <reviewPage :activename="activeName" />
       </el-tab-pane>
@@ -26,10 +29,11 @@ import reviewAssignment from './components/reviewassignment'
 import reviewAssignment2 from './components/reviewassignment2'
 import reviewPage from './components/reviewpage'
 import reviewDownload from './components/reviewdownload'
+import doctorReport from './components/doctorReport'
 
 export default {
   name: 'Review',
-  components: { reviewAssignment, reviewPage, reviewAssignment2, reviewDownload },
+  components: { reviewAssignment, reviewPage, reviewAssignment2, reviewDownload, doctorReport },
   data() {
     return {
       activeName: 'review'
