@@ -13,7 +13,7 @@
       <uploader-drop>
         <p>拖动文件到此处或点击上传</p>
         <!-- <el-button style="border:none;" :disabled="isContinue"><uploader-btn :attrs="attrs" :directory="true">选择文件夹</uploader-btn></el-button> -->
-        <uploader-btn :attrs="attrs" :directory="true">选择文件夹</uploader-btn>
+        <uploader-btn :attrs="attrs" :directory="true" :single="true">选择文件夹</uploader-btn>
       </uploader-drop>
       <uploader-list />
     </uploader>
@@ -31,7 +31,6 @@ export default {
       options: {
         target: APIUrl + '/api1/uploaddir',
         query: this.getqueryfunc,
-        isContinue: false,
         headers: {
           'Authorization': getToken()
         },
@@ -83,7 +82,6 @@ export default {
         this.$message.error('所选的病例目录不完整 !')
       } else {
         this.$message({ type: 'success', message: '开始上传' })
-        this.isContinue = true
       }
     },
     oncomplete() {
