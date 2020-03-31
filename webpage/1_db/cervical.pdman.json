@@ -1766,47 +1766,54 @@
               "remark": "",
               "chnname": "项目描述",
               "defaultValue": "\"\"",
-              "notNull": false
+              "notNull": false,
+              "relationNoShow": true
             },
             {
               "name": "dir",
               "type": "DefaultString",
               "remark": "",
               "chnname": "项目目录",
-              "defaultValue": "\"\""
+              "defaultValue": "\"\"",
+              "relationNoShow": true
             },
             {
               "name": "status",
               "type": "Integer",
               "remark": "0初始化 1送去处理 2开始处理 3处理出错 4处理完成 5 送去审核预测结果 6 预测结果审核完成",
               "chnname": "项目状态",
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "start_time",
               "type": "DateTime",
               "remark": "",
-              "chnname": "开始训练/预测时间"
+              "chnname": "开始训练/预测时间",
+              "relationNoShow": true
             },
             {
               "name": "end_time",
               "type": "DateTime",
               "remark": "",
-              "chnname": "训练/预结束时间"
+              "chnname": "训练/预结束时间",
+              "relationNoShow": true
             },
             {
               "name": "percent",
               "type": "Integer",
               "remark": "",
               "chnname": "训练/预的进度",
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "ETA",
               "type": "Integer",
               "remark": "",
               "chnname": "预估还要多长时间结束",
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "type",
@@ -1814,14 +1821,16 @@
               "remark": "0 未知 1 保留 2 训练 3 预测",
               "chnname": "项目类型",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "parameter_time",
               "type": "Integer",
               "remark": "只有训练时候需要",
               "chnname": "训练多长时间autokeras参数",
-              "defaultValue": "1800"
+              "defaultValue": "1800",
+              "relationNoShow": true
             },
             {
               "name": "parameter_resize",
@@ -1856,7 +1865,8 @@
               "type": "MiddleString",
               "remark": "数组，被转成字符串存储",
               "chnname": "预测完之后的细胞类型统计",
-              "defaultValue": "\"[]\""
+              "defaultValue": "\"[]\"",
+              "relationNoShow": true
             },
             {
               "name": "created_by",
@@ -1864,7 +1874,8 @@
               "remark": "",
               "chnname": "创建人",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "vid",
@@ -1878,13 +1889,15 @@
               "name": "created_at",
               "type": "DateTime",
               "remark": "",
-              "chnname": "创建时间"
+              "chnname": "创建时间",
+              "relationNoShow": true
             },
             {
               "name": "updated_at",
               "type": "DateTime",
               "remark": "",
-              "chnname": "更新时间"
+              "chnname": "更新时间",
+              "relationNoShow": true
             }
           ],
           "indexs": [],
@@ -1969,7 +1982,8 @@
               "remark": "单位是像素",
               "chnname": "左上角X坐标",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "y1",
@@ -1977,7 +1991,8 @@
               "remark": "单位是像素",
               "chnname": "左上角Y坐标",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "x2",
@@ -1986,7 +2001,7 @@
               "chnname": "右下角X坐标",
               "pk": false,
               "notNull": true,
-              "relationNoShow": false,
+              "relationNoShow": true,
               "defaultValue": "0"
             },
             {
@@ -1996,7 +2011,7 @@
               "chnname": "右下角Y坐标",
               "pk": false,
               "notNull": true,
-              "relationNoShow": false,
+              "relationNoShow": true,
               "defaultValue": "0"
             },
             {
@@ -2005,7 +2020,8 @@
               "remark": "",
               "chnname": "上述坐标切割出来的细胞",
               "notNull": true,
-              "defaultValue": "\"\""
+              "defaultValue": "\"\"",
+              "relationNoShow": true
             },
             {
               "name": "predict_score",
@@ -2067,7 +2083,8 @@
               "type": "BigInt",
               "remark": "",
               "chnname": "创建者",
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "created_at",
@@ -2192,7 +2209,8 @@
               "remark": "单位是像素",
               "chnname": "左上角X坐标",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "y1",
@@ -2200,7 +2218,8 @@
               "remark": "单位是像素",
               "chnname": "左上角Y坐标",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "x2",
@@ -2209,7 +2228,7 @@
               "chnname": "右下角X坐标",
               "pk": false,
               "notNull": true,
-              "relationNoShow": false,
+              "relationNoShow": true,
               "defaultValue": "0"
             },
             {
@@ -2219,7 +2238,7 @@
               "chnname": "右下角Y坐标",
               "pk": false,
               "notNull": true,
-              "relationNoShow": false,
+              "relationNoShow": true,
               "defaultValue": "0"
             },
             {
@@ -2228,7 +2247,8 @@
               "remark": "",
               "chnname": "上述坐标切割出来的细胞",
               "notNull": true,
-              "defaultValue": "\"\""
+              "defaultValue": "\"\"",
+              "relationNoShow": true
             },
             {
               "name": "imgpath",
@@ -2236,7 +2256,8 @@
               "remark": "",
               "chnname": "原图路径",
               "notNull": true,
-              "defaultValue": "\"\""
+              "defaultValue": "\"\"",
+              "relationNoShow": true
             },
             {
               "name": "w",
@@ -2244,7 +2265,8 @@
               "remark": "单位是像素",
               "chnname": "原图的宽",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "h",
@@ -2252,7 +2274,8 @@
               "remark": "单位是像素",
               "chnname": "原图的高",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "predict_score",
@@ -2260,7 +2283,8 @@
               "remark": "50表示50%",
               "chnname": "预测得分",
               "notNull": true,
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": false
             },
             {
               "name": "predict_type",
@@ -2314,7 +2338,8 @@
               "type": "BigInt",
               "remark": "",
               "chnname": "创建者",
-              "defaultValue": "0"
+              "defaultValue": "0",
+              "relationNoShow": true
             },
             {
               "name": "created_at",
@@ -2551,43 +2576,67 @@
         "nodes": [
           {
             "shape": "table",
+            "title": "dataset",
+            "moduleName": false,
+            "x": 910,
+            "y": 830,
+            "id": "c2d354a7"
+          },
+          {
+            "shape": "table",
+            "title": "project",
+            "moduleName": false,
+            "x": 490,
+            "y": 780,
+            "id": "34436630"
+          },
+          {
+            "shape": "table",
+            "title": "model",
+            "moduleName": false,
+            "x": 1300,
+            "y": 880,
+            "id": "e6833b22"
+          },
+          {
+            "shape": "table",
+            "title": "predict",
+            "moduleName": false,
+            "x": 540,
+            "y": 460,
+            "id": "52aaaecc"
+          },
+          {
+            "shape": "table",
             "title": "image",
             "moduleName": false,
-            "x": 230,
-            "y": 190,
+            "x": 1010,
+            "y": 460,
             "id": "ca012e9c"
           },
           {
             "shape": "table",
             "title": "label",
             "moduleName": false,
-            "x": 520,
-            "y": 200,
+            "x": 1340,
+            "y": 460,
             "id": "b353cdae"
           },
           {
             "shape": "table",
             "title": "category",
             "moduleName": false,
-            "x": 780,
-            "y": 190,
+            "x": 1630,
+            "y": 470,
             "id": "46902060"
           },
           {
             "shape": "table",
-            "title": "dataset",
+            "title": "review",
             "moduleName": false,
-            "x": 210,
-            "y": 460,
-            "id": "c2d354a7"
-          },
-          {
-            "shape": "table",
-            "title": "model",
-            "moduleName": false,
-            "x": 780,
-            "y": 480,
-            "id": "e6833b22"
+            "x": 1020,
+            "y": 140,
+            "id": "9aaacb51"
           }
         ],
         "edges": [
@@ -2599,12 +2648,12 @@
             "id": "1efe28f2",
             "controlPoints": [
               {
-                "x": 360.7659454345703,
-                "y": 172.3409090909091
+                "x": 1140.7659454345703,
+                "y": 412.22058823529414
               },
               {
-                "x": 391.3013916015625,
-                "y": 152.27380952380952
+                "x": 1211.3013916015625,
+                "y": 412.2738095238095
               }
             ],
             "sourceAnchor": 1,
@@ -2618,16 +2667,111 @@
             "id": "b3cd1f5e",
             "controlPoints": [
               {
-                "x": 648.6986083984375,
-                "y": 172.36904761904762
+                "x": 1468.6986083984375,
+                "y": 432.3690476190476
               },
               {
-                "x": 693.0017242431641,
-                "y": 182.41666666666669
+                "x": 1543.001724243164,
+                "y": 462.4166666666667
               }
             ],
             "sourceAnchor": 5,
             "targetAnchor": 0
+          },
+          {
+            "shape": "erdRelation",
+            "relation": "1:1",
+            "source": "c2d354a7",
+            "target": "e6833b22",
+            "id": "1e3d5b10",
+            "controlPoints": [
+              {
+                "x": 1102.7877960205078,
+                "y": 852.5978260869565
+              },
+              {
+                "x": 1147.8910064697266,
+                "y": 852.2884615384615
+              }
+            ],
+            "sourceAnchor": 11,
+            "targetAnchor": 0
+          },
+          {
+            "shape": "erdRelation",
+            "relation": "1:0,n",
+            "source": "c2d354a7",
+            "target": "34436630",
+            "id": "679d6201",
+            "controlPoints": [
+              {
+                "x": 717.2122039794922,
+                "y": 752.1630434782609
+              },
+              {
+                "x": 672.1147613525391,
+                "y": 752.3382352941177
+              }
+            ],
+            "sourceAnchor": 0,
+            "targetAnchor": 3
+          },
+          {
+            "shape": "erdRelation",
+            "relation": "1:1",
+            "source": "52aaaecc",
+            "target": "34436630",
+            "id": "4fe521fa",
+            "controlPoints": [
+              {
+                "x": 368.63914489746094,
+                "y": 422.3369565217391
+              },
+              {
+                "x": 307.88523864746094,
+                "y": 732.2205882352941
+              }
+            ],
+            "sourceAnchor": 4,
+            "targetAnchor": 0
+          },
+          {
+            "shape": "erdRelation",
+            "relation": "0,n:1",
+            "source": "52aaaecc",
+            "target": "ca012e9c",
+            "id": "6d76e644",
+            "controlPoints": [
+              {
+                "x": 711.3608551025391,
+                "y": 402.25
+              },
+              {
+                "x": 879.2340545654297,
+                "y": 412.22058823529414
+              }
+            ],
+            "sourceAnchor": 3,
+            "targetAnchor": 0
+          },
+          {
+            "shape": "erdRelation",
+            "relation": "1:0,1",
+            "source": "9aaacb51",
+            "target": "52aaaecc",
+            "id": "10c18e09",
+            "controlPoints": [
+              {
+                "x": 848.6391448974609,
+                "y": 72.23
+              },
+              {
+                "x": 711.3608551025391,
+                "y": 382.1630434782609
+              }
+            ],
+            "sourceAnchor": 2,
+            "targetAnchor": 1
           }
         ]
       },
@@ -2652,6 +2796,61 @@
           "to": {
             "entity": "category",
             "field": "ID"
+          }
+        },
+        {
+          "relation": "1:1",
+          "from": {
+            "entity": "dataset",
+            "field": "parameter_mid"
+          },
+          "to": {
+            "entity": "model",
+            "field": "id"
+          }
+        },
+        {
+          "relation": "1:0,n",
+          "from": {
+            "entity": "dataset",
+            "field": "id"
+          },
+          "to": {
+            "entity": "project",
+            "field": "did"
+          }
+        },
+        {
+          "relation": "1:1",
+          "from": {
+            "entity": "predict",
+            "field": "pid"
+          },
+          "to": {
+            "entity": "project",
+            "field": "id"
+          }
+        },
+        {
+          "relation": "0,n:1",
+          "from": {
+            "entity": "predict",
+            "field": "imgid"
+          },
+          "to": {
+            "entity": "image",
+            "field": "ID"
+          }
+        },
+        {
+          "relation": "1:0,1",
+          "from": {
+            "entity": "review",
+            "field": "predictid"
+          },
+          "to": {
+            "entity": "predict",
+            "field": "id"
           }
         }
       ]
