@@ -11,9 +11,10 @@
         class="input-name"
         style="margin-bottom: 50px; margin-right:50px;"
         clearable
+        @change="inputChange"
       />
       <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: blue; margin-bottom: 5px; margin-top:5px; margin-right:100px;">*2.请选择上传模型类型</span>
-      <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;">
+      <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;" :disabled="isSelect" @change="selectChange">
         <el-option
           v-for="item in options"
           :key="item.type"
@@ -37,6 +38,7 @@
       :on-error="onError"
       :before-upload="beforeUpload"
       :on-change="onChange"
+      :disabled="isUpload"
     >
       <i class="el-icon-upload" />
       <div class="el-upload__text" style="color: blue;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
@@ -79,6 +81,8 @@ export default {
       modeltype: 0,
       uploadServer: false,
       modelChecked: false,
+      isSelect: true,
+      isUpload: true,
       options: [{
         type: 4,
         label: '切割'
@@ -91,6 +95,12 @@ export default {
   created() {
   },
   methods: {
+    inputChange() {
+      this.isSelect = false
+    },
+    selectChange() {
+      this.isUpload = false
+    },
     beforeUpload() {
       this.postData.type = this.modeltype
       this.postData.pid = 0
