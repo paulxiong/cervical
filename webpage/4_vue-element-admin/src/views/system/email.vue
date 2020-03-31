@@ -1,9 +1,9 @@
 <template>
   <div class="emailData">
     <el-tabs v-model="activeName" class="tabs">
-      <!-- <el-tab-pane label="邮件参数设置" name="setvariable">
+      <el-tab-pane label="邮件参数设置" name="setvariable">
         <setvariableEmail />
-      </el-tab-pane> -->
+      </el-tab-pane>
       <el-tab-pane label="注册验证邮件" name="register">
         <registerEmail />
       </el-tab-pane>
@@ -17,11 +17,11 @@
 <script>
 import registerEmail from './components/register-email'
 import passwordEmail from './components/password-email'
-// import setvariableEmail from './components/setvariable-email'
+import setvariableEmail from './components/setvariable-email'
 
 export default {
   name: 'EmailData',
-  components: { registerEmail, passwordEmail },
+  components: { registerEmail, passwordEmail, setvariableEmail },
   data() {
     return {
       activeName: 'setvariable'
