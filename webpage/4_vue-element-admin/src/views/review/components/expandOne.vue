@@ -171,7 +171,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.expandtwo {
+.expandone {
   overflow: auto;
   height: 100%;
   .temp-box {
