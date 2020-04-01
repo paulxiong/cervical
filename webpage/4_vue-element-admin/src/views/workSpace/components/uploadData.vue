@@ -60,10 +60,9 @@ export default {
       return { 'mid': this.mid, 'bid': this.bid, 'dir': this.dirname }
     },
     onfilesAdded(files, fileList, event) {
-      console.log(this.$refs.uploader)
-      // if (fileList[0].name) {
-      //   this.dirname = fileList[0].name // 被上传的文件夹的名字
-      // }
+      if (fileList[0].name) {
+        this.dirname = fileList[0].name // 被上传的文件夹的名字
+      }
       this.bid = `b${dateformat4()}`
       this.mid = `m${dateformat5()}`
 
