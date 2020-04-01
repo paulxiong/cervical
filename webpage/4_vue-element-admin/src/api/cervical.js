@@ -373,3 +373,11 @@ export function getScantxtByDID(query) {
     params: query
   })
 }
+
+export function getReviewsByPid(query) {
+  return request({
+    url: '/api1/reviewsbypid',
+    method: 'get',
+    params: query
+  })
+}

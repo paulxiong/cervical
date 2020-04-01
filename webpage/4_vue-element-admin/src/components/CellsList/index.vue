@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { getPredictsByPID2 } from '@/api/cervical'
+import { getReviewsByPid } from '@/api/cervical'
 import { APIUrl } from '@/const/config'
 import { cellsOptions, cellsOptions2, cellsOptions3 } from '@/const/const'
 
@@ -72,27 +72,23 @@ export default {
   },
   created() {
     this.cellWidth = window.innerHeight <= 769 ? 35 : window.innerHeight <= 939 ? 74 : 85
-    this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
+    this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
   },
-  // mounted() {
-  //   this.$nextTick(() => {
-  //     console.log(document.querySelector('.el-tabs__content').getBoundingClientRect())
-  //   })
-  // },
   methods: {
-    getPredictsByPID2(limit, skip, pid) {
-      getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 51, 'order': 0 }).then(res => {
-        this.cellsList = res.data.data.predicts
+    getReviewsByPid(limit, skip, pid, status) {
+      // status, default 0, 0 未审核 1 已审核"
+      getReviewsByPid({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': status, 'owner': 0 }).then(res => {
+        this.cellsList = res.data.data.reviews
         this.total = res.data.data.total
       })
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
+      this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
+      this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
     },
     imgclicked(img) {
       this.cellRadio = img.predict_type

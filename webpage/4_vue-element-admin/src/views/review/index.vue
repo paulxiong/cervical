@@ -36,7 +36,7 @@ export default {
   components: { reviewAssignment, reviewPage, reviewAssignment2, reviewDownload, doctorReport },
   data() {
     return {
-      activeName: 'review'
+      activeName: 'doctor'
     }
   }
 }
