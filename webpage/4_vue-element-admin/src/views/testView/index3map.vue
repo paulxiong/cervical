@@ -10,13 +10,36 @@
       <div class="slt-box flex">
         <img :src="resultimg" class="slt-img">
         <div class="text-box">
-          <el-button icon="el-icon-arrow-left" size="mini" type="info" @click="goBack">返回上一页</el-button>
-          <div class="text-box-total">
-            <h3>进度：</h3>
-            <p><b>已审核:</b> 36</p>
-            <p><b>未审核:</b> 2</p>
+          <div>
+            <el-button size="mini" type="primary">查看详情</el-button>
+            <el-button icon="el-icon-arrow-left" size="mini" type="info" @click="goBack">返回上一页</el-button>
           </div>
-          <el-button size="mini" type="primary">查看详情</el-button>
+          <img :src="preview" class="bpt-img">
+          <el-table
+            :data="checkTableData"
+            border
+            size="mini"
+            :row-style="rowStyle"
+          >
+            <el-table-column
+              label="进度"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.type }} {{ scope.row.total }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="未审核"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.total - scope.row.checked_num }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="checked_num"
+              label="已审核"
+            />
+          </el-table>
         </div>
       </div>
       <div ref="tabsbox" class="tabsbox">
@@ -47,10 +70,22 @@ export default {
       pid: 0,
       curHeight: (window.innerHeight - 200) + 'px',
       cellsboxHeight: '200px',
+      checkTableData: [
+        {
+          type: '阳性',
+          total: 36,
+          checked_num: 4
+        },
+        {
+          type: '阴性',
+          total: 24,
+          checked_num: 23
+        }
+      ],
       loading: false,
       resultimg: '',
       preview: '',
-      mapargs: { }
+      mapargs: {}
     }
   },
   created() {
@@ -64,13 +99,18 @@ export default {
     goBack() {
       this.$router.back(-1)
     },
+    rowStyle({ row, rowIndex }) {
+      if (row.total === row.checked_num) {
+        return 'background:rgba(19, 206, 102, 0.8)'
+      }
+    },
     getScantxtByDID(did, type) {
       this.loading = true
       getScantxtByDID({ 'did': did, 'type': type }).then(res => {
         const data = res.data.data
         this.mapargs = data
         this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=300'
-        this.preview = medicalURL.previewImagePath(data.batchid, data.medicalid, data.preview)
+        this.preview = medicalURL.previewImagePath(data.batchid, data.medicalid, data.preview) + '?width=240'
         this.loading = false
       })
     },
@@ -105,13 +145,26 @@ export default {
 
   .text-box {
     height: 100%;
-    padding-top: 10px;
-    padding-left: 30px;
+    padding-top: 1px;
+    padding-left: 2px;
   }
 
   .slt-img {
     width: 200px;
     height: 200px;
+  }
+
+  .bpt-img {
+    width: 200px;
+    margin-top: 1px;
+    margin-bottom: -2px;
+  }
+
+  /deep/ th {
+    padding: 4px 0;
+  }
+  /deep/ td {
+    padding: 4px 0;
   }
 }
 </style>

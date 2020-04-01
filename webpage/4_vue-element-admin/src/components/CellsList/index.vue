@@ -1,7 +1,7 @@
 <template>
   <div class="img-content">
     <div class="img-div flex">
-      <div v-for="(img) in cellsList" :key="img.id" class="img-box">
+      <div v-for="img in cellsList" :key="img.id" class="img-box">
         <el-image
           class="img"
           :src="hosturlpath32 + img.cellpath + '?width=' + cellWidth"
@@ -61,7 +61,7 @@ export default {
       cellsOptions: cellsOptions,
       cellsOptions2: cellsOptions2,
       cellsOptions3: cellsOptions3,
-      cellRadio: 50,
+      cellRadio: '',
       cellsList: [],
       total: 0,
       currentPage: 1,
@@ -88,11 +88,14 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
+      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
+      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
     },
     imgclicked(img) {
+      this.cellRadio = img.predict_type
       this.$emit('imgclicked', img)
     }
   }
