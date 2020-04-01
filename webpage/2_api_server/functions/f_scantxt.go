@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Unknwon/goconfig"
+	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
 )
 
 func getConfigStringValue(cfg *goconfig.ConfigFile, section string, key string) (val string, err error) {
@@ -85,6 +86,10 @@ func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err err
 	st.Result, _ = getConfigStringValue(cfg, "General", "Result")
 	st.Preview, _ = getConfigStringValue(cfg, "General", "Preview")
 	st.Imgs = make([]ImgROI, 0)
+
+	// 前端显示要把Result图片和Preview图片的名字做URL编码
+	st.Result = u.URLEncodeFileName(st.Result)
+	st.Preview = u.URLEncodeFileName(st.Preview)
 
 	cnt := 0
 	_rowpre := 0

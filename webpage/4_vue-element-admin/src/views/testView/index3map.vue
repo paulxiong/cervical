@@ -8,7 +8,7 @@
 
     <div class="cells-box">
       <div class="slt-box flex">
-        <img src="../../assets/slt.jpg" class="slt-img">
+        <img src="resultimg" class="slt-img">
         <div class="text-box">
           <el-button icon="el-icon-arrow-left" size="mini" type="info" @click="goBack">返回上一页</el-button>
           <div class="text-box-total">
@@ -35,6 +35,7 @@
 import lmap from '@/components/leafletMap/leafletMap'
 import cellsList from '@/components/CellsList/index'
 import { getScantxtByDID } from '@/api/cervical'
+import { medicalURL } from '@/api/filesimages'
 
 export default {
   components: { lmap, cellsList },
@@ -44,6 +45,8 @@ export default {
       pid: 0,
       curHeight: (window.innerHeight - 200) + 'px',
       loading: false,
+      resultimg: '',
+      preview: '',
       mapargs: { }
     }
   },
@@ -61,7 +64,10 @@ export default {
     getScantxtByDID(did, type) {
       this.loading = true
       getScantxtByDID({ 'did': did, 'type': type }).then(res => {
-        this.mapargs = res.data.data
+        const data = res.data.data
+        this.mapargs = data
+        this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=100'
+        this.preview = medicalURL.previewImagePath(data.batchid, data.medicalid, data.preview)
         this.loading = false
       })
     },
