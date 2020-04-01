@@ -8,7 +8,7 @@
 
     <div class="cells-box">
       <div class="slt-box flex">
-        <img src="resultimg" class="slt-img">
+        <img :src="resultimg" class="slt-img">
         <div class="text-box">
           <el-button icon="el-icon-arrow-left" size="mini" type="info" @click="goBack">返回上一页</el-button>
           <div class="text-box-total">
@@ -19,14 +19,16 @@
           <el-button size="mini" type="primary">查看详情</el-button>
         </div>
       </div>
-      <el-tabs type="border-card" :style="{'min-height': curHeight}" style="overflow-y:auto;">
-        <el-tab-pane label="预测为阳性的细胞">
-          <cellsList @imgclicked="imgclicked" />
-        </el-tab-pane>
-        <el-tab-pane label="预测为阴性的细胞">
-          <cellsList @imgclicked="imgclicked" />
-        </el-tab-pane>
-      </el-tabs>
+      <div ref="tabsbox" class="tabsbox">
+        <el-tabs type="border-card" :style="{'min-height': curHeight}" style="overflow-y:auto;">
+          <el-tab-pane label="预测为阳性的细胞">
+            <cellsList @imgclicked="imgclicked" />
+          </el-tab-pane>
+          <el-tab-pane label="预测为阴性的细胞">
+            <cellsList @imgclicked="imgclicked" />
+          </el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +46,7 @@ export default {
       did: 0,
       pid: 0,
       curHeight: (window.innerHeight - 200) + 'px',
+      cellsboxHeight: '200px',
       loading: false,
       resultimg: '',
       preview: '',
@@ -66,7 +69,7 @@ export default {
       getScantxtByDID({ 'did': did, 'type': type }).then(res => {
         const data = res.data.data
         this.mapargs = data
-        this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=100'
+        this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=300'
         this.preview = medicalURL.previewImagePath(data.batchid, data.medicalid, data.preview)
         this.loading = false
       })
@@ -108,7 +111,7 @@ export default {
 
   .slt-img {
     width: 200px;
-    width: 200px;
+    height: 200px;
   }
 }
 </style>

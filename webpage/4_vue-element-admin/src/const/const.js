@@ -78,16 +78,16 @@ export const cellsOptions = [
     label: 'Norm正常细胞'
   },
   {
-    value: 5,
-    label: 'NILM未见上皮内病变'
-  },
-  {
     value: 12,
     label: 'T滴虫'
   },
   {
     value: 15,
     label: 'X1线索细胞'
+  },
+  {
+    value: 5,
+    label: 'NILM未见上皮内病变'
   },
   {
     value: 14,
@@ -146,10 +146,6 @@ export const cellsOptions3 = [
   {
     value: 200,
     label: '不是细胞'
-  },
-  {
-    value: 201,
-    label: '不是细胞2'
   }
 ]
 
