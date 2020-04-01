@@ -5,6 +5,7 @@
       :options="options"
       class="uploader-example"
       :show-file-list="true"
+      :file-list="dataList"
       @files-submitted="onfilesSubmitted"
       @file-complete="oncomplete"
       @files-added="onfilesAdded"
@@ -45,7 +46,8 @@ export default {
       uploaderInstance: null,
       dirname: '',
       bid: '',
-      mid: ''
+      mid: '',
+      dataList: []
     }
   },
   mounted() {
@@ -88,6 +90,7 @@ export default {
         this.$message.error('所选的病例目录不完整 !')
       } else {
         this.$message({ type: 'success', message: '开始上传' })
+        this.once = true
       }
     },
     oncomplete() {
