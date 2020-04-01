@@ -271,7 +271,7 @@ func GetReviews(c *gin.Context) {
 // @Param skip query string false "skip, default 0"
 // @Param pid query string false "pid, default 0"
 // @Param owner query string false "owner, default 0, 0 只看属于自己的, 1 查看所有用户的"
-// @Param status query string false "status, default 0, 0 未审核 1 已审核"
+// @Param status query string false "status, default 0, 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部(只在看自己的生效)
 // @Success 200 {object} controllers.reviewslist
 // @Router /api1/reviewsbypid [get]
 func GetReviewsByPID(c *gin.Context) {
@@ -295,7 +295,7 @@ func GetReviewsByPID(c *gin.Context) {
 }
 
 type reviewupdate struct {
-	ID       int64 `json:"id"`        // 细胞预测的ID
+	ID       int64 `json:"id"`        // 细胞Review的ID
 	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
 }
 

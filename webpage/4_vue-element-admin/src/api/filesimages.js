@@ -21,5 +21,9 @@ export const medicalURL = {
   // 返回某个病例数据的Preview缩略图
   previewImagePath: function(bid, mid, previewimgname) {
     return `${APIUrl}/imgs/scratch/img/${bid}/${mid}/Thumbs/${previewimgname}`
+  },
+  // 返回某个细胞图的FOV的URL, cellpath已经是相对路径了
+  cellPath: function(cellpath) {
+    return `${APIUrl}/imgs/${cellpath}`
   }
 }

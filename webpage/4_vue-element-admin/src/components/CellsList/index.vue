@@ -4,14 +4,14 @@
       <div v-for="img in cellsList" :key="img.id" class="img-box">
         <el-image
           class="img"
-          :src="hosturlpath32 + img.cellpath + '?width=' + cellWidth"
+          :src="img.cellpath + '?width=' + cellWidth"
           @click="imgclicked(img)"
         >
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline" />
           </div>
         </el-image>
-        <svg-icon style="width:15px;height:15px;" class="check-icon" :icon-class="'unchecked'" />
+        <svg-icon style="width:20px;height:20px;" class="check-icon" :icon-class="img.status === 1 ? 'checked' : img.status === 2 ? 'delete' : img.status === 3 ? 'adminA' : 'unchecked'" />
       </div>
     </div>
     <el-pagination
@@ -45,15 +45,16 @@
 
     <div class="btn-box">
       <el-divider content-position="center">医生复核区</el-divider>
-      <el-button icon="el-icon-check" type="success" style="width:100%;">确认复核</el-button>
+      <el-button icon="el-icon-check" type="success" style="width:100%;" @click="confirmclicked">确认复核</el-button>
     </div>
   </div>
 </template>
 
 <script>
 import { getReviewsByPid } from '@/api/cervical'
-import { APIUrl } from '@/const/config'
 import { cellsOptions, cellsOptions2, cellsOptions3 } from '@/const/const'
+import { medicalURL } from '@/api/filesimages'
+import { updateLabelReview } from '@/api/cervical'
 
 export default {
   data() {
@@ -61,38 +62,82 @@ export default {
       cellsOptions: cellsOptions,
       cellsOptions2: cellsOptions2,
       cellsOptions3: cellsOptions3,
-      cellRadio: '',
+      cellRadio: 100,
       cellsList: [],
       total: 0,
       currentPage: 1,
       currentPageSize: 10,
       cellWidth: 36,
-      hosturlpath32: '' + APIUrl + '/imgs/'
+      selectedcell: null
     }
   },
   created() {
-    this.cellWidth = window.innerHeight <= 769 ? 35 : window.innerHeight <= 939 ? 74 : 85
-    this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
+    this.cellWidth = window.innerHeight <= 769 ? 35 : window.innerHeight <= 939 ? 64 : 70
+    this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 4)
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.cellsList.length > 0) {
+        this.imgclicked(this.cellsList[0])
+      } else {
+        const that = this
+        setTimeout(() => {
+          if (that.cellsList.length > 0) {
+            that.defaultclicked(that.cellsList[0], that)
+          }
+        }, 1000)
+      }
+    })
   },
   methods: {
     getReviewsByPid(limit, skip, pid, status) {
-      // status, default 0, 0 未审核 1 已审核"
+      // status 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
       getReviewsByPid({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': status, 'owner': 0 }).then(res => {
+        res.data.data.reviews.map(v => {
+          v.cellpath = medicalURL.cellPath(v.cellpath)
+        })
         this.cellsList = res.data.data.reviews
         this.total = res.data.data.total
       })
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
+      this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 4)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid)
+      this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 4)
     },
-    imgclicked(img) {
-      this.cellRadio = img.predict_type
-      this.$emit('imgclicked', img)
+    defaultclicked(cell, _this) {
+      _this.selectedcell = { ...cell }
+      _this.cellRadio = cell.predict_type
+      _this.$emit('imgclicked', cell)
+    },
+    imgclicked(cell) {
+      this.defaultclicked(cell, this)
+    },
+    confirmclicked() {
+      this.updateLabelReview(this.selectedcell, this.cellRadio)
+    },
+    updateLabelReview() {
+      updateLabelReview({
+        id: this.selectedcell.id,
+        true_type: this.cellRadio
+      }).then(res => {
+        this.updateLocalCellsList(this.selectedcell.id, this.cellRadio)
+        this.$message({
+          message: '审核确认成功',
+          type: 'success'
+        })
+      })
+    },
+    updateLocalCellsList(id, _type) {
+      this.cellsList.map(v => {
+        if (v.id === id) {
+          v.status = 1 // status 0 未审核 1 已审核 2 移除 3 管理员确认
+          v.true_type = _type
+        }
+      })
     }
   }
 }

@@ -130,7 +130,6 @@ export default {
     },
     TileLayer_getTileUrl(coords) {
       // 这里的X,y表示第几个瓦片坐标，不是像素坐标, 左上角是原点（初始化map有关），从左往右X递增，从上到下Y递增
-      console.log('z=%d \t x=%d \t y=%d', coords.z, coords.x, coords.y)
       if (coords.x < 0 || coords.y < 0) {
         return ''
       }

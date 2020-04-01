@@ -140,6 +140,18 @@ func ListReviews2(pid int, limit int, skip int, status int, userid int64, owner 
 	var _r []Review
 	// 0 只看属于自己的, 1 查看所有用户的
 	if owner == 0 {
+		//status 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
+		if status == 4 {
+			ret := db.Model(&Review{}).Where("pid=? AND vid=?", pid, userid).Count(&total)
+			if ret.Error != nil {
+				logger.Info.Println(ret.Error)
+			}
+			ret = db.Model(&Review{}).Where("pid=? AND vid=?", pid, userid).Limit(limit).Offset(skip).Find(&_r)
+			if ret.Error != nil {
+				logger.Info.Println(ret.Error)
+			}
+			return total, _r, ret.Error
+		}
 		ret := db.Model(&Review{}).Where("status=? AND pid=? AND vid=?", status, pid, userid).Count(&total)
 		if ret.Error != nil {
 			logger.Info.Println(ret.Error)
