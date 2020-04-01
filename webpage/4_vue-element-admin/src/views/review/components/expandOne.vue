@@ -3,9 +3,10 @@
     <div class="temp-box flex">
       <el-table
         ref="multipleTable"
-        :data="predicts"
+        :data="cpredicts"
         tooltip-effect="dark"
         style="width: 75%"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="ID" prop="id" width="120" />
@@ -31,11 +32,11 @@
 
     <el-pagination
       class="page"
-      :current-page.sync="page"
+      :current-page.sync="cpage"
       :page-sizes="[10, 20, 30, 50]"
-      :page-size="pagesize"
+      :page-size="cpagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
+      :total="ctotal"
       @current-change="handleCurrentChange"
       @size-change="handleSizeChange"
     />
@@ -49,24 +50,12 @@ import { cellsType } from '@/const/const'
 export default {
   name: 'App',
   props: {
-    // predicts: {
-    //   type: Array,
-    //   default: () => {
-    //     return []
-    //   }
-    // },
     pid: {
       type: Number,
       default: () => {
         return 0
       }
     },
-    // page: {
-    //   type: Number,
-    //   default: () => {
-    //     return 0
-    //   }
-    // },
     pagesize: {
       type: Number,
       default: () => {
@@ -84,7 +73,9 @@ export default {
     return {
       cpage: 1,
       cpagesize: 10,
+      ctotal: 0,
       cpredicts: [],
+      selectedList: [],
       vid: '请选择分配对象',
       userList: [],
       isChange: true
@@ -92,21 +83,17 @@ export default {
   },
   computed: {
     predicts: {
-      // getter
       get: function() {
         return this.cpredicts
       },
-      // setter
       set: function(newValue) {
 
       }
     },
     page: {
-      // getter
       get: function() {
         return 0
       },
-      // setter
       set: function(newValue) {
 
       }
@@ -118,6 +105,7 @@ export default {
     }
   },
   mounted() {
+    this.ctotal = this.total
     this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
   },
   created() {
@@ -125,40 +113,42 @@ export default {
   },
   methods: {
     memeberChange(val) {
-      console.log(val)
       this.isChange = false
     },
     getPredictsByPID(limit, skip, pid) {
-      getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 50, 'order': 0 }).then(res => {
+      getPredictsByPID({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 51, 'order': 0 }).then(res => {
         res.data.data.predicts.map(item => {
           item.predict_str = cellsType[item.predict_type]
           item.true_str = cellsType[item.true_type]
         })
         this.cpredicts = res.data.data.predicts
-        // console.log(this.cpredicts, 'cpredicts')
+        this.ctotal = res.data.data.total
       })
     },
     handleCurrentChange(val) {
       this.cpage = val
-      // console.log(this.cpage, this.cpagesize, this.pid)
       this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
     },
     handleSizeChange(val) {
       this.cpagesize = val
-      // console.log(this.cpage, this.cpagesize, this.pid)
       this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
     },
+    handleSelectionChange(val) {
+      this.selectedList = []
+      val.map(v => {
+        this.selectedList.push(v.id)
+      })
+    },
     setPredictsReview(project) {
-      console.log(project)
       this.loading = true
       const postData = {
-        'pid': project.id,
+        'pid': this.pid,
         'predicts': this.selectedList,
-        'vid': project.id
+        'vid': this.vid
       }
       setPredictsReview(postData).then(res => {
         this.loading = false
-        this.getPredictsByPID(project.currentPageSize, (project.currentPage - 1) * project.currentPageSize, project.id)
+        this.getPredictsByPID(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
       })
     },
     getUserLists(limit, skip, order) {
