@@ -111,6 +111,9 @@ export default {
     defaultclicked(cell, _this) {
       _this.selectedcell = { ...cell }
       _this.cellRadio = cell.predict_type
+      if (cell.status !== 0) {
+        _this.cellRadio = cell.true_type
+      }
       _this.$emit('imgclicked', cell)
     },
     imgclicked(cell) {
