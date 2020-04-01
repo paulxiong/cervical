@@ -45,10 +45,10 @@ export default {
     })
   },
   mounted() {
-    let that = this // 保留vue的this, 方便后面使用
+    const that = this // 保留vue的this, 方便后面使用
     this.mapInstance = this.Map_create()
 
-    let tiles = new L.GridLayer({ 'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight) })
+    const tiles = new L.GridLayer({ 'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight) })
     tiles.createTile = function(coords) {
       return that.GridLayer_createTile(coords, this)
     }
@@ -62,10 +62,10 @@ export default {
       getAttribution: that.TileLayer_getAttribution
     })
     L.tileLayer.kitten = function(options) {
-      let k = new L.TileLayer.Kitten(options)
+      const k = new L.TileLayer.Kitten(options)
       k._removeAllTiles = function() {
-        for (let key in this._tiles) {
-          let zoomlevel = that.mapInstance.getZoom()
+        for (const key in this._tiles) {
+          const zoomlevel = that.mapInstance.getZoom()
           if (zoomlevel !== 0.00) { // 0缩放级别是原图，大于小于这个都不要删除图层,因为我们只有1层图层，放大缩小都是这层, 删掉就看不到了
             continue
           }
@@ -101,14 +101,14 @@ export default {
       })
     },
     GridLayer_createTile(coords, _this) {
-      let tile = L.DomUtil.create('canvas', 'leaflet-tile')
-      let ctx = tile.getContext('2d')
-      let size = _this.getTileSize() // 这个this不是vue的this
+      const tile = L.DomUtil.create('canvas', 'leaflet-tile')
+      const ctx = tile.getContext('2d')
+      const size = _this.getTileSize() // 这个this不是vue的this
       tile.width = size.x
       tile.height = size.y
       if (this.debug === true) {
-        let nwPoint = coords.scaleBy(size)// 将切片号乘以切片分辨率，得到切片左上角的绝对像素坐标
-        let nw = this.mapInstance.unproject(nwPoint, coords.z)// 根据绝对像素坐标，以及缩放层级，反投影得到其经纬度
+        const nwPoint = coords.scaleBy(size)// 将切片号乘以切片分辨率，得到切片左上角的绝对像素坐标
+        const nw = this.mapInstance.unproject(nwPoint, coords.z)// 根据绝对像素坐标，以及缩放层级，反投影得到其经纬度
         ctx.fillStyle = 'white'
         ctx.fillRect(0, 0, size.x, 50)
         ctx.fillStyle = 'black'
@@ -151,22 +151,22 @@ export default {
     makebounds(scenewidth, sceneheight) {
       // 要把坐标移动到第四象限，这样保证左上角X,y都是0,从左往右X递增，从上到下Y递减
       // L.CRS.Simple，的latLng的单位是像素点
-      let southWest = [-sceneheight, 0] // 地图西南点坐标， 左下(y1, x1)
-      let northEast = [0, scenewidth] // 地图东北点坐标，右上(y2, x2)
-      let bounds = L.latLngBounds(southWest, northEast) // 地图边界
+      const southWest = [-sceneheight, 0] // 地图西南点坐标， 左下(y1, x1)
+      const northEast = [0, scenewidth] // 地图东北点坐标，右上(y2, x2)
+      const bounds = L.latLngBounds(southWest, northEast) // 地图边界
       return bounds
     },
     gotolatLng(x, y) {
       y = -y // y轴是负数
       // console.log(this.mapInstance.getCenter())
       this.mapInstance.setView([y, x], this.zoom)
-      let bounds = [[y, x], [y - 100, x + 100]]
+      const bounds = [[y, x], [y - 100, x + 100]]
       L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
     },
     latLngToCoords(latLng) {
       let y = parseInt(latLng.lat / this.args.realimgheight)
       y = -y
-      let x = parseInt(latLng.lng / this.args.realimgwidth)
+      const x = parseInt(latLng.lng / this.args.realimgwidth)
       console.log(x, y)
     }
   }
