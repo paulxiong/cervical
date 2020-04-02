@@ -114,19 +114,32 @@ func GetPredictsByPIDSortByScore(c *gin.Context) {
 	_type, _ := strconv.ParseInt(typeStr, 10, 64)
 	order, _ := strconv.ParseInt(orderStr, 10, 64)
 
-	// 第3个参数limit给了100+limit，因为下面要过滤，不能保证最后返回的就是limit个数
-	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), int(limit+100), int(skip), int(_type), int(order))
+	// 第3个参数limit给了500+limit，因为下面要过滤，不能保证最后返回的就是limit个数,skip也不在查找时候做，这里将来改进
+	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), int(limit+500), int(0), int(_type), int(order))
+	logger.Info.Println(total, len(p))
+	total2 := models.GetReviewCntByPID(pid, int(_type)) // 已经分配过的个数
 
 	_predicts := predictsByPID{}
 	_predicts.Predicts = make([]_predictsByPID, 0)
-	_predicts.Total = total
-	for index, v := range p {
-		if index < int(skip) || len(_predicts.Predicts) >= int(limit) {
-			continue
+	_predicts.Total = total - total2
+	if _predicts.Total < 1 {
+		_predicts.Total = 0
+		res.ResSucceedStruct(c, _predicts)
+		return
+	}
+	index := 0
+	for _, v := range p {
+		if len(_predicts.Predicts) >= int(limit) {
+			break
 		}
 		//已经添加到细胞审核的就不需要重复添加了
 		_r, err1 := models.GetReviewByPRID(v.ID)
 		if err1 == nil || _r.ID > 0 {
+			continue
+		}
+		index = index + 1
+
+		if index < int(skip+1) {
 			continue
 		}
 		_predicts.Predicts = append(_predicts.Predicts, _predictsByPID{
