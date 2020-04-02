@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -204,4 +205,27 @@ func UpdateReview(id int64, trueType int, userid int64) (e error) {
 		logger.Info.Println(ret.Error)
 	}
 	return ret.Error
+}
+
+// GetProjectsByVID 查找某个用户能看到的所有需要审核的项目
+func GetProjectsByVID(vid int64, limit int64, skip int64) []Project {
+	type res struct {
+		Pid int64
+	}
+	selector := fmt.Sprintf("select pid from c_review where vid=%d group by pid limit %d offset %d;", vid, limit, skip)
+	ress := make([]res, 0)
+	ret := db.Raw(selector).Scan(&ress)
+	if ret.Error != nil {
+		log.Println(ret.Error)
+	}
+
+	_ps := make([]Project, 0)
+	for _, v := range ress {
+		_p := Project{}
+		ret2 := db.Model(&_p).Where("id=?", v.Pid).First(&_p)
+		if ret2.Error == nil {
+			_ps = append(_ps, _p)
+		}
+	}
+	return _ps
 }

@@ -381,3 +381,11 @@ export function getReviewsByPid(query) {
     params: query
   })
 }
+
+export function getProjectsToReview(query) {
+  return request({
+    url: '/api1/projectsbyvid',
+    method: 'get',
+    params: query
+  })
+}

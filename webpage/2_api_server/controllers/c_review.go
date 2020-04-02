@@ -400,3 +400,31 @@ func DownloadReviews(c *gin.Context) {
 	c.File(zipname)
 	return
 }
+
+// GetProjectsByVID 查找某个用户能看到的所有需要审核的项目
+// @Summary 查找某个用户能看到的所有需要审核的项目
+// @Description 查找某个用户能看到的所有需要审核的项目
+// @tags API1 医生检查细胞类型（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param limit query string false "limit, default 1"
+// @Param skip query string false "skip, default 0"
+// @Success 200 {object} controllers.reviewslist
+// @Router /api1/projectsbyvid [get]
+func GetProjectsByVID(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "1")
+	skipStr := c.DefaultQuery("skip", "0")
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+	usr, _ := models.GetUserFromContext(c)
+
+	lp := listProjectsData{}
+	ps := models.GetProjectsByVID(usr.ID, limit, skip)
+
+	lp.Projects = ps
+	// lp.Total = total
+
+	res.ResSucceedStruct(c, lp)
+	return
+}

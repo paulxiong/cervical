@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { getListprojects } from '@/api/cervical'
+import { getProjectsToReview } from '@/api/cervical'
 import { taskStatus, createdBy, taskType, projectType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 
@@ -97,7 +97,7 @@ export default {
     }
   },
   created() {
-    this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+    this.getProjectsToReview(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
   },
   methods: {
     goFovmap(v) {
@@ -107,15 +107,15 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.getListprojects(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getProjectsToReview(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSizeChange(val) {
       this.currentPageSize = val
-      this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.getProjectsToReview(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
-    getListprojects(limit, skip, order) {
+    getProjectsToReview(limit, skip, order) {
       this.loading = true
-      getListprojects({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+      getProjectsToReview({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
         res.data.data.projects.map(v => {
           v.created_at = parseTime(v.created_at)
           v.updated_at = parseTime(v.updated_at)
