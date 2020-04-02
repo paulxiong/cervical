@@ -1,5 +1,8 @@
 <template>
   <div class="modelData">
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive" />
+    </keep-alive>
     <div class="filter-box">
       <!-- <el-input
         v-model="listQuery.desc"

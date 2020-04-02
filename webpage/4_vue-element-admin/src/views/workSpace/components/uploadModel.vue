@@ -174,7 +174,7 @@ export default {
 <style lang="scss" scoped>
 .upload {
   .upload-models {
-    max-height: 350;
+    max-height: 300;
   }
   /deep/.list-container {
     overflow-y: auto;
