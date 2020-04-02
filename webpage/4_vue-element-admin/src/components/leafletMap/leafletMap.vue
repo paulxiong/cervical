@@ -97,7 +97,8 @@ export default {
         zoomDelta: 0.1, // 变焦增量+-滚轮一下缩放多少,
         zoomSnap: 0.1,
         noWrap: true,
-        detectRetina: false
+        detectRetina: false,
+        attributionControl: false // 不要显示leaflet的链接
       })
     },
     GridLayer_createTile(coords, _this) {
