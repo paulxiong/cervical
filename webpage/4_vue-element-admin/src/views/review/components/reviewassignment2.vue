@@ -119,7 +119,7 @@ export default {
       this.getListprojects(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleSelectionChange(event) {
-      console.log(event, this.$refs.multipleTable)
+      // console.log(event, this.$refs.multipleTable)
       this.selectedList = []
       // val.map(v => {
       //   this.selectedList.push(v.id)

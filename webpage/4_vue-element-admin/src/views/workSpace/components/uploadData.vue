@@ -13,7 +13,6 @@
       <uploader-unsupport />
       <uploader-drop v-show="!once">
         <p>拖动文件到此处或点击上传</p>
-        <!-- <el-button style="border:none;" :disabled="isContinue"><uploader-btn :attrs="attrs" :directory="true">选择文件夹</uploader-btn></el-button> -->
         <uploader-btn :attrs="attrs" :directory="true" :single="true">选择文件夹</uploader-btn>
       </uploader-drop>
       <uploader-list />

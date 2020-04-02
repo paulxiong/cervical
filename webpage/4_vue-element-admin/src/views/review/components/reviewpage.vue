@@ -82,7 +82,7 @@ export default {
     this.getLabelReviews(1, 0)
   },
   mounted() {
-    console.log(document.body.clientWidth)
+    // console.log(document.body.clientWidth)
     if (document.body.clientWidth < 600) {
       this.isPhone = true
     }
@@ -147,7 +147,7 @@ export default {
             this.images = images
             v.imgpath2 = v.imgpath + '?crop=' + xywh.x1 + ',' + xywh.y1 + '|' + xywh.x2 + ',' + xywh.y2 + '&quality=100'
             v.tagName = ''
-            console.log(xywh)
+            // console.log(xywh)
             v.position = {
               // 如果靠边框的会框错
               x: parseFloat(xywh.cellx1 / xywh.w) * 100 + '%',

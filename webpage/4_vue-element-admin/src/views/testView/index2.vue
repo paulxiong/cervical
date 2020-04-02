@@ -237,7 +237,7 @@ export default {
   },
   methods: {
     handleDelete(index, row) {
-      console.log(index, row)
+      // console.log(index, row)
       const pid = row.id
       const dropdataset = (row.dropdataset === true) ? 1 : 0
       const content = (row.dropdataset === true) ? '此操作将永久删除该项目及相应数据集' : '此操作将永久删除该项目'

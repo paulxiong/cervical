@@ -592,7 +592,7 @@ export default {
       this.$refs['aiPanel-editor'].getMarker().clearData()
       if (cells.length) {
         this.select = cells[cells.length - 1]
-        console.log(this.select)
+        // console.log(this.select)
         this.$refs['aiPanel-editor'].getMarker().renderData(cells)
       }
       // if (!select && cells.length) {

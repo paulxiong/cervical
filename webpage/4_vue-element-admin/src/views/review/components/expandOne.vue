@@ -101,7 +101,7 @@ export default {
   },
   watch: {
     predicts: function(value, newValue) {
-      console.log(value, newValue)
+      // console.log(value, newValue)
     }
   },
   mounted() {
