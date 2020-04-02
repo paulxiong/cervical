@@ -47,7 +47,7 @@
           <el-tab-pane label="预测为阳性的细胞">
             <cellsList @imgclicked="imgclicked" />
           </el-tab-pane>
-          <el-tab-pane label="预测为阴性的细胞">
+          <el-tab-pane label="预测为阴性的细胞" :disabled="true">
             <cellsList @imgclicked="imgclicked" />
           </el-tab-pane>
         </el-tabs>
