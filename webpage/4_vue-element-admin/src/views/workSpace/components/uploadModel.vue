@@ -148,7 +148,7 @@ export default {
       this.$refs.upload.clearFiles()
       document.querySelector('.el-upload-list').remove('list-container')
       localStorage.setItem('TAB', 'model')
-      this.$router.go({ path: '/workSpace' })
+      // this.$router.go({ path: '/workSpace' })
     },
     closeWindows() {
       this.$refs.upload.clearFiles()
@@ -174,11 +174,11 @@ export default {
 <style lang="scss" scoped>
 .upload {
   .upload-models {
-    max-height: 500px;
+    max-height: 350;
   }
   /deep/.list-container {
     overflow-y: auto;
-    height: 300px;
+    height: 50px;
   }
   .change-type {
     margin-right: 5%;

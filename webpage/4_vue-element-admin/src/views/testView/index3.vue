@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="test3">
     <el-table
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -136,20 +136,31 @@ export default {
 </script>
 
 <style>
-  .uploader-example {
-    width: 880px;
-    padding: 15px;
-    margin: 40px auto 0;
-    font-size: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+  .test3 {
+  overflow: auto;
+  height: 100%;
+  padding-bottom: 30px;
   }
-  .uploader-example .uploader-btn {
-    margin-right: 4px;
+  .tools {
+    background: #fff;
+    justify-content: space-around;
+    bottom: 0px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
-  .uploader-example .uploader-list {
-    max-height: 440px;
-    overflow: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
+  .table-expand {
+    font-size: 0;
+  }
+  .table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: calc(100% / 4);
   }
 </style>
