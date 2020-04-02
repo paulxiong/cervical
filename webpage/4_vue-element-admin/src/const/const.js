@@ -48,7 +48,7 @@ export const cellsType = {
   2: '2 LSIL鳞状上皮细胞低度病变 P',
   3: '3 HSIL鳞状上皮细胞高度病变 P',
   4: '4 HPV感染 P',
-  5: '5 NILM未见上皮内病变 N',
+  // 5: '5 NILM未见上皮内病变 N',
   6: '6 SCC鳞状上皮细胞癌 P',
   7: '7 ASCUS不典型鳞状细胞低 P',
   8: '8 ASCH不典型鳞状细胞高 P',
@@ -85,10 +85,10 @@ export const cellsOptions = [
     value: 15,
     label: 'X1线索细胞'
   },
-  {
-    value: 5,
-    label: 'NILM未见上皮内病变'
-  },
+  // {
+  //   value: 5,
+  //   label: 'NILM未见上皮内病变'
+  // },
   {
     value: 14,
     label: 'HSV疱疹'
