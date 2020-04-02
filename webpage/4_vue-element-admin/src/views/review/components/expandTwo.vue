@@ -20,6 +20,18 @@
         </el-table-column>
       </el-table>
       <div class="select-box" style="width:25%;">
+        <h3>细胞阴/阳性</h3>
+        <el-select v-model="typeid" placeholder="请选择" @change="typeChange">
+          <el-option
+            v-for="item in typelist"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          >
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+          </el-option>
+        </el-select>
+        <el-button type="primary" @click="getCellList">刷新细胞图列表</el-button>
         <h3>分配给</h3>
         <el-select v-model="vid" placeholder="请选择" @change="memeberChange">
           <el-option
@@ -86,7 +98,16 @@ export default {
       selectedList: [],
       vid: '请选择分配对象',
       userList: [],
-      isChange: true
+      isChange: true,
+      cellorder: 0,
+      celltype: 50,
+      typeid: 0,
+      typelist: [
+        { 'id': 0, 'name': '阴性-得分从低到高', 'type': 50, 'order': 0 },
+        { 'id': 1, 'name': '阴性-得分从高到低', 'type': 50, 'order': 1 },
+        { 'id': 2, 'name': '阳性-得分从低到高', 'type': 51, 'order': 0 },
+        { 'id': 3, 'name': '阳性-得分从高到低', 'type': 51, 'order': 1 }
+      ]
     }
   },
   mounted() {
@@ -100,8 +121,16 @@ export default {
     memeberChange(val) {
       this.isChange = false
     },
+    typeChange(val) {
+      this.typelist.map(item => {
+        if (item.id === val) {
+          this.cellorder = item.order
+          this.celltype = item.type
+        }
+      })
+    },
     getPredictsByPID2(limit, skip, pid) {
-      getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': 51, 'order': 0 }).then(res => {
+      getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': 0, 'type': this.celltype, 'order': this.cellorder }).then(res => {
         res.data.data.predicts.map(item => {
           item.predict_str = cellsType[item.predict_type]
           item.true_str = cellsType[item.true_type]
@@ -123,6 +152,9 @@ export default {
       val.map(v => {
         this.selectedList.push(v.id)
       })
+    },
+    getCellList() {
+      this.getPredictsByPID2(this.cpagesize, (this.cpage - 1) * this.cpagesize, this.pid)
     },
     setPredictsReview(project) {
       this.loading = true
