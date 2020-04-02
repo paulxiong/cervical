@@ -31,7 +31,7 @@ export default {
       minZoom: -2,
       maxZoom: 0.4, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
       maxNativeZoom: 0.1,
-      minNativeZoom: 0,
+      minNativeZoom: -0,
       zoom: 0
     }
   },
@@ -158,7 +158,7 @@ export default {
     gotolatLng(x, y) {
       y = -y // y轴是负数
       // console.log(this.mapInstance.getCenter())
-      this.mapInstance.setView([y, x], this.zoom)
+      this.mapInstance.setView([y, x], this.zoom, { animate: true, duration: 0.1 }) // 通过移动动画强制刷新画面
       const bounds = [[y, x], [y - 100, x + 100]]
       L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
     },
