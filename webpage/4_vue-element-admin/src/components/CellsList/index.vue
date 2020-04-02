@@ -68,7 +68,8 @@ export default {
       currentPage: 1,
       currentPageSize: 10,
       cellWidth: 36,
-      selectedcell: null
+      selectedcell: null,
+      reviewed: 0 // 已经审核的个数
     }
   },
   created() {
@@ -115,6 +116,7 @@ export default {
         _this.cellRadio = cell.true_type
       }
       _this.$emit('imgclicked', cell)
+      this.updateLocalCellsList(-1, -1) // 只是统计有几个审核过的细胞
     },
     imgclicked(cell) {
       this.defaultclicked(cell, this)
@@ -135,12 +137,17 @@ export default {
       })
     },
     updateLocalCellsList(id, _type) {
+      this.reviewed = 0
       this.cellsList.map(v => {
         if (v.id === id) {
           v.status = 1 // status 0 未审核 1 已审核 2 移除 3 管理员确认
           v.true_type = _type
         }
+        if (v.status !== 0) {
+          this.reviewed++
+        }
       })
+      this.$emit('updatereviewcnt', { reviewed: this.reviewed, total: this.cellsList.length })
     }
   }
 }

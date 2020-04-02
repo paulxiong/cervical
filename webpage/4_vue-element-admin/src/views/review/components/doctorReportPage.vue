@@ -45,10 +45,10 @@
       <div ref="tabsbox" class="tabsbox">
         <el-tabs type="border-card" :style="{'min-height': curHeight}" style="overflow-y:auto;">
           <el-tab-pane label="预测为阳性的细胞">
-            <cellsList @imgclicked="imgclicked" />
+            <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
           </el-tab-pane>
           <el-tab-pane label="预测为阴性的细胞" :disabled="true">
-            <cellsList @imgclicked="imgclicked" />
+            <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -73,13 +73,13 @@ export default {
       checkTableData: [
         {
           type: '阳性',
-          total: 36,
-          checked_num: 4
+          total: 0,
+          checked_num: 0
         },
         {
           type: '阴性',
-          total: 24,
-          checked_num: 23
+          total: 0,
+          checked_num: 0
         }
       ],
       loading: false,
@@ -123,6 +123,18 @@ export default {
       y = (y - 1) * this.mapargs.realimgheight + img.y1
       x = (x - 1) * this.mapargs.realimgwidth + img.x1
       this.$refs.map.gotolatLng(x, y)
+    },
+    updatereviewcnt(reviewedcnt) {
+      this.checkTableData = [{
+        type: '阴性',
+        total: 0,
+        checked_num: 0
+      }]
+      this.checkTableData.push({
+        type: '阳性',
+        total: reviewedcnt.total,
+        checked_num: reviewedcnt.reviewed
+      })
     }
   }
 }
