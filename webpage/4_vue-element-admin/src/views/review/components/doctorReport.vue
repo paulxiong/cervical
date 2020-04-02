@@ -116,6 +116,13 @@ export default {
     getProjectsToReview(limit, skip, order) {
       this.loading = true
       getProjectsToReview({ 'limit': limit, 'skip': skip, 'order': order }).then(res => {
+        if (res.data.data.projects.length < 1) {
+          this.projectlist = []
+          this.pid = 0
+          this.total = 0
+          this.loading = false
+          return
+        }
         res.data.data.projects.map(v => {
           v.created_at = parseTime(v.created_at)
           v.updated_at = parseTime(v.updated_at)

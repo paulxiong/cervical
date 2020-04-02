@@ -3,7 +3,7 @@
     <div class="img-div flex">
       <div v-for="img in cellsList" :key="img.id" class="img-box">
         <el-image
-          class="img"
+          :class="img.id == selectedcell.id ? 'img-clicked' : 'img'"
           :src="img.cellpath + '?width=' + cellWidth"
           @click="imgclicked(img)"
         >
@@ -154,9 +154,14 @@ export default {
     position: relative;
   }
   .img {
-    margin: 0 2px;
+    margin: 2px 2px 2px 2px;
     border-radius: 10%;
-    // border-bottom-right-radius: 50%;
+    border: 0px solid red;
+  }
+  .img-clicked {
+    margin: 0 0 0 0;
+    border-radius: 10%;
+    border: 2px solid red;
   }
   .check-icon {
     position: absolute;
