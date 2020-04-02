@@ -77,13 +77,8 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/test3',
-    component: () => import('@/views/testView/index3'),
-    hidden: true
-  },
-  {
-    path: '/index3map',
-    component: () => import('@/views/testView/index3map'),
+    path: '/doctorreport',
+    component: () => import('@/views/review/components/doctorReportPage'),
     hidden: true
   },
   {

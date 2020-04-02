@@ -102,7 +102,7 @@ export default {
   methods: {
     goFovmap(v) {
       this.$router.push({
-        path: `/index3map?pid=${v.id}&did=${v.did}`
+        path: `/doctorreport?pid=${v.id}&did=${v.did}`
       })
     },
     handleCurrentChange(val) {
