@@ -1,55 +1,76 @@
 <template>
   <div class="upload flex">
     <div class="change-type">
-      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: blue; margin-bottom: 5px; margin-right:80px;">*1.请输入上传模型描述信息</span>
-      <el-input
-        v-model="args.description"
-        autofocus
-        placeholder="请输入模型描述"
-        show-word-limit
-        maxlength="30"
-        class="input-name"
-        style="margin-bottom: 50px; margin-right:50px;"
-        clearable
-        @change="inputChange"
-      />
-      <span style="display: flex; justify-content:center; align-items:center font-size=: 15px; color: blue; margin-bottom: 5px; margin-top:5px; margin-right:100px;">*2.请选择上传模型类型</span>
-      <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;" :disabled="isSelect" @change="selectChange">
-        <el-option
-          v-for="item in options"
-          :key="item.type"
-          :label="item.label"
-          :value="item.type"
-        />
-      </el-select>
+      <el-form
+        ref="args"
+        v-loading="loading"
+        :model="args"
+        :rules="rules"
+        class="login-container"
+        label-position="left"
+        label-width="0px"
+      >
+        <el-form-item prop="description" style="text-align: left" required>
+          <span style="color: blue;"> *1.请输入上传模型描述信息：</span>
+          <el-input
+            v-model="args.description"
+            v-focus
+            prefix-icon="icon iconfont el-icon-qianniu-account"
+            type="text"
+            autofocus
+            auto-complete="off"
+            placeholder="请输入模型描述"
+            show-word-limit
+            maxlength="30"
+            class="input-name"
+            style="margin-right:50px; width: 75%"
+            clearable
+            @change="inputChange"
+          />
+        </el-form-item>
+        <el-form-item prop="type" style="text-align: left" required>
+          <span style="color: blue;"> *2.请选择上传模型类型：</span>
+          <br>
+          <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;" :disabled="isSelect" @change="selectChange">
+            <el-option
+              v-for="item in options"
+              :key="item.type"
+              :label="item.label"
+              :value="item.type"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
     </div>
-    <el-upload
-      ref="upload"
-      class="upload-models"
-      accept=".h5,.H5"
-      :action="APIUrl"
-      :headers="headers"
-      :data="args"
-      drag
-      :limit="parseInt('1')"
-      show-file-list
-      :on-success="onSuccess"
-      :auto-upload="true"
-      :on-error="onError"
-      :before-upload="beforeUpload"
-      :on-change="onChange"
-      :disabled="isUpload"
-    >
-      <i class="el-icon-upload" />
-      <div class="el-upload__text" style="color: blue;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
-      <!-- <el-button
-        style="margin: 10px 0 0 20px;"
-        size="mini"
-        type="success"
-        @click.stop="submitUpload"
-      >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button> -->
-      <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
-    </el-upload>
+    <div class="uploadmodel">
+      <el-upload
+        ref="upload"
+        class="upload-models"
+        accept=".h5,.H5"
+        :action="APIUrl"
+        :headers="headers"
+        :data="args"
+        drag
+        :limit="parseInt('1')"
+        show-file-list
+        :on-success="onSuccess"
+        :auto-upload="true"
+        :on-error="onError"
+        :before-upload="beforeUpload"
+        :on-change="onChange"
+        :disabled="isUpload"
+      >
+        <i class="el-icon-upload" />
+        <div class="el-upload__text" style="color: blue;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
+        <!-- <el-button
+          style="margin: 10px 0 0 20px;"
+          size="mini"
+          type="success"
+          @click.stop="submitUpload"
+        >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button> -->
+        <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
+      </el-upload>
+    </div>
   </div>
 </template>
 
@@ -73,6 +94,10 @@ export default {
         'description': '',
         'precision1': 0.0,
         'recall': 0.0
+      },
+      rules: {
+        description: [{ required: true, message: '请输入上传模型描述信息', trigger: 'blur' }],
+        type: [{ required: true, message: '请选择上传模型类型', trigger: 'blur' }]
       },
       finishedFileList: 0,
       fileList: 0,
@@ -188,6 +213,9 @@ export default {
     position: absolute;
     right: 0px;
     bottom: 0px;
+  }
+  .upload-models {
+    margin-left: -100px;
   }
 }
 </style>
