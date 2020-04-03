@@ -14,7 +14,7 @@
           <span style="color: blue;"> *1.请输入上传模型描述信息：</span>
           <el-input
             v-model="args.description"
-            v-focus
+            v-focus="true"
             prefix-icon="icon iconfont el-icon-qianniu-account"
             type="text"
             autofocus
