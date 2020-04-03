@@ -1,17 +1,18 @@
 # coding=utf-8
 import requests, json, time, os
 
-rooturl="http://192.168.1.107:3000"
-token="token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NzkyNTY0NjcsIm9yaWdfaWF0IjoxNTc2NjY0NDY3LCJ1c2VyLklkIjoxM30.SQQKpYR36Wqx5GeK8wNA8oZwNoYCwDekA8AVx3_aRxQ"
+rooturl="http://medical.raidcdn.cn:3000"
+token="token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODg0ODQ3MzksIm9yaWdfaWF0IjoxNTg1ODkyNzM5LCJ1c2VyLklkIjoxM30.6L57Qn1oS3pv5j7rjq0WULgYltax7A6qwDN9mT0aTUE"
+modelID=64
 
-def uploadDatasets(bid, mid, filepath):
+def uploadDatasets(bid, mid, mdir, filepath):
     ret = False
     if not os.path.exists(filepath) or len(bid) < 1 or len(mid) < 1:
         print("bad args %s %s %s" % (bid, mid, filepath))
         return ret
-    url = rooturl + "/api1/upload"
+    url = rooturl + "/api1/uploaddir"
     headers = {"Authorization": token}
-    params = {"bid": bid, "mid": mid}
+    params = {"bid": bid, "mid": mid, "relativePath": filepath, "dir": mdir}
 
     files = {'file': open(filepath, 'rb')}
     response = None
@@ -35,7 +36,7 @@ def create_dataset(bid, mid, desc):
 
     url = rooturl + "/api1/createdataset"
     headers = {"Authorization": token}
-    params = {"parameter_cache": 1, "parameter_gray": 1, "parameter_mid": 2, "parameter_size": 100, "parameter_type": 0}
+    params = {"parameter_cache": 1, "parameter_gray": 1, "parameter_mid": modelID, "parameter_size": 100, "parameter_type": 0}
     params["batchids"] = [bid]
     params["medicalids"] = [mid]
     params["desc"] = desc
@@ -78,30 +79,21 @@ def get_datasets_info(did):
     return dataset
 
 def gen_batchid_midicalid():
-    batchid, midicalid = '', ''
-    day1 = 86400*1000
-    ts = int(time.time()*1000)
-    dts = ts - int((ts % day1))
-
-    batchid, midicalid = "b" + str(dts), "m" + str(ts)
+    batchid, midicalid = time.strftime("%Y%m%d", time.localtime()), time.strftime("%Y%m%d%H%M%S", time.localtime())
     return batchid, midicalid
 
-def _get_filelist(dirpath, suffix=['.jpg', '.JPG']):
-    files = []
-    if not os.path.isdir(dirpath):
-        return files
-    for j in os.listdir(dirpath):
-        path2 = os.path.join(dirpath, j)
-        if os.path.isdir(path2):
+def _get_filelist(dirpath):
+    uploadlists = []
+    for i in os.listdir(dirpath):
+        path1 = os.path.join(dirpath, i)
+        if os.path.isfile(path1):
+            uploadlists.append({'relativePath': path1})
             continue
-        ext = os.path.splitext(path2)[1]
-        ext = ext.lower()
-        if not ext in suffix:
-            # print("skip %s" % path2)
-            continue
-        else:
-            files.append(path2)
-    return files
+        for j in os.listdir(path1):
+            path2 = os.path.join(path1, j)
+            if os.path.isfile(path2):
+                uploadlists.append({'relativePath': path2})
+    return uploadlists
 
 def create_project(did, desc):
     if did < 1 or len(desc) < 1:
@@ -131,34 +123,25 @@ def create_project(did, desc):
     return pid
 
 if __name__ == "__main__":
-    dirpath="/media/disk/tmp/dt/5#20191221"
-    dirname="5#20191221"
+    dirpath="/data/tmp"
+    dirname="tmp"
     #想要上传的病历号写在这个里面
-    mids=["1903536", "1903610", "1903615", "1903640", "1903665", "1903688", "1903694", "1903699", "1903704", "1903710", \
-          "1903716", "1903721", "1903726", "1903731", "1903736", "1903741", "1903746", "1903751", "1903606", "1903611", \
-          "1903616", "1903641", "1903661", "1903666", "1903679", "1903689", "1903695", "1903700", "1903705", "1903711", \
-          "1903717", "1903722", "1903727", "1903732", "1903737", "1903742", "1903747", "1903752", "1903607", "1903612", \
-          "1903637", "1903642", "1903662", "1903667", "1903685", "1903691", "1903696", "1903701", "1903706", "1903712", \
-          "1903718", "1903723", "1903728", "1903733", "1903738", "1903743", "1903748", "1903753", "1903608", "1903613", \
-          "1903638", "1903643", "1903663", "1903668", "1903686", "1903692", "1903697", "1903702", "1903707", "1903713", \
-          "1903719", "1903724", "1903729", "1903734", "1903739", "1903744", "1903749", "1903754", "1903609", "1903614", \
-          "1903639", "1903644", "1903664", "1903687", "1903693", "1903703", "1903708", "1903715", "1903720", "1903725", \
-          "1903730", "1903740", "1903745", "1903750", "903690"]
+    mids=["1803595"]
 
     for m in mids:
         print("\n\n%s ======================" % m)
-        imgdir=os.path.join(dirpath, m, "Images")
-        if not os.path.isdir(imgdir):
+        medicaldir=os.path.join(dirpath, m)
+        if not os.path.isdir(medicaldir):
             continue
-        filelits = _get_filelist(imgdir)
+        filelits = _get_filelist(medicaldir)
         if len(filelits) < 1:
             continue
 
         print("1 uploading imgs...")
         _bid, _mid = gen_batchid_midicalid()
         uploadcnt = {'ok': 0, 'failed': 0}
-        for img in filelits:
-            ret = uploadDatasets(_bid, _mid, img)
+        for _file in filelits:
+            ret = uploadDatasets(_bid, _mid, medicaldir, _file['relativePath'])
             if ret is True:
                 uploadcnt['ok'] = uploadcnt['ok'] + 1
             else:
@@ -186,6 +169,7 @@ if __name__ == "__main__":
         print("6 cropping dataset done")
         if goterror is True:
             continue
+        continue
 
         print("7 creating project...")
         pid = create_project(did, dirname + '+' + m)
