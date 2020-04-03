@@ -4,6 +4,10 @@ import requests, json, time, os
 rooturl="http://medical.raidcdn.cn:3000"
 token="token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODg0ODQ3MzksIm9yaWdfaWF0IjoxNTg1ODkyNzM5LCJ1c2VyLklkIjoxM30.6L57Qn1oS3pv5j7rjq0WULgYltax7A6qwDN9mT0aTUE"
 modelID=64
+dirpath="/data/tmp"
+dirname="tmp"
+#想要上传的病历号写在这个里面
+mids=["1803595"]
 
 def uploadDatasets(bid, mid, mdir, filepath):
     ret = False
@@ -79,7 +83,8 @@ def get_datasets_info(did):
     return dataset
 
 def gen_batchid_midicalid():
-    batchid, midicalid = time.strftime("%Y%m%d", time.localtime()), time.strftime("%Y%m%d%H%M%S", time.localtime())
+    batchid = 'b' + time.strftime("%Y%m%d", time.localtime())
+    midicalid = 'm' + time.strftime("%Y%m%d%H%M%S", time.localtime())
     return batchid, midicalid
 
 def _get_filelist(dirpath):
@@ -123,11 +128,6 @@ def create_project(did, desc):
     return pid
 
 if __name__ == "__main__":
-    dirpath="/data/tmp"
-    dirname="tmp"
-    #想要上传的病历号写在这个里面
-    mids=["1803595"]
-
     for m in mids:
         print("\n\n%s ======================" % m)
         medicaldir=os.path.join(dirpath, m)
