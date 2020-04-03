@@ -4,27 +4,6 @@
       <router-view v-if="$route.meta.keepAlive" />
     </keep-alive>
     <div class="filter-box">
-      <!-- <el-input
-        v-model="listQuery.desc"
-        placeholder="请输入描述搜索"
-        style="width:200px;"
-        class="filter-input"
-        @keyup.enter.native="filterSearch"
-      />
-      <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
-        clearable
-        class="filter-type"
-        style="width: 130px"
-      >
-        <el-option
-          v-for="item in typeOptions"
-          :key="item.key"
-          :label="item.name"
-          :value="item.key"
-        />
-      </el-select> -->
       <el-button
         class="filter-btn"
         type="primary"
@@ -45,27 +24,6 @@
       :data="modelLists"
       style="width: 100%"
     >
-      <!-- <el-table-column type="expand">
-        <template slot-scope="props">
-          <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="准确度">
-              <span>{{ props.row.precision }}</span>
-            </el-form-item>
-            <el-form-item label="召回率">
-              <span>{{ props.row.recall }}</span>
-            </el-form-item>
-            <el-form-item label="损失">
-              <span>{{ props.row.loss }}</span>
-            </el-form-item>
-            <el-form-item label="训练用图数">
-              <span>{{ props.row.n_train }}张</span>
-            </el-form-item>
-            <el-form-item label="类型">
-              <span>{{ props.row.types }}</span>
-            </el-form-item>
-          </el-form>
-        </template>
-      </el-table-column> -->
       <el-table-column
         label="模型ID"
         prop="id"
