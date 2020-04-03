@@ -68,7 +68,7 @@ export default {
       currentPage: 1,
       currentPageSize: 10,
       cellWidth: 36,
-      selectedcell: null,
+      selectedcell: { id: 0 }, // 随便初始化一个值，防止页面报错
       reviewed: 0 // 已经审核的个数
     }
   },

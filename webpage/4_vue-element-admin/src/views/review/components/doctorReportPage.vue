@@ -44,10 +44,7 @@
       </div>
       <div ref="tabsbox" class="tabsbox">
         <el-tabs type="border-card" :style="{'min-height': curHeight}" style="overflow-y:auto;">
-          <el-tab-pane label="预测为阳性的细胞">
-            <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
-          </el-tab-pane>
-          <el-tab-pane label="预测为阴性的细胞" :disabled="true">
+          <el-tab-pane label="需要审核的细胞">
             <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
           </el-tab-pane>
         </el-tabs>
@@ -122,7 +119,9 @@ export default {
       let y = parseInt(arr[0])
       y = (y - 1) * this.mapargs.realimgheight + img.y1
       x = (x - 1) * this.mapargs.realimgwidth + img.x1
-      this.$refs.map.gotolatLng(x, y)
+      if (this.$refs.map) {
+        this.$refs.map.gotolatLng(x, y)
+      }
     },
     updatereviewcnt(reviewedcnt) {
       this.checkTableData = [{
