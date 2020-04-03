@@ -40,7 +40,7 @@ def create_dataset(bid, mid, desc):
 
     url = rooturl + "/api1/createdataset"
     headers = {"Authorization": token}
-    params = {"parameter_cache": 1, "parameter_gray": 1, "parameter_mid": modelID, "parameter_size": 100, "parameter_type": 0}
+    params = {"parameter_cache": 1, "parameter_gray": 1, "parameter_mid": 2, "parameter_size": 100, "parameter_type": 0}
     params["batchids"] = [bid]
     params["medicalids"] = [mid]
     params["desc"] = desc
@@ -107,7 +107,7 @@ def create_project(did, desc):
 
     url = rooturl + "/api1/createproject"
     headers = {"Authorization": token}
-    params = {"celltypes": [100], "parameter_mid": 4, "parameter_resize": 100, "parameter_time": 1800, "parameter_type": 0, "type": 3}
+    params = {"celltypes": [100], "parameter_mid": modelID, "parameter_resize": 100, "parameter_time": 1800, "parameter_type": 0, "type": 3}
     params["desc"] = desc
     params["did"] = did
 
