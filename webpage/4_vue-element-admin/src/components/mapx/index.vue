@@ -20,10 +20,6 @@ export default {
       type: String,
       required: true
     },
-    bigUrl: {
-      type: String,
-      default: null
-    },
     scroll: {
       type: Boolean,
       default: false
@@ -62,11 +58,6 @@ export default {
       this.imgUrl = val
       this.orginUrl = val
       this.initTime()
-    },
-    bigUrl: function() {
-      this.bigImgUrl = bigUrl
-      this.bigOrginUrl = bigUrl
-      this.initTime()
     }
   },
   created() {
@@ -79,8 +70,6 @@ export default {
     this.id = str
     this.imgUrl = this.url
     this.orginUrl = this.url
-    this.bigImgUrl = this.bigUrl
-    this.bigOrginUrl = this.bigUrl
   },
   mounted() {
     this.$nextTick(() => {
@@ -109,9 +98,9 @@ export default {
       this.img = new Image()
       this.img.src = imgsrc
       this.img.onload = () => {
-        this.rectTimesX = (this.imgbox.offsetWidth / this.scale) / this.imgwrap.offsetWidth,
+        this.rectTimesX = (this.imgbox.offsetWidth / this.scale) / this.imgwrap.offsetWidth
         this.rectTimesY = (this.imgbox.offsetHeight / this.scale) / this.imgwrap.offsetHeight
-        this.imgTimesX = this.img.width / this.imgwrap.offsetWidth,
+        this.imgTimesX = this.img.width / this.imgwrap.offsetWidth
         this.imgTimesY = this.img.height / this.imgwrap.offsetHeight
         this.vertical = this.img.width < this.img.height
         this.init = true
@@ -149,9 +138,8 @@ export default {
       this.img.onload = () => {
         this.vertical = this.img.width < this.img.height
         this.showImg = true
-        const thumb = box.querySelector('img')
         setTimeout(() => {
-          this.rectTimesX = (this.imgbox.offsetWidth / this.scale) / box.querySelector('img').offsetWidth,
+          this.rectTimesX = (this.imgbox.offsetWidth / this.scale) / box.querySelector('img').offsetWidth
           this.rectTimesY = (this.imgbox.offsetHeight / this.scale) / box.querySelector('img').offsetHeight
         }, 20)
       }
@@ -273,7 +261,7 @@ export default {
       if (step == null) {
         step = min_step
       }
-      if (direction == 'right') {
+      if (direction === 'right') {
         step++
         // 旋转到原位置，即超过最大值
         step > max_step && (step = min_step)
@@ -379,7 +367,8 @@ export default {
         };
         .mouse-cover{
             position: fixed;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(90, 224, 100, 0.5);
+            border: solid 2px red;
             cursor:pointer
         };
         .mouse-cover-canvas{
