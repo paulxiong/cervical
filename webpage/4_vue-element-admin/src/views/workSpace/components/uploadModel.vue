@@ -10,7 +10,7 @@
         label-position="left"
         label-width="0px"
       >
-        <el-form-item prop="description" style="text-align: left" required>
+        <el-form-item prop="description" style="text-align: left" :required="form.inputdesc">
           <span style="color: blue;"> *1.请输入上传模型描述信息：</span>
           <el-input
             v-model="args.description"
@@ -88,6 +88,10 @@ export default {
         'description': '',
         'precision1': 0.0,
         'recall': 0.0
+      },
+      form: {
+        inputdesc: true,
+        description: ''
       },
       rules: {
         description: [{ required: true, message: '请输入上传模型描述信息', trigger: 'blur' }],
