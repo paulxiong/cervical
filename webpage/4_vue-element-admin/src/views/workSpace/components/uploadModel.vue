@@ -62,12 +62,6 @@
       >
         <i class="el-icon-upload" />
         <div class="el-upload__text" style="color: blue;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
-        <!-- <el-button
-          style="margin: 10px 0 0 20px;"
-          size="mini"
-          type="success"
-          @click.stop="submitUpload"
-        >上传到服务器并创建模型 {{ finishedFileList }} / {{ fileList }}</el-button> -->
         <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
       </el-upload>
     </div>

@@ -1,11 +1,11 @@
 <template>
   <div class="medicalReport">
     <el-table :data="projectlist" max-height="300">
-      <el-table-column width="100" label="报告ID" prop="id" />
+      <el-table-column width="70" label="报告ID" prop="id" />
       <el-table-column label="描述" prop="desc" />
       <el-table-column width="100" label="数据集" prop="did" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+      <el-table-column label="创建时间" prop="created_at" width="180" />
+      <el-table-column label="状态/剩余时间(秒)" prop="statusTime" width="150">
         <template slot-scope="scope">
           <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
         </template>
