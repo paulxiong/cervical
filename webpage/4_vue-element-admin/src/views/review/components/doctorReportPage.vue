@@ -8,7 +8,13 @@
 
     <div class="cells-box">
       <div class="slt-box flex">
-        <img :src="resultimg" class="slt-img">
+        <!-- <img :src="resultimg" class="slt-img"> -->
+        <mapx
+          :url="resultimg"
+          :col="mapargs.colcnt"
+          :row="mapargs.rowcnt"
+          @updatexy="thumbclicked"
+        />
         <div class="text-box">
           <div>
             <el-button size="mini" type="primary">查看详情</el-button>
@@ -23,6 +29,7 @@
           >
             <el-table-column
               label="进度"
+              :min-width="tabwidth"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.type }} {{ scope.row.total }}</span>
@@ -30,6 +37,7 @@
             </el-table-column>
             <el-table-column
               label="未审核"
+              :min-width="tabwidth"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.total - scope.row.checked_num }}</span>
@@ -38,6 +46,7 @@
             <el-table-column
               prop="checked_num"
               label="已审核"
+              :min-width="tabwidth"
             />
           </el-table>
         </div>
@@ -55,12 +64,13 @@
 
 <script>
 import lmap from '@/components/leafletMap/leafletMap'
+import Mapx from '@/components/mapx/index'
 import cellsList from '@/components/CellsList/index'
 import { getScantxtByDID } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
 
 export default {
-  components: { lmap, cellsList },
+  components: { lmap, cellsList, Mapx },
   data() {
     return {
       did: 0,
@@ -82,7 +92,8 @@ export default {
       loading: false,
       resultimg: '',
       preview: '',
-      mapargs: {}
+      mapargs: {},
+      tabwidth: 70
     }
   },
   created() {
@@ -111,6 +122,13 @@ export default {
         this.loading = false
       })
     },
+    thumbclicked(xy) {
+      const x = parseInt(this.mapargs.realimgheight * this.mapargs.rowcnt * xy.xpercent)
+      const y = parseInt(this.mapargs.realimgwidth * this.mapargs.colcnt * xy.ypercent)
+      if (this.$refs.map) {
+        this.$refs.map.gotolatLng(x, y, false)
+      }
+    },
     imgclicked(img) {
       let arr = img.cellpath.split('IMG')
       arr = arr[1].split(this.mapargs.imgext)
@@ -120,7 +138,7 @@ export default {
       y = (y - 1) * this.mapargs.realimgheight + img.y1
       x = (x - 1) * this.mapargs.realimgwidth + img.x1
       if (this.$refs.map) {
-        this.$refs.map.gotolatLng(x, y)
+        this.$refs.map.gotolatLng(x, y, true)
       }
     },
     updatereviewcnt(reviewedcnt) {
@@ -156,6 +174,7 @@ export default {
 
   .text-box {
     height: 100%;
+    width: 225px;
     padding-top: 1px;
     padding-left: 2px;
   }
