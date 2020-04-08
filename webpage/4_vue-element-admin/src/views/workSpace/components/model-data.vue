@@ -32,6 +32,7 @@
       <el-table-column
         label="描述"
         prop="desc"
+        width="300"
       />
       <el-table-column
         label="模型类型"
