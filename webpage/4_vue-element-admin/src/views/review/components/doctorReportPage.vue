@@ -10,6 +10,7 @@
       <div class="slt-box flex">
         <!-- <img :src="resultimg" class="slt-img"> -->
         <mapx
+          ref="thumbmapx"
           :url="resultimg"
           :col="mapargs.colcnt"
           :row="mapargs.rowcnt"
@@ -129,6 +130,11 @@ export default {
         this.$refs.map.gotolatLng(x, y, false)
       }
     },
+    thumbmouseMoveToXY(xpercent, ypercent) {
+      if (this.$refs.thumbmapx) {
+        this.$refs.thumbmapx.mouseMoveToXY(xpercent, ypercent)
+      }
+    },
     imgclicked(img) {
       let arr = img.cellpath.split('IMG')
       arr = arr[1].split(this.mapargs.imgext)
@@ -137,6 +143,7 @@ export default {
       let y = parseInt(arr[0])
       y = (y - 1) * this.mapargs.realimgheight + img.y1
       x = (x - 1) * this.mapargs.realimgwidth + img.x1
+      this.thumbmouseMoveToXY(x / (this.mapargs.realimgwidth * this.mapargs.colcnt), y / (this.mapargs.realimgheight * this.mapargs.rowcnt))
       if (this.$refs.map) {
         this.$refs.map.gotolatLng(x, y, true)
       }

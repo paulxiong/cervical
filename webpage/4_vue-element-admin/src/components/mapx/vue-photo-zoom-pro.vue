@@ -158,7 +158,8 @@ export default {
       outZoomerInitTop: 0, // 外部缩放器的初始位置
       outZoomerTop: 0, // 外部缩放器的位置
       imgInfo: {}, // 图片信息
-      $img: null // 图片dom
+      $img: null, // 图片dom
+      movetype: 'movetoxy' // 模拟鼠标事件的事件类型
     }
   },
   computed: {
@@ -385,7 +386,7 @@ export default {
      * 鼠标移动事件, 触摸
      */
     mouseMove(e) {
-      if (e.type !== 'mouseup' &&
+      if (e.type !== 'mouseup' && e.type !== this.movetype &&
         !(e.type === 'mousemove' && e.buttons === 1) &&
         !(e.type === 'mouseleave' && e.buttons === 1)) return
       if (this.hideZoomer) return
@@ -519,6 +520,15 @@ export default {
      */
     resetOutZoomPosition() {
       this.outZoomerInitTop = 0
+    },
+    mouseMoveToXY(xpercent, ypercent) {
+      if (this.imgLoadedFlag) {
+        this.hideZoomer = false
+      }
+      const y = this.imgInfo.height * ypercent
+      const x = this.imgInfo.width * xpercent
+      const eventxy = { pageX: this.zoomerRect.absoluteLeft + x, pageY: this.zoomerRect.absoluteTop + y, clientY: y, type: this.movetype }
+      this.mouseMove(eventxy)
     }
   }
 }
