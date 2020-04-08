@@ -29,9 +29,9 @@
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive" />
     <el-table :data="errLog" style="width: 100%">
-      <el-table-column prop="operationlog.name" label="用户" width="150" />
-      <el-table-column prop="created_time" label="操作时间" width="200" />
-      <el-table-column prop="version" label="版本" width="100" />
+      <el-table-column prop="operationlog.name" label="用户" width="200" />
+      <el-table-column prop="created_time" label="操作时间" width="250" />
+      <el-table-column prop="version" label="版本" width="150" />
       <el-table-column prop="url" label="访问域名" />
       <el-table-column label="错误日志">
         <template slot-scope="scope">
