@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div id="main" style="width: 900px;height: 600px;" />
+  <div class="main">
+    <div id="pieCharts" style="width: 800px;height: 650px;" />
   </div>
 </template>
 
@@ -19,7 +19,7 @@ export default {
   methods: {
     getPie() {
       // 绘制图表
-      var myChart = echarts.init(document.getElementById('main'))
+      var myChart = echarts.init(document.getElementById('pieCharts'))
       // 指定图表的配置项和数据
       var option = {
         title: {
@@ -32,10 +32,10 @@ export default {
           formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
         legend: {// 图例组件，图例组件展现了不同系列的标记(symbol)，颜色和名字。可以通过点击图例控制哪些系列不显示
-          orient: 'vertical',
+          // orient: 'vertical',
           // top: 'middle',
-          bottom: 100,
-          left: 0,
+          bottom: 0,
+          left: 50,
           textStyle: {// 图例中文字的样式
             color: '#000',
             fontSize: 12
@@ -86,7 +86,7 @@ export default {
           {
             name: '细胞占比',
             type: 'pie',
-            radius: '60%',
+            radius: '70%',
             border: 100,
             right: 100,
             textStyle: {
@@ -129,6 +129,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.main {
+  background: #fff;
+}
 </style>

@@ -1,5 +1,7 @@
 <template>
-  <div id="echartss" style="width: 900px; height: 600px;" />
+  <div class="main">
+    <div id="barCharts" style="width: 800px; height: 650px;" />
+  </div>
 </template>
 
 <script>
@@ -11,7 +13,8 @@ export default {
 
         title: {
           text: '模型信息',
-          subtext: '虚假数据'
+          subtext: '虚假数据',
+          left: 20
         },
         tooltip: {
           trigger: 'axis'
@@ -29,6 +32,7 @@ export default {
         ],
         toolbox: {
           show: true,
+          right: 10,
           feature: {
             dataView: {
               show: true, readOnly: true,
@@ -56,7 +60,7 @@ export default {
             },
             magicType: { show: true, type: ['line', 'bar'] },
             restore: { show: true },
-            saveAsImage: { show: true }
+            saveAsImage: { show: true } // 保存图表的
           }
         },
         calculable: true,
@@ -146,9 +150,15 @@ export default {
   },
   mounted: function() {
     // 基于准备好的dom，初始化echarts实例
-    const myChart = echarts.init(document.getElementById('echartss'))
+    const myChart = echarts.init(document.getElementById('barCharts'))
     // 绘制图表，this.echarts1_option是数据
     myChart.setOption(this.echarts1_option)
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.main {
+  background: #fff;
+}
+</style>
