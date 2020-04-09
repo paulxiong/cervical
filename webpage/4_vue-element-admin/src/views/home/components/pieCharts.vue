@@ -132,5 +132,6 @@ export default {
 <style lang="scss" scoped>
 .main {
   background: #fff;
+  padding: 10px 0;
 }
 </style>
