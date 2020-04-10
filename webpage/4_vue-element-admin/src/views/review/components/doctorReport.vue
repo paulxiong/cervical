@@ -11,7 +11,7 @@
       style="width: 100%"
     >
       <el-table-column width="60" label="ID" prop="id" />
-      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="描述" prop="desc" width="400" />
       <el-table-column label="数据集 ID" prop="did" />
       <el-table-column label="创建者">
         <template slot-scope="scope">

@@ -26,8 +26,8 @@
             :data="checkTableData"
             border
             size="mini"
-            :row-style="rowStyle"
           >
+            <!-- :row-style="rowStyle" -->
             <el-table-column
               label="进度"
               :min-width="tabwidth"
@@ -110,7 +110,7 @@ export default {
     },
     rowStyle({ row, rowIndex }) {
       if (row.total === row.checked_num) {
-        return 'background:rgba(19, 206, 102, 0.8)'
+        return 'background:rgba(19, 206, 102, 0.2)'
       }
     },
     getScantxtByDID(did, type) {
