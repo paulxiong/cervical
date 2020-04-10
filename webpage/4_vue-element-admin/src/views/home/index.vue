@@ -3,35 +3,35 @@
     <panel-group />
 
     <div class="row-box flex">
-      <!-- <medical-report style="width: 48%;" />
+      <medical-report style="width: 48%;" />
       <transaction-table style="width: 48%;" />
       <data-sets style="width: 48%; margin: 40px 0;" />
-      <best-model style="width: 48%; margin: 40px 0;" /> -->
-      <pie-charts style="width: 48%; margin: 40px 0;" />
-      <bar-charts style="width: 48%; margin: 40px 0;" />
+      <best-model style="width: 48%; margin: 40px 0;" />
+      <!-- <pie-charts style="width: 48%; margin: 40px 0;" />
+      <bar-charts style="width: 48%; margin: 40px 0;" /> -->
     </div>
   </div>
 </template>
 
 <script>
 import PanelGroup from './components/PanelGroup'
-// import TransactionTable from './components/TransactionTable'
-// import BestModel from './components/bestModel'
-// import DataSets from './components/DataSets'
-// import medicalReport from './components/medicalReport'
-import pieCharts from './components/pieCharts'
-import barCharts from './components/barCharts'
+import TransactionTable from './components/TransactionTable'
+import BestModel from './components/bestModel'
+import DataSets from './components/DataSets'
+import medicalReport from './components/medicalReport'
+// import pieCharts from './components/pieCharts'
+// import barCharts from './components/barCharts'
 
 export default {
   name: 'DashboardAdmin',
   components: {
     PanelGroup,
-    // TransactionTable,
-    // BestModel,
-    // DataSets,
-    // medicalReport
-    pieCharts,
-    barCharts
+    TransactionTable,
+    BestModel,
+    DataSets,
+    medicalReport
+    // pieCharts,
+    // barCharts
   }
 }
 </script>
