@@ -28,8 +28,10 @@
         {"status": 90, "key": "UserUpdateFailed",        "content": "用户信息更新失败， 请稍后重试"},
 
         {"status": 100, "key": "ProjectNotReady",        "content": "项目没找到或者项目没处理完成"},
+        {"status": 101, "key": "ProjectInUse",           "content": "项目被审核使用中"},
 
         {"status": 110, "key": "DatasetsNotFound",       "content": "数据集没找到,或者没准备好"},
+        {"status": 111, "key": "DatasetsInUse",          "content": "数据集被项目使用中"},
 
         {"status": 120, "key": "ModelInfoNotFound",      "content": "模型文件信息没找到或加载失败"},
         {"status": 121, "key": "ModelAlreadySaved",      "content": "该模型文件已经保存过了"},

@@ -65,6 +65,13 @@ func GetReviewByPRID(prid int64) (p Review, e error) {
 	return _r, ret.Error
 }
 
+// GetReviewCntByPID1 通过项目ID查找审核记录条数
+func GetReviewCntByPID1(pid int64) int64 {
+	var total int64
+	db.Model(&Review{}).Where("pid=?", pid).Count(&total)
+	return total
+}
+
 // GetReviewCntByPID 通过项目ID查找审核记录条数
 func GetReviewCntByPID(pid int64, _type int) int64 {
 	var total int64

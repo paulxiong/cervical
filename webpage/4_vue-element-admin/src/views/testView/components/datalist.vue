@@ -193,7 +193,9 @@ export default {
     },
     deleteRow() {
       removeDataSet({ did: this.did }).then(res => {
-        this.$message.success('删除成功')
+        if (res.data && res.data.status === 0) {
+          this.$message.success('删除成功')
+        }
         this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
         this.delVisible = false
       })

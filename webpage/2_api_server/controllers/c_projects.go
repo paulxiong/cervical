@@ -322,6 +322,13 @@ func RemoveProject(c *gin.Context) {
 		res.ResFailedStatus(c, e.Errors["ProjectNotReady"])
 		return
 	}
+
+	totalReview := models.GetReviewCntByPID1(pid)
+	if totalReview > 0 {
+		res.ResFailedStatus(c, e.Errors["ProjectInUse"])
+		return
+	}
+
 	projectdir := f.GetProjectPath(pinfo.Dir)
 	f.RemoveDir(projectdir)
 	models.RemovePredictsByPid(pid)

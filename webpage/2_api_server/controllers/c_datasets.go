@@ -844,6 +844,12 @@ func RemoveDataset(c *gin.Context) {
 	didStr := c.DefaultQuery("did", "0")
 	did, _ := strconv.ParseInt(didStr, 10, 64)
 
+	p, err := models.GetOneProjectByDID(int(did))
+	if err == nil || p.ID > 0 {
+		res.ResFailedStatus(c, e.Errors["DatasetsInUse"])
+		return
+	}
+
 	err2 := removeDatasetByID(did)
 	if err2 != nil {
 		res.ResFailedStatus(c, e.Errors["DatasetsNotFound"])
