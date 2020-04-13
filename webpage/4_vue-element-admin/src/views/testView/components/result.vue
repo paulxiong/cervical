@@ -8,20 +8,20 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
-        <el-table-column label="id" width="50">
+        <el-table-column type="selection" width="50" />
+        <el-table-column label="id" width="70">
           <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
-        <el-table-column prop="desc" label="描述" width="150" show-overflow-tooltip />
-        <el-table-column prop="pid" label="pid" width="50" />
-        <el-table-column prop="did" label="did" width="50" />
-        <el-table-column prop="ncnt" label="阴性" width="80" />
-        <el-table-column prop="pcnt" label="阳性" width="80" />
-        <el-table-column prop="ucnt" label="杂质" width="80" />
-        <el-table-column prop="fovcnt" label="FOV个数" width="80" />
-        <el-table-column prop="p1n0" label="机器预测结果" width="80" />
-        <el-table-column prop="truep1n0" label="医生诊断结果" width="80" />
-        <el-table-column prop="remark" label="备注" width="150" />
+        <el-table-column prop="desc" label="描述" width="200" show-overflow-tooltip />
+        <el-table-column prop="pid" label="pid" />
+        <el-table-column prop="did" label="did" />
+        <el-table-column prop="ncnt" label="阴性" />
+        <el-table-column prop="pcnt" label="阳性" />
+        <el-table-column prop="ucnt" label="杂质" />
+        <el-table-column prop="fovcnt" label="FOV个数" />
+        <el-table-column prop="p1n0" label="机器预测结果" />
+        <el-table-column prop="truep1n0" label="医生诊断结果" />
+        <el-table-column prop="remark" label="备注" />
       </el-table>
       <div style="margin-top: 20px">
         <el-button @click="toggleSelection()">取消选择</el-button>

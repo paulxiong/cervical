@@ -58,22 +58,22 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
-        <el-table-column label="id" width="50">
+        <el-table-column type="selection" width="50" />
+        <el-table-column label="id" width="70">
           <template slot-scope="scope">{{ scope.row.id }}</template>
         </el-table-column>
-        <el-table-column prop="desc" label="描述" width="120" show-overflow-tooltip />
-        <el-table-column prop="dir" label="dir" width="100" show-overflow-tooltip />
-        <el-table-column prop="did" label="did" width="50" />
-        <el-table-column prop="ddir" label="ddir" width="100" show-overflow-tooltip />
-        <el-table-column prop="cnt50" label="阴性" width="80" />
-        <el-table-column prop="cnt51" label="阳性" width="80" />
-        <el-table-column prop="cnt200" label="杂质" width="80" />
-        <el-table-column prop="fov" label="FOV个数" width="80" />
-        <el-table-column prop="cellstotal" label="细胞总数" width="80" />
-        <el-table-column prop="ppercent" label="阳性占比%" width="80" />
-        <el-table-column prop="cellspfov" label="阳性/FOV" width="80" />
-        <el-table-column prop="p1n0name" label="结果" width="80" />
+        <el-table-column prop="desc" label="描述" width="200" show-overflow-tooltip />
+        <el-table-column prop="dir" label="dir" show-overflow-tooltip />
+        <el-table-column prop="did" label="did" />
+        <el-table-column prop="ddir" label="ddir" show-overflow-tooltip />
+        <el-table-column prop="cnt50" label="阴性" />
+        <el-table-column prop="cnt51" label="阳性" />
+        <el-table-column prop="cnt200" label="杂质" />
+        <el-table-column prop="fov" label="FOV个数" />
+        <el-table-column prop="cellstotal" label="细胞总数" />
+        <el-table-column prop="ppercent" label="阳性占比%" />
+        <el-table-column prop="cellspfov" label="阳性/FOV" />
+        <el-table-column prop="p1n0name" label="结果" />
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button v-if="scope.row.saved === 1" size="mini" type="success" @click="handleBeforeSaveResult(scope.$index, scope.row)">更新记录</el-button>
