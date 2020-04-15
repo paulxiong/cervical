@@ -215,7 +215,7 @@ func UpdateReview(id int64, trueType int, userid int64) (e error) {
 }
 
 // GetProjectsByVID 查找某个用户能看到的所有需要审核的项目
-func GetProjectsByVID(vid int64, limit int64, skip int64) []Project {
+func GetProjectsByVID(vid int64, limit int64, skip int64) ([]Project, int64) {
 	type res struct {
 		Pid int64
 	}
@@ -226,6 +226,16 @@ func GetProjectsByVID(vid int64, limit int64, skip int64) []Project {
 		log.Println(ret.Error)
 	}
 
+	type res2 struct {
+		Total int64
+	}
+	selector2 := fmt.Sprintf("SELECT count(1) as total from (select count(1) from c_review where vid=%d group by pid) xxx;", vid)
+	ress2 := res2{}
+	ret2 := db.Raw(selector2).Scan(&ress2)
+	if ret2.Error != nil {
+		log.Println(ret2.Error)
+	}
+
 	_ps := make([]Project, 0)
 	for _, v := range ress {
 		_p := Project{}
@@ -234,5 +244,5 @@ func GetProjectsByVID(vid int64, limit int64, skip int64) []Project {
 			_ps = append(_ps, _p)
 		}
 	}
-	return _ps
+	return _ps, ress2.Total
 }

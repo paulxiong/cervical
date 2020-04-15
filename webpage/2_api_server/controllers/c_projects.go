@@ -80,7 +80,7 @@ func CreateProject(c *gin.Context) {
 
 type listProjectsData struct {
 	Projects []models.Project `json:"projects"` //项目列表的数组
-	Total    int64            `json:"total"`    //项目总个数
+	Total    int              `json:"total"`    //项目总个数
 }
 
 // ListProjects 按数据库存储顺序依次获得项目信息
@@ -113,7 +113,7 @@ func ListProjects(c *gin.Context) {
 
 	dts := listProjectsData{}
 	dts.Projects = p
-	dts.Total = total
+	dts.Total = int(total)
 	res.ResSucceedStruct(c, dts)
 	return
 }

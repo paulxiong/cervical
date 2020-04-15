@@ -420,10 +420,10 @@ func GetProjectsByVID(c *gin.Context) {
 	usr, _ := models.GetUserFromContext(c)
 
 	lp := listProjectsData{}
-	ps := models.GetProjectsByVID(usr.ID, limit, skip)
+	ps, total := models.GetProjectsByVID(usr.ID, limit, skip)
 
 	lp.Projects = ps
-	// lp.Total = total
+	lp.Total = int(total)
 
 	res.ResSucceedStruct(c, lp)
 	return
