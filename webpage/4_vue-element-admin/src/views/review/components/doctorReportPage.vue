@@ -138,8 +138,8 @@ export default {
     updatereviewcnt(reviewedcnt) {
       this.checkTableData = []
       this.checkTableData.push({
-        type: '总数',
-        total: reviewedcnt.total,
+        type: '审核细胞',
+        total: reviewedcnt.notreviewed + reviewedcnt.reviewed,
         checked_num: reviewedcnt.reviewed
       })
     }

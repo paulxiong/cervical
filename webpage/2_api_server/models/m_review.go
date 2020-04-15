@@ -190,10 +190,10 @@ func ListReviews2(pid int, limit int, skip int, status int, userid int64, owner 
 }
 
 // UpdateReview 更新审核信息
-func UpdateReview(id int64, trueType int, userid int64) (e error) {
-	_, err := GetReviewByID(id)
+func UpdateReview(id int64, trueType int, userid int64) (Review, error) {
+	r, err := GetReviewByID(id)
 	if err != nil {
-		return err
+		return r, err
 	}
 
 	// 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
@@ -211,7 +211,7 @@ func UpdateReview(id int64, trueType int, userid int64) (e error) {
 	if ret.Error != nil {
 		logger.Info.Println(ret.Error)
 	}
-	return ret.Error
+	return r, ret.Error
 }
 
 // GetProjectsByVID 查找某个用户能看到的所有需要审核的项目

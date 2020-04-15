@@ -238,8 +238,10 @@ func SetPredictsReview(c *gin.Context) {
 
 // reviewslist 用户审核的统计
 type reviewslist struct {
-	Reviews []models.Review `json:"reviews"` //预测结果
-	Total   int64           `json:"total" `  //预测总数
+	Reviews     []models.Review `json:"reviews"`     //预测结果
+	Total       int64           `json:"total" `      //预测总数
+	NotReviewed int64           `json:"notreviewed"` // 当前项目细胞Review的没有审核的个数
+	Reviewed    int64           `json:"reviewed"`    // 当前项目细胞Review的已经审核的个数
 }
 
 // GetReviews 依次获得等待审核的细胞信息
@@ -303,6 +305,8 @@ func GetReviewsByPID(c *gin.Context) {
 
 	rl := reviewslist{}
 	rl.Total, rl.Reviews, _ = models.ListReviews2(int(pid), int(limit), int(skip), int(status), usr.ID, int(owner))
+	rl.Reviewed, _, _ = models.ListReviews2(int(pid), int(limit), int(skip), 1, usr.ID, int(owner))
+	rl.NotReviewed, _, _ = models.ListReviews2(int(pid), int(limit), int(skip), 0, usr.ID, int(owner))
 	res.ResSucceedStruct(c, rl)
 	return
 }
@@ -310,6 +314,10 @@ func GetReviewsByPID(c *gin.Context) {
 type reviewupdate struct {
 	ID       int64 `json:"id"`        // 细胞Review的ID
 	TrueType int   `json:"true_type"` // 审核细胞类型,1到15是细胞类型, 50 阴性 51 阳性 100 未知, 200 不是细胞
+}
+type reviewstate struct {
+	NotReviewed int64 `json:"notreviewed"` // 当前项目细胞Review的没有审核的个数
+	Reviewed    int64 `json:"reviewed"`    // 当前项目细胞Review的已经审核的个数
 }
 
 // UpdateReview 医生审核细胞信息写回数据库
@@ -320,7 +328,7 @@ type reviewupdate struct {
 // @Produce json
 // @Security ApiKeyAuth
 // @Param predictupdate body controllers.reviewupdate true "医生审核信息"
-// @Success 200 {string} json "{"ping": "ok",	"status": 200}"
+// @Success 200 {object} controllers.reviewstate
 // @Router /api1/review [post]
 func UpdateReview(c *gin.Context) {
 	ru := reviewupdate{}
@@ -332,8 +340,12 @@ func UpdateReview(c *gin.Context) {
 
 	usr, _ := models.GetUserFromContext(c)
 
-	models.UpdateReview(ru.ID, ru.TrueType, usr.ID)
-	res.ResSucceedString(c, "ok")
+	r, _ := models.UpdateReview(ru.ID, ru.TrueType, usr.ID)
+
+	rs := reviewstate{}
+	rs.Reviewed, _, _ = models.ListReviews2(int(r.PID), 0, 0, 1, usr.ID, 0)
+	rs.NotReviewed, _, _ = models.ListReviews2(int(r.PID), 0, 0, 0, usr.ID, 0)
+	res.ResSucceedStruct(c, rs)
 	return
 }
 

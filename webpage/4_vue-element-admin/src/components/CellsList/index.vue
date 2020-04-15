@@ -71,7 +71,8 @@ export default {
       currentPageSize: 10,
       cellWidth: 36,
       selectedcell: { id: 0 }, // 随便初始化一个值，防止页面报错
-      reviewed: 0 // 已经审核的个数
+      reviewed: 0, // 已经审核的个数
+      notreviewed: 0 // 没有审核的个数
     }
   },
   created() {
@@ -101,6 +102,9 @@ export default {
         })
         this.cellsList = res.data.data.reviews
         this.total = res.data.data.total
+        this.reviewed = res.data.data.reviewed
+        this.notreviewed = res.data.data.notreviewed
+        this.updateLocalCellsList(-1, -1) // 只是发送一下审核进度给父组件
       })
     },
     handleCurrentChange(val) {
@@ -118,7 +122,6 @@ export default {
         _this.cellRadio = cell.true_type
       }
       _this.$emit('imgclicked', cell)
-      this.updateLocalCellsList(-1, -1) // 只是统计有几个审核过的细胞
     },
     imgclicked(cell) {
       this.defaultclicked(cell, this)
@@ -131,6 +134,8 @@ export default {
         id: this.selectedcell.id,
         true_type: this.cellRadio
       }).then(res => {
+        this.reviewed = res.data.data.reviewed
+        this.notreviewed = res.data.data.notreviewed
         this.updateLocalCellsList(this.selectedcell.id, this.cellRadio)
         this.$message({
           message: '审核确认成功',
@@ -139,17 +144,13 @@ export default {
       })
     },
     updateLocalCellsList(id, _type) {
-      this.reviewed = 0
       this.cellsList.map(v => {
         if (v.id === id) {
           v.status = 1 // status 0 未审核 1 已审核 2 移除 3 管理员确认
           v.true_type = _type
         }
-        if (v.status !== 0) {
-          this.reviewed++
-        }
       })
-      this.$emit('updatereviewcnt', { reviewed: this.reviewed, total: this.cellsList.length })
+      this.$emit('updatereviewcnt', { reviewed: this.reviewed, notreviewed: this.notreviewed })
     }
   }
 }
