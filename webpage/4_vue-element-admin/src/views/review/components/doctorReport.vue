@@ -69,16 +69,7 @@ export default {
   components: { },
   data() {
     return {
-      mapargs: {
-        bid: 'b20200327',
-        mid: 'b20200327095341',
-        ext: '.jpg',
-        ImageWidth: 2448,
-        ImageHeight: 2048,
-        sceneWidth: 72348,
-        sceneHeight: 72104
-      },
-      total: undefined,
+      total: 0,
       currentPage: 1,
       currentPageSize: 10,
       loading: false,

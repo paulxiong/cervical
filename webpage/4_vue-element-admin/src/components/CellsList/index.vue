@@ -14,31 +14,33 @@
         <svg-icon style="width:15px;height:15px;" class="check-icon" :icon-class="img.status === 1 ? 'checked' : img.status === 2 ? 'delete' : img.status === 3 ? 'adminA' : 'unchecked'" />
       </div>
     </div>
-    <el-pagination
-      v-if="total"
-      class="page"
-      :current-page.sync="currentPage"
-      :page-size="currentPageSize"
-      layout="total, pager"
-      :total="total"
-      @current-change="handleCurrentChange"
-      @size-change="handleSizeChange"
-    />
+    <div class="tools flex">
+      <el-pagination
+        v-if="total"
+        small
+        layout="total, prev, pager, next"
+        :current-page.sync="currentPage"
+        :page-size="currentPageSize"
+        :total="total"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
+    </div>
     <el-divider content-position="left"><el-radio v-model="cellRadio" :label="50">阴性</el-radio></el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
-      <el-radio v-for="cell of cellsOptions" :key="cell.value" :label="cell.value" border style="margin:0 6px 7px 0;">
+      <el-radio v-for="cell of cellsOptions" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
         {{ cell.label }}
       </el-radio>
     </el-radio-group>
     <el-divider content-position="left"><el-radio v-model="cellRadio" :label="51">阳性</el-radio></el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
-      <el-radio v-for="cell of cellsOptions2" :key="cell.value" :label="cell.value" border style="margin:0 6px 7px 0;">
+      <el-radio v-for="cell of cellsOptions2" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
         {{ cell.label }}
       </el-radio>
     </el-radio-group>
     <el-divider content-position="left">其他</el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
-      <el-radio v-for="cell of cellsOptions3" :key="cell.value" :label="cell.value" border style="margin:0 6px 7px 0;">
+      <el-radio v-for="cell of cellsOptions3" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
         {{ cell.label }}
       </el-radio>
     </el-radio-group>
@@ -73,7 +75,7 @@ export default {
     }
   },
   created() {
-    this.cellWidth = window.innerHeight <= 769 ? 35 : window.innerHeight <= 939 ? 64 : 70
+    this.cellWidth = window.innerHeight <= 769 ? 38 : window.innerHeight <= 939 ? 66 : 80
     this.getReviewsByPid(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 4)
   },
   mounted() {
@@ -177,7 +179,7 @@ export default {
   }
 }
 /deep/ .el-divider {
-  margin-top: 18px;
-  margin-bottom: 18px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 </style>

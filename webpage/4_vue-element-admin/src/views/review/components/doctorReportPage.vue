@@ -8,7 +8,6 @@
 
     <div class="cells-box">
       <div class="slt-box flex">
-        <!-- <img :src="resultimg" class="slt-img"> -->
         <mapx
           ref="thumbmapx"
           :url="resultimg"
@@ -17,23 +16,19 @@
           @updatexy="thumbclicked"
         />
         <div class="text-box">
-          <div>
-            <el-button size="mini" type="primary">查看详情</el-button>
-            <el-button icon="el-icon-arrow-left" size="mini" type="info" @click="goBack">返回上一页</el-button>
-          </div>
+          <el-button icon="el-icon-arrow-left" size="medium" type="primary" class="text-box-btn" @click="goBack">返回上一页</el-button>
           <img :src="preview" class="bpt-img">
           <el-table
             :data="checkTableData"
             border
             size="mini"
           >
-            <!-- :row-style="rowStyle" -->
             <el-table-column
-              label="进度"
+              label="总数"
               :min-width="tabwidth"
             >
               <template slot-scope="scope">
-                <span>{{ scope.row.type }} {{ scope.row.total }}</span>
+                <span>{{ scope.row.total }}</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -52,12 +47,8 @@
           </el-table>
         </div>
       </div>
-      <div ref="tabsbox" class="tabsbox">
-        <el-tabs type="border-card" :style="{'min-height': curHeight}" style="overflow-y:auto;">
-          <el-tab-pane label="需要审核的细胞">
-            <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
-          </el-tab-pane>
-        </el-tabs>
+      <div class="reviewbox">
+        <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
       </div>
     </div>
   </div>
@@ -74,18 +65,14 @@ export default {
   components: { lmap, cellsList, Mapx },
   data() {
     return {
+      tabPosition: 'top',
       did: 0,
       pid: 0,
       curHeight: (window.innerHeight - 200) + 'px',
       cellsboxHeight: '200px',
       checkTableData: [
         {
-          type: '阳性',
-          total: 0,
-          checked_num: 0
-        },
-        {
-          type: '阴性',
+          type: '待审核',
           total: 0,
           checked_num: 0
         }
@@ -149,13 +136,9 @@ export default {
       }
     },
     updatereviewcnt(reviewedcnt) {
-      this.checkTableData = [{
-        type: '阴性',
-        total: 0,
-        checked_num: 0
-      }]
+      this.checkTableData = []
       this.checkTableData.push({
-        type: '阳性',
+        type: '总数',
         total: reviewedcnt.total,
         checked_num: reviewedcnt.reviewed
       })
@@ -184,6 +167,11 @@ export default {
     width: 225px;
     padding-top: 1px;
     padding-left: 2px;
+    .text-box-btn {
+      width:222px;
+      height: 50px;
+      margin: 2px 0px 2px 0px;
+    }
   }
 
   .slt-img {
@@ -192,9 +180,8 @@ export default {
   }
 
   .bpt-img {
-    width: 200px;
-    margin-top: 1px;
-    margin-bottom: -2px;
+    width: 222px;
+    margin: 1px 0px 0px 0px;
   }
 
   /deep/ th {
@@ -202,6 +189,9 @@ export default {
   }
   /deep/ td {
     padding: 4px 0;
+  }
+  .reviewbox{
+    margin: 2px 0px 0px 0px;
   }
 }
 </style>
