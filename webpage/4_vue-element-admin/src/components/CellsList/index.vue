@@ -11,7 +11,7 @@
             <i class="el-icon-picture-outline" />
           </div>
         </el-image>
-        <svg-icon style="width:20px;height:20px;" class="check-icon" :icon-class="img.status === 1 ? 'checked' : img.status === 2 ? 'delete' : img.status === 3 ? 'adminA' : 'unchecked'" />
+        <svg-icon style="width:15px;height:15px;" class="check-icon" :icon-class="img.status === 1 ? 'checked' : img.status === 2 ? 'delete' : img.status === 3 ? 'adminA' : 'unchecked'" />
       </div>
     </div>
     <el-pagination
