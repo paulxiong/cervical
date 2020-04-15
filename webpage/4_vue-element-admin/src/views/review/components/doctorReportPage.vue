@@ -76,7 +76,6 @@ export default {
     return {
       did: 0,
       pid: 0,
-      arr: [],
       curHeight: (window.innerHeight - 200) + 'px',
       cellsboxHeight: '200px',
       checkTableData: [
@@ -138,7 +137,7 @@ export default {
     },
     imgclicked(img) {
       let arr = img.cellpath.split('IMG')
-      // arr = arr[1].split(this.mapargs.imgext)
+      arr = arr[1].split(this.mapargs.imgext)
       arr = arr[0].split('x')
       let x = parseInt(arr[1])
       let y = parseInt(arr[0])
