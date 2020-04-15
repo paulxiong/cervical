@@ -10,10 +10,10 @@
       :data="projectlist"
       style="width: 100%"
     >
-      <el-table-column width="60" label="ID" prop="id" />
-      <el-table-column label="描述" prop="desc" width="400" />
-      <el-table-column label="数据集 ID" prop="did" />
-      <el-table-column label="创建者">
+      <el-table-column width="70" label="ID" prop="id" />
+      <el-table-column label="描述" prop="desc" />
+      <el-table-column label="数据集ID" prop="did" width="80" />
+      <el-table-column label="创建者" width="80">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
             <el-image
@@ -38,16 +38,10 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="类型" prop="projectType" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+      <el-table-column label="创建时间" prop="created_at" width="150" />
+      <el-table-column label="操作" prop="statusTime" width="200">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
-          <el-button
-            style="float: right; padding: 3px 0"
-            type="primary"
-            @click="goFovmap(scope.row)"
-          >查看详情</el-button>
+          <el-button type="primary" size="mini" @click="goFovmap(scope.row)">查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
