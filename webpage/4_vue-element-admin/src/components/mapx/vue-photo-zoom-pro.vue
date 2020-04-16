@@ -298,6 +298,29 @@ export default {
     })
   },
   methods: {
+    /*
+     * 解决兼容性问题
+     */
+    getObjXy(obj) {
+      var xy = obj.getBoundingClientRect()
+      // document.documentElement.clientTop 在IE67中始终为2，其他高级点的浏览器为0
+      var top = xy.top - document.documentElement.clientTop + document.documentElement.scrollTop
+      var bottom = xy.bottom
+      // document.documentElement.clientLeft 在IE67中始终为2，其他高级点的浏览器为0
+      var left = xy.left - document.documentElement.clientLeft + document.documentElement.scrollLeft
+      var right = xy.right
+      var width = xy.width || right - left // IE67不存在width 使用right - left获得
+      var height = xy.height || bottom - top
+
+      return {
+        top: top,
+        right: right,
+        bottom: bottom,
+        left: left,
+        width: width,
+        height: height
+      }
+    },
     /**
      * 为某个dom添加监听dom位置或者大小变化的
      */
@@ -318,7 +341,7 @@ export default {
         //   });
         // }
         this.beforeReactivateMoveFns.push(() => {
-          const rect = dom.getBoundingClientRect().toJSON()
+          const rect = this.getObjXy(dom)
           if (this.validImgResize(rect)) {
             cb && cb(rect)
           }
@@ -354,7 +377,7 @@ export default {
         this.imgLoadedFlag = true
         $img.src = this.url
         setTimeout(() => {
-          this.imgInfo = $img.getBoundingClientRect().toJSON()
+          this.imgInfo = this.getObjXy($img)
           this.handlerImgResize()
           this.$emit('created', $img, this.imgInfo)
         })
