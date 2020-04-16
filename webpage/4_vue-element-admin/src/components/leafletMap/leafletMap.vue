@@ -47,6 +47,10 @@ export default {
   mounted() {
     const that = this // 保留vue的this, 方便后面使用
     this.mapInstance = this.Map_create()
+    this.mapInstance.on('dragend', function(e) { // 拖动视野图结束移动就会触发
+      const xy = that.latLngToCoords(that.mapInstance.getCenter())
+      that.$emit('dragend', xy)
+    })
 
     const tiles = new L.GridLayer({ 'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight) })
     tiles.createTile = function(coords) {
@@ -170,7 +174,7 @@ export default {
       let y = parseInt(latLng.lat / this.args.realimgheight)
       y = -y
       const x = parseInt(latLng.lng / this.args.realimgwidth)
-      console.log(x, y)
+      return { 'x': x, 'y': y }
     }
   }
 }

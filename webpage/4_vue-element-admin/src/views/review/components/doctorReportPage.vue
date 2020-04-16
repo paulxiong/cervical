@@ -4,6 +4,7 @@
       v-if="mapargs.batchid"
       ref="map"
       :args="mapargs"
+      @dragend="dragend"
     />
 
     <div class="cells-box">
@@ -142,6 +143,11 @@ export default {
         total: reviewedcnt.notreviewed + reviewedcnt.reviewed,
         checked_num: reviewedcnt.reviewed
       })
+    },
+    dragend(xy) {
+      const y = (xy.y + 0.5) * this.mapargs.realimgheight // 传过来的y是从0开始所以不需要减一,0.5表示移动到中心
+      const x = (xy.x + 0.5) * this.mapargs.realimgwidth
+      this.thumbmouseMoveToXY(x / (this.mapargs.realimgwidth * this.mapargs.colcnt), y / (this.mapargs.realimgheight * this.mapargs.rowcnt))
     }
   }
 }
