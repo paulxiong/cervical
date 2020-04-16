@@ -161,6 +161,7 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   .img-box {
+    height: 80px;
     position: relative;
   }
   .img {
