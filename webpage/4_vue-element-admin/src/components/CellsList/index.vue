@@ -161,8 +161,10 @@ export default {
   flex-wrap: wrap;
   justify-content: flex-start;
   .img-box {
-    height: 80px;
     position: relative;
+  }
+  /deep/ .el-image {
+    height: 80px;
   }
   .img {
     margin: 2px 2px 2px 2px;
