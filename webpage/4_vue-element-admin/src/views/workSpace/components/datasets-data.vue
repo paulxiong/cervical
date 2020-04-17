@@ -246,7 +246,7 @@ export default {
       this.modelChecked = val
     },
     filterSearch() {
-      this.listdatasets(10, (this.currentPage - 1) * this.currentPageSize, 1)
+      this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     handleCurrentChange(val) {
       this.currentPage = val
