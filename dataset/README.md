@@ -494,64 +494,20 @@ cells_towclass_1230
 ```
 链接：https://pan.baidu.com/s/12GxWG5ptk2X-eSYD4xFotg 
 提取码：fref
-基于cells_xc0216_2class_onecell经过maskrcnn切割模型和人工筛选，使细胞核均在图像中心，阳性细胞数量3754:3754
+基于cells_xc0216_2class_onecell经过
 ```
 
-#### 第八次迭代数据
+### 医生标注
 ```
-链接：https://pan.baidu.com/s/1gCUJixLz67B4JBJYjj4Tag
-提取码：2sjk
-数据说明：1、阳性细胞总共23552个，包含了夏参导出的阳性细胞、昆明这边医生标注的阳性细胞、VAEGAN生成的假细胞。
-         2、阴性细胞总共24200，包含了夏参导出的阴性细胞，这个数据集之前总共七次迭代收集的假阳性细胞。
-```
-#### 第九次迭代数据
-```
-链接：https://pan.baidu.com/s/18HevWpesxo30jZKdSULaQQ 
-提取码：v26v
-数据说明：1、阳性细胞总共30287个，包含了夏参导出的阳性细胞、昆明这边医生标注的阳性细胞、VAEGAN生成的假细胞。
-         2、阴性细胞总共24200，包含了夏参导出的阴性细胞，这个数据集之前总共七次迭代收集的假阳性细胞。
-```
-#### 第十次迭代数据
-```
-链接：https://pan.baidu.com/s/1-2fZpc2qGlbgSOBl5OGitw 
-提取码：snoc 
-数据说明：1、阳性细胞总共30287个，包含了夏参导出的阳性细胞、昆明这边医生标注的阳性细胞、VAEGAN生成的假细胞。
-         2、阴性细胞总共33368，包含了夏参导出的阴性细胞，这个数据集之前总共七次迭代收集的假阳性细胞。
+2020-04-19医生标注的
+链接：https://pan.baidu.com/s/1Ei7M5pA9y92zfHq2cqQvqQ 
+提取码：7nbp
 
-```
-#### 第十一次迭代数据
-```
- 链接：https://pan.baidu.com/s/1CK5Tt68qSWaqy5sTzZpo-w 
-提取码：hq0u
-数据说明：1、阳性细胞总共30287个，包含了夏参导出的阳性细胞、昆明这边医生标注的阳性细胞、VAEGAN生成的假细胞。
-         2、阴性细胞总共34047，包含了夏参导出的阴性细胞，这个数据集之前总共七次迭代收集的假阳性细胞。
+2020-01-26项总在web上标注
+链接：https://pan.baidu.com/s/1JO4nfZV5EnNpH_vof-ctow 
+提取码：adz3
 
-```
-#### 第十二次迭代数据
-```
- 链接：https://pan.baidu.com/s/11EUFhhiQ3DvWPUJFqTdkyw
- 提取码：ura5
-数据说明：做了减法，把阳性细胞不太清晰和模糊的细胞团删除，保留轮廓相对清晰的训练数据
-         1、阳性细胞总共29080个，包含了夏参导出的阳性细胞、昆明这边医生标注的阳性细胞、VAEGAN生成的假细胞。
-         2、阴性细胞总共37770，包含了夏参导出的阴性细胞，这个数据集之前总共七次迭代收集的假阳性细胞。
-
-```
-#### 第十三次迭代数据
-```
- hpv细胞链接：https://pan.baidu.com/s/1gdOI2_velVzydQChbZoQcQ
- 提取码：gvpt
-
- 萎缩性细胞链接：https://pan.baidu.com/s/112rMMa7HTnox2KZ93AAcJQ 
- 提取码：puj6
- 
- 数据说明：在第十二次迭代数据的基础上加入的萎缩性细胞4008个，hpv阳性细胞677个，其中第十二次的阳性细胞训练集里包含这677个hpv阳性细胞的一部分。所以跌打训练的时候这部分重复的细胞相当于复制了一份加入迭代。
-
-
-```
-
-#### 0318筛出来的杂质和细胞核小的
-```
-链接: https://pan.baidu.com/s/1P52tuIgHevRKXInuxhKkJg 提取码: aqw7
-remove 下面存放筛出来的，valied存放留下的
-
+2020-03-19医生在web上标注
+链接：https://pan.baidu.com/s/15UpfJS4rH36-Vq2jA6zwug 
+提取码：y6hl
 ```
