@@ -83,8 +83,12 @@ def get_datasets_info(did):
     return dataset
 
 def gen_batchid_midicalid():
-    batchid = 'b' + time.strftime("%Y%m%d", time.localtime())
-    midicalid = 'm' + time.strftime("%Y%m%d%H%M%S", time.localtime())
+    ts = time.time()
+    local_time = time.localtime(ts)
+    ms = int((ts - int(ts)) * 1000)
+    ms = "%0.4d" % ms
+    batchid = 'b' + time.strftime("%Y%m%d", local_time)
+    midicalid = 'm' + time.strftime("%H%M%S", local_time) + ms
     return batchid, midicalid
 
 def _get_filelist(dirpath):
