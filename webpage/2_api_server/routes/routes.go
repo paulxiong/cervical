@@ -92,6 +92,7 @@ func Router() *gin.Engine {
 		api1.GET("/getLabelbyimageid", ctr.GetLabelByImageID)
 
 		// 数据集
+		api1.GET("/bidmid", ctr.GetBIDMID)
 		api1.POST("/createdataset", ctr.CreateDataset)
 		api1.GET("/listdatasets", ctr.ListDatasets)
 		api1.GET("/removedataset", ctr.RemoveDataset)

@@ -22,6 +22,7 @@
 
 <script>
 import { APIUrl } from '@/const/config'
+import { getBidMid } from '@/api/cervical'
 import { getToken } from '@/utils/auth'
 import { dateformat4, dateformat5 } from '@/utils/dateformat'
 
@@ -62,12 +63,7 @@ export default {
       if (fileList[0].name) {
         this.dirname = fileList[0].name // 被上传的文件夹的名字
       }
-      this.bid = `b${dateformat4()}`
-      this.mid = `m${dateformat5()}`
-
-      // 不提倡的做法
-      var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
-      localStorage.setItem('POST_DATA', JSON.stringify(postData))
+      this.getBidMid()
     },
     // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
     onfilesSubmitted(files, fileList, event) {
@@ -94,6 +90,18 @@ export default {
     oncomplete() {
       this.once = true
       this.$emit('checkUpload', true)
+    },
+    getBidMid() {
+      getBidMid({ }).then(res => {
+        if (res.data.data > 0) {
+          this.bid = res.data.data.batchid
+          this.mid = res.data.data.medicalid
+
+          // 不提倡的做法
+          var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
+          localStorage.setItem('POST_DATA', JSON.stringify(postData))
+        }
+      })
     }
   }
 }

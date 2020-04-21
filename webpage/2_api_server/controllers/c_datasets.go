@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
@@ -884,5 +885,35 @@ func GetScanTxtByDID(c *gin.Context) {
 	}
 	st := f.LoadScanTXTJSON(dinfo.BatchIDs1[0], dinfo.MedicalIDs1[0], int(_type))
 	res.ResSucceedStruct(c, st)
+	return
+}
+
+type bidmid struct {
+	Batchid   string `json:"batchid"   example:"redhouse"` //批次号
+	Medicalid string `json:"medicalid" example:"1817134"`  //病历号
+}
+
+// 这个是controler里面的全局量
+var bidmidmutex sync.Mutex
+
+// GetBIDMID 返回一组新的bid和mid
+// @Summary 返回一组新的bid和mid
+// @Description 返回一组新的bid和mid
+// @tags API1 数据集（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} controllers.bidmid
+// @Router /api1/bidmid [get]
+func GetBIDMID(c *gin.Context) {
+	// 使用互斥锁保证请下面的代码不会冲突
+	bidmidmutex.Lock()
+	defer func() {
+		bidmidmutex.Unlock()
+	}()
+	_bidmid := bidmid{}
+	time.Sleep(time.Duration(2) * time.Millisecond) // 2ms 防止冲突
+	_bidmid.Batchid, _bidmid.Medicalid = f.Getbidmid()
+	res.ResSucceedStruct(c, _bidmid)
 	return
 }

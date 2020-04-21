@@ -389,3 +389,11 @@ export function getProjectsToReview(query) {
     params: query
   })
 }
+
+export function getBidMid(query) {
+  return request({
+    url: '/api1/bidmid',
+    method: 'get',
+    params: query
+  })
+}
