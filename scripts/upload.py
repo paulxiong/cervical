@@ -1,5 +1,6 @@
 # coding=utf-8
 import requests, json, time, os
+from tqdm import tqdm
 
 rooturl="http://medical.raidcdn.cn:3000"
 token="token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODg0ODQ3MzksIm9yaWdfaWF0IjoxNTg1ODkyNzM5LCJ1c2VyLklkIjoxM30.6L57Qn1oS3pv5j7rjq0WULgYltax7A6qwDN9mT0aTUE"
@@ -144,7 +145,7 @@ if __name__ == "__main__":
         print("1 uploading imgs...")
         _bid, _mid = gen_batchid_midicalid()
         uploadcnt = {'ok': 0, 'failed': 0}
-        for _file in filelits:
+        for _file in tqdm(filelits):
             ret = uploadDatasets(_bid, _mid, medicaldir, _file['relativePath'])
             if ret is True:
                 uploadcnt['ok'] = uploadcnt['ok'] + 1
