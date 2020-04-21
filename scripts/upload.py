@@ -84,13 +84,23 @@ def get_datasets_info(did):
     return dataset
 
 def gen_batchid_midicalid():
-    ts = time.time()
-    local_time = time.localtime(ts)
-    ms = int((ts - int(ts)) * 1000)
-    ms = "%0.4d" % ms
-    batchid = 'b' + time.strftime("%Y%m%d", local_time)
-    midicalid = 'm' + time.strftime("%H%M%S", local_time) + ms
-    return batchid, midicalid
+    url = rooturl + "/api1/bidmid"
+    headers = {"Authorization": token}
+    response = None
+    try:
+        response = requests.get(url=url, headers=headers)
+    except Exception as e:
+        print(e)
+
+    bid, mid = None, None
+    if 200 == response.status_code:
+        json1 = response.json()
+        if json1 is None or json1['status'] != 0:
+            dataset = None
+            print(json1)
+        else:
+            bid, mid = json1['data']['batchid'], json1['data']['medicalid']
+    return bid, mid
 
 def _get_filelist(dirpath):
     uploadlists = []
