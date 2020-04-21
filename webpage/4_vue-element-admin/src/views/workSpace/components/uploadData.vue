@@ -93,14 +93,16 @@ export default {
     },
     getBidMid() {
       getBidMid({ }).then(res => {
-        if (res.data.data > 0) {
+        if (res.data.data && res.data.data.batchid && res.data.data.medicalid) {
           this.bid = res.data.data.batchid
           this.mid = res.data.data.medicalid
-
-          // 不提倡的做法
-          var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
-          localStorage.setItem('POST_DATA', JSON.stringify(postData))
+        } else {
+          this.bid = `b${dateformat4()}`
+          this.mid = `m${dateformat5()}`
         }
+        // 不提倡的做法
+        var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
+        localStorage.setItem('POST_DATA', JSON.stringify(postData))
       })
     }
   }
