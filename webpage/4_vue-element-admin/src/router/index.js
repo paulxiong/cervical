@@ -131,7 +131,7 @@ export const constantRoutes = [
       },
       {
         path: 'details',
-        component: () => import('@/views/workSpace/details'),
+        component: () => import('@/views/workSpace/details2'),
         hidden: true,
         name: '审核报告详情',
         meta: { title: '审核报告详情', affix: true }
