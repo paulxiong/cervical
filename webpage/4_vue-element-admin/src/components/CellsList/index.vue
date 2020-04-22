@@ -163,9 +163,9 @@ export default {
   .img-box {
     position: relative;
   }
-  /deep/ .el-image {
-    height: 80px;
-  }
+  // /deep/ .el-image {
+  //   height: 80px;
+  // }
   .img {
     margin: 2px 2px 2px 2px;
     border-radius: 10%;
