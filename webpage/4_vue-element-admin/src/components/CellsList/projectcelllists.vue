@@ -47,7 +47,7 @@
 
     <div class="btn-box">
       <el-divider content-position="center">医生复核区</el-divider>
-      <el-button icon="el-icon-check" type="success" style="width:100%;" @click="confirmclicked">确认复核</el-button>
+      <el-button icon="el-icon-check" type="success" style="width:100%;" :disabled="true" @click="confirmclicked">确认复核</el-button>
     </div>
   </div>
 </template>

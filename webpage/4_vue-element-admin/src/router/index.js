@@ -82,6 +82,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/report/details',
+    component: () => import('@/views/workSpace/details2'),
+    hidden: true
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/home',
@@ -128,13 +133,6 @@ export const constantRoutes = [
         component: () => import('@/views/report/report'),
         name: '审核报告概览',
         meta: { title: '审核报告概览', icon: 'documentation', affix: true }
-      },
-      {
-        path: 'details',
-        component: () => import('@/views/workSpace/details2'),
-        hidden: true,
-        name: '审核报告详情',
-        meta: { title: '审核报告详情', affix: true }
       }
     ]
   },

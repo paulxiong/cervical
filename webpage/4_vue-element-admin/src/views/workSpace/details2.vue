@@ -1,5 +1,5 @@
 <template>
-  <div class="leaflet flex" style="width:100%;height:100%;">
+  <div class="leafletmap flex" style="width:100%;height:100%;">
     <lmap
       v-if="mapargs.batchid"
       ref="map"
@@ -154,7 +154,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.leaflet {
+.leafletmap {
   justify-content: space-between;
   .cells-box {
     width: 425px;
