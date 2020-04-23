@@ -13,8 +13,8 @@
       >
         <el-table-column width="70" label="ID" prop="id" />
         <el-table-column label="描述" prop="desc" />
-        <el-table-column label="数据集ID" prop="did" width="80" />
-        <el-table-column label="创建者" width="80">
+        <el-table-column label="数据集ID" prop="did" width="100" />
+        <el-table-column label="创建者" width="100">
           <template slot-scope="scope">
             <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
               <el-image
@@ -39,7 +39,7 @@
             </el-image>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" prop="created_at" width="150" />
+        <el-table-column label="创建时间" prop="created_at" width="200" />
         <el-table-column label="操作" prop="statusTime" width="200">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="goFovmap(scope.row)">查看详情</el-button>
