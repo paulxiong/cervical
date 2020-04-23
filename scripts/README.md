@@ -94,7 +94,7 @@ pid,all,valied
 按照丢弃和留下的细胞分类的目录如下
 ```
 └── result
-    ├── remove
+    ├── invalid
     │   ├── 4046
     │       ├── 1.png
     │
