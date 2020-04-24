@@ -87,8 +87,8 @@ export default {
       pid: 121,
       vid: 0,
       total: undefined,
-      currentPage: 1,
-      currentPageSize: 10,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
       // 获取row的key值
       getRowKeys(row) {

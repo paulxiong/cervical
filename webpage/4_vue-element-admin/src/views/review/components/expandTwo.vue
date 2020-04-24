@@ -91,8 +91,8 @@ export default {
   data() {
     return {
       hosturlpath64: APIUrl + '/imgs/',
-      cpage: 1,
-      cpagesize: 10,
+      cpage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      cpagesize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       ctotal: 0,
       cpredicts: [],
       selectedList: [],

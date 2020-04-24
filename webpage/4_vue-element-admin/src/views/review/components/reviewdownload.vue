@@ -46,8 +46,8 @@ export default {
       reviews: [],
       selectedList: [],
       total: 0,
-      currentPage: 1,
-      currentPageSize: 30,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 30,
       loading: false
     }
   },

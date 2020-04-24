@@ -105,8 +105,8 @@ export default {
   data() {
     return {
       step: 1,
-      currentPage: 1,
-      currentPageSize: 10,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       loading: false,
       total: undefined,
       modelLists: [],
