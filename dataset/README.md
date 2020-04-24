@@ -564,3 +564,22 @@ cells_towclass_1230
 链接：https://pan.baidu.com/s/15UpfJS4rH36-Vq2jA6zwug 
 提取码：y6hl
 ```
+#### 细胞多分类
+### 0424_cells_toNclass
+```
+链接：https://pan.baidu.com/s/1T-cReABBJ0r21gURfMZNUQ 
+提取码：ytni
+说明：20200424，图像RGB，尺寸100100，细胞4分类：阴性、阳性、萎缩、杂质
+目录结构：
+0424_cells_toNclass
+├── test_data
+│   ├── test_out_0424_invalid-cells(500)
+│   ├── test_out_0424_N-cells(500)
+│   ├── test_out_0424_P-cells(500)
+│   └── test_out_0424_ws-cells(500)
+└── train_data
+    ├── out_0424_invalid-cells(9500)
+    ├── out_0424_N-cells(7401)
+    ├── out_0424_P-cells(7304)
+    └── out_0424_ws-cells(3190)
+```
