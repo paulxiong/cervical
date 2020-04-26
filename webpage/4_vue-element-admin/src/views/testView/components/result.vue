@@ -52,8 +52,8 @@ export default {
     return {
       results: [],
       total: 0,
-      currentPageSize: 200,
-      currentPage: 0,
+      currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
+      currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 200,
       selectedList: []
     }
   },
