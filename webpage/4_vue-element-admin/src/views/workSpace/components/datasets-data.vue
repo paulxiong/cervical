@@ -84,7 +84,7 @@
       <el-table-column label="创建者">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
-            <el-image
+            <!-- <el-image
               style="width:36px;height:36px;border-radius:7px;"
               :src="scope.row.userimg"
               lazy
@@ -92,9 +92,10 @@
               <div slot="error" class="image-slot">
                 <i class="el-icon-picture-outline" />
               </div>
-            </el-image>
+            </el-image> -->
+            <el-image :src="scope.row.userimg" style="width:36px;height:36px;border-radius:6px;" />
           </el-tooltip>
-          <el-image
+          <!-- <el-image
             v-else
             style="width:36px;height:36px;border-radius:7px;"
             :src="scope.row.userimg"
@@ -103,7 +104,7 @@
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" />
             </div>
-          </el-image>
+          </el-image> -->
         </template>
       </el-table-column>
       <el-table-column label="裁剪模型" prop="parameter_mid" />
