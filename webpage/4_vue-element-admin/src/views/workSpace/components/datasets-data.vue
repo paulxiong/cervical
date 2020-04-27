@@ -96,7 +96,6 @@
             <el-image
               :src="scope.row.userimg"
               style="width:36px;height:36px;border-radius:7px;"
-              lazy
             />
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" />
