@@ -93,9 +93,16 @@
                 <i class="el-icon-picture-outline" />
               </div>
             </el-image> -->
-            <el-image :src="scope.row.userimg" style="width:36px;height:36px;border-radius:6px;" />
+            <el-image
+              :src="scope.row.userimg"
+              style="width:36px;height:36px;border-radius:7px;"
+              lazy
+            />
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
           </el-tooltip>
-          <!-- <el-image
+          <el-image
             v-else
             style="width:36px;height:36px;border-radius:7px;"
             :src="scope.row.userimg"
@@ -104,7 +111,7 @@
             <div slot="error" class="image-slot">
               <i class="el-icon-picture-outline" />
             </div>
-          </el-image> -->
+          </el-image>
         </template>
       </el-table-column>
       <el-table-column label="裁剪模型" prop="parameter_mid" />
