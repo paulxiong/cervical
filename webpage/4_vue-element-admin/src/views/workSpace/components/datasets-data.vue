@@ -190,8 +190,6 @@ export default {
       upload: false,
       uploadServer: false,
       imgChecked: false,
-      // currentPage: parseInt(localStorage.getItem('page_index')) ? parseInt(localStorage.getItem('page_index')) : 1,
-      // currentPageSize: parseInt(localStorage.getItem('page_size')) ? parseInt(localStorage.getItem('page_size')) : 10,
       currentPage: 1,
       currentPageSize: 10,
       loading: false,
