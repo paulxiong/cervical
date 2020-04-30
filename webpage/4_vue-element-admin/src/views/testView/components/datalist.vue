@@ -1,128 +1,134 @@
 <template>
-  <div class="datasetsData">
-    <div class="filter-box">
-      <el-table
-        v-loading="loading"
-        element-loading-text="拼命加载中"
-        :data="datasetsList"
-        style="width: 100%"
-      >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="table-expand">
-              <el-form-item label="目录">
-                <span>{{ props.row.dir }}</span>
-              </el-form-item>
-              <el-form-item label="创建者">
-                <span>{{ props.row.username }}</span>
-              </el-form-item>
-              <el-form-item label="裁剪模型">
-                <span>{{ props.row.parameter_mid }}</span>
-              </el-form-item>
-              <el-form-item label="裁剪是否用缓存">
-                <span>{{ props.row.parameter_cache }}</span>
-              </el-form-item>
-              <el-form-item label="裁剪采用颜色">
-                <span>{{ props.row.parameter_gray }}</span>
-              </el-form-item>
-              <el-form-item label="裁剪采用大小">
-                <span>{{ props.row.parameter_size }}</span>
-              </el-form-item>
-              <el-form-item label="裁剪开始时间">
-                <span>{{ props.row.processtime }}</span>
-              </el-form-item>
-              <el-form-item label="裁剪结束">
-                <span>{{ props.row.processend }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
-        <el-table-column label="ID" width="60" prop="id" />
-        <el-table-column label="描述" prop="desc" />
-        <el-table-column label="创建者">
-          <template slot-scope="scope">
-            <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
+  <div>
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive" />
+    </keep-alive>
+    <router-view v-if="!$route.meta.keepAlive" />
+    <div class="datasetsData">
+      <div class="filter-box">
+        <el-table
+          v-loading="loading"
+          element-loading-text="拼命加载中"
+          :data="datasetsList"
+          style="width: 100%"
+        >
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form label-position="left" inline class="table-expand">
+                <el-form-item label="目录">
+                  <span>{{ props.row.dir }}</span>
+                </el-form-item>
+                <el-form-item label="创建者">
+                  <span>{{ props.row.username }}</span>
+                </el-form-item>
+                <el-form-item label="裁剪模型">
+                  <span>{{ props.row.parameter_mid }}</span>
+                </el-form-item>
+                <el-form-item label="裁剪是否用缓存">
+                  <span>{{ props.row.parameter_cache }}</span>
+                </el-form-item>
+                <el-form-item label="裁剪采用颜色">
+                  <span>{{ props.row.parameter_gray }}</span>
+                </el-form-item>
+                <el-form-item label="裁剪采用大小">
+                  <span>{{ props.row.parameter_size }}</span>
+                </el-form-item>
+                <el-form-item label="裁剪开始时间">
+                  <span>{{ props.row.processtime }}</span>
+                </el-form-item>
+                <el-form-item label="裁剪结束">
+                  <span>{{ props.row.processend }}</span>
+                </el-form-item>
+              </el-form>
+            </template>
+          </el-table-column>
+          <el-table-column label="ID" width="60" prop="id" />
+          <el-table-column label="描述" prop="desc" />
+          <el-table-column label="创建者">
+            <template slot-scope="scope">
+              <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
+                <el-image
+                  style="width:36px;height:36px;border-radius:7px;"
+                  :src="scope.row.userimg"
+                >
+                  <div slot="error" class="image-slot">
+                    <i class="el-icon-picture-outline" />
+                  </div>
+                </el-image>
+              </el-tooltip>
               <el-image
+                v-else
                 style="width:36px;height:36px;border-radius:7px;"
                 :src="scope.row.userimg"
+                lazy
               >
                 <div slot="error" class="image-slot">
                   <i class="el-icon-picture-outline" />
                 </div>
               </el-image>
-            </el-tooltip>
-            <el-image
-              v-else
-              style="width:36px;height:36px;border-radius:7px;"
-              :src="scope.row.userimg"
-              lazy
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline" />
-              </div>
-            </el-image>
-          </template>
-        </el-table-column>
-        <el-table-column label="裁剪模型" prop="parameter_mid" />
-        <el-table-column label="创建时间" prop="created_at" />
-        <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
-          <template slot-scope="scope">
-            <!-- <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button> -->
-            <!-- <el-button type="warning" style="color: red;" size="mini">删除</el-button> -->
-            <!-- <el-button type="danger" icon="el-icon-delete" circle>删除</el-button> -->
-            <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
-        <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="delVisible = false">取 消</el-button>
-          <el-button type="primary" @click="deleteRow">确 定</el-button>
-        </span>
-      </el-dialog>
+            </template>
+          </el-table-column>
+          <el-table-column label="裁剪模型" prop="parameter_mid" />
+          <el-table-column label="创建时间" prop="created_at" />
+          <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column fixed="right" label="操作" width="100">
+            <template slot-scope="scope">
+              <!-- <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button> -->
+              <!-- <el-button type="warning" style="color: red;" size="mini">删除</el-button> -->
+              <!-- <el-button type="danger" icon="el-icon-delete" circle>删除</el-button> -->
+              <el-button size="small" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row.id)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
+          <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="delVisible = false">取 消</el-button>
+            <el-button type="primary" @click="deleteRow">确 定</el-button>
+          </span>
+        </el-dialog>
 
-      <div class="tools flex">
-        <el-pagination
-          class="page"
-          :current-page.sync="currentPage"
-          :page-sizes="[10, 20, 30, 50]"
-          :page-size="currentPageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        />
-      </div>
-      <el-dialog
-        :title="upload ? '上传数据' : '新建数据集'"
-        :visible.sync="dialogFormVisible"
-        @closed="closedDialog"
-      >
-        <newDatasets
-          ref="newDatasets"
-          :upload="upload"
-          style="margin-top:-30px;"
-          @checkUpload="checkUpload"
-          @checkImg="checkImg"
-          @checkModel="checkModel"
-        />
-        <div slot="footer" class="dialog-footer">
-          <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
-          <el-button
-            v-show="step===1 || step===2"
-            size="mini"
-            :disabled="!uploadServer && !imgChecked && !modelChecked"
-            type="primary"
-            @click="stepNext"
-          >下一步</el-button>
+        <div class="tools flex">
+          <el-pagination
+            class="page"
+            :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 30, 50]"
+            :page-size="currentPageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          />
         </div>
-      </el-dialog>
+        <el-dialog
+          :title="upload ? '上传数据' : '新建数据集'"
+          :visible.sync="dialogFormVisible"
+          @closed="closedDialog"
+        >
+          <newDatasets
+            ref="newDatasets"
+            :upload="upload"
+            style="margin-top:-30px;"
+            @checkUpload="checkUpload"
+            @checkImg="checkImg"
+            @checkModel="checkModel"
+          />
+          <div slot="footer" class="dialog-footer">
+            <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
+            <el-button
+              v-show="step===1 || step===2"
+              size="mini"
+              :disabled="!uploadServer && !imgChecked && !modelChecked"
+              type="primary"
+              @click="stepNext"
+            >下一步</el-button>
+          </div>
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
