@@ -98,13 +98,13 @@ class cells_detector():
             if int(threshold*100) > int(score*100):
                 continue
             _y1, _x1, _y2, _x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
-            ##FIXME:细胞尺寸过滤
-            #if (x2 - x1) <= 17 or  (y2 - y1) <= 17:
-            #    celltype = 201 #201表示不是细胞(尺寸太小)
+            #FIXME:细胞尺寸过滤, 不关心阴性细胞，所以细胞核太小的阴性细胞忽略
+            if (x2 - x1) <= 17 or  (y2 - y1) <= 17:
+                celltype = 201 #201表示不是细胞(尺寸太小)
 
             x1, y1, x2, y2 = xy_x1y1x2y2((_x2 + _x1) / 2, (_y2 + _y1) / 2, size)
             _rois.append([x1, y1, x2, y2, celltype, _x1, _y1, _x2, _y2])
-        _rois = filter_xy(_rois)
+        #_rois = filter_xy(_rois)
         return _rois
 
 #同一个FOV里面，标注框有重合的只保留第一个
