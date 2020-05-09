@@ -107,15 +107,14 @@
       </el-table-column>
     </el-table>
     <div class="tools flex">
-      <el-pagination
+      <pagination
+        v-show="total>0"
         class="page"
-        :current-page.sync="currentPage"
-        :page-sizes="[10, 20, 30, 50]"
-        :page-size="currentPageSize"
-        layout="total, sizes, prev, pager, next, jumper"
+        :subpath="subpath"
         :total="total"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
+        :page-sizes="[10, 20, 30, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        @pagination="getList"
       />
     </div>
   </div>
@@ -127,31 +126,25 @@ import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const
 import { parseTime } from '@/utils/index'
 import { APIUrl } from '@/const/config'
 import { getToken } from '@/utils/auth'
+import Pagination from '@/components/Pagination2'
 
 export default {
   name: 'DoctorReport',
-  components: {},
+  components: { Pagination },
   data() {
     return {
       reportlist: [],
-      currentPage: 1,
-      currentPageSize: 10,
       loading: false,
       downloadLoading: false,
-      total: undefined
+      total: 0,
+      subpath: 'DoctorReport'
     }
   },
   created() {
-    this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 5, 1)
   },
   methods: {
-    handleCurrentChange(val) {
-      this.currentPage = val
-      this.getListreport(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 5, 1)
-    },
-    handleSizeChange(val) {
-      this.currentPageSize = val
-      this.getListreport(val, (this.currentPage - 1) * this.currentPageSize, 5, 1)
+    getList(val) {
+      this.getListreport(val.limit, (val.page - 1) * val.limit, 5, 1)
     },
     goDetail(val) {
       localStorage.setItem('details_title', val.desc)
@@ -234,16 +227,6 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  .tools {
-    background: #fff;
-    justify-content: space-around;
-    bottom: 0px;
-    position: fixed;
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
   .table-expand {
     font-size: 0;
   }
