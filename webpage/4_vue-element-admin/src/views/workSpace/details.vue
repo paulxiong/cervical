@@ -26,7 +26,6 @@
 import imagesCom from './images'
 import trainCom from './train'
 import predictCom from './predict'
-import { setTimeout } from 'timers'
 
 export default {
   components: {
@@ -44,14 +43,6 @@ export default {
       pid: undefined,
       type: undefined
     }
-  },
-  beforeDestroy() {
-    setTimeout(() => {
-      localStorage.removeItem('page_index')
-      localStorage.removeItem('page_size')
-      localStorage.removeItem('TAB')
-      localStorage.removeItem('REPORT_TAB')
-    }, 5000)
   },
   created() {
     this.did = this.$route.query.did ? parseInt(this.$route.query.did) : undefined

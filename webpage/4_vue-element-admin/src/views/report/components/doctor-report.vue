@@ -147,9 +147,6 @@ export default {
       this.getListreport(val.limit, (val.page - 1) * val.limit, 5, 1)
     },
     goDetail(val) {
-      localStorage.setItem('details_title', val.desc)
-      localStorage.setItem('page_index', this.currentPage)
-      localStorage.setItem('page_size', this.currentPageSize)
       this.$router.push({
         path: `/report/details?pid=${val.id}&did=${val.did}&type=${val.type}&report=doctor`
       })

@@ -165,10 +165,6 @@ export default {
       this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
     },
     goDetail(val) {
-      localStorage.setItem('TAB', this.activename)
-      localStorage.setItem('details_title', val.desc)
-      localStorage.setItem('page_index', this.currentPage)
-      localStorage.setItem('page_size', this.currentPageSize)
       this.$router.push({
         path: `/workSpace/details?did=${val.id}`
       })
@@ -199,8 +195,6 @@ export default {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;
-  .filter-box {
-  }
   .tools {
     background: #fff;
     justify-content: space-around;

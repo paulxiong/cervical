@@ -264,10 +264,6 @@ export default {
       this.listdatasets(val, (this.currentPage - 1) * this.currentPageSize, 1)
     },
     goDetail(val) {
-      localStorage.setItem('TAB', this.activename)
-      localStorage.setItem('details_title', val.desc)
-      localStorage.setItem('page_index', this.currentPage)
-      localStorage.setItem('page_size', this.currentPageSize)
       this.$router.push({
         path: `/workSpace/details?did=${val.id}`
       })
