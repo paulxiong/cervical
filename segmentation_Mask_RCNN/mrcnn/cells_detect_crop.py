@@ -92,19 +92,21 @@ class cells_detector():
         _rois = []
         threshold = float(0.90)
         for i in range(0, len(scores_masks)):
+            celltype = 100 #100表示类型未知
             score = scores_masks[i]
             classid = r['class_ids'][i]
             roi = final_rois[i]
             if int(threshold*100) > int(score*100):
                 continue
             _y1, _x1, _y2, _x2 = int(roi[0]), int(roi[1]), int(roi[2]), int(roi[3])
+            x1, y1, x2, y2 = xy_x1y1x2y2((_x2 + _x1) / 2, (_y2 + _y1) / 2, size)
             #FIXME:细胞尺寸过滤, 不关心阴性细胞，所以细胞核太小的阴性细胞忽略
             if (x2 - x1) <= 17 or  (y2 - y1) <= 17:
-                celltype = 201 #201表示不是细胞(尺寸太小)
+                #celltype = 201 #201表示不是细胞(尺寸太小)
+                continue
 
-            x1, y1, x2, y2 = xy_x1y1x2y2((_x2 + _x1) / 2, (_y2 + _y1) / 2, size)
             _rois.append([x1, y1, x2, y2, celltype, _x1, _y1, _x2, _y2])
-        #_rois = filter_xy(_rois)
+        _rois = filter_xy(_rois)
         return _rois
 
 #同一个FOV里面，标注框有重合的只保留第一个
@@ -123,7 +125,7 @@ def filter_xy(_rois):
             x2_1, y2_1, x2_2, y2_2 = int(r2[0]), int(r2[1]), int(r2[2]), int(r2[3])
             b2x, b2y = int((x2_2 + x2_1) / 2), int((y2_2 + y2_1) / 2)
             dst = int(math.sqrt(math.pow((b2x - b1x), 2) + math.pow((b2y - b1y), 2)))
-            if dst <= 50:
+            if dst <= 10:
                 #print(b1x, b1y, b2x, b2y, dst)
                 _rois[j][4] = 1100#临时变量
     for i in _rois:
