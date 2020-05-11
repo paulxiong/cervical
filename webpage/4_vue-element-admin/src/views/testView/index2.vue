@@ -1,110 +1,6 @@
 <template>
   <div class="testData2">
-    <el-tabs type="border-card">
-      <el-tab-pane>
-        <span slot="label"><i class="el-icon-date" /> CPU</span>
-        <table class="tftable" border="1">
-          <tr>
-            <th class="td-1">CPU使用千分率</th>
-            <th>{{ systeminfo.cpu }}</th>
-          </tr>
-          <tr>
-            <td class="td-1">CPU核心数</td>
-            <td>{{ systeminfo.numcpu }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">1分钟之内CPU负载</td>
-            <td>{{ systeminfo.avg1 }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">5分钟之内CPU负载</td>
-            <td>{{ systeminfo.avg5 }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">15分钟之内CPU负载</td>
-            <td>{{ systeminfo.avg15 }}</td>
-          </tr>
-        </table>
-      </el-tab-pane>
-      <el-tab-pane label="内存">
-        <span slot="label"><i class="el-icon-date" /> 内存</span>
-        <table class="tftable" border="1">
-          <tr>
-            <th class="td-1">总内存大小(单位字节)</th>
-            <th>{{ systeminfo.mt }}</th>
-          </tr>
-          <tr>
-            <td class="td-1">可用存大小(单位字节)</td>
-            <td>{{ systeminfo.ma }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">内存使用千分率</td>
-            <td>{{ systeminfo.mperm }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">总交换分区大小</td>
-            <td>{{ systeminfo.st }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">可用交换分区大小</td>
-            <td>{{ systeminfo.sf }}</td>
-          </tr>
-          <tr>
-            <td class="td-1">交换分区使用千分率</td>
-            <td>{{ systeminfo.sperm }}</td>
-          </tr>
-        </table>
-      </el-tab-pane>
-      <el-tab-pane label="磁盘">
-        <span slot="label"><i class="el-icon-date" /> 磁盘</span>
-        <table class="tftable" border="1">
-          <tr v-for="item in systeminfo.disks" :key="item.Type">
-            <td class="td-1">分区:{{ item.spec }}</td>
-            <td>格式:{{ item.type }}</td>
-            <td>挂载目录:{{ item.dir }}</td>
-            <td>总大小(字节):{{ item.ball }}</td>
-            <td>使用千分率:{{ item.bperm }}</td>
-          </tr>
-        </table>
-      </el-tab-pane>
-      <el-tab-pane label="网卡">
-        <span slot="label"><i class="el-icon-date" /> 网卡</span>
-        <table class="tftable" border="1">
-          <tr v-for="item in systeminfo.cards" :key="item.Type">
-            <td class="td-1">网卡:{{ item.if }}</td>
-            <td>InKBps:{{ item.ib }}</td>
-            <td>OutKBps:{{ item.ob }}</td>
-            <td>总接收字节数:{{ item.tib }}</td>
-            <td>总发送字节数:{{ item.tob }}</td>
-          </tr>
-          <tr>
-            <td class="td-1" colspan="4">TCP/UDP已连接端口数</td>
-            <td>{{ systeminfo.tcp.est }}</td>
-          </tr>
-          <tr>
-            <td class="td-1" colspan="4">TCP/UDP监听端口数</td>
-            <td>{{ systeminfo.tcp.lis }}</td>
-          </tr>
-          <tr>
-            <td class="td-1" colspan="4">TCP/UDP端口总数</td>
-            <td>{{ systeminfo.tcp.total }}</td>
-          </tr>
-          <tr>
-            <td class="td-1" colspan="4">IPV6 TCP/UDP已连接端口数</td>
-            <td>{{ systeminfo.tcp6.est }}</td>
-          </tr>
-          <tr>
-            <td class="td-1" colspan="4">IPV6 TCP/UDP监听端口数</td>
-            <td>{{ systeminfo.tcp6.lis }}</td>
-          </tr>
-          <tr>
-            <td class="td-1" colspan="4">IPV6 TCP/UDP端口总数</td>
-            <td>{{ systeminfo.tcp6.total }}</td>
-          </tr>
-        </table>
-      </el-tab-pane>
-    </el-tabs>
-    <ul>
+    <ul v-if="systeminfo.numcpu">
       <li>系统信息更新时间 {{ systeminfo.updatedat }}</li>
       <li />
       <li>CPU使用千分率 {{ systeminfo.cpu }}</li>
@@ -215,7 +111,7 @@ export default {
     return {
       path: WSURL + '/api1/ws',
       socket: null,
-      systeminfo: [],
+      systeminfo: {},
       projectlist: [],
       currentPageSize: 20,
       currentPage: 1,
