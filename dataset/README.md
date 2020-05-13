@@ -534,7 +534,13 @@ cells_towclass_1230
 链接：https://pan.baidu.com/s/1C-fkITWD05flcYG2IJdANA 
 提取码：g2ic
 ```
-
+### 第二个级联的模型训练数据
+### 第一次迭代数据
+```
+链接：https://pan.baidu.com/s/1DaAj-1BAYGgmOQrnyrbhMQ 
+提取码：82e5
+数据说明：file_N文件下19667个阳性细胞，file_P文件下20560个阴性细胞
+```
 
 #### 厦参数据
 ### cells_xc0216_2class_onecell（第一批）
