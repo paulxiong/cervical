@@ -7,8 +7,9 @@
 <script>
 import { APIUrl } from '@/const/config'
 import L from 'leaflet'
-import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import LeafletDraw from 'leaflet-draw'
+import 'leaflet-draw/dist/leaflet.draw.css'
 
 export default {
   name: 'LeafletVue',
@@ -32,18 +33,21 @@ export default {
       maxZoom: 0.4, // >0表示放大，但是放大不能超过0.5不然自动加载下个z-level切片
       maxNativeZoom: 0.1,
       minNativeZoom: -0,
-      zoom: 0
+      zoom: 0,
+      // 后面是关于标注
+      drawnItems: null,
+      weight: 2,
+      textFontSize_default: 14
     }
   },
   created() {
   },
   mounted() {
+    console.log(LeafletDraw.drawVersion) // 没有输出，只是为了消除import但是没有使用的警告
     const that = this // 保留vue的this, 方便后面使用
+
+    this.tooltip_init()
     this.mapInstance = this.Map_create()
-    this.mapInstance.on('dragend', function(e) { // 拖动视野图结束移动就会触发
-      const xy = that.latLngToCoords(that.mapInstance.getCenter())
-      that.$emit('dragend', xy)
-    })
 
     const tiles = new L.GridLayer({ 'tileSize': L.point(this.args.realimgwidth, this.args.realimgheight) })
     tiles.createTile = function(coords) {
@@ -77,12 +81,15 @@ export default {
       'continuousWorld': true,
       'maxNativeZoom': this.maxNativeZoom,
       'minNativeZoom': this.minNativeZoom }).addTo(this.mapInstance)
+
+    // 下面是标注相关的
+    this.MapDrawCreate(this.mapInstance)
   },
   beforeDestroy() {
   },
   methods: {
     Map_create() {
-      return L.map('map', {
+      const _map = L.map('map', {
         crs: L.CRS.Simple,
         center: new L.LatLng(0, 0), // 左上角(y, x)
         maxBounds: this.makebounds(this.args.scenewidth, this.args.sceneheight),
@@ -97,6 +104,97 @@ export default {
         detectRetina: false,
         attributionControl: false // 不要显示leaflet的链接
       })
+      const that = this
+      _map.on('dragend', function(e) { // 拖动视野图结束移动就会触发
+        const xy = that.latLngToCoords(that.mapInstance.getCenter())
+        that.$emit('dragend', xy)
+      })
+      return _map
+    },
+    MapDrawCreate(mapInstance) { // 创建画图实例，参数mapInstance是已经初始化的Map实例, taht是vue的实例
+      const that = this
+      this.drawnItems = new L.FeatureGroup()
+      mapInstance.addLayer(this.drawnItems)
+      var drawControl = new L.Control.Draw({
+        position: 'topright',
+        draw: {
+          polyline: false, // 不准画线
+          polygon: false, // 不准画多边形
+          circle: false, // 不准画圆
+          marker: false, // 不准画标记
+          rectangle: {
+            shapeOptions: {
+              clickable: true,
+              fillOpacity: 0, // 填充完全透明
+              weight: this.weight
+            }
+          }
+        },
+        edit: {
+          featureGroup: this.drawnItems,
+          poly: {
+            allowIntersection: false
+          },
+          remove: true
+        }
+      })
+      if (mapInstance.addControl(drawControl)) {
+        console.log('addControl')
+      }
+
+      L.Tooltip.include({
+        updatePosition: function(latlng) {
+          console.log('Tooltip updatePosition')
+          // ignore or maybe set the visibility etc
+        }
+      })
+
+      mapInstance.on(L.Draw.Event.CREATED, function(e) {
+        var type = e.layerType
+        if (type !== 'rectangle') { // 目前只支持画矩形
+          return
+        }
+        var layer = e.layer
+        // 参考https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
+        layer.bindTooltip('HPV', {
+          permanent: true,
+          direction: 'right',
+          sticky: true,
+          offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
+        }).addTo(that.drawnItems)
+      })
+
+      mapInstance.on(L.Draw.Event.EDITED, function(e) {
+        var layers = e.layers
+        var countOfEditedLayers = 0
+        layers.eachLayer(function(layer) {
+          countOfEditedLayers++
+
+          // 更新tooltip的位置
+          if (layer.getTooltip) {
+            var toolTip = layer.getTooltip()
+            if (toolTip) {
+              toolTip._updatePosition()
+            }
+          }
+        })
+        console.log('修改了 ' + countOfEditedLayers + ' 个图层')
+      })
+    },
+    tooltip_init() { // 初始化地图上默认的一些提示信息
+      L.drawLocal.draw.handlers.rectangle.tooltip.start = '单击并拖动鼠标来绘制矩形'
+      L.drawLocal.draw.handlers.simpleshape.tooltip.end = '单击完成绘制'
+
+      // 下面这个是自定义方法，目的是缩放的时候动态更新tooltip位置, 是画完框之后，上面的设置是画框的时候的提示
+      L.Tooltip.prototype._updatePosition = function() {
+        // this是指tooltip
+        var pos = this._map.latLngToLayerPoint(this._latlng)
+        if (this._source && this._source._bounds) {
+          const x1y1 = this._source._bounds._northEast // 右上
+          pos = this._map.latLngToLayerPoint(x1y1)
+        }
+        this._setPosition(pos)
+      }
     },
     GridLayer_createTile(coords, _this) {
       const tile = L.DomUtil.create('canvas', 'leaflet-tile')
