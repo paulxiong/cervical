@@ -1,6 +1,10 @@
 <template>
   <div class="vue-leaflet">
     <div id="map" :style="{width: curWidth, height: curHeight}" />
+    <el-button type="primary" @click="drawrec">矩形</el-button>
+    <el-button type="primary" @click="drawedit">修改</el-button>
+    <el-button type="primary" @click="draweditdone">完成修改</el-button>
+    <el-button type="primary" @click="drawdelete">删除</el-button>
   </div>
 </template>
 
@@ -109,6 +113,23 @@ export default {
         const xy = that.latLngToCoords(that.mapInstance.getCenter())
         that.$emit('dragend', xy)
       })
+      _map.on(L.Draw.Event.CREATED, function() { console.log('CREATED       ') })
+      _map.on(L.Draw.Event.EDITED, function() { console.log('EDITED        ') })
+      _map.on(L.Draw.Event.DELETED, function() { console.log('DELETED       ') })
+      _map.on(L.Draw.Event.DRAWSTART, function() { console.log('DRAWSTART     ') })
+      _map.on(L.Draw.Event.DRAWSTOP, function() { console.log('DRAWSTOP      ') })
+      _map.on(L.Draw.Event.DRAWVERTEX, function() { console.log('DRAWVERTEX    ') })
+      _map.on(L.Draw.Event.EDITSTART, function() { console.log('EDITSTART     ') })
+      _map.on(L.Draw.Event.EDITMOVE, function() { console.log('EDITMOVE      ') })
+      _map.on(L.Draw.Event.EDITSTOP, function() { console.log('EDITSTOP      ') })
+      _map.on(L.Draw.Event.DELETESTART, function() { console.log('DELETESTART   ') })
+      _map.on(L.Draw.Event.DELETESTOP, function() { console.log('DELETESTOP    ') })
+      _map.on(L.Draw.Event.TOOLBAROPENED, function() { console.log('TOOLBAROPENED') })
+      _map.on(L.Draw.Event.TOOLBARCLOSED, function() { console.log('TOOLBARCLOSED') })
+      _map.on(L.Draw.Event.MARKERCONTEXT, function() { console.log('MARKERCONTEXT') })
+      _map.on(L.Draw.Event.EDITRESIZE, function(e) { console.log('EDITRESIZE    ') })
+      _map.on(L.Draw.Event.EDITVERTEX, function(e) { console.log('EDITVERTEX    ') })
+
       return _map
     },
     MapDrawCreate(mapInstance) { // 创建画图实例，参数mapInstance是已经初始化的Map实例, taht是vue的实例
@@ -122,6 +143,7 @@ export default {
           polygon: false, // 不准画多边形
           circle: false, // 不准画圆
           marker: false, // 不准画标记
+          circlemark: false,
           rectangle: {
             shapeOptions: {
               clickable: true,
@@ -138,6 +160,7 @@ export default {
           remove: true
         }
       })
+      this.drawControl = drawControl
       if (mapInstance.addControl(drawControl)) {
         console.log('addControl')
       }
@@ -184,6 +207,7 @@ export default {
     tooltip_init() { // 初始化地图上默认的一些提示信息
       L.drawLocal.draw.handlers.rectangle.tooltip.start = '单击并拖动鼠标来绘制矩形'
       L.drawLocal.draw.handlers.simpleshape.tooltip.end = '单击完成绘制'
+      L.drawLocal.edit.handlers.remove.tooltip.text = '单击标注来删除'
 
       // 下面这个是自定义方法，目的是缩放的时候动态更新tooltip位置, 是画完框之后，上面的设置是画框的时候的提示
       L.Tooltip.prototype._updatePosition = function() {
@@ -266,6 +290,39 @@ export default {
       y = -y
       const x = parseInt(latLng.lng / this.args.realimgwidth)
       return { 'x': x, 'y': y }
+    },
+    initDrawrecDrawControl() {
+      this.drawRectangle = new L.Draw.Rectangle(this.mapInstance, this.drawControl.options.rectangle).disable()
+      this.drawRectangle.disable()
+      this.mapInstance.on('draw:editstart', function(e) {
+        console.log(e)
+      })
+    },
+    drawrec(e) {
+      new L.Draw.Rectangle(this.mapInstance, this.drawControl.options.rectangle).enable()
+    },
+    drawedit(e) {
+      new L.Draw.Rectangle(this.mapInstance, this.drawControl.options.rectangle).disable()
+      this.mapDrawEdit = new L.EditToolbar.Edit(this.mapInstance, {
+        featureGroup: this.drawnItems,
+        selectedPathOptions: this.drawControl.options.edit.selectedPathOptions
+      }).enable()
+      console.log(this.mapDrawEdit)
+      this.mapInstance.on('MSPointerMove', function(e) { // 拖动视野图结束移动就会触发
+        console.log('MSPointerMove')
+      })
+    },
+    draweditdone(e) {
+      this.mapDrawEdit = new L.EditToolbar.Edit(this.mapInstance, {
+        featureGroup: this.drawnItems,
+        selectedPathOptions: this.drawControl.options.edit.selectedPathOptions
+      }).disable()
+    },
+    drawdelete() {
+      new L.Draw.Rectangle(this.mapInstance, this.drawControl.options.rectangle).disable()
+      this.mapDrawDelete = new L.EditToolbar.Delete(this.mapInstance, {
+        featureGroup: this.drawnItems
+      }).enable()
     }
   }
 }
