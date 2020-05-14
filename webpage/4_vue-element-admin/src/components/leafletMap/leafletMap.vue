@@ -1,6 +1,15 @@
 <template>
   <div class="vue-leaflet">
     <div id="map" :style="{width: curWidth, height: curHeight}" />
+    <el-button type="primary" @click="clickDrawRec">标注</el-button>
+    <el-button type="primary" @click="clickDrawCancel">退出标注</el-button>
+    <el-button type="primary" @click="clickEditRec">修改</el-button>
+    <el-button type="primary" @click="clickEditCancel">退出修改</el-button>
+    <el-button type="primary" @click="clickEditSave">保存修改</el-button>
+    <el-button type="primary" @click="clickRemoveRec">删除</el-button>
+    <el-button type="primary" @click="clickRemoveCancel">退出删除</el-button>
+    <el-button type="primary" @click="clickRemoveSave">保存删除</el-button>
+    <el-button type="primary" @click="clickRemoveAll">删除所有</el-button>
   </div>
 </template>
 
@@ -10,7 +19,8 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw'
 import 'leaflet-draw/dist/leaflet.draw.css'
-import { MapDrawCreate } from './draw/draw.js'
+import { MapDrawCreate, clickDrawRec, clickEditRec, clickRemoveRec, clickDrawCancel,
+  clickEditCancel, clickEditSave, clickRemoveCancel, clickRemoveSave, clickRemoveAll } from './draw/draw.js'
 
 export default {
   name: 'LeafletVue',
@@ -81,7 +91,9 @@ export default {
       'minNativeZoom': this.minNativeZoom }).addTo(this.mapInstance)
 
     // 下面是标注相关的
-    MapDrawCreate(this, this.mapInstance)
+    if (this.args.labletool) {
+      MapDrawCreate(this, this.mapInstance)
+    }
   },
   beforeDestroy() {
   },
@@ -179,6 +191,33 @@ export default {
       y = -y
       const x = parseInt(latLng.lng / this.args.realimgwidth)
       return { 'x': x, 'y': y }
+    },
+    clickDrawRec() {
+      clickDrawRec()
+    },
+    clickEditRec() {
+      clickEditRec()
+    },
+    clickRemoveRec() {
+      clickRemoveRec()
+    },
+    clickDrawCancel() {
+      clickDrawCancel()
+    },
+    clickEditCancel() {
+      clickEditCancel()
+    },
+    clickEditSave() {
+      clickEditSave()
+    },
+    clickRemoveCancel() {
+      clickRemoveCancel()
+    },
+    clickRemoveSave() {
+      clickRemoveSave()
+    },
+    clickRemoveAll() {
+      clickRemoveAll()
     }
   }
 }
