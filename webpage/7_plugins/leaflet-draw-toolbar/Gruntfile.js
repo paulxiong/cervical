@@ -199,14 +199,5 @@ module.exports = function(grunt) {
     });
 
     /* Default (development): Watch files and lint, test, and build on change. */
-    grunt.registerTask('default', [ 'concat', 'uglify:dist', 'less', 'autoprefixer', 'cssmin' ]);
-
-    grunt.registerTask('build:js', [
-        'concat:dist',
-        'uglify:dist'
-    ]);
-
-    grunt.registerTask('build:images', [ 'copy:dist' ]);
-
-    grunt.registerTask('build:css', [ 'less', 'autoprefixer', 'cssmin' ]);
+    grunt.registerTask('default', [ 'concat:dist', 'uglify:dist', 'less', 'autoprefixer', 'cssmin', 'copy:dist']);
 };

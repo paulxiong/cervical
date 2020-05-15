@@ -16,5 +16,19 @@ L.Toolbar2.EditToolbar.Popup = L.Toolbar2.Popup.extend({
 		}
 
 		L.Toolbar2.Popup.prototype.onAdd.call(this, map);
+
+		// 最笨的办法检测鼠标点在标注外面,如果点在外面就把popup关闭
+		var thisPopup = this
+		function hidepopup(e) {
+			if(!e.latlng || !thisPopup || !thisPopup._map) {
+				return
+			}
+			if(!shape.getBounds().contains(e.latlng)) {
+				thisPopup._map.removeLayer(thisPopup)
+			}
+		}
+		setTimeout(function() {
+			thisPopup._map.once('click', hidepopup, {capture: false, once: true});
+		}, 20);
 	}
 });
