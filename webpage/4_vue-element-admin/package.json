@@ -37,6 +37,8 @@
     "jszip": "3.2.1",
     "leaflet": "1.6.0",
     "leaflet-draw": "1.0.4",
+    "leaflet-draw-toolbar": "0.3.0-alpha.1",
+    "leaflet-toolbar": "0.4.0-alpha.2",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",

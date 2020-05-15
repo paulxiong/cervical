@@ -1,0 +1,56 @@
+{
+  "name": "leaflet-draw-toolbar",
+  "version": "0.3.0-alpha.1",
+  "description": "Leaflet.toolbar for Leaflet.draw.",
+  "scripts": {
+    "build": "grunt"
+  },
+  "peerDependencies": {
+    "leaflet": "^1.0.0",
+    "leaflet-draw": "^0.4.0",
+    "leaflet-toolbar": "^0.3.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "~7.1.4",
+    "chai": "~4.1.2",
+    "grunt": "~1.0.1",
+    "grunt-autoprefixer": "~3.0.4",
+    "grunt-bump": "~0.8.0",
+    "grunt-contrib-clean": "~1.1.0",
+    "grunt-contrib-coffee": "~1.0.0",
+    "grunt-contrib-concat": "~1.0.1",
+    "grunt-contrib-cssmin": "~2.2.1",
+    "grunt-contrib-jshint": "~1.1.0",
+    "grunt-contrib-less": "~1.4.1",
+    "grunt-contrib-nodeunit": "~1.0.0",
+    "grunt-contrib-uglify": "~3.0.1",
+    "grunt-contrib-watch": "~1.0.0",
+    "grunt-contrib-connect": "~1.0.2",
+    "grunt-contrib-copy": "~1.0.0",
+    "grunt-gh-pages": "~2.0.0",
+    "jshint": "~2.9.5",
+    "leaflet": "1.6.0",
+    "leaflet-draw": "1.0.4",
+    "leaflet-toolbar": "0.4.0-alpha.2",
+    "matchdep": "~2.0.0",
+    "sinon": "~3.2.1",
+    "uglify-js": "~3.1.0"
+  },
+  "directories": {
+    "distribution": "./dist",
+    "source": "./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justinmmanley/leaflet-draw-toolbar"
+  },
+  "keywords": [
+    "maps",
+    "leaflet",
+    "toolbar",
+    "user-interface"
+  ],
+  "author": "Justin Manley",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}

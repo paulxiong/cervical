@@ -1,5 +1,8 @@
 import L from 'leaflet'
 import 'leaflet-draw'
+import 'leaflet-toolbar'
+import 'leaflet-draw-toolbar/dist/leaflet.draw-toolbar.js'
+import './ColorPicker.js'
 
 function _tooltip_init() { // 初始化地图上默认的一些提示信息
   L.drawLocal.draw.toolbar.buttons.rectangle = '绘制矩形标注'
@@ -34,11 +37,13 @@ function _tooltip_init() { // 初始化地图上默认的一些提示信息
 }
 
 // 单击一个正方形触发
-function _clickRectangleHandler(e, drawInstance) {
+function _clickRectangleHandler(e, drawInstance, _map) {
   var layer = e.sourceTarget // 这里获得矩形
   console.log(layer.getTooltip())
 
-//   layer.editing.enable() // 使能修改当前矩形
+  // layer.editing.enable() // 使能修改当前矩形
+  // layer.setTooltipContent('修改')
+
 //   handler: new L.EditToolbar.Edit(map, {
 //     featureGroup: featureGroup,
 //     selectedPathOptions: this.options.edit.selectedPathOptions,
@@ -47,7 +52,7 @@ function _clickRectangleHandler(e, drawInstance) {
 }
 
 // 画完一个正方形触发
-function _createRectangleHandler(e, drawInstance) {
+function _createRectangleHandler(e, drawInstance, _map) {
   var type = e.layerType
   if (type !== 'rectangle') { // 目前只支持画矩形
     return
@@ -59,14 +64,18 @@ function _createRectangleHandler(e, drawInstance) {
     permanent: true, // 始终显示
     direction: 'right',
     sticky: true,
-    interactive: false, // 可交互的，就是能被点击到
+    interactive: true, // 可交互的，就是能被点击到
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
 
   layer.cellid = ts
   // 单击矩形触发
   layer.on('click', function(event) {
-    _clickRectangleHandler(event, drawInstance, layer)
+    _clickRectangleHandler(event, drawInstance, layer, _map)
+  })
+
+  layer.on('dblclick', function(event) {
+    console.log('dblclick')
   })
 }
 
@@ -150,9 +159,9 @@ function _drawEvent(_map, drawInstance) {
     console.log('DELETESTOP')
     drawInstance.startremove = false
   })
-  _map.on(L.Draw.Event.CREATED, function(e) { // 新画了框
+  _map.on(L.Draw.Event.CREATED, function(e,) { // 新画了框
     console.log('CREATED')
-    _createRectangleHandler(e, drawInstance)
+    _createRectangleHandler(e, drawInstance, _map)
   })
   _map.on(L.Draw.Event.EDITED, function(e) { // 修改结束
     console.log('EDITED')
@@ -173,34 +182,39 @@ function _drawEvent(_map, drawInstance) {
 function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参数mapInstance是已经初始化的Map实例
   drawInstance.drawnItems = new L.FeatureGroup()
   mapInstance.addLayer(drawInstance.drawnItems)
-  drawInstance.drawControl = new L.Control.Draw({
-    position: 'topright',
-    draw: {
-      polyline: false, // 不准画线
-      polygon: false, // 不准画多边形
-      circle: false, // 不准画圆
-      marker: false, // 不准画标记
-      circlemarker: false,
-      rectangle: {
-        shapeOptions: {
-          clickable: true,
-          fillOpacity: 0, // 填充完全透明
-          color: 'red', // 边框颜色
-          weight: drawInstance.weight
-        }
-      }
-    },
-    edit: {
-      featureGroup: drawInstance.drawnItems,
-      poly: {
-        allowIntersection: false
+
+  var editActions = [
+    L.Toolbar2.EditAction.Popup.Edit,
+    L.Toolbar2.EditAction.Popup.Delete,
+    L.Toolbar2.Action.extendOptions({
+      toolbarIcon: {
+        className: 'leaflet-draw-draw-marker',
+        html: '<span class="fa fa-eyedropper"></span>'
       },
-      remove: true
-    }
+      subToolbar: new L.Toolbar2({ actions: [
+        L.ColorPicker.extendOptions({ color: '#db1d0f' }),
+        L.ColorPicker.extendOptions({ color: '#025100' }),
+        L.ColorPicker.extendOptions({ color: '#ffff00' }),
+        L.ColorPicker.extendOptions({ color: '#0000ff' })
+      ] })
+    })
+  ]
+  new L.Toolbar2.DrawToolbar({
+    position: 'topleft'
+  }).addTo(mapInstance)
+
+  mapInstance.on('draw:created', function(evt) {
+    var	type = evt.layerType
+    var layer = evt.layer
+
+    drawInstance.drawnItems.addLayer(layer)
+
+    layer.on('click', function(event) {
+      new L.Toolbar2.EditToolbar.Popup(event.latlng, {
+        actions: editActions
+      }).addTo(mapInstance, layer)
+    })
   })
-  if (mapInstance.addControl(drawInstance.drawControl)) {
-    console.log('addControl')
-  }
 }
 
 export default class LeafletDrawRectangle {

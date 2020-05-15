@@ -1,7 +1,7 @@
 <template>
   <div class="vue-leaflet">
     <div id="map" :style="{width: curWidth, height: curHeight}" />
-    <el-button type="primary" @click="clickDrawRec">标注</el-button>
+    <!-- <el-button type="primary" @click="clickDrawRec">标注</el-button>
     <el-button type="primary" @click="clickDrawCancel">退出标注</el-button>
     <el-button type="primary" @click="clickEditRec">修改</el-button>
     <el-button type="primary" @click="clickEditCancel">退出修改</el-button>
@@ -9,16 +9,18 @@
     <el-button type="primary" @click="clickRemoveRec">删除</el-button>
     <el-button type="primary" @click="clickEditCancel">退出删除</el-button>
     <el-button type="primary" @click="clickEditSave">保存删除</el-button>
-    <el-button type="primary" @click="clickRemoveAll">删除所有</el-button>
+    <el-button type="primary" @click="clickRemoveAll">删除所有</el-button> -->
   </div>
 </template>
 
 <script>
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw.css'
+import 'leaflet-toolbar/dist/leaflet.toolbar.css'
+import 'leaflet-draw-toolbar/dist/leaflet.draw-toolbar.css'
 import { APIUrl } from '@/const/config'
 import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw'
-import 'leaflet-draw/dist/leaflet.draw.css'
 import LeafletDrawRectangle from './draw/draw.js'
 
 export default {
