@@ -7,8 +7,8 @@
     <el-button type="primary" @click="clickEditCancel">退出修改</el-button>
     <el-button type="primary" @click="clickEditSave">保存修改</el-button>
     <el-button type="primary" @click="clickRemoveRec">删除</el-button>
-    <el-button type="primary" @click="clickRemoveCancel">退出删除</el-button>
-    <el-button type="primary" @click="clickRemoveSave">保存删除</el-button>
+    <el-button type="primary" @click="clickEditCancel">退出删除</el-button>
+    <el-button type="primary" @click="clickEditSave">保存删除</el-button>
     <el-button type="primary" @click="clickRemoveAll">删除所有</el-button>
   </div>
 </template>
@@ -19,8 +19,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw'
 import 'leaflet-draw/dist/leaflet.draw.css'
-import { MapDrawCreate, clickDrawRec, clickEditRec, clickRemoveRec, clickDrawCancel,
-  clickEditCancel, clickEditSave, clickRemoveCancel, clickRemoveSave, clickRemoveAll } from './draw/draw.js'
+import LeafletDrawRectangle from './draw/draw.js'
 
 export default {
   name: 'LeafletVue',
@@ -45,10 +44,7 @@ export default {
       maxNativeZoom: 0.1,
       minNativeZoom: -0,
       zoom: 0,
-      // 后面是关于标注
-      drawnItems: null,
-      weight: 2,
-      drawControl: null
+      drawInstance: null
     }
   },
   created() {
@@ -92,7 +88,7 @@ export default {
 
     // 下面是标注相关的
     if (this.args.labletool) {
-      MapDrawCreate(this, this.mapInstance)
+      this.drawInstance = new LeafletDrawRectangle(this, this.mapInstance)
     }
   },
   beforeDestroy() {
@@ -193,31 +189,31 @@ export default {
       return { 'x': x, 'y': y }
     },
     clickDrawRec() {
-      clickDrawRec()
+      this.drawInstance.clickDrawRec()
     },
     clickEditRec() {
-      clickEditRec()
+      this.drawInstance.clickEditRec()
     },
     clickRemoveRec() {
-      clickRemoveRec()
+      this.drawInstance.clickRemoveRec()
     },
     clickDrawCancel() {
-      clickDrawCancel()
+      this.drawInstance.clickDrawCancel()
     },
     clickEditCancel() {
-      clickEditCancel()
+      this.drawInstance.clickCancel()
     },
     clickEditSave() {
-      clickEditSave()
+      this.drawInstance.clickSave()
     },
     clickRemoveCancel() {
-      clickRemoveCancel()
+      this.drawInstance.clickCancel()
     },
     clickRemoveSave() {
-      clickRemoveSave()
+      this.drawInstance.clickSave()
     },
     clickRemoveAll() {
-      clickRemoveAll()
+      this.drawInstance.clickRemoveAll()
     }
   }
 }

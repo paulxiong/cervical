@@ -77,6 +77,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/test3',
+    component: () => import('@/views/testView/index3'),
+    hidden: true
+  },
+  {
     path: '/doctorreport',
     component: () => import('@/views/review/components/doctorReportPage'),
     hidden: true
@@ -84,6 +89,11 @@ export const constantRoutes = [
   {
     path: '/report/details',
     component: () => import('@/views/workSpace/details2'),
+    hidden: true
+  },
+  {
+    path: '/label/page',
+    component: () => import('@/views/label/labelpage'),
     hidden: true
   },
   {
@@ -158,7 +168,7 @@ export const constantRoutes = [
     children: [
       {
         path: '/label',
-        component: () => import('@/views/label/index'),
+        component: () => import('@/views/label/labelhome'),
         name: '标注',
         meta: { title: '标注', icon: 'edit', affix: true }
       }

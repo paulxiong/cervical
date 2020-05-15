@@ -1,5 +1,5 @@
 <template>
-  <div class="doctor-report">
+  <div class="labellist">
     <el-table
       v-loading="loading"
       element-loading-text="拼命加载中"
@@ -148,7 +148,7 @@ export default {
     },
     goDetail(val) {
       this.$router.push({
-        path: `/report/details?pid=${val.id}&did=${val.did}&type=${val.type}&report=doctor`
+        path: `/label/page?pid=${val.id}&did=${val.did}&type=${val.type}&report=doctor`
       })
     },
     // 判断当前病例的阴性阳性
@@ -220,7 +220,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.doctor-report {
+.labellist {
   overflow: auto;
   height: 100%;
   padding-bottom: 30px;

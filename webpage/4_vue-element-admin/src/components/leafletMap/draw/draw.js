@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import 'leaflet-draw'
 
-function _tooltip_init(_this) { // 初始化地图上默认的一些提示信息
+function _tooltip_init() { // 初始化地图上默认的一些提示信息
   L.drawLocal.draw.toolbar.buttons.rectangle = '绘制矩形标注'
   L.drawLocal.draw.toolbar.actions.title = '取消绘制矩形标注'
   L.drawLocal.draw.toolbar.actions.text = '取消'
@@ -34,7 +34,7 @@ function _tooltip_init(_this) { // 初始化地图上默认的一些提示信息
 }
 
 // 单击一个正方形触发
-function _clickRectangleHandler(e, _this) {
+function _clickRectangleHandler(e, drawInstance) {
   var layer = e.sourceTarget // 这里获得矩形
   console.log(layer.getTooltip())
 
@@ -47,29 +47,31 @@ function _clickRectangleHandler(e, _this) {
 }
 
 // 画完一个正方形触发
-function _createRectangleHandler(e, _this) {
+function _createRectangleHandler(e, drawInstance) {
   var type = e.layerType
   if (type !== 'rectangle') { // 目前只支持画矩形
     return
   }
   var layer = e.layer
   // 参考 https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
-  layer.bindTooltip(`<a title="123" style='width:100%;height:100%;background-color: red;color: white;'>HPV1</a>`, {
+  const ts = '' + new Date().getTime()
+  layer.bindTooltip(`<a title="123" style='width:100%;height:100%;background-color: red;color: white;'>${ts}</a>`, {
     permanent: true, // 始终显示
     direction: 'right',
     sticky: true,
     interactive: false, // 可交互的，就是能被点击到
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
-  }).addTo(_this.drawnItems)
+  }).addTo(drawInstance.drawnItems)
 
+  layer.cellid = ts
   // 单击矩形触发
   layer.on('click', function(event) {
-    _clickRectangleHandler(event, _this, layer)
+    _clickRectangleHandler(event, drawInstance, layer)
   })
 }
 
 // 修改中触发
-function _editingRectangleHandler(e, _this) {
+function _editingRectangleHandler(e, drawInstance) {
   const layer = e.layer
   if (!layer.getTooltip) {
     return
@@ -82,11 +84,12 @@ function _editingRectangleHandler(e, _this) {
 }
 
 // 修改结束之后触发
-function _editRectangleHandler(e, _this) {
+function _editRectangleHandler(e, drawInstance) {
   var layers = e.layers
   var countOfEditedLayers = 0
   layers.eachLayer(function(layer) {
     countOfEditedLayers++
+    console.log(layer.cellid)
     // 更新tooltip的位置
     if (layer.getTooltip) {
       var toolTip = layer.getTooltip()
@@ -98,42 +101,79 @@ function _editRectangleHandler(e, _this) {
   console.log('修改了 ' + countOfEditedLayers + ' 个图层')
 }
 
-function _drawEvent(_this, _map) {
-  _map.on(L.Draw.Event.DELETED, function() { console.log('DELETED') })
-  _map.on(L.Draw.Event.DRAWSTOP, function() { console.log('DRAWSTOP') })
+// 删除结束之后触发
+function _removeRectangleHandler(e, drawInstance) {
+  var layers = e.layers
+  var countOfEditedLayers = 0
+  layers.eachLayer(function(layer) {
+    countOfEditedLayers++
+    // 更新tooltip的位置
+    if (layer.getTooltip) {
+      var toolTip = layer.getTooltip()
+      console.log(toolTip)
+      console.log(layer.cellid)
+      // if (toolTip) {
+      //   toolTip._updatePosition()
+      // }
+    }
+  })
+  console.log('删除了 ' + countOfEditedLayers + ' 个图层')
+}
+
+function _drawEvent(_map, drawInstance) {
   _map.on(L.Draw.Event.DRAWVERTEX, function() { console.log('DRAWVERTEX') })
-  _map.on(L.Draw.Event.EDITSTART, function() { console.log('EDITSTART') })
-  _map.on(L.Draw.Event.EDITSTOP, function() { console.log('EDITSTOP') })
-  _map.on(L.Draw.Event.DELETESTART, function() { console.log('DELETESTART') })
-  _map.on(L.Draw.Event.DELETESTOP, function() { console.log('DELETESTOP') })
   _map.on(L.Draw.Event.TOOLBAROPENED, function() { console.log('TOOLBAROPENED') })
   _map.on(L.Draw.Event.TOOLBARCLOSED, function() { console.log('TOOLBARCLOSED') })
   _map.on(L.Draw.Event.MARKERCONTEXT, function() { console.log('MARKERCONTEXT') })
   _map.on(L.Draw.Event.EDITVERTEX, function(e) { console.log('EDITVERTEX') })
   _map.on(L.Draw.Event.DRAWSTART, function() {
     console.log('DRAWSTART')
+    drawInstance.startdraw = true
   })
-  _map.on(L.Draw.Event.CREATED, function(e) {
-    console.log('CREATED') // 画框
-    _createRectangleHandler(e, _this)
+  _map.on(L.Draw.Event.DRAWSTOP, function() {
+    console.log('DRAWSTOP')
+    drawInstance.startdraw = false
+  })
+  _map.on(L.Draw.Event.EDITSTART, function() {
+    console.log('EDITSTART')
+    drawInstance.startedit = true
+  })
+  _map.on(L.Draw.Event.EDITSTOP, function() {
+    console.log('EDITSTOP')
+    drawInstance.startedit = false
+  })
+  _map.on(L.Draw.Event.DELETESTART, function() {
+    console.log('DELETESTART')
+    drawInstance.startremove = true
+  })
+  _map.on(L.Draw.Event.DELETESTOP, function() {
+    console.log('DELETESTOP')
+    drawInstance.startremove = false
+  })
+  _map.on(L.Draw.Event.CREATED, function(e) { // 新画了框
+    console.log('CREATED')
+    _createRectangleHandler(e, drawInstance)
   })
   _map.on(L.Draw.Event.EDITED, function(e) { // 修改结束
     console.log('EDITED')
-    _editRectangleHandler(e, _this)
+    _editRectangleHandler(e, drawInstance)
+  })
+  _map.on(L.Draw.Event.DELETED, function(e) { // 删除结束
+    console.log('DELETED')
+    _removeRectangleHandler(e, drawInstance)
   })
   _map.on(L.Draw.Event.EDITMOVE, function(e) { // 修改，平移矩形
-    _editingRectangleHandler(e, _this)
+    _editingRectangleHandler(e, drawInstance)
   })
   _map.on(L.Draw.Event.EDITRESIZE, function(e) { // 修改，矩形改变大小
-    _editingRectangleHandler(e, _this)
+    _editingRectangleHandler(e, drawInstance)
   })
 }
 
-function _MapDrawCreate(_this, mapInstance) { // 创建画图实例，参数mapInstance是已经初始化的Map实例, _this是vue的实例
-  const that = _this
-  that.drawnItems = new L.FeatureGroup()
-  mapInstance.addLayer(that.drawnItems)
-  that.drawControl = new L.Control.Draw({
+function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参数mapInstance是已经初始化的Map实例
+  drawInstance.drawnItems = new L.FeatureGroup()
+  mapInstance.addLayer(drawInstance.drawnItems)
+  drawInstance.drawControl = new L.Control.Draw({
     position: 'topright',
     draw: {
       polyline: false, // 不准画线
@@ -146,89 +186,65 @@ function _MapDrawCreate(_this, mapInstance) { // 创建画图实例，参数mapI
           clickable: true,
           fillOpacity: 0, // 填充完全透明
           color: 'red', // 边框颜色
-          weight: that.weight
+          weight: drawInstance.weight
         }
       }
     },
     edit: {
-      featureGroup: that.drawnItems,
+      featureGroup: drawInstance.drawnItems,
       poly: {
         allowIntersection: false
       },
       remove: true
     }
   })
-  if (mapInstance.addControl(that.drawControl)) {
+  if (mapInstance.addControl(drawInstance.drawControl)) {
     console.log('addControl')
   }
 }
 
-export function MapDrawCreate(_this, _map) {
-  _tooltip_init(_this)
-  _drawEvent(_this, _map)
-  _MapDrawCreate(_this, _map)
-}
+export default class LeafletDrawRectangle {
+  constructor(vueInstance, mapInstance) {
+    // 下面是全局量
+    this.mapInstance = mapInstance
+    this.vueInstance = vueInstance
+    this.drawnItems = null
+    this.drawControl = null
+    // 下面是参数
+    this.weight = 2
+    this.startdraw = false // 画框状态
+    this.startedit = false // 修改状态
+    this.startremove = false // 删除状态
 
-// 查找工具栏按钮,并单击
-function _clickToolBar(classname, title) {
-  var element = document.getElementsByClassName(classname)
-  if (element.length < 1) {
-    return
+    _tooltip_init()
+    _MapDrawCreate(this.mapInstance, this)
+    _drawEvent(this.mapInstance, this)
   }
-  for (var i = 0; i < element.length; i++) {
-    var item = element[i]
-    if (item.title !== title) {
-      continue
-    }
-    item.click()
-  }
-  return
-}
-// 查找工具栏按钮,并单击
-function _clickAction(classname, title, text) {
-  var element = document.getElementsByClassName(classname)
-  if (element.length < 1) {
-    return
-  }
-  for (var i = 0; i < element.length; i++) {
-    var item = element[i].getElementsByTagName('a')
-    if (item.length < 1) {
-      continue
-    }
-    for (var j = 0; j < item.length; j++) {
-      if (!item[j] || item[j].title !== title || item[j].text !== text) {
-        continue
-      }
-      item[j].click()
-    }
-  }
-}
 
-// 通过页面元素操作来控制工具栏
-export function clickDrawRec() { // 开始绘制矩形
-  return _clickToolBar('leaflet-draw-draw-rectangle', '绘制矩形标注')
-}
-export function clickEditRec() { // 开始修改
-  return _clickToolBar('leaflet-draw-edit-edit', '修改标注')
-}
-export function clickRemoveRec() { // 开始删除
-  return _clickToolBar('leaflet-draw-edit-remove', '删除标注')
-}
-export function clickDrawCancel() { // 取消绘制矩形
-  return _clickAction('leaflet-draw-actions', '取消绘制矩形标注', '取消')
-}
-export function clickEditCancel() { // 取消修改
-  return _clickAction('leaflet-draw-actions', '取消当前的标注修改', '取消')
-}
-export function clickEditSave() { // 保存修改
-  return _clickAction('leaflet-draw-actions', '保存修改', '保存')
-}
-export function clickRemoveCancel() { // 取消删除
-  return _clickAction('leaflet-draw-actions', '取消当前的标注修改', '取消')
-}
-export function clickRemoveSave() { // 保存删除
-  return _clickAction('leaflet-draw-actions', '保存修改', '保存')
-}
-export function clickRemoveAll() { // 删除所有
-  return _clickAction('leaflet-draw-actions', '删除所有的标注, 慎用！', '删除所有')
+  clickDrawRec() { // 开始绘制矩形
+    this.drawControl._toolbars.draw._modes.rectangle.handler.enable()
+  }
+  clickEditRec() { // 开始修改
+    this.drawControl._toolbars.edit._modes.edit.handler.enable() // 修改所有
+  }
+  clickRemoveRec() { // 开始删除
+    this.drawControl._toolbars.edit._modes.remove.handler.enable() // 开始删除
+  }
+  clickDrawCancel() { // 取消绘制矩形
+    if (!this.startdraw) return
+    this.drawControl._toolbars.draw._modes.rectangle.handler.disable() // 取消绘制矩形
+  }
+  clickCancel() { // 取消修改/删除
+    if (!this.startedit && !this.startremove) return
+    this.drawControl._toolbars.edit.disable() // 取消修改
+  }
+  clickSave() { // 保存修改/删除
+    if (!this.startedit && !this.startremove) return
+    this.drawControl._toolbars.edit._save()
+    this.drawControl._toolbars.edit.disable() // 取消修改
+  }
+  clickRemoveAll() { // 删除所有
+    if (!this.startremove) return
+    this.drawControl._toolbars.edit._modes.remove.handler.removeAllLayers() // 取消修改
+  }
 }
