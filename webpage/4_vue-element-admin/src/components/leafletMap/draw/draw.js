@@ -15,7 +15,7 @@ function _celltype_init() {
   const menuitems = []
   for (var i = 0; i < celltypes.length; i++) {
     celltypes[i].color = celltypes[i].typecolor // 线框改变颜色时候用
-    menuitems.push(L.ColorPicker.extendOptions(celltypes[i]))
+    menuitems.push(L.ColorPicker.extendOptions({ 'color': celltypes[i].choicscolor, 'celltype': celltypes[i] }))
   }
   return menuitems
 }
@@ -61,16 +61,15 @@ function _createRectangleHandler(e, drawInstance, _map) {
   var layer = e.layer
   // 参考 https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
   const ts = '' + new Date().getTime()
-  layer.bindTooltip(`<a title="123" style='width:100%;height:100%;background-color: red;color: white;'>${ts}</a>`, {
+  layer.bindTooltip(`<a title="未知类型" style='width:100%;height:100%;background-color: red;color: white; display: inline-block;font-size: 15px;'>${ts}</a>`, {
     permanent: true, // 始终显示
     direction: 'right',
     sticky: true,
-    interactive: false, // 可交互的，就是能被点击到
+    interactive: true, // 可交互的，就是能被点击到, 调试样式要改成true
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
-  // layer.setTooltipContent('修改')
+  layer.celltypeid = 200 // 默认是200--未知类型
 
-  layer.cellid = ts
   layer.on('dblclick', function(event) {
     console.log('dblclick')
   })

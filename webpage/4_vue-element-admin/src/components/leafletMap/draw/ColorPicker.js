@@ -11,8 +11,13 @@ L.ColorPicker = L.Toolbar2.Action.extend({
     L.Toolbar2.Action.prototype.initialize.call(this, map, options)
   },
   addHooks: function() {
-    this._shape.setStyle({ color: this.options.color })
+    this._shape.setStyle({ color: this.options.celltype.typecolor })
     this.disable()
+    const toolTip = this._shape.getTooltip()
+    if (toolTip) {
+      toolTip._source.setTooltipContent(`<a title="123" style='width:100%;height:100%;background-color: ${this.options.celltype.typecolor};color: white; display: inline-block;font-size: 15px;'>${this.options.celltype.label}</a>`)
+      toolTip._source.celltypeid = this.options.celltype.id
+    }
   },
   _createIcon: function(toolbar, container, args) {
     var colorSwatch = L.DomUtil.create('div')
@@ -29,10 +34,10 @@ L.ColorPicker = L.Toolbar2.Action.extend({
 
     // 显示细胞类型
     this.cellTypeText = L.DomUtil.create('a', 'cell-option-text')
-    this.cellTypeText.innerHTML = `${this.options.label}`
+    this.cellTypeText.innerHTML = `${this.options.celltype.label}`
     this.cellTypeText.style.width = '100%'
     this.cellTypeText.style.height = '100%'
-    this.cellTypeText.style.backgroundColor = this.options.choicscolor
+    this.cellTypeText.style.backgroundColor = this.options.celltype.choicscolor
     this.cellTypeText.style.display = 'block'
     this.cellTypeText.style.lineHeight = L.DomUtil.getStyle(this._link, 'height')
     this.cellTypeText.style.textAlign = 'left'
@@ -49,7 +54,7 @@ L.ColorPicker = L.Toolbar2.Action.extend({
       this.cellTypeText.style.backgroundColor = '#D8D8D8'
     }, this)
     L.DomEvent.on(this._link, 'mouseout', function() {
-      this.cellTypeText.style.backgroundColor = this.options.choicscolor
+      this.cellTypeText.style.backgroundColor = this.options.celltype.choicscolor
     }, this)
 
     L.DomEvent.on(this._link, 'click', function() {
