@@ -20,7 +20,7 @@ export default {
   props: {
     url: {
       type: String,
-      default: 'http://medical.raidcdn.cn:3000/imgs/scratch/img/b20200403/m20200403193737/Thumbs/Result-1905955%2B%E4%BD%8E.jpg?width=300'
+      default: ''
     },
     col: { type: Number, default: 34 },
     row: { type: Number, default: 41 }

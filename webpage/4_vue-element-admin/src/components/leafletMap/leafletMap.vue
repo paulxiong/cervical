@@ -1,15 +1,7 @@
 <template>
   <div class="vue-leaflet">
     <div id="map" :style="{width: curWidth, height: curHeight}" />
-    <!-- <el-button type="primary" @click="clickDrawRec">标注</el-button>
-    <el-button type="primary" @click="clickDrawCancel">退出标注</el-button>
-    <el-button type="primary" @click="clickEditRec">修改</el-button>
-    <el-button type="primary" @click="clickEditCancel">退出修改</el-button>
-    <el-button type="primary" @click="clickEditSave">保存修改</el-button>
-    <el-button type="primary" @click="clickRemoveRec">删除</el-button>
-    <el-button type="primary" @click="clickEditCancel">退出删除</el-button>
-    <el-button type="primary" @click="clickEditSave">保存删除</el-button>
-    <el-button type="primary" @click="clickRemoveAll">删除所有</el-button> -->
+    <el-button type="primary" @click="clickDrawRec">标注</el-button>
   </div>
 </template>
 
@@ -164,7 +156,7 @@ export default {
       return img
     },
     TileLayer_getAttribution() {
-      return "<a href='https://placekitten.com/attribution.html'>提示</a>"
+      return ''
     },
     makebounds(scenewidth, sceneheight) {
       // 要把坐标移动到第四象限，这样保证左上角X,y都是0,从左往右X递增，从上到下Y递减
@@ -220,3 +212,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.leaflet-right {
+  /* 把toolbar放在右上角，然后使用display隐藏 */
+  display: none;
+}
+</style>

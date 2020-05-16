@@ -3,6 +3,22 @@ import 'leaflet-draw'
 import 'leaflet-toolbar'
 import 'leaflet-draw-toolbar/dist/leaflet.draw-toolbar.js'
 import './ColorPicker.js'
+import { cellsOptions, cellsOptions2, cellsOptions3 } from '@/const/const'
+
+function _celltype_init() {
+  var celltypes = []
+  celltypes = celltypes.concat(cellsOptions, cellsOptions2, cellsOptions3)
+  celltypes = celltypes.sort(function(a, b) {
+    return a.order > b.order
+  })
+  // 创建菜单列表
+  const menuitems = []
+  for (var i = 0; i < celltypes.length; i++) {
+    celltypes[i].color = celltypes[i].typecolor // 线框改变颜色时候用
+    menuitems.push(L.ColorPicker.extendOptions(celltypes[i]))
+  }
+  return menuitems
+}
 
 function _tooltip_init() { // 初始化地图上默认的一些提示信息
   L.drawLocal.draw.toolbar.buttons.rectangle = '绘制矩形标注'
@@ -36,21 +52,6 @@ function _tooltip_init() { // 初始化地图上默认的一些提示信息
   }
 }
 
-// 单击一个正方形触发
-function _clickRectangleHandler(e, drawInstance, _map) {
-  var layer = e.sourceTarget // 这里获得矩形
-  console.log(layer.getTooltip())
-
-  // layer.editing.enable() // 使能修改当前矩形
-  // layer.setTooltipContent('修改')
-
-//   handler: new L.EditToolbar.Edit(map, {
-//     featureGroup: featureGroup,
-//     selectedPathOptions: this.options.edit.selectedPathOptions,
-//     poly: this.options.poly
-// }),
-}
-
 // 画完一个正方形触发
 function _createRectangleHandler(e, drawInstance, _map) {
   var type = e.layerType
@@ -64,18 +65,34 @@ function _createRectangleHandler(e, drawInstance, _map) {
     permanent: true, // 始终显示
     direction: 'right',
     sticky: true,
-    interactive: true, // 可交互的，就是能被点击到
+    interactive: false, // 可交互的，就是能被点击到
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
+  // layer.setTooltipContent('修改')
 
   layer.cellid = ts
-  // 单击矩形触发
-  layer.on('click', function(event) {
-    _clickRectangleHandler(event, drawInstance, layer, _map)
-  })
-
   layer.on('dblclick', function(event) {
     console.log('dblclick')
+  })
+
+  // 创建菜单
+  drawInstance.drawnItems.addLayer(layer)
+  var editActions = [
+    L.Toolbar2.EditAction.Popup.Edit,
+    L.Toolbar2.EditAction.Popup.Delete,
+    L.Toolbar2.Action.extendOptions({
+      toolbarIcon: {
+        className: 'leaflet-draw-draw-marker',
+        html: '<span class="fa fa-eyedropper"></span>'
+      },
+      subToolbar: new L.Toolbar2({ actions: drawInstance.menuitems })
+    })
+  ]
+  // 单击矩形触发菜单
+  layer.on('click', function(event) {
+    new L.Toolbar2.EditToolbar.Popup(event.latlng, {
+      actions: editActions
+    }).addTo(_map, layer)
   })
 }
 
@@ -183,38 +200,39 @@ function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参
   drawInstance.drawnItems = new L.FeatureGroup()
   mapInstance.addLayer(drawInstance.drawnItems)
 
-  var editActions = [
-    L.Toolbar2.EditAction.Popup.Edit,
-    L.Toolbar2.EditAction.Popup.Delete,
-    L.Toolbar2.Action.extendOptions({
-      toolbarIcon: {
-        className: 'leaflet-draw-draw-marker',
-        html: '<span class="fa fa-eyedropper"></span>'
+  drawInstance.drawControl = new L.Control.Draw({ // 这个是leaflet.draw提供，编辑和删除是全局控制
+    position: 'topright',
+    draw: {
+      polyline: false, // 不准画线
+      polygon: false, // 不准画多边形
+      circle: false, // 不准画圆
+      marker: false, // 不准画标记
+      circlemarker: false,
+      rectangle: {
+        shapeOptions: {
+          clickable: true,
+          fillOpacity: 0, // 填充完全透明
+          color: 'red', // 边框颜色
+          weight: drawInstance.weight
+        }
+      }
+    },
+    edit: {
+      featureGroup: drawInstance.drawnItems,
+      poly: {
+        allowIntersection: false
       },
-      subToolbar: new L.Toolbar2({ actions: [
-        L.ColorPicker.extendOptions({ color: '#db1d0f' }),
-        L.ColorPicker.extendOptions({ color: '#025100' }),
-        L.ColorPicker.extendOptions({ color: '#ffff00' }),
-        L.ColorPicker.extendOptions({ color: '#0000ff' })
-      ] })
-    })
-  ]
-  new L.Toolbar2.DrawToolbar({
-    position: 'topleft'
-  }).addTo(mapInstance)
-
-  mapInstance.on('draw:created', function(evt) {
-    var	type = evt.layerType
-    var layer = evt.layer
-
-    drawInstance.drawnItems.addLayer(layer)
-
-    layer.on('click', function(event) {
-      new L.Toolbar2.EditToolbar.Popup(event.latlng, {
-        actions: editActions
-      }).addTo(mapInstance, layer)
-    })
+      remove: true
+    }
   })
+  if (mapInstance.addControl(drawInstance.drawControl)) {
+    console.log('addControl')
+  }
+
+  new L.Toolbar2.DrawToolbar({ // 这个是leaflet-draw-toolbar提供，编辑和删除是单个控制
+    position: 'topright',
+    actions: [L.Toolbar2.DrawAction.Rectangle]
+  }).addTo(mapInstance)
 }
 
 export default class LeafletDrawRectangle {
@@ -230,6 +248,7 @@ export default class LeafletDrawRectangle {
     this.startedit = false // 修改状态
     this.startremove = false // 删除状态
 
+    this.menuitems = _celltype_init() // 所有细胞类型
     _tooltip_init()
     _MapDrawCreate(this.mapInstance, this)
     _drawEvent(this.mapInstance, this)
