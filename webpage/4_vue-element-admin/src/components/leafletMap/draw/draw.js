@@ -13,6 +13,13 @@ function _celltype_init() {
   celltypes = celltypes.sort(function(a, b) {
     return a.order > b.order
   })
+
+  // 细胞类型字典, 导入系统预测时候使用
+  var celltypekeys = {}
+  celltypes.map(v => {
+    celltypekeys[v.id] = v
+  })
+
   // 创建菜单列表
   const menuitems = []
   var unkownCell = null
@@ -33,7 +40,7 @@ function _celltype_init() {
   toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '左下', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'bottom' }))
   toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '左上', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'top' }))
 
-  return { 'menuitems': menuitems, 'unkownCell': unkownCell, 'toolTipPosation': toolTipPosation }
+  return { 'menuitems': menuitems, 'unkownCell': unkownCell, 'toolTipPosation': toolTipPosation, 'celltypekeys': celltypekeys }
 }
 
 function _tooltip_init() { // 初始化地图上默认的一些提示信息
@@ -81,15 +88,16 @@ function _tooltip_init() { // 初始化地图上默认的一些提示信息
   }
 }
 
-// 画完一个正方形触发
-function _createRectangleHandler(e, drawInstance, _map) {
+// 画完一个正方形触发, 设置菜单和事件, celltypeinfo只在导入系统预测时候才有，手动画的时候没有, 是const.js里面定义的其中一种细胞类型
+function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
   var type = e.layerType
   if (type !== 'rectangle') { // 目前只支持画矩形
     return
   }
+  const _celltypeinfo = celltypeinfo || drawInstance.unkownCell
   var layer = e.layer
   // 参考 https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
-  layer.bindTooltip(tooltipContent(drawInstance.unkownCell), {
+  layer.bindTooltip(tooltipContent(_celltypeinfo), {
     permanent: true, // 始终显示
     direction: 'right',
     direction2: 'top', // 这个是我们自己加的
@@ -97,7 +105,7 @@ function _createRectangleHandler(e, drawInstance, _map) {
     interactive: true, // 可交互的，就是能被点击到, 调试样式要改成true
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
-  layer.celltypeid = drawInstance.unkownCell.id // 默认是200--未知类型
+  layer.celltypeid = _celltypeinfo.id // 默认是200--未知类型
 
   // 创建菜单
   drawInstance.drawnItems.addLayer(layer)
@@ -216,7 +224,7 @@ function _drawEvent(_map, drawInstance) {
   })
   _map.on(L.Draw.Event.CREATED, function(e,) { // 新画了框
     console.log('CREATED')
-    _createRectangleHandler(e, drawInstance, _map)
+    _createRectangleHandler(e, drawInstance, _map, null)
   })
   _map.on(L.Draw.Event.EDITED, function(e) { // 修改结束
     console.log('EDITED')
@@ -246,15 +254,7 @@ function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参
       circle: false, // 不准画圆
       marker: false, // 不准画标记
       circlemarker: false,
-      rectangle: {
-        shapeOptions: {
-          opacity: 1,
-          clickable: true,
-          fillOpacity: 0, // 填充完全透明
-          color: drawInstance.unkownCell.typecolor, // 边框颜色
-          weight: drawInstance.weight
-        }
-      }
+      rectangle: { shapeOptions: drawInstance.rectangleOptions }
     },
     edit: {
       featureGroup: drawInstance.drawnItems,
@@ -274,6 +274,41 @@ function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参
   }).addTo(mapInstance)
 }
 
+function _cellPosation(cell, vueInstance) { // 使用predict的信息计算出当前细胞在全图的位置, 输入参数cell是从服务器获得的一个predict
+  let arr = cell.cellpath.split('IMG')
+  arr = arr[1].split(vueInstance.args.imgext)
+  arr = arr[0].split('x')
+  let x = parseInt(arr[1])
+  let y = parseInt(arr[0])
+  y = (y - 1) * vueInstance.args.realimgheight + cell.y1
+  x = (x - 1) * vueInstance.args.realimgwidth + cell.x1
+
+  y = -y // 在第四像限，所以y是负数
+  var points = []
+  points.push([y, x])
+  points.push([y, x + 100])
+  points.push([y - 100, x + 100])
+  points.push([y - 100, x])
+  cell.points = points
+}
+
+function _drawrectangle(drawInstance, mapInstance, cellinfo) {
+  _cellPosation(cellinfo, drawInstance.vueInstance)
+
+  var rectangle = new L.Rectangle(cellinfo.points, drawInstance.rectangleOptions)
+  rectangle.addTo(drawInstance.drawnItems)
+
+  const e = {
+    layerType: 'rectangle',
+    layer: rectangle
+  }
+
+  const _celltype = drawInstance.celltypekeys[cellinfo.predict_type] || drawInstance.unkownCell
+
+  // 创建菜单，设置事件
+  _createRectangleHandler(e, drawInstance, mapInstance, _celltype)
+}
+
 export default class LeafletDrawRectangle {
   constructor(vueInstance, mapInstance) {
     // 下面是全局量
@@ -291,11 +326,24 @@ export default class LeafletDrawRectangle {
     this.menuitems = ret.menuitems // 所有细胞类型
     this.unkownCell = ret.unkownCell // 未知类型，标注初始化时候使用
     this.toolTipPosation = ret.toolTipPosation // toolTip的位置列表
+    this.celltypekeys = ret.celltypekeys // 细胞类型字典, 导入系统预测时候使用
+
+    // 矩形框参数
+    this.rectangleOptions = {
+      opacity: 1,
+      clickable: true,
+      fillOpacity: 0, // 填充完全透明
+      color: this.unkownCell.typecolor, // 边框颜色
+      weight: this.weight
+    }
+
     _tooltip_init()
     _MapDrawCreate(this.mapInstance, this)
     _drawEvent(this.mapInstance, this)
   }
-
+  drawrectangle(cellinfo) {
+    _drawrectangle(this, this.mapInstance, cellinfo)
+  }
   clickDrawRec() { // 开始绘制矩形
     this.drawControl._toolbars.draw._modes.rectangle.handler.enable()
   }

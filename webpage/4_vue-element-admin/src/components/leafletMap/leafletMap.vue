@@ -170,11 +170,11 @@ export default {
       y = -y // y轴是负数
       // console.log(this.mapInstance.getCenter())
       this.mapInstance.setView([y, x], this.zoom, { animate: true, duration: 0.1 }) // 通过移动动画强制刷新画面
-      if (!drawrectangle) {
-        return
-      }
-      const bounds = [[y, x], [y - 100, x + 100]]
-      L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
+      // if (!drawrectangle) {
+      //   return
+      // }
+      // // const bounds = [[y, x], [y - 100, x + 100]]
+      // L.rectangle(bounds, { color: '#ff7800', weight: 2, fillOpacity: 0 }).addTo(this.mapInstance)
     },
     latLngToCoords(latLng) {
       let y = parseInt(latLng.lat / this.args.realimgheight)
@@ -185,29 +185,11 @@ export default {
     clickDrawRec() {
       this.drawInstance.clickDrawRec()
     },
-    clickEditRec() {
-      this.drawInstance.clickEditRec()
-    },
-    clickRemoveRec() {
-      this.drawInstance.clickRemoveRec()
-    },
     clickDrawCancel() {
       this.drawInstance.clickDrawCancel()
     },
-    clickEditCancel() {
-      this.drawInstance.clickCancel()
-    },
-    clickEditSave() {
-      this.drawInstance.clickSave()
-    },
-    clickRemoveCancel() {
-      this.drawInstance.clickCancel()
-    },
-    clickRemoveSave() {
-      this.drawInstance.clickSave()
-    },
-    clickRemoveAll() {
-      this.drawInstance.clickRemoveAll()
+    drawrectangle(cell) {
+      this.drawInstance.drawrectangle(cell)
     }
   }
 }

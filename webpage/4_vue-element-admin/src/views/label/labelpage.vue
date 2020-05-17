@@ -49,7 +49,7 @@
         </div>
       </div>
       <div class="reviewbox">
-        <cellsList @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" />
+        <labelpannel :scantxt="mapargs" @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" @importpredict="importpredict" @labelclicked="labelclicked" @cancellabelclicked="cancellabelclicked" />
       </div>
     </div>
   </div>
@@ -58,12 +58,12 @@
 <script>
 import lmap from '@/components/leafletMap/leafletMap'
 import Mapx from '@/components/mapx/index'
-import cellsList from '@/components/CellsList/projectcelllists'
+import labelpannel from '@/components/CellsList/labelpannel'
 import { getScantxtByDID } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
 
 export default {
-  components: { lmap, cellsList, Mapx },
+  components: { lmap, labelpannel, Mapx },
   data() {
     return {
       tabPosition: 'top',
@@ -149,6 +149,17 @@ export default {
       const y = (xy.y + 0.5) * this.mapargs.realimgheight // 传过来的y是从0开始所以不需要减一,0.5表示移动到中心
       const x = (xy.x + 0.5) * this.mapargs.realimgwidth
       this.thumbmouseMoveToXY(x / (this.mapargs.realimgwidth * this.mapargs.colcnt), y / (this.mapargs.realimgheight * this.mapargs.rowcnt))
+    },
+    importpredict(_cellsList) {
+      _cellsList.map(v => {
+        this.$refs.map.drawrectangle(v)
+      })
+    },
+    labelclicked() {
+      this.$refs.map.clickDrawRec()
+    },
+    cancellabelclicked() {
+      this.$refs.map.clickDrawCancel()
     }
   }
 }
