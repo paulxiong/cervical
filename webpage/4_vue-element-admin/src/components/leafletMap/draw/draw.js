@@ -2,22 +2,38 @@ import L from 'leaflet'
 import 'leaflet-draw'
 import 'leaflet-toolbar'
 import 'leaflet-draw-toolbar/dist/leaflet.draw-toolbar.js'
-import './ColorPicker.js'
-import { cellsOptions, cellsOptions2, cellsOptions3 } from '@/const/const'
+import './CellTypePicker.js'
+import './ToolTipPosation.js'
+import { cellsOptionsAll } from '@/const/const'
+import { tooltipContent } from './element.js'
 
 function _celltype_init() {
   var celltypes = []
-  celltypes = celltypes.concat(cellsOptions, cellsOptions2, cellsOptions3)
+  celltypes = celltypes.concat(cellsOptionsAll)
   celltypes = celltypes.sort(function(a, b) {
     return a.order > b.order
   })
   // 创建菜单列表
   const menuitems = []
+  var unkownCell = null
   for (var i = 0; i < celltypes.length; i++) {
-    celltypes[i].color = celltypes[i].typecolor // 线框改变颜色时候用
-    menuitems.push(L.ColorPicker.extendOptions({ 'color': celltypes[i].choicscolor, 'celltype': celltypes[i] }))
+    if (celltypes[i].id === 100) {
+      unkownCell = Object.assign({}, celltypes[i])
+    }
+    if (celltypes[i].notcelltype) {
+      continue
+    }
+    menuitems.push(L.CellTypePicker.extendOptions({ 'color': celltypes[i].choicscolor, 'celltype': celltypes[i] }))
   }
-  return menuitems
+
+  // tooltip的位置列表
+  var toolTipPosation = []
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '右上', 'color': '#ffdca8', 'direction': 'right', 'direction2': 'top' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '右下', 'color': '#ffdca8', 'direction': 'right', 'direction2': 'bottom' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '左下', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'bottom' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '左上', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'top' }))
+
+  return { 'menuitems': menuitems, 'unkownCell': unkownCell, 'toolTipPosation': toolTipPosation }
 }
 
 function _tooltip_init() { // 初始化地图上默认的一些提示信息
@@ -45,7 +61,20 @@ function _tooltip_init() { // 初始化地图上默认的一些提示信息
     // this是指tooltip
     var pos = this._map.latLngToLayerPoint(this._latlng)
     if (this._source && this._source._bounds) {
-      const x1y1 = this._source._bounds._northEast // 右上
+      var x1y1 = this._source._bounds._northEast
+      if (this.options.direction === 'left') {
+        if (this.options.direction2 === 'top') {
+          x1y1 = this._source.getBounds().getNorthWest() // 左上
+        } else if (this.options.direction2 === 'bottom') {
+          x1y1 = this._source.getBounds().getSouthWest() // 左下
+        }
+      } else if (this.options.direction === 'right') {
+        if (this.options.direction2 === 'top') {
+          x1y1 = this._source.getBounds().getNorthEast() // 右上
+        } else if (this.options.direction2 === 'bottom') {
+          x1y1 = this._source.getBounds().getSouthEast() // 右下
+        }
+      }
       pos = this._map.latLngToLayerPoint(x1y1)
     }
     this._setPosition(pos)
@@ -60,19 +89,15 @@ function _createRectangleHandler(e, drawInstance, _map) {
   }
   var layer = e.layer
   // 参考 https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
-  const ts = '' + new Date().getTime()
-  layer.bindTooltip(`<a title="未知类型" style='width:100%;height:100%;background-color: red;color: white; display: inline-block;font-size: 15px;'>${ts}</a>`, {
+  layer.bindTooltip(tooltipContent(drawInstance.unkownCell), {
     permanent: true, // 始终显示
     direction: 'right',
+    direction2: 'top', // 这个是我们自己加的
     sticky: true,
     interactive: true, // 可交互的，就是能被点击到, 调试样式要改成true
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
-  layer.celltypeid = 200 // 默认是200--未知类型
-
-  layer.on('dblclick', function(event) {
-    console.log('dblclick')
-  })
+  layer.celltypeid = drawInstance.unkownCell.id // 默认是200--未知类型
 
   // 创建菜单
   drawInstance.drawnItems.addLayer(layer)
@@ -85,13 +110,27 @@ function _createRectangleHandler(e, drawInstance, _map) {
         html: '<span class="fa fa-eyedropper"></span>'
       },
       subToolbar: new L.Toolbar2({ actions: drawInstance.menuitems })
+    }),
+    L.Toolbar2.Action.extendOptions({
+      toolbarIcon: {
+        className: 'leaflet-draw-draw-rectangle',
+        html: '<span class="fa fa-rectangle"></span>'
+      },
+      subToolbar: new L.Toolbar2({ actions: drawInstance.toolTipPosation })
     })
   ]
   // 单击矩形触发菜单
   layer.on('click', function(event) {
-    new L.Toolbar2.EditToolbar.Popup(event.latlng, {
-      actions: editActions
-    }).addTo(_map, layer)
+    if (!event || !event.sourceTarget || !event.latlng) {
+      return
+    }
+
+    // 点在矩形上才弹出，tooltip上不要弹出菜单
+    if (event.sourceTarget.getBounds().contains(event.latlng)) {
+      new L.Toolbar2.EditToolbar.Popup(event.latlng, {
+        actions: editActions
+      }).addTo(_map, layer)
+    }
   })
 }
 
@@ -209,9 +248,10 @@ function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参
       circlemarker: false,
       rectangle: {
         shapeOptions: {
+          opacity: 1,
           clickable: true,
           fillOpacity: 0, // 填充完全透明
-          color: 'red', // 边框颜色
+          color: drawInstance.unkownCell.typecolor, // 边框颜色
           weight: drawInstance.weight
         }
       }
@@ -247,7 +287,10 @@ export default class LeafletDrawRectangle {
     this.startedit = false // 修改状态
     this.startremove = false // 删除状态
 
-    this.menuitems = _celltype_init() // 所有细胞类型
+    const ret = _celltype_init() // 所有细胞类型
+    this.menuitems = ret.menuitems // 所有细胞类型
+    this.unkownCell = ret.unkownCell // 未知类型，标注初始化时候使用
+    this.toolTipPosation = ret.toolTipPosation // toolTip的位置列表
     _tooltip_init()
     _MapDrawCreate(this.mapInstance, this)
     _drawEvent(this.mapInstance, this)

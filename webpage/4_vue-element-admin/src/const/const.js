@@ -204,5 +204,35 @@ export const cellsOptions3 = [
   // }
 ]
 
+/* eslint-disable */
+export const cellsOptionsAll = [
+  { id: 1,   order: 1,   choicscolor: '#00FF00', typecolor: '#009e08', notcelltype: false, shortname: 'Norm',       label: '正常细胞' },
+  { id: 23,  order: 2,   choicscolor: '#3bf940', typecolor: '#009e08', notcelltype: false, shortname: 'Glandular',  label: '腺上皮细胞' },
+  { id: 15,  order: 3,   choicscolor: '#66ff6b', typecolor: '#009e08', notcelltype: false, shortname: 'X1',         label: '线索细胞' },
+  { id: 14,  order: 4,   choicscolor: '#7cf780', typecolor: '#009e08', notcelltype: false, shortname: 'HSV',        label: '疱疹' },
+  { id: 13,  order: 5,   choicscolor: '#89f78d', typecolor: '#009e08', notcelltype: false, shortname: 'M',          label: '霉菌' },
+  { id: 20,  order: 6,   choicscolor: '#9bf59e', typecolor: '#009e08', notcelltype: false, shortname: 'PM',         label: '萎缩性改变' },
+  { id: 21,  order: 7,   choicscolor: '#b8f9bb', typecolor: '#009e08', notcelltype: false, shortname: 'Metaplasia', label: '鳞状化生细胞' },
+  { id: 22,  order: 8,   choicscolor: '#cdfdcf', typecolor: '#009e08', notcelltype: false, shortname: 'B1/T1/M1',   label: '生物性病原体' },
+  { id: 12,  order: 9,   choicscolor: '#e4ffe5', typecolor: '#009e08', notcelltype: false, shortname: 'T',          label: '滴虫' },
+
+  // 阳性
+  { id: 7,   order: 101, choicscolor: '#fdbdbd', typecolor: '#ff0000', notcelltype: false, shortname: 'ASC-US',     label: '非典型鳞状细胞、意义不明确' },
+  { id: 8,   order: 102, choicscolor: '#fba1a1', typecolor: '#ff0000', notcelltype: false, shortname: 'ASC-H',      label: '非典型鳞状细胞不除外高级别鳞状上皮内病变' },
+  { id: 9,   order: 107, choicscolor: '#fb8989', typecolor: '#ff0000', notcelltype: false, shortname: 'AGC',        label: '不典型腺细胞' },
+  { id: 2,   order: 103, choicscolor: '#fd7272', typecolor: '#ff0000', notcelltype: false, shortname: 'LSIL',       label: '低级别鳞状上皮内病变' },
+  { id: 3,   order: 104, choicscolor: '#ff6968', typecolor: '#ff0000', notcelltype: false, shortname: 'HSIL',       label: '高级别鳞状上皮内病变' },
+  { id: 4,   order: 105, choicscolor: '#fb4f4e', typecolor: '#ff0000', notcelltype: false, shortname: 'HPV',        label: '人乳头瘤病毒' },
+  { id: 6,   order: 106, choicscolor: '#fd3b3a', typecolor: '#ff0000', notcelltype: false, shortname: 'SCC',        label: '鳞状上皮细胞癌' },
+  { id: 10,  order: 108, choicscolor: '#ff1d1d', typecolor: '#ff0000', notcelltype: false, shortname: 'AIS',        label: '颈管原位腺癌' },
+  { id: 11,  order: 109, choicscolor: '#FF0000', typecolor: '#ff0000', notcelltype: false, shortname: 'ADC',        label: '腺癌' },
+  // 其他
+  { id: 200, order: 201, choicscolor: '#ffdca8', typecolor: '#ff7800', notcelltype: false, shortname: 'NC',         label: '不是细胞' },
+  { id: 100, order: 202, choicscolor: '#ffcd84', typecolor: '#ff7800', notcelltype: false, shortname: 'Unkown',     label: '未知类型' },
+  { id: 50,  order: 202, choicscolor: '#ffba55', typecolor: '#ff7800', notcelltype: true,  shortname: 'N',          label: '阴性' },
+  { id: 51,  order: 202, choicscolor: '#ff9800', typecolor: '#ff7800', notcelltype: true,  shortname: 'P',          label: '阳性' }
+]
+/* eslint-enable */
+
 // 标注页面把原图的宽缩放到几个像素点（原图太大了一个屏幕显示不过来）
 export const page3ImgWidth = 645
