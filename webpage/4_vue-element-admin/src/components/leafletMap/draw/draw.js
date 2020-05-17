@@ -102,7 +102,7 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     direction: 'right',
     direction2: 'top', // 这个是我们自己加的
     sticky: true,
-    interactive: true, // 可交互的，就是能被点击到, 调试样式要改成true
+    interactive: false, // 可交互的，就是能被点击到, 调试样式要改成true
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
   layer.celltypeid = _celltypeinfo.id // 默认是200--未知类型

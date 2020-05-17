@@ -1,7 +1,6 @@
 <template>
   <div class="vue-leaflet">
     <div id="map" :style="{width: curWidth, height: curHeight}" />
-    <el-button type="primary" @click="clickDrawRec">标注</el-button>
   </div>
 </template>
 
@@ -188,7 +187,7 @@ export default {
     clickDrawCancel() {
       this.drawInstance.clickDrawCancel()
     },
-    drawrectangle(cell) {
+    drawrectangle(cell) { // 这个是自动导入使用
       this.drawInstance.drawrectangle(cell)
     }
   }
