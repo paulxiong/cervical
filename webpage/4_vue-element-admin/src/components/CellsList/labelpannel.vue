@@ -31,7 +31,7 @@
       <div class="btn-box">
         <el-button class="labelbtn" type="success" @click="labelclicked">标注</el-button>
         <el-button class="labelbtn" type="success" @click="cancellabelclicked">取消标注</el-button>
-        <el-button class="labelbtn" type="success" @click="importclicked">导入系统标注</el-button>
+        <el-button :disabled="imported" class="labelbtn" type="success" @click="importclicked">{{ importbuttontext }}</el-button>
       </div>
     </div>
   </div>
@@ -53,6 +53,8 @@ export default {
   },
   data() {
     return {
+      importbuttontext: '导入系统标注',
+      imported: false,
       cellsOptions: cellsOptions,
       cellsOptions2: cellsOptions2,
       cellsOptions3: cellsOptions3,
@@ -75,7 +77,7 @@ export default {
   mounted() {
   },
   methods: {
-    getPredictsByPID2(limit, skip, pid, status, type) {
+    getPredictsByPID2(limit, skip, pid, status, type, cb) {
       // status 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
       getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': status, 'type': type, 'order': 1 }).then(res => {
         res.data.data.predicts.map(v => {
@@ -84,6 +86,8 @@ export default {
         this.cellsList = res.data.data.predicts
         this.total = res.data.data.total
         this.updateLocalCellsList(-1, -1) // 只是发送一下审核进度给父组件
+
+        return cb && cb()
       })
     },
     getPredictsByPID2All(limit, skip, pid, status, type) {
@@ -111,9 +115,12 @@ export default {
       this.$emit('labelclicked')
     },
     importclicked() {
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 0, 51) // 系统预测小图预览
-      this.$emit('importpredict', this.cellsListAll)
-      this.gotofirstcell() // 系统预测小图预览的第一个细胞
+      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 0, 51, f => { // 系统预测小图预览
+        this.$emit('importpredict', this.cellsListAll)
+        this.gotofirstcell() // 系统预测小图预览的第一个细胞
+        this.imported = true
+        this.importbuttontext = '已导入系统标注'
+      })
     },
     cancellabelclicked() {
       this.$emit('cancellabelclicked')
