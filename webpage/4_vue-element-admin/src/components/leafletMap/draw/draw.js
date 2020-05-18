@@ -95,9 +95,9 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     return
   }
   const _celltypeinfo = celltypeinfo || drawInstance.unkownCell
-  var layer = e.layer
+  var shape = e.layer
   // 参考 https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
-  layer.bindTooltip(tooltipContent(_celltypeinfo), {
+  shape.bindTooltip(tooltipContent(_celltypeinfo), {
     permanent: true, // 始终显示
     direction: 'right',
     direction2: 'top', // 这个是我们自己加的
@@ -105,10 +105,11 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     interactive: false, // 可交互的，就是能被点击到, 调试样式要改成true
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
-  layer.celltypeid = _celltypeinfo.id // 默认是200--未知类型
+  shape.celltype = _celltypeinfo // 默认是200--未知类型
+  shape.predictid = shape.predictid || 0 // 不是预测，是新创建的标注，预测id统一是0
 
   // 创建菜单
-  drawInstance.drawnItems.addLayer(layer)
+  drawInstance.drawnItems.addLayer(shape)
   var editActions = [
     L.Toolbar2.EditAction.Popup.Edit,
     L.Toolbar2.EditAction.Popup.Delete,
@@ -128,7 +129,7 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     })
   ]
   // 单击矩形触发菜单
-  layer.on('click', function(event) {
+  shape.on('click', function(event) {
     if (!event || !event.sourceTarget || !event.latlng) {
       return
     }
@@ -137,9 +138,10 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     if (event.sourceTarget.getBounds().contains(event.latlng)) {
       new L.Toolbar2.EditToolbar.Popup(event.latlng, {
         actions: editActions
-      }).addTo(_map, layer)
+      }).addTo(_map, shape)
     }
   })
+  drawInstance._newRectangleHandler(shape)
 }
 
 // 修改中触发
@@ -158,80 +160,62 @@ function _editingRectangleHandler(e, drawInstance) {
 // 修改结束之后触发
 function _editRectangleHandler(e, drawInstance) {
   var layers = e.layers
-  var countOfEditedLayers = 0
   layers.eachLayer(function(layer) {
-    countOfEditedLayers++
-    console.log(layer.cellid)
-    // 更新tooltip的位置
     if (layer.getTooltip) {
       var toolTip = layer.getTooltip()
       if (toolTip) {
-        toolTip._updatePosition()
+        toolTip._updatePosition() // 更新tooltip的位置
       }
     }
+    drawInstance._updateRectangleHandler(layer)
   })
-  console.log('修改了 ' + countOfEditedLayers + ' 个图层')
 }
 
 // 删除结束之后触发
 function _removeRectangleHandler(e, drawInstance) {
   var layers = e.layers
-  var countOfEditedLayers = 0
   layers.eachLayer(function(layer) {
-    countOfEditedLayers++
-    // 更新tooltip的位置
-    if (layer.getTooltip) {
-      var toolTip = layer.getTooltip()
-      console.log(toolTip)
-      console.log(layer.cellid)
-      // if (toolTip) {
-      //   toolTip._updatePosition()
-      // }
-    }
+    drawInstance._deleteRectangleHandler(layer)
   })
-  console.log('删除了 ' + countOfEditedLayers + ' 个图层')
 }
 
 function _drawEvent(_map, drawInstance) {
-  _map.on(L.Draw.Event.DRAWVERTEX, function() { console.log('DRAWVERTEX') })
-  _map.on(L.Draw.Event.TOOLBAROPENED, function() { console.log('TOOLBAROPENED') })
-  _map.on(L.Draw.Event.TOOLBARCLOSED, function() { console.log('TOOLBARCLOSED') })
-  _map.on(L.Draw.Event.MARKERCONTEXT, function() { console.log('MARKERCONTEXT') })
-  _map.on(L.Draw.Event.EDITVERTEX, function(e) { console.log('EDITVERTEX') })
+  // _map.on(L.Draw.Event.DRAWVERTEX, function() { })
+  // _map.on(L.Draw.Event.TOOLBAROPENED, function() { })
+  // _map.on(L.Draw.Event.TOOLBARCLOSED, function() { })
+  // _map.on(L.Draw.Event.MARKERCONTEXT, function() { })
+  // _map.on(L.Draw.Event.EDITVERTEX, function(e) { })
+  _map.on('draw:updatelabel', function(e) {
+    var layers = e.layers
+    layers.eachLayer(function(layer) {
+      drawInstance._updateRectangleHandler(layer)
+    })
+  })
   _map.on(L.Draw.Event.DRAWSTART, function() {
-    console.log('DRAWSTART')
     drawInstance.startdraw = true
   })
   _map.on(L.Draw.Event.DRAWSTOP, function() {
-    console.log('DRAWSTOP')
     drawInstance.startdraw = false
   })
   _map.on(L.Draw.Event.EDITSTART, function() {
-    console.log('EDITSTART')
     drawInstance.startedit = true
   })
   _map.on(L.Draw.Event.EDITSTOP, function() {
-    console.log('EDITSTOP')
     drawInstance.startedit = false
   })
   _map.on(L.Draw.Event.DELETESTART, function() {
-    console.log('DELETESTART')
     drawInstance.startremove = true
   })
   _map.on(L.Draw.Event.DELETESTOP, function() {
-    console.log('DELETESTOP')
     drawInstance.startremove = false
   })
   _map.on(L.Draw.Event.CREATED, function(e,) { // 新画了框
-    console.log('CREATED')
     _createRectangleHandler(e, drawInstance, _map, null)
   })
   _map.on(L.Draw.Event.EDITED, function(e) { // 修改结束
-    console.log('EDITED')
     _editRectangleHandler(e, drawInstance)
   })
   _map.on(L.Draw.Event.DELETED, function(e) { // 删除结束
-    console.log('DELETED')
     _removeRectangleHandler(e, drawInstance)
   })
   _map.on(L.Draw.Event.EDITMOVE, function(e) { // 修改，平移矩形
@@ -298,24 +282,51 @@ function _drawrectangle(drawInstance, mapInstance, cellinfo) {
   var rectangle = new L.Rectangle(cellinfo.points, drawInstance.rectangleOptions)
   rectangle.addTo(drawInstance.drawnItems)
 
+  var _celltype = Object.assign({}, drawInstance.unkownCell)
+  if (drawInstance.celltypekeys[cellinfo.predict_type]) {
+    _celltype = Object.assign({}, drawInstance.celltypekeys[cellinfo.predict_type])
+  }
+  rectangle.predictid = cellinfo.id // 保存预测ID到shape.celltype里面，后面记录到数据库有用
+
+  // 创建菜单，设置事件
   const e = {
     layerType: 'rectangle',
     layer: rectangle
   }
-
-  const _celltype = drawInstance.celltypekeys[cellinfo.predict_type] || drawInstance.unkownCell
-
-  // 创建菜单，设置事件
   _createRectangleHandler(e, drawInstance, mapInstance, _celltype)
 }
 
+function _getShapeInfo(shape) { // 输入正方形对象，输出标注在全图上面的信息
+  const x1y1 = shape.getBounds().getNorthWest()
+  const x2y2 = shape.getBounds().getSouthEast()
+  const labelinfo = {
+    'x1': x1y1.lng,
+    'y1': x1y1.lat,
+    'x2': x2y2.lng,
+    'y2': x2y2.lat,
+    'preid': shape.predictid, // 预测条目在数据库的ID
+    'typeid': shape.celltype.id,
+    'typelabel': shape.celltype.label
+  }
+  return labelinfo
+}
+
 export default class LeafletDrawRectangle {
-  constructor(vueInstance, mapInstance) {
+  constructor(vueInstance, mapInstance, handlers) {
     // 下面是全局量
     this.mapInstance = mapInstance
     this.vueInstance = vueInstance
     this.drawnItems = null
     this.drawControl = null
+
+    // 增删改的时候调用的接口
+    this.handlers = {}
+    if (handlers) {
+      this.handlers.add = handlers.add || null
+      this.handlers.update = handlers.update || null
+      this.handlers.delete = handlers.delete || null
+    }
+
     // 下面是参数
     this.weight = 2
     this.startdraw = false // 画框状态
@@ -341,8 +352,20 @@ export default class LeafletDrawRectangle {
     _MapDrawCreate(this.mapInstance, this)
     _drawEvent(this.mapInstance, this)
   }
-  drawrectangle(cellinfo) {
+  drawrectangle(cellinfo) { // 调用代码绘制一个矩形
     _drawrectangle(this, this.mapInstance, cellinfo)
+  }
+  _newRectangleHandler(shape) { // 新增矩形时候触发，代码画框还是手动画框都触发
+    const labelinfo = _getShapeInfo(shape)
+    return this.handlers.add && this.handlers.add(labelinfo)
+  }
+  _updateRectangleHandler(shape) { // 平移或者resize矩形时候触发, 修改标注的细胞类型也会触发
+    const labelinfo = _getShapeInfo(shape)
+    return this.handlers.update && this.handlers.update(labelinfo)
+  }
+  _deleteRectangleHandler(shape) { // 删除矩形时候触发
+    const labelinfo = _getShapeInfo(shape)
+    return this.handlers.delete && this.handlers.delete(labelinfo)
   }
   clickDrawRec() { // 开始绘制矩形
     this.drawControl._toolbars.draw._modes.rectangle.handler.enable()

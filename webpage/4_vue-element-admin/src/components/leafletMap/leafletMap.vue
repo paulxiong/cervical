@@ -81,7 +81,11 @@ export default {
 
     // 下面是标注相关的
     if (this.args.labletool) {
-      this.drawInstance = new LeafletDrawRectangle(this, this.mapInstance)
+      this.drawInstance = new LeafletDrawRectangle(this, this.mapInstance, {
+        'add': this.drawRectangleAddHandler,
+        'update': this.drawRectangleUpdateHandler,
+        'delete': this.drawRectangleDeleteHandler
+      })
     }
   },
   beforeDestroy() {
@@ -189,6 +193,15 @@ export default {
     },
     drawrectangle(cell) { // 这个是自动导入使用
       this.drawInstance.drawrectangle(cell)
+    },
+    drawRectangleAddHandler(labelinfo) {
+      console.log('新增')
+    },
+    drawRectangleUpdateHandler(labelinfo) {
+      console.log('修改')
+    },
+    drawRectangleDeleteHandler(labelinfo) {
+      console.log('删除')
     }
   }
 }

@@ -16,8 +16,11 @@ L.CellTypePicker = L.Toolbar2.Action.extend({
     this.disable()
     const toolTip = this._shape.getTooltip()
     if (toolTip) {
-      toolTip._source.setTooltipContent(tooltipContent(this.options.celltype))
-      toolTip._source.celltype = this.options.celltype
+      if (toolTip._source.celltype !== this.options.celltype) {
+        toolTip._source.setTooltipContent(tooltipContent(this.options.celltype))
+        toolTip._source.celltype = this.options.celltype
+        this._map.fire('draw:updatelabel', { layers: L.layerGroup([this._shape]) })
+      }
     }
   },
   _createIcon: function(toolbar, container, args) {
