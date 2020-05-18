@@ -2570,6 +2570,159 @@
           ],
           "chnname": "result",
           "remark": "项目预测结果统计"
+        },
+        {
+          "title": "label2",
+          "fields": [
+            {
+              "name": "id",
+              "type": "ShortString",
+              "remark": "时间辍+项目ID+数据集ID+用户ID+随机字符串",
+              "chnname": "标注信息",
+              "autoIncrement": false,
+              "pk": true,
+              "notNull": true,
+              "defaultValue": ""
+            },
+            {
+              "name": "preid",
+              "type": "BigInt",
+              "remark": "人工标注的默认是0",
+              "chnname": "预测的ID",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "pid",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "项目ID",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "did",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "数据集ID",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "typeid",
+              "type": "Integer",
+              "remark": "",
+              "chnname": "类型的ID",
+              "notNull": true,
+              "defaultValue": "100"
+            },
+            {
+              "name": "x1",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "整图左上角X坐标",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "y1",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "整图左上角Y坐标",
+              "notNull": true,
+              "defaultValue": "0"
+            },
+            {
+              "name": "x2",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "整图右下角X坐标",
+              "pk": false,
+              "notNull": true,
+              "relationNoShow": false,
+              "defaultValue": "0"
+            },
+            {
+              "name": "y2",
+              "type": "Integer",
+              "remark": "单位是像素",
+              "chnname": "整图右下角Y坐标",
+              "pk": false,
+              "notNull": true,
+              "relationNoShow": false,
+              "defaultValue": "0"
+            },
+            {
+              "name": "created_by",
+              "type": "BigInt",
+              "remark": "",
+              "chnname": "创建者",
+              "defaultValue": "0"
+            },
+            {
+              "name": "created_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "创建时间",
+              "relationNoShow": true
+            },
+            {
+              "name": "updated_at",
+              "type": "DateTime",
+              "remark": "",
+              "chnname": "更新时间",
+              "relationNoShow": true
+            }
+          ],
+          "indexs": [],
+          "headers": [
+            {
+              "fieldName": "chnname",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "name",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "type",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "dataType",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "remark",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "pk",
+              "relationNoShow": false
+            },
+            {
+              "fieldName": "notNull",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "autoIncrement",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "defaultValue",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "relationNoShow",
+              "relationNoShow": true
+            },
+            {
+              "fieldName": "uiHint",
+              "relationNoShow": true
+            }
+          ],
+          "chnname": "label2",
+          "remark": "标注信息,新版本"
         }
       ],
       "graphCanvas": {
@@ -2802,7 +2955,7 @@
           "relation": "1:1",
           "from": {
             "entity": "dataset",
-            "field": "parameter_mid"
+            "field": "process_end"
           },
           "to": {
             "entity": "model",

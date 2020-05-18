@@ -5,6 +5,9 @@
       ref="map"
       :args="mapargs"
       @dragend="dragend"
+      @labeladd="labeladd"
+      @labelupdate="labelupdate"
+      @labeldelete="labeldelete"
     />
 
     <div class="cells-box">
@@ -49,7 +52,14 @@
         </div>
       </div>
       <div class="reviewbox">
-        <labelpannel :scantxt="mapargs" @imgclicked="imgclicked" @updatereviewcnt="updatereviewcnt" @importpredict="importpredict" @labelclicked="labelclicked" @cancellabelclicked="cancellabelclicked" />
+        <labelpannel
+          :scantxt="mapargs"
+          @imgclicked="imgclicked"
+          @updatereviewcnt="updatereviewcnt"
+          @importpredict="importpredict"
+          @labelclicked="labelclicked"
+          @cancellabelclicked="cancellabelclicked"
+        />
       </div>
     </div>
   </div>
@@ -59,7 +69,7 @@
 import lmap from '@/components/leafletMap/leafletMap'
 import Mapx from '@/components/mapx/index'
 import labelpannel from '@/components/CellsList/labelpannel'
-import { getScantxtByDID } from '@/api/cervical'
+import { getScantxtByDID, updateLabel2, getlabel2sbypid } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
 
 export default {
@@ -92,6 +102,11 @@ export default {
       this.getScantxtByDID(this.did, 1)
     })
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.getlabel2sbypid(this.pid, 0)
+    })
+  },
   methods: {
     goBack() {
       this.$router.back(-1)
@@ -107,9 +122,25 @@ export default {
         const data = res.data.data
         this.mapargs = data
         this.mapargs.labletool = true // 表示需要初始化标注工具
+        this.mapargs.pid = this.pid
+        this.mapargs.did = this.did
         this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=300'
         this.preview = medicalURL.previewImagePath(data.batchid, data.medicalid, data.preview) + '?width=240'
         this.loading = false
+      })
+    },
+    getlabel2sbypid(pid, status) {
+      getlabel2sbypid({ 'limit': 999, 'skip': 0, 'pid': pid, 'status': status }).then(res => {
+        this.labelinfo = res.data.data
+        console.log(this.labelinfo)
+        // this.labelinfo.labels.map(v => {
+        //   console.log(v)
+        // })
+      })
+    },
+    updateLabel2(labels) {
+      updateLabel2({
+        'label2s': labels
       })
     },
     thumbclicked(xy) {
@@ -160,6 +191,29 @@ export default {
     },
     cancellabelclicked() {
       this.$refs.map.clickDrawCancel()
+    },
+    _updatelabelinfo(labelinfo) {
+      labelinfo.did = this.did
+      labelinfo.pid = this.pid
+      labelinfo.y1 = -labelinfo.y1
+      labelinfo.y2 = -labelinfo.y2
+      return labelinfo
+    },
+    labeladd(labelinfo) {
+      labelinfo = this._updatelabelinfo(labelinfo)
+      labelinfo.op = 1 // 0未知 1增加 2删除 3修改
+      console.log(labelinfo)
+      this.updateLabel2([labelinfo])
+    },
+    labelupdate(labelinfo) {
+      labelinfo = this._updatelabelinfo(labelinfo)
+      labelinfo.op = 2
+      console.log(labelinfo)
+    },
+    labeldelete(labelinfo) {
+      labelinfo = this._updatelabelinfo(labelinfo)
+      labelinfo.op = 3
+      console.log(labelinfo)
     }
   }
 }

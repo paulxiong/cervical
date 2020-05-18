@@ -6,6 +6,7 @@ import './CellTypePicker.js'
 import './ToolTipPosation.js'
 import { cellsOptionsAll } from '@/const/const'
 import { tooltipContent } from './element.js'
+import { newlabelid } from '@/utils/label'
 
 function _celltype_init() {
   var celltypes = []
@@ -107,6 +108,7 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
   }).addTo(drawInstance.drawnItems)
   shape.celltype = _celltypeinfo // 默认是200--未知类型
   shape.predictid = shape.predictid || 0 // 不是预测，是新创建的标注，预测id统一是0
+  shape.labelid = newlabelid(drawInstance.vueInstance.args.pid, drawInstance.vueInstance.args.did)
 
   // 创建菜单
   drawInstance.drawnItems.addLayer(shape)
@@ -304,6 +306,7 @@ function _getShapeInfo(shape) { // 输入正方形对象，输出标注在全图
     'y1': x1y1.lat,
     'x2': x2y2.lng,
     'y2': x2y2.lat,
+    'labelid': shape.labelid,
     'preid': shape.predictid, // 预测条目在数据库的ID
     'typeid': shape.celltype.id,
     'typelabel': shape.celltype.label

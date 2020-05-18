@@ -397,3 +397,19 @@ export function getBidMid(query) {
     params: query
   })
 }
+
+export function updateLabel2(data) {
+  return request({
+    url: '/api1/updatelabel2s',
+    method: 'post',
+    data
+  })
+}
+
+export function getlabel2sbypid(query) {
+  return request({
+    url: '/api1/label2sbypid',
+    method: 'get',
+    params: query
+  })
+}

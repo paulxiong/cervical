@@ -154,6 +154,10 @@ func Router() *gin.Engine {
 		api1.GET("/reviewsbypid", ctr.GetReviewsByPID)
 		api1.POST("/downloadreviews", ctr.DownloadReviews)
 		api1.GET("/projectsbyvid", ctr.GetProjectsByVID)
+
+		// 标注2
+		api1.POST("/updatelabel2s", ctr.UpdateLabel2s)
+		api1.GET("/label2sbypid", ctr.GetLabel2ByPID)
 	}
 	return r
 }
