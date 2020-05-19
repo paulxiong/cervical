@@ -103,7 +103,7 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     direction: 'right',
     direction2: 'top', // 这个是我们自己加的
     sticky: true,
-    interactive: false, // 可交互的，就是能被点击到, 调试样式要改成true
+    interactive: true, // 可交互的，就是能被点击到, 调试样式要改成true
     offset: [0, 0] // 这个必须是0,0, 上面修改了_updatePosition，缩放的时候才计算偏移
   }).addTo(drawInstance.drawnItems)
   shape.celltype = _celltypeinfo // 默认是200--未知类型
@@ -343,13 +343,13 @@ export default class LeafletDrawRectangle {
   drawrectangle(cellinfo) { // 调用代码绘制一个矩形, 传入的是FOV信息
     _drawrectangle(this, this.mapInstance, cellinfo)
   }
-  _newRectangleHandler(shape) { // 新增矩形时候触发，代码画框还是手动画框都触发，所以检查一下，代码触发的忽略
+  _newRectangleHandler(shape) { // 新增矩形时候触发，代码画框还是手动画框都触发，所以检查一下，代码触发的是在初始化时候的所以不需要写会数据库
+    const labelinfo = _getShapeInfo(shape)
     if (shape.fromdb) {
       shape.fromdb = false // 之后的就是修改和删除，不会有新增了
-      return
+      return this.handlers.add && this.handlers.add(labelinfo, true)
     }
-    const labelinfo = _getShapeInfo(shape)
-    return this.handlers.add && this.handlers.add(labelinfo)
+    return this.handlers.add && this.handlers.add(labelinfo, false)
   }
   _updateRectangleHandler(shape) { // 平移或者resize矩形时候触发, 修改标注的细胞类型也会触发
     const labelinfo = _getShapeInfo(shape)

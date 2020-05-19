@@ -61,6 +61,7 @@
           @importpredict="importpredict"
           @labelclicked="labelclicked"
           @cancellabelclicked="cancellabelclicked"
+          @gotolatlng="gotolatlng"
         />
       </div>
     </div>
@@ -73,7 +74,7 @@ import Mapx from '@/components/mapx/index'
 import labelpannel from '@/components/CellsList/labelpannel'
 import { getScantxtByDID, updateLabel2, getlabel2sbypid } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
-import { cellInFovPosation } from '@/utils/label'
+import { cellInFovPosation, celltypekeys } from '@/utils/label'
 
 export default {
   components: { lmap, labelpannel, Mapx },
@@ -82,8 +83,6 @@ export default {
       tabPosition: 'top',
       did: 0,
       pid: 0,
-      curHeight: (window.innerHeight - 200) + 'px',
-      cellsboxHeight: '200px',
       checkTableData: [
         {
           type: '待审核',
@@ -95,15 +94,16 @@ export default {
       resultimg: '',
       preview: '',
       mapargs: {},
-      tabwidth: 70
+      tabwidth: 70,
+      labels: {},
+      celltypes: {}
     }
   },
   created() {
     this.did = this.$route.query.did ? parseInt(this.$route.query.did) : undefined
     this.pid = this.$route.query.pid ? parseInt(this.$route.query.pid) : undefined
     this.getScantxtByDID(this.did, 1)
-  },
-  mounted() {
+    this.celltypes = celltypekeys()
   },
   methods: {
     goBack() {
@@ -137,6 +137,7 @@ export default {
           v.points.push([-v.y2, v.x2])
           v.predict_type = v.typeid
           v.fromdb = true
+          // this.celltypes[v.typeid].
           if (this.$refs.map) {
             this.$refs.map.drawrectangle(v)
           }
@@ -144,19 +145,18 @@ export default {
             imported = true
           }
         })
-
         if (imported) {
           this.$refs.labelpannel.importedfunc()
         }
       })
     },
-    labelinited() { // 标注初始化完成自动触发
-      this.getlabel2sbypid(this.pid, 0)
-    },
     updateLabel2(labels) {
       updateLabel2({
         'label2s': labels
       })
+    },
+    labelinited() { // 标注初始化完成自动触发
+      this.getlabel2sbypid(this.pid, 0)
     },
     thumbclicked(xy) {
       const x = parseInt(this.mapargs.realimgheight * this.mapargs.rowcnt * xy.xpercent)
@@ -210,29 +210,54 @@ export default {
     cancellabelclicked() {
       this.$refs.map.clickDrawCancel()
     },
+    gotolatlng(xy) {
+      this.$refs.map.gotolatLng(xy.x, xy.y)
+    },
+    _savelabel(labelinfo) { // 同时把标注信息存到全局量, 用来作面板展示
+      if (!this.labels[labelinfo.typeid]) {
+        this.labels[labelinfo.typeid] = {}
+      }
+      // 树状结构存储，方便分类
+      for (var level1 in this.labels) {
+        for (var level2 in this.labels[level1]) {
+          if (this.labels[level1][level2].labelid !== labelinfo.labelid) {
+            continue
+          }
+          this.labels[level1][level2] = undefined
+          delete this.labels[level1][level2]
+          break
+        }
+      }
+      var _label = Object.assign({}, labelinfo)
+      _label.shortname = this.celltypes[_label.typeid].shortname
+      _label.label = this.celltypes[_label.typeid].label
+      this.labels[labelinfo.typeid][labelinfo.labelid] = _label
+      this.$refs.labelpannel.updateLabelTable(this.labels)
+    },
     _updatelabelinfo(labelinfo) {
       labelinfo.did = this.did
       labelinfo.pid = this.pid
       labelinfo.y1 = -labelinfo.y1
       labelinfo.y2 = -labelinfo.y2
+      this._savelabel(labelinfo)
       return labelinfo
     },
-    labeladd(labelinfo) {
-      labelinfo = this._updatelabelinfo(labelinfo)
+    labeladd(labelinfo, alreadyindb) {
       labelinfo.op = 1 // 0未知 1增加 2删除 3修改
-      this.updateLabel2([labelinfo])
+      labelinfo = this._updatelabelinfo(labelinfo)
+      if (!alreadyindb) {
+        this.updateLabel2([labelinfo])
+      }
     },
     labelupdate(labelinfo) {
-      labelinfo = this._updatelabelinfo(labelinfo)
       labelinfo.op = 3
+      labelinfo = this._updatelabelinfo(labelinfo)
       this.updateLabel2([labelinfo])
-      console.log(labelinfo)
     },
     labeldelete(labelinfo) {
-      labelinfo = this._updatelabelinfo(labelinfo)
       labelinfo.op = 2
+      labelinfo = this._updatelabelinfo(labelinfo)
       this.updateLabel2([labelinfo])
-      console.log(labelinfo)
     }
   }
 }

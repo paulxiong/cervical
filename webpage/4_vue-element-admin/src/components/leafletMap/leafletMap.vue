@@ -198,15 +198,12 @@ export default {
     },
     drawRectangleAddHandler(labelinfo) {
       this.$emit('labeladd', labelinfo)
-      console.log('新增')
     },
     drawRectangleUpdateHandler(labelinfo) {
       this.$emit('labelupdate', labelinfo)
-      console.log('修改')
     },
     drawRectangleDeleteHandler(labelinfo) {
       this.$emit('labeldelete', labelinfo)
-      console.log('删除')
     }
   }
 }

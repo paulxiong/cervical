@@ -1,37 +1,19 @@
 <template>
   <div class="img-content">
-    <div class="img-div flex">
-      <div v-for="img in cellsList" :key="img.id" class="img-box">
-        <el-image
-          :class="img.id == selectedcell.id ? 'img-clicked' : 'img'"
-          :src="img.cellpath + '?width=' + cellWidth"
-          @click="imgclicked(img)"
-        >
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline" />
-          </div>
-        </el-image>
-        <svg-icon style="width:15px;height:15px;" class="check-icon" :icon-class="img.status === 1 ? 'checked' : img.status === 2 ? 'delete' : img.status === 3 ? 'adminA' : 'unchecked'" />
-      </div>
-    </div>
-    <div class="flex">
-      <el-pagination
-        v-if="total"
-        small
-        layout="total, prev, pager, next"
-        :current-page.sync="currentPage"
-        :page-size="currentPageSize"
-        :total="total"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-      />
+    <div class="img-div">
+      <el-divider content-position="left">标注</el-divider>
+      <el-table :data="tableData" height="320" highlight-current-row style="width: 100%" @row-click="rowclick">
+        <el-table-column prop="shortname" label="缩写" width="85" />
+        <el-table-column :show-overflow-tooltip="true" prop="label" label="全称" width="260" />
+        <el-table-column prop="typeid" label="状态" />
+      </el-table>
     </div>
     <div>
-      <el-divider content-position="center">标注</el-divider>
+      <el-divider content-position="left">操作</el-divider>
       <div class="btn-box">
         <el-button class="labelbtn" type="success" @click="labelclicked">标注</el-button>
-        <el-button class="labelbtn" type="success" @click="cancellabelclicked">取消标注</el-button>
-        <el-button :disabled="imported" class="labelbtn" type="success" @click="importclicked">{{ importbuttontext }}</el-button>
+        <el-button class="labelbtn" type="success" @click="cancellabelclicked">退出标注模式</el-button>
+        <el-button v-if="!imported" :disabled="imported" class="labelbtn" type="success" @click="importclicked">{{ importbuttontext }}</el-button>
       </div>
     </div>
   </div>
@@ -39,7 +21,6 @@
 
 <script>
 import { getPredictsByPID2, updateLabelReview } from '@/api/cervical'
-import { cellsOptions, cellsOptions2, cellsOptions3 } from '@/const/const'
 import { medicalURL } from '@/api/filesimages'
 
 export default {
@@ -55,9 +36,6 @@ export default {
     return {
       importbuttontext: '导入系统标注',
       imported: false,
-      cellsOptions: cellsOptions,
-      cellsOptions2: cellsOptions2,
-      cellsOptions3: cellsOptions3,
       cellRadio: 100,
       total: 0,
       currentPage: 1,
@@ -67,14 +45,13 @@ export default {
       cellsListAll: [],
       selectedcell: { id: 0 }, // 随便初始化一个值，防止页面报错
       reviewed: 0, // 已经审核的个数
-      notreviewed: 0 // 没有审核的个数
+      notreviewed: 0, // 没有审核的个数
+      tableData: []
     }
   },
   created() {
     this.cellWidth = window.innerHeight <= 769 ? 38 : window.innerHeight <= 939 ? 66 : 80
     this.getPredictsByPID2All(200, 0, this.$route.query.pid, 0, 51)
-  },
-  mounted() {
   },
   methods: {
     getPredictsByPID2(limit, skip, pid, status, type, cb) {
@@ -98,6 +75,29 @@ export default {
         })
         this.cellsListAll = res.data.data.predicts
       })
+    },
+    rowclick(row, column, event) {
+      const x = (row.x1 + row.x2) / 2
+      const y = (row.y1 + row.y2) / 2
+      this.$emit('gotolatlng', { 'x': x, 'y': y })
+    },
+    updateLabelTable(labeltree) { // 更新列表
+      this.tableData = []
+      var _table = []
+      for (var level1 in labeltree) {
+        for (var level2 in labeltree[level1]) {
+          _table.push(labeltree[level1][level2])
+        }
+      }
+      this.tableData = _table
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (rowIndex === 1) {
+        return 'warning-row'
+      } else if (rowIndex === 3) {
+        return 'success-row'
+      }
+      return ''
     },
     gotofirstcell() {
       if (this.cellsList.length > 0) {
@@ -130,14 +130,6 @@ export default {
     },
     cancellabelclicked() {
       this.$emit('cancellabelclicked')
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 0, 51)
-    },
-    handleSizeChange(val) {
-      this.currentPageSize = val
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 0, 51)
     },
     defaultclicked(cell, _this) {
       _this.selectedcell = { ...cell }

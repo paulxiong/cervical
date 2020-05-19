@@ -1,3 +1,5 @@
+import { cellsOptionsAll } from '@/const/const'
+
 // newlabelid 生成标注的ID
 export function newlabelid(pid, did) {
   var labelid = ('' + pid).padStart(8, '0')
@@ -28,4 +30,19 @@ export function cellInFovPosation(cell, realimgheight, realimgwidth, imgext) {
   var _cell = Object.assign({}, cell)
   _cell.points = points
   return _cell
+}
+
+export function celltypekeys() { // 细胞类型字典
+  var celltypes = []
+  celltypes = celltypes.concat(cellsOptionsAll)
+  celltypes = celltypes.sort(function(a, b) {
+    return a.order > b.order
+  })
+
+  // 细胞类型字典, 导入系统预测时候使用
+  var _celltypekeys = {}
+  celltypes.map(v => {
+    _celltypekeys[v.id] = v
+  })
+  return Object.assign({}, _celltypekeys)
 }
