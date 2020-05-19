@@ -9,17 +9,17 @@ import (
 
 // Label2 标注的信息
 type Label2 struct {
-	ID        string    `json:"id"            gorm:"column:id; primary_key" example:"1"`    //标注信息 时间辍+项目ID+数据集ID+用户ID+随机字符串
-	PreID     int64     `json:"preid"         gorm:"column:preid"           example:"2"`    //预测的ID 人工标注的默认是0
-	PID       int64     `json:"pid"           gorm:"column:pid"             example:"2"`    //项目ID
-	DID       int64     `json:"did"           gorm:"column:did"             example:"2"`    //数据集ID
-	TypeID    int       `json:"typeid"        gorm:"column:typeid"          example:"2"`    //类型的ID
-	X1        int       `json:"x1"            gorm:"column:x1"              example:"0"`    //左上角X
-	Y1        int       `json:"y1"            gorm:"column:y1"              example:"0"`    //左上角Y
-	X2        int       `json:"x2"            gorm:"column:x2"              example:"320"`  //右下角X
-	Y2        int       `json:"y2"            gorm:"column:y2"              example:"320"`  //右下角Y
-	Status    int       `json:"status"        gorm:"column:status"          example:"1"`    //状态, 0 未审核 1 已审核 2 移除
-	CreatedBy int64     `json:"created_by"    gorm:"column:created_by"`                     //创建者
+	ID        string    `json:"id"            gorm:"column:id; primary_key" example:"1"`   //标注信息 时间辍+项目ID+数据集ID+用户ID+随机字符串
+	PreID     int64     `json:"preid"         gorm:"column:preid"           example:"2"`   //预测的ID 人工标注的默认是0
+	PID       int64     `json:"pid"           gorm:"column:pid"             example:"2"`   //项目ID
+	DID       int64     `json:"did"           gorm:"column:did"             example:"2"`   //数据集ID
+	TypeID    int       `json:"typeid"        gorm:"column:typeid"          example:"2"`   //类型的ID
+	X1        int       `json:"x1"            gorm:"column:x1"              example:"0"`   //左上角X
+	Y1        int       `json:"y1"            gorm:"column:y1"              example:"0"`   //左上角Y
+	X2        int       `json:"x2"            gorm:"column:x2"              example:"320"` //右下角X
+	Y2        int       `json:"y2"            gorm:"column:y2"              example:"320"` //右下角Y
+	Status    int       `json:"status"        gorm:"column:status"          example:"1"`   //状态, 0 未审核 1 已审核 2 移除
+	CreatedBy int64     `json:"created_by"    gorm:"column:created_by"`                    //创建者
 	CreatedAt time.Time `json:"created_at"    gorm:"column:created_at"`
 	UpdatedAt time.Time `json:"updated_at"    gorm:"column:updated_at"`
 }
@@ -46,9 +46,11 @@ func (l *Label2) InsertLabel2() (e error) {
 	if ret.Error == nil && _l.X2 > 0 {
 		return nil
 	}
-	ret = db.Model(l).Where("preid=?", l.PreID).First(&_l)
-	if ret.Error == nil && _l.X2 > 0 {
-		return nil
+	if l.PreID > 0 {
+		ret = db.Model(l).Where("preid=?", l.PreID).First(&_l)
+		if ret.Error == nil && _l.X2 > 0 {
+			return nil
+		}
 	}
 
 	ret2 := db.Model(l).Save(l)

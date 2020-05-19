@@ -87,6 +87,8 @@ export default {
         'delete': this.drawRectangleDeleteHandler
       })
     }
+    // 初始化完成
+    this.$emit('labelinited')
   },
   beforeDestroy() {
   },

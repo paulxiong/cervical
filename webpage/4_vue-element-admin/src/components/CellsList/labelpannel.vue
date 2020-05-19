@@ -111,6 +111,10 @@ export default {
         }, 1000)
       }
     },
+    importedfunc() {
+      this.imported = true
+      this.importbuttontext = '已导入系统标注'
+    },
     labelclicked() {
       this.$emit('labelclicked')
     },
@@ -118,8 +122,7 @@ export default {
       this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 0, 51, f => { // 系统预测小图预览
         this.$emit('importpredict', this.cellsListAll)
         this.gotofirstcell() // 系统预测小图预览的第一个细胞
-        this.imported = true
-        this.importbuttontext = '已导入系统标注'
+        this.importedfunc()
       })
     },
     cancellabelclicked() {

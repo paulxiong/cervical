@@ -8,6 +8,7 @@
       @labeladd="labeladd"
       @labelupdate="labelupdate"
       @labeldelete="labeldelete"
+      @labelinited="labelinited"
     />
 
     <div class="cells-box">
@@ -53,6 +54,7 @@
       </div>
       <div class="reviewbox">
         <labelpannel
+          ref="labelpannel"
           :scantxt="mapargs"
           @imgclicked="imgclicked"
           @updatereviewcnt="updatereviewcnt"
@@ -71,6 +73,7 @@ import Mapx from '@/components/mapx/index'
 import labelpannel from '@/components/CellsList/labelpannel'
 import { getScantxtByDID, updateLabel2, getlabel2sbypid } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
+import { cellInFovPosation } from '@/utils/label'
 
 export default {
   components: { lmap, labelpannel, Mapx },
@@ -96,16 +99,11 @@ export default {
     }
   },
   created() {
-    this.$nextTick(() => {
-      this.did = this.$route.query.did ? parseInt(this.$route.query.did) : undefined
-      this.pid = this.$route.query.pid ? parseInt(this.$route.query.pid) : undefined
-      this.getScantxtByDID(this.did, 1)
-    })
+    this.did = this.$route.query.did ? parseInt(this.$route.query.did) : undefined
+    this.pid = this.$route.query.pid ? parseInt(this.$route.query.pid) : undefined
+    this.getScantxtByDID(this.did, 1)
   },
   mounted() {
-    this.$nextTick(() => {
-      this.getlabel2sbypid(this.pid, 0)
-    })
   },
   methods: {
     goBack() {
@@ -130,13 +128,30 @@ export default {
       })
     },
     getlabel2sbypid(pid, status) {
-      getlabel2sbypid({ 'limit': 999, 'skip': 0, 'pid': pid, 'status': status }).then(res => {
+      getlabel2sbypid({ 'limit': 1000, 'skip': 0, 'pid': pid, 'status': status }).then(res => {
         this.labelinfo = res.data.data
-        console.log(this.labelinfo)
-        // this.labelinfo.labels.map(v => {
-        //   console.log(v)
-        // })
+        var imported = false
+        this.labelinfo.Label2s.map(v => {
+          v.points = []
+          v.points.push([-v.y1, v.x1]) // 在第4象限所以y是负数
+          v.points.push([-v.y2, v.x2])
+          v.predict_type = v.typeid
+          v.fromdb = true
+          if (this.$refs.map) {
+            this.$refs.map.drawrectangle(v)
+          }
+          if (!imported && v.preid > 0) {
+            imported = true
+          }
+        })
+
+        if (imported) {
+          this.$refs.labelpannel.importedfunc()
+        }
       })
+    },
+    labelinited() { // 标注初始化完成自动触发
+      this.getlabel2sbypid(this.pid, 0)
     },
     updateLabel2(labels) {
       updateLabel2({
@@ -183,7 +198,10 @@ export default {
     },
     importpredict(_cellsList) {
       _cellsList.map(v => {
-        this.$refs.map.drawrectangle(v)
+        // predict信息添加在全图的points位置，方便画图
+        const cellinfo = cellInFovPosation(v, this.mapargs.realimgheight, this.mapargs.realimgwidth, this.mapargs.imgext)
+        cellinfo.fromdb = false // 从预测来，要在标注的库里面新建条目
+        this.$refs.map.drawrectangle(cellinfo)
       })
     },
     labelclicked() {
@@ -202,17 +220,18 @@ export default {
     labeladd(labelinfo) {
       labelinfo = this._updatelabelinfo(labelinfo)
       labelinfo.op = 1 // 0未知 1增加 2删除 3修改
-      console.log(labelinfo)
       this.updateLabel2([labelinfo])
     },
     labelupdate(labelinfo) {
       labelinfo = this._updatelabelinfo(labelinfo)
-      labelinfo.op = 2
+      labelinfo.op = 3
+      this.updateLabel2([labelinfo])
       console.log(labelinfo)
     },
     labeldelete(labelinfo) {
       labelinfo = this._updatelabelinfo(labelinfo)
-      labelinfo.op = 3
+      labelinfo.op = 2
+      this.updateLabel2([labelinfo])
       console.log(labelinfo)
     }
   }

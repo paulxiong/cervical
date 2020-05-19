@@ -108,7 +108,8 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
   }).addTo(drawInstance.drawnItems)
   shape.celltype = _celltypeinfo // 默认是200--未知类型
   shape.predictid = shape.predictid || 0 // 不是预测，是新创建的标注，预测id统一是0
-  shape.labelid = newlabelid(drawInstance.vueInstance.args.pid, drawInstance.vueInstance.args.did)
+  shape.labelid = shape.labelid || newlabelid(drawInstance.vueInstance.args.pid, drawInstance.vueInstance.args.did)
+  shape.setStyle({ color: shape.celltype.typecolor })
 
   // 创建菜单
   drawInstance.drawnItems.addLayer(shape)
@@ -260,27 +261,10 @@ function _MapDrawCreate(mapInstance, drawInstance) { // 创建画图实例，参
   }).addTo(mapInstance)
 }
 
-function _cellPosation(cell, vueInstance) { // 使用predict的信息计算出当前细胞在全图的位置, 输入参数cell是从服务器获得的一个predict
-  let arr = cell.cellpath.split('IMG')
-  arr = arr[1].split(vueInstance.args.imgext)
-  arr = arr[0].split('x')
-  let x = parseInt(arr[1])
-  let y = parseInt(arr[0])
-  y = (y - 1) * vueInstance.args.realimgheight + cell.y1
-  x = (x - 1) * vueInstance.args.realimgwidth + cell.x1
-
-  y = -y // 在第四像限，所以y是负数
-  var points = []
-  points.push([y, x])
-  points.push([y, x + 100])
-  points.push([y - 100, x + 100])
-  points.push([y - 100, x])
-  cell.points = points
-}
-
 function _drawrectangle(drawInstance, mapInstance, cellinfo) {
-  _cellPosation(cellinfo, drawInstance.vueInstance)
-
+  if (!cellinfo.points) {
+    return
+  }
   var rectangle = new L.Rectangle(cellinfo.points, drawInstance.rectangleOptions)
   rectangle.addTo(drawInstance.drawnItems)
 
@@ -289,6 +273,8 @@ function _drawrectangle(drawInstance, mapInstance, cellinfo) {
     _celltype = Object.assign({}, drawInstance.celltypekeys[cellinfo.predict_type])
   }
   rectangle.predictid = cellinfo.id // 保存预测ID到shape.celltype里面，后面记录到数据库有用
+  rectangle.fromdb = cellinfo.fromdb || false // 数据库以及有的，不需要触发新增的事件
+  rectangle.labelid = cellinfo.labelid
 
   // 创建菜单，设置事件
   const e = {
@@ -302,14 +288,13 @@ function _getShapeInfo(shape) { // 输入正方形对象，输出标注在全图
   const x1y1 = shape.getBounds().getNorthWest()
   const x2y2 = shape.getBounds().getSouthEast()
   const labelinfo = {
-    'x1': x1y1.lng,
-    'y1': x1y1.lat,
-    'x2': x2y2.lng,
-    'y2': x2y2.lat,
+    'x1': parseInt(x1y1.lng),
+    'y1': parseInt(x1y1.lat),
+    'x2': parseInt(x2y2.lng),
+    'y2': parseInt(x2y2.lat),
     'labelid': shape.labelid,
     'preid': shape.predictid, // 预测条目在数据库的ID
-    'typeid': shape.celltype.id,
-    'typelabel': shape.celltype.label
+    'typeid': shape.celltype.id
   }
   return labelinfo
 }
@@ -355,10 +340,14 @@ export default class LeafletDrawRectangle {
     _MapDrawCreate(this.mapInstance, this)
     _drawEvent(this.mapInstance, this)
   }
-  drawrectangle(cellinfo) { // 调用代码绘制一个矩形
+  drawrectangle(cellinfo) { // 调用代码绘制一个矩形, 传入的是FOV信息
     _drawrectangle(this, this.mapInstance, cellinfo)
   }
-  _newRectangleHandler(shape) { // 新增矩形时候触发，代码画框还是手动画框都触发
+  _newRectangleHandler(shape) { // 新增矩形时候触发，代码画框还是手动画框都触发，所以检查一下，代码触发的忽略
+    if (shape.fromdb) {
+      shape.fromdb = false // 之后的就是修改和删除，不会有新增了
+      return
+    }
     const labelinfo = _getShapeInfo(shape)
     return this.handlers.add && this.handlers.add(labelinfo)
   }
