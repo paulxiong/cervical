@@ -109,7 +109,7 @@ func GetLabel2ByPID(c *gin.Context) {
 	label2s := label2sResult{}
 	label2s.Label2s = make([]label2Result, 0)
 
-	total, _label2s, _ := models.ListLabel2ByPid(int(limit), int(skip), int(pid))
+	_, _label2s, _ := models.ListLabel2ByPid(int(limit), int(skip), int(pid))
 	for _, v := range _label2s {
 		if _status == 10 {
 			if v.Status != 0 && v.Status != 1 {
@@ -130,7 +130,7 @@ func GetLabel2ByPID(c *gin.Context) {
 			Y2:      v.Y2,
 		})
 	}
-	label2s.Total = total
+	label2s.Total = int64(len(label2s.Label2s))
 	res.ResSucceedStruct(c, label2s)
 	return
 }

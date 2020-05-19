@@ -2,15 +2,13 @@ import { cellsOptionsAll } from '@/const/const'
 
 // newlabelid 生成标注的ID
 export function newlabelid(pid, did) {
-  var labelid = ('' + pid).padStart(8, '0')
-  labelid = labelid + ('' + did).padStart(8, '0')
-  labelid = labelid + ('' + (new Date().getTime())).padStart(13, '0')
-  labelid = labelid + ('' + parseInt((1 + Math.random()) * 65536)).padStart(5, '0')
+  var labelid = '' + (new Date().getTime())
+  labelid = labelid + ('' + parseInt((1 + Math.random()) * 65536)).padStart(6, '0')
   return labelid
 }
 
-// cellInFovPosation 使用predict的信息计算出当前细胞在全图的位置, 输入参数cell是从服务器获得的一个predict
-export function cellInFovPosation(cell, realimgheight, realimgwidth, imgext) {
+// cellInFullPosation 使用predict的信息计算出当前细胞在全图的位置, 输入参数cell是从服务器获得的一个predict
+export function cellInFullPosation(cell, realimgheight, realimgwidth, imgext) {
   let arr = cell.cellpath.split('IMG')
   arr = arr[1].split(imgext)
   arr = arr[0].split('x')
@@ -32,11 +30,20 @@ export function cellInFovPosation(cell, realimgheight, realimgwidth, imgext) {
   return _cell
 }
 
+// fullPosation2Fov 使用当前细胞在全图的位置计算出一条类似predict的信息, 输入lanbelinfo的x1,y1,x2,y2是在全图上的坐标
+export function fullPosation2Fov(labelinfo, realimgheight, realimgwidth, imgext) {
+  var x = parseInt((labelinfo.x1 + labelinfo.x2) / 2)
+  var y = parseInt((labelinfo.y1 + labelinfo.y2) / 2)
+  x = parseInt(x / realimgwidth)
+  y = parseInt(y / realimgheight)
+  console.log(x, y)
+}
+
 export function celltypekeys() { // 细胞类型字典
   var celltypes = []
   celltypes = celltypes.concat(cellsOptionsAll)
   celltypes = celltypes.sort(function(a, b) {
-    return a.order > b.order
+    return (a.order - b.order)
   })
 
   // 细胞类型字典, 导入系统预测时候使用

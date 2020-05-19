@@ -5,9 +5,7 @@
       ref="map"
       :args="mapargs"
       @dragend="dragend"
-      @labeladd="labeladd"
       @labelupdate="labelupdate"
-      @labeldelete="labeldelete"
       @labelinited="labelinited"
     />
 
@@ -57,9 +55,10 @@
           ref="labelpannel"
           :scantxt="mapargs"
           @imgclicked="imgclicked"
+          @labelclicked="labelclicked"
           @updatereviewcnt="updatereviewcnt"
           @importpredict="importpredict"
-          @labelclicked="labelclicked"
+          @labelimgclicked="labelimgclicked"
           @cancellabelclicked="cancellabelclicked"
           @gotolatlng="gotolatlng"
         />
@@ -74,7 +73,7 @@ import Mapx from '@/components/mapx/index'
 import labelpannel from '@/components/CellsList/labelpannel'
 import { getScantxtByDID, updateLabel2, getlabel2sbypid } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
-import { cellInFovPosation, celltypekeys } from '@/utils/label'
+import { cellInFullPosation, celltypekeys } from '@/utils/label'
 
 export default {
   components: { lmap, labelpannel, Mapx },
@@ -96,7 +95,8 @@ export default {
       mapargs: {},
       tabwidth: 70,
       labels: {},
-      celltypes: {}
+      celltypes: {},
+      inited: false // 初始化完，即数据库的标注已经画在界面上了
     }
   },
   created() {
@@ -145,6 +145,8 @@ export default {
             imported = true
           }
         })
+        this.inited = true // 初始化完
+        this.$refs.labelpannel.updateLabelTable(this.labels) // 初始化完，更新一下面板数据
         if (imported) {
           this.$refs.labelpannel.importedfunc()
         }
@@ -183,6 +185,14 @@ export default {
         this.$refs.map.gotolatLng(x, y, true)
       }
     },
+    labelimgclicked(label) {
+      const x = parseInt((label.x1 + label.x2) / 2)
+      const y = parseInt((label.y1 + label.y2) / 2)
+      this.thumbmouseMoveToXY(x / (this.mapargs.realimgwidth * this.mapargs.colcnt), y / (this.mapargs.realimgheight * this.mapargs.rowcnt))
+      if (this.$refs.map) {
+        this.$refs.map.gotolatLng(x, y, true)
+      }
+    },
     updatereviewcnt(reviewedcnt) {
       this.checkTableData = []
       this.checkTableData.push({
@@ -199,7 +209,7 @@ export default {
     importpredict(_cellsList) {
       _cellsList.map(v => {
         // predict信息添加在全图的points位置，方便画图
-        const cellinfo = cellInFovPosation(v, this.mapargs.realimgheight, this.mapargs.realimgwidth, this.mapargs.imgext)
+        const cellinfo = cellInFullPosation(v, this.mapargs.realimgheight, this.mapargs.realimgwidth, this.mapargs.imgext)
         cellinfo.fromdb = false // 从预测来，要在标注的库里面新建条目
         this.$refs.map.drawrectangle(cellinfo)
       })
@@ -231,33 +241,39 @@ export default {
       var _label = Object.assign({}, labelinfo)
       _label.shortname = this.celltypes[_label.typeid].shortname
       _label.label = this.celltypes[_label.typeid].label
+      _label.cellpath = 'http://dev.medical.raidcdn.cn:3000/imgs/projects/QQ62Othf/resize_predict/100/b20200515.m0212180523.21453.IMG017x023.jpg_1_100_0_2_1248_1097_1348_1197_100_1274_1117_1323_1178.png'
+      _label.order = new Date().getTime()
       this.labels[labelinfo.typeid][labelinfo.labelid] = _label
-      this.$refs.labelpannel.updateLabelTable(this.labels)
+
+      if (this.inited) { // 初始化完之后的操作才触发更新面板的数据
+        this.$refs.labelpannel.updateLabelTable(this.labels)
+      }
     },
     _updatelabelinfo(labelinfo) {
       labelinfo.did = this.did
       labelinfo.pid = this.pid
       labelinfo.y1 = -labelinfo.y1
       labelinfo.y2 = -labelinfo.y2
-      this._savelabel(labelinfo)
       return labelinfo
     },
-    labeladd(labelinfo, alreadyindb) {
-      labelinfo.op = 1 // 0未知 1增加 2删除 3修改
+    labelupdate(op, labelinfo, alreadyindb) {
+      if (op === 'add') {
+        labelinfo.op = 1
+      } else if (op === 'edit') {
+        labelinfo.op = 3
+      } else if (op === 'delete') {
+        labelinfo.op = 2
+      } else {
+        return
+      }
       labelinfo = this._updatelabelinfo(labelinfo)
+      if ((labelinfo.y2 - labelinfo.y1 < 5) || (labelinfo.x2 - labelinfo.x1 < 5)) {
+        return
+      }
+      this._savelabel(labelinfo) // 保存到当前全局量
       if (!alreadyindb) {
         this.updateLabel2([labelinfo])
       }
-    },
-    labelupdate(labelinfo) {
-      labelinfo.op = 3
-      labelinfo = this._updatelabelinfo(labelinfo)
-      this.updateLabel2([labelinfo])
-    },
-    labeldelete(labelinfo) {
-      labelinfo.op = 2
-      labelinfo = this._updatelabelinfo(labelinfo)
-      this.updateLabel2([labelinfo])
     }
   }
 }

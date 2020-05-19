@@ -1,12 +1,33 @@
 <template>
   <div class="img-content">
-    <div class="img-div">
-      <el-divider content-position="left">标注</el-divider>
-      <el-table :data="tableData" height="320" highlight-current-row style="width: 100%" @row-click="rowclick">
-        <el-table-column prop="shortname" label="缩写" width="85" />
-        <el-table-column :show-overflow-tooltip="true" prop="label" label="全称" width="260" />
-        <el-table-column prop="typeid" label="状态" />
-      </el-table>
+    <div>
+      <el-divider content-position="left">详情</el-divider>
+      <div class="img-div">
+        <div v-for="img in labelList" :key="img.labelid" class="img-box">
+          <el-image
+            :class="img.labelid == selectedcell.labelid ? 'img-clicked' : 'img'"
+            :src="img.cellpath + '?width=' + cellWidth"
+            @click="imgclicked(img)"
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline" />
+            </div>
+          </el-image>
+          <svg-icon style="width:15px;height:15px;" class="check-icon" :icon-class="img.status === 1 ? 'checked' : img.status === 2 ? 'delete' : img.status === 3 ? 'adminA' : 'unchecked'" />
+        </div>
+      </div>
+    </div>
+    <div class="pagination-container1">
+      <el-pagination
+        v-if="total"
+        small
+        layout="total, prev, pager, next"
+        :current-page.sync="currentPage"
+        :page-size="currentPageSize"
+        :total="total"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
     </div>
     <div>
       <el-divider content-position="left">操作</el-divider>
@@ -22,6 +43,7 @@
 <script>
 import { getPredictsByPID2, updateLabelReview } from '@/api/cervical'
 import { medicalURL } from '@/api/filesimages'
+import { fullPosation2Fov } from '@/utils/label'
 
 export default {
   props: {
@@ -39,8 +61,10 @@ export default {
       cellRadio: 100,
       total: 0,
       currentPage: 1,
-      currentPageSize: 10,
-      cellWidth: 36,
+      currentPageSize: 20,
+      cellWidth: 80,
+      labelList: [],
+      labelListAll: [],
       cellsList: [],
       cellsListAll: [],
       selectedcell: { id: 0 }, // 随便初始化一个值，防止页面报错
@@ -50,23 +74,9 @@ export default {
     }
   },
   created() {
-    this.cellWidth = window.innerHeight <= 769 ? 38 : window.innerHeight <= 939 ? 66 : 80
     this.getPredictsByPID2All(200, 0, this.$route.query.pid, 0, 51)
   },
   methods: {
-    getPredictsByPID2(limit, skip, pid, status, type, cb) {
-      // status 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
-      getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': status, 'type': type, 'order': 1 }).then(res => {
-        res.data.data.predicts.map(v => {
-          v.cellpath = medicalURL.cellPath(v.cellpath)
-        })
-        this.cellsList = res.data.data.predicts
-        this.total = res.data.data.total
-        this.updateLocalCellsList(-1, -1) // 只是发送一下审核进度给父组件
-
-        return cb && cb()
-      })
-    },
     getPredictsByPID2All(limit, skip, pid, status, type) {
       // status 0 未审核 1 已审核 2 移除 3 管理员确认 4 全部
       getPredictsByPID2({ 'limit': limit, 'skip': skip, 'pid': pid, 'status': status, 'type': type, 'order': 1 }).then(res => {
@@ -76,20 +86,35 @@ export default {
         this.cellsListAll = res.data.data.predicts
       })
     },
-    rowclick(row, column, event) {
-      const x = (row.x1 + row.x2) / 2
-      const y = (row.y1 + row.y2) / 2
-      this.$emit('gotolatlng', { 'x': x, 'y': y })
+    _getCellsTable() { // 分页显示
+      this.labelList = []
+      var _labelList = []
+      for (var i = 0; i < this.labelListAll.length; i++) {
+        if (_labelList.length >= this.currentPageSize) {
+          break
+        }
+        if (i < (this.currentPage - 1) * this.currentPageSize) {
+          continue
+        }
+        _labelList.push(this.labelListAll[i])
+        console.log(this.labelListAll[i].cellpath)
+        fullPosation2Fov(this.labelListAll[i], this.scantxt.realimgheight, this.scantxt.realimgwidth, this.scantxt.imgext)
+      }
+      this.labelList = _labelList
     },
     updateLabelTable(labeltree) { // 更新列表
-      this.tableData = []
+      this.labelListAll = []
       var _table = []
       for (var level1 in labeltree) {
         for (var level2 in labeltree[level1]) {
-          _table.push(labeltree[level1][level2])
+          _table.push(Object.assign({}, labeltree[level1][level2]))
         }
       }
-      this.tableData = _table
+      this.labelListAll = _table.sort(function(a, b) {
+        return (b.order - a.order)
+      })
+      this.total = this.labelListAll.length
+      this._getCellsTable() // 取出当前页面需要显示的
     },
     tableRowClassName({ row, rowIndex }) {
       if (rowIndex === 1) {
@@ -100,13 +125,13 @@ export default {
       return ''
     },
     gotofirstcell() {
-      if (this.cellsList.length > 0) {
-        this.imgclicked(this.cellsList[0])
+      if (this.labelList.length > 0) {
+        this.imgclicked(this.labelList[0])
       } else {
         const that = this
         setTimeout(() => {
-          if (that.cellsList.length > 0) {
-            that.defaultclicked(that.cellsList[0], that)
+          if (that.labelList.length > 0) {
+            that.defaultclicked(that.labelList[0], that)
           }
         }, 1000)
       }
@@ -119,25 +144,27 @@ export default {
       this.$emit('labelclicked')
     },
     importclicked() {
-      this.getPredictsByPID2(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, this.$route.query.pid, 0, 51, f => { // 系统预测小图预览
-        if (!this.imported) { // 说明是点按钮触发的
-          this.$emit('importpredict', this.cellsListAll)
-        }
-        this.gotofirstcell() // 系统预测小图预览的第一个细胞
-        this.imported = true
-        this.importbuttontext = '已导入系统标注'
-      })
+      if (!this.imported) { // 说明是点按钮触发的
+        this.$emit('importpredict', this.cellsListAll)
+      }
+      this.gotofirstcell() // 系统预测小图预览的第一个细胞
+      this.imported = true
+      this.importbuttontext = '已导入系统标注'
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this._getCellsTable()
+    },
+    handleSizeChange(val) {
+      this.currentPageSize = val
+      this._getCellsTable()
     },
     cancellabelclicked() {
       this.$emit('cancellabelclicked')
     },
     defaultclicked(cell, _this) {
       _this.selectedcell = { ...cell }
-      _this.cellRadio = cell.predict_type
-      if (cell.status !== 0) {
-        _this.cellRadio = cell.true_type
-      }
-      _this.$emit('imgclicked', cell)
+      _this.$emit('labelimgclicked', cell)
     },
     imgclicked(cell) {
       this.defaultclicked(cell, this)
@@ -173,21 +200,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pagination-container1 {
+  text-align: center;
+}
 .btn-box {
   display: flex;
   .labelbtn {
-    width: 45%;
+    width: 100%;
   }
 }
 .img-div {
   flex-wrap: wrap;
-  justify-content: flex-start;
+  display: flex;
+  justify-content: space-around;
   .img-box {
     position: relative;
   }
-  // /deep/ .el-image {
-  //   height: 80px;
-  // }
   .img {
     margin: 2px 2px 2px 2px;
     border-radius: 10%;

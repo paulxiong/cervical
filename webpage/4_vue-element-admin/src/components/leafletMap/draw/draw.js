@@ -144,7 +144,7 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
       }).addTo(_map, shape)
     }
   })
-  drawInstance._newRectangleHandler(shape)
+  drawInstance._updateRectangleHandler('add', shape)
 }
 
 // 修改中触发
@@ -160,7 +160,7 @@ function _editingRectangleHandler(e, drawInstance) {
   toolTip._updatePosition()
 }
 
-// 修改结束之后触发
+// 修改结束之后触发, 平移/resize
 function _editRectangleHandler(e, drawInstance) {
   var layers = e.layers
   layers.eachLayer(function(layer) {
@@ -170,7 +170,7 @@ function _editRectangleHandler(e, drawInstance) {
         toolTip._updatePosition() // 更新tooltip的位置
       }
     }
-    drawInstance._updateRectangleHandler(layer)
+    drawInstance._updateRectangleHandler('edit', layer)
   })
 }
 
@@ -178,7 +178,7 @@ function _editRectangleHandler(e, drawInstance) {
 function _removeRectangleHandler(e, drawInstance) {
   var layers = e.layers
   layers.eachLayer(function(layer) {
-    drawInstance._deleteRectangleHandler(layer)
+    drawInstance._updateRectangleHandler('delete', layer)
   })
 }
 
@@ -191,7 +191,7 @@ function _drawEvent(_map, drawInstance) {
   _map.on('draw:updatelabel', function(e) {
     var layers = e.layers
     layers.eachLayer(function(layer) {
-      drawInstance._updateRectangleHandler(layer)
+      drawInstance._updateRectangleHandler('edit', layer)
     })
   })
   _map.on(L.Draw.Event.DRAWSTART, function() {
@@ -300,7 +300,7 @@ function _getShapeInfo(shape) { // 输入正方形对象，输出标注在全图
 }
 
 export default class LeafletDrawRectangle {
-  constructor(vueInstance, mapInstance, handlers) {
+  constructor(vueInstance, mapInstance, handler) {
     // 下面是全局量
     this.mapInstance = mapInstance
     this.vueInstance = vueInstance
@@ -308,12 +308,7 @@ export default class LeafletDrawRectangle {
     this.drawControl = null
 
     // 增删改的时候调用的接口
-    this.handlers = {}
-    if (handlers) {
-      this.handlers.add = handlers.add || null
-      this.handlers.update = handlers.update || null
-      this.handlers.delete = handlers.delete || null
-    }
+    this.handler = handler
 
     // 下面是参数
     this.weight = 2
@@ -343,21 +338,15 @@ export default class LeafletDrawRectangle {
   drawrectangle(cellinfo) { // 调用代码绘制一个矩形, 传入的是FOV信息
     _drawrectangle(this, this.mapInstance, cellinfo)
   }
-  _newRectangleHandler(shape) { // 新增矩形时候触发，代码画框还是手动画框都触发，所以检查一下，代码触发的是在初始化时候的所以不需要写会数据库
+  // 新增矩形时候触发，代码画框还是手动画框都触发，所以检查一下，代码触发的是在初始化时候的所以不需要写会数据库
+  // 平移或者resize矩形时候触发, 修改标注的细胞类型也会触发
+  _updateRectangleHandler(op, shape) {
     const labelinfo = _getShapeInfo(shape)
     if (shape.fromdb) {
-      shape.fromdb = false // 之后的就是修改和删除，不会有新增了
-      return this.handlers.add && this.handlers.add(labelinfo, true)
+      shape.fromdb = false // 只有新建框的时候fromdb=true之后的就是修改和删除，不会有从数据库读标注来新增了
+      return this.handler && this.handler(op, labelinfo, true)
     }
-    return this.handlers.add && this.handlers.add(labelinfo, false)
-  }
-  _updateRectangleHandler(shape) { // 平移或者resize矩形时候触发, 修改标注的细胞类型也会触发
-    const labelinfo = _getShapeInfo(shape)
-    return this.handlers.update && this.handlers.update(labelinfo)
-  }
-  _deleteRectangleHandler(shape) { // 删除矩形时候触发
-    const labelinfo = _getShapeInfo(shape)
-    return this.handlers.delete && this.handlers.delete(labelinfo)
+    return this.handler && this.handler(op, labelinfo, false)
   }
   clickDrawRec() { // 开始绘制矩形
     this.drawControl._toolbars.draw._modes.rectangle.handler.enable()
