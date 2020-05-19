@@ -158,7 +158,7 @@ export default {
       })
     },
     labelinited() { // 标注初始化完成自动触发
-      this.getlabel2sbypid(this.pid, 0)
+      this.getlabel2sbypid(this.pid, 10)
     },
     thumbclicked(xy) {
       const x = parseInt(this.mapargs.realimgheight * this.mapargs.rowcnt * xy.xpercent)
@@ -211,6 +211,7 @@ export default {
         // predict信息添加在全图的points位置，方便画图
         const cellinfo = cellInFullPosation(v, this.mapargs.realimgheight, this.mapargs.realimgwidth, this.mapargs.imgext)
         cellinfo.fromdb = false // 从预测来，要在标注的库里面新建条目
+        cellinfo.status = v.status
         this.$refs.map.drawrectangle(cellinfo)
       })
     },
@@ -241,7 +242,7 @@ export default {
       var _label = Object.assign({}, labelinfo)
       _label.shortname = this.celltypes[_label.typeid].shortname
       _label.label = this.celltypes[_label.typeid].label
-      _label.cellpath = 'http://dev.medical.raidcdn.cn:3000/imgs/projects/QQ62Othf/resize_predict/100/b20200515.m0212180523.21453.IMG017x023.jpg_1_100_0_2_1248_1097_1348_1197_100_1274_1117_1323_1178.png'
+      _label.cellpath = ''
       _label.order = new Date().getTime()
       this.labels[labelinfo.typeid][labelinfo.labelid] = _label
 
@@ -256,7 +257,7 @@ export default {
       labelinfo.y2 = -labelinfo.y2
       return labelinfo
     },
-    labelupdate(op, labelinfo, alreadyindb) {
+    labelupdate(op, labelinfo, alreadyindb, status) {
       if (op === 'add') {
         labelinfo.op = 1
       } else if (op === 'edit') {
@@ -266,6 +267,7 @@ export default {
       } else {
         return
       }
+      labelinfo.status = status
       labelinfo = this._updatelabelinfo(labelinfo)
       if ((labelinfo.y2 - labelinfo.y1 < 5) || (labelinfo.x2 - labelinfo.x1 < 5)) {
         return

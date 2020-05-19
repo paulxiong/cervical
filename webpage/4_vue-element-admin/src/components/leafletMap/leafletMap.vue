@@ -192,8 +192,8 @@ export default {
     drawrectangle(cell) { // 这个是自动导入使用
       this.drawInstance.drawrectangle(cell)
     },
-    drawRectangleUpdateHandler(op, labelinfo, alreadyindb) {
-      this.$emit('labelupdate', op, labelinfo, alreadyindb)
+    drawRectangleUpdateHandler(op, labelinfo, alreadyindb, status) {
+      this.$emit('labelupdate', op, labelinfo, alreadyindb, status)
     }
   }
 }

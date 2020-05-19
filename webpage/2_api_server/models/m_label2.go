@@ -42,6 +42,7 @@ func (l *Label2) BeforeCreate(scope *gorm.Scope) error {
 // InsertLabel2 新建标注信息
 func (l *Label2) InsertLabel2() (e error) {
 	_l := Label2{}
+	l.Status = 0
 	ret := db.Model(l).Where("id=?", l.ID).First(&_l)
 	if ret.Error == nil && _l.X2 > 0 {
 		return nil
@@ -72,7 +73,7 @@ func (l *Label2) RemoveLabel2() (e error) {
 
 // UpdateLabel2 更新标注信息
 func (l *Label2) UpdateLabel2() (e error) {
-	ret2 := db.Model(l).Where("id=?", l.ID).Updates(map[string]interface{}{"x1": l.X1, "y1": l.Y1, "x2": l.X2, "y2": l.Y2, "typeid": l.TypeID})
+	ret2 := db.Model(l).Where("id=?", l.ID).Updates(map[string]interface{}{"x1": l.X1, "y1": l.Y1, "x2": l.X2, "y2": l.Y2, "typeid": l.TypeID, "status": 1})
 	if ret2.Error != nil {
 		logger.Info.Println(ret2.Error)
 	}

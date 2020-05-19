@@ -100,7 +100,6 @@ export default {
         this.labelListAll[i].cellpath = fov.cellurl
         _labelList.push(this.labelListAll[i])
       }
-      console.log(_labelList)
       this.labelList = _labelList
     },
     updateLabelTable(labeltree) { // 更新列表
@@ -114,6 +113,7 @@ export default {
       this.labelListAll = _table.sort(function(a, b) {
         return (b.order - a.order)
       })
+
       this.total = this.labelListAll.length
       this._getCellsTable() // 取出当前页面需要显示的
     },

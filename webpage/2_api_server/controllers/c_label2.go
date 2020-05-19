@@ -22,6 +22,7 @@ type label2Result struct {
 	Y1      int    `json:"y1"      example:"0"`   // 左上角Y
 	X2      int    `json:"x2"      example:"100"` // 右下角X
 	Y2      int    `json:"y2"      example:"100"` // 右下角Y
+	Status  int    `json:"status"  example:"1"`   //状态, 0 未审核 1 已审核 2 移除
 }
 
 type label2sResult struct {
@@ -62,7 +63,7 @@ func UpdateLabel2s(c *gin.Context) {
 			Y1:     v.Y1,
 			X2:     v.X2,
 			Y2:     v.Y2,
-			Status: 0,
+			Status: v.Status,
 		}
 		if newl.X1 < 0 || newl.Y1 < 0 || newl.X2 <= newl.X1 || newl.Y2 <= newl.Y1 {
 			logger.Info.Println("Label2Invalie 2")
@@ -128,6 +129,7 @@ func GetLabel2ByPID(c *gin.Context) {
 			Y1:      v.Y1,
 			X2:      v.X2,
 			Y2:      v.Y2,
+			Status: v.Status,
 		})
 	}
 	label2s.Total = int64(len(label2s.Label2s))

@@ -170,6 +170,7 @@ function _editRectangleHandler(e, drawInstance) {
         toolTip._updatePosition() // 更新tooltip的位置
       }
     }
+    layer.status = 1
     drawInstance._updateRectangleHandler('edit', layer)
   })
 }
@@ -178,6 +179,7 @@ function _editRectangleHandler(e, drawInstance) {
 function _removeRectangleHandler(e, drawInstance) {
   var layers = e.layers
   layers.eachLayer(function(layer) {
+    layer.status = 2
     drawInstance._updateRectangleHandler('delete', layer)
   })
 }
@@ -191,6 +193,7 @@ function _drawEvent(_map, drawInstance) {
   _map.on('draw:updatelabel', function(e) {
     var layers = e.layers
     layers.eachLayer(function(layer) {
+      layer.status = 1
       drawInstance._updateRectangleHandler('edit', layer)
     })
   })
@@ -275,6 +278,7 @@ function _drawrectangle(drawInstance, mapInstance, cellinfo) {
   rectangle.predictid = cellinfo.id // 保存预测ID到shape.celltype里面，后面记录到数据库有用
   rectangle.fromdb = cellinfo.fromdb || false // 数据库以及有的，不需要触发新增的事件
   rectangle.labelid = cellinfo.labelid
+  rectangle.status = cellinfo.status // 0 未审核 1 已审核 2 移除 10 审核+未审核的
 
   // 创建菜单，设置事件
   const e = {
@@ -344,9 +348,9 @@ export default class LeafletDrawRectangle {
     const labelinfo = _getShapeInfo(shape)
     if (shape.fromdb) {
       shape.fromdb = false // 只有新建框的时候fromdb=true之后的就是修改和删除，不会有从数据库读标注来新增了
-      return this.handler && this.handler(op, labelinfo, true)
+      return this.handler && this.handler(op, labelinfo, true, shape.status)
     }
-    return this.handler && this.handler(op, labelinfo, false)
+    return this.handler && this.handler(op, labelinfo, false, shape.status)
   }
   clickDrawRec() { // 开始绘制矩形
     this.drawControl._toolbars.draw._modes.rectangle.handler.enable()
