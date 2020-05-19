@@ -227,8 +227,8 @@ export default {
     border: 0px solid red;
   }
   .img-clicked {
-    width: 80px;
-    height: 80px;
+    width: 84px;
+    height: 84px;
     margin: 0 0 0 0;
     border-radius: 10%;
     border: 2px solid red;
