@@ -2653,6 +2653,14 @@
               "defaultValue": "0"
             },
             {
+              "name": "status",
+              "type": "Integer",
+              "remark": "0 未审核 1 已审核 2 移除 10 审核+未审核的",
+              "chnname": "状态",
+              "defaultValue": "0",
+              "notNull": true
+            },
+            {
               "name": "created_by",
               "type": "BigInt",
               "remark": "",

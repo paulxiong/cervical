@@ -1,4 +1,5 @@
 import { cellsOptionsAll } from '@/const/const'
+import { APIUrl } from '@/const/config'
 
 // newlabelid 生成标注的ID
 export function newlabelid(pid, did) {
@@ -31,12 +32,22 @@ export function cellInFullPosation(cell, realimgheight, realimgwidth, imgext) {
 }
 
 // fullPosation2Fov 使用当前细胞在全图的位置计算出一条类似predict的信息, 输入lanbelinfo的x1,y1,x2,y2是在全图上的坐标
-export function fullPosation2Fov(labelinfo, realimgheight, realimgwidth, imgext) {
+export function fullPosation2Fov(labelinfo, args) {
   var x = parseInt((labelinfo.x1 + labelinfo.x2) / 2)
   var y = parseInt((labelinfo.y1 + labelinfo.y2) / 2)
-  x = parseInt(x / realimgwidth)
-  y = parseInt(y / realimgheight)
-  console.log(x, y)
+  x = parseInt(x / args.realimgwidth) + 1
+  y = parseInt(y / args.realimgheight) + 1
+  var fov = 'IMG' + ('' + y).padStart(3, '0') + 'x' + ('' + x).padStart(3, '0') + args.imgext
+  var x1 = labelinfo.x1 - ((x - 1) * args.realimgwidth)
+  var y1 = labelinfo.y1 - ((y - 1) * args.realimgheight)
+  var x2 = labelinfo.x2 - ((x - 1) * args.realimgwidth)
+  var y2 = labelinfo.y2 - ((y - 1) * args.realimgheight)
+  x1 = x1 < 0 ? 0 : x1 > args.realimgwidth ? (args.realimgwidth - 1) : x1
+  y1 = y1 < 0 ? 0 : y1 > args.realimgheight ? (args.realimgheight - 1) : y1
+  x2 = x2 < 0 ? 0 : x2 > args.realimgwidth ? (args.realimgwidth - 1) : x2
+  y2 = y2 < 0 ? 0 : y2 > args.realimgheight ? (args.realimgheight - 1) : y2
+  const cellurl = `${APIUrl}/imgs/scratch/img/${args.batchid}/${args.medicalid}/Images/${fov}?crop=${x1},${y1}|${x2},${y2}&quality=50`
+  return { 'img': fov, 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2, 'cellurl': cellurl }
 }
 
 export function celltypekeys() { // 细胞类型字典

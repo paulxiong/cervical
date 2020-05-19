@@ -6,7 +6,7 @@
         <div v-for="img in labelList" :key="img.labelid" class="img-box">
           <el-image
             :class="img.labelid == selectedcell.labelid ? 'img-clicked' : 'img'"
-            :src="img.cellpath + '?width=' + cellWidth"
+            :src="img.cellpath"
             @click="imgclicked(img)"
           >
             <div slot="error" class="image-slot">
@@ -96,10 +96,11 @@ export default {
         if (i < (this.currentPage - 1) * this.currentPageSize) {
           continue
         }
+        const fov = fullPosation2Fov(this.labelListAll[i], this.scantxt) // 标注在FOV里面的位置
+        this.labelListAll[i].cellpath = fov.cellurl
         _labelList.push(this.labelListAll[i])
-        console.log(this.labelListAll[i].cellpath)
-        fullPosation2Fov(this.labelListAll[i], this.scantxt.realimgheight, this.scantxt.realimgwidth, this.scantxt.imgext)
       }
+      console.log(_labelList)
       this.labelList = _labelList
     },
     updateLabelTable(labeltree) { // 更新列表
@@ -215,13 +216,19 @@ export default {
   justify-content: space-around;
   .img-box {
     position: relative;
+    width: 84px;
+    height: 88px;
   }
   .img {
+    width: 80px;
+    height: 80px;
     margin: 2px 2px 2px 2px;
     border-radius: 10%;
     border: 0px solid red;
   }
   .img-clicked {
+    width: 80px;
+    height: 80px;
     margin: 0 0 0 0;
     border-radius: 10%;
     border: 2px solid red;
