@@ -32,10 +32,12 @@ func init() {
 	fileName := "apiserver.log"
 	level := getLoggerLevel("debug")
 	syncWriter := zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&lumberjack.Logger{
-		Filename:  fileName,
-		MaxSize:   1 << 30, //1G
-		LocalTime: true,
-		Compress:  true,
+		Filename:   fileName, // 日志文件路径
+		MaxSize:    128,      // 每个日志文件保存的最大尺寸 单位：M
+		MaxBackups: 10,       // 日志文件最多保存多少个备份
+		MaxAge:     30,       // 文件最多保存多少天
+		LocalTime:  true,
+		Compress:   true, // 是否压缩
 	}))
 	encoder := zap.NewProductionEncoderConfig()
 	encoder.EncodeTime = zapcore.ISO8601TimeEncoder
