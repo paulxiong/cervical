@@ -106,7 +106,7 @@ export default {
       getScantxtByDID({ 'did': did, 'type': type }).then(res => {
         const data = res.data.data
         this.mapargs = data
-        this.mapargs.labletool = true // 表示需要初始化标注工具
+        this.mapargs.labletool = false // 表示需要初始化标注工具
         this.mapargs.pid = this.pid
         this.mapargs.did = this.did
         this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=300'

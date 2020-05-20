@@ -95,13 +95,13 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
   if (type !== 'rectangle') { // 目前只支持画矩形
     return
   }
-  // 审核模式不需要弹出菜单, 不需要tooltip
-  if (drawInstance.vueInstance.args.labletool) {
+  var shape = e.layer
+  // 审核模式不需要弹出菜单
+  if (!drawInstance.vueInstance.args.labletool) {
     return
   }
 
   const _celltypeinfo = celltypeinfo || drawInstance.unkownCell
-  var shape = e.layer
   // 参考 https://github.com/Leaflet/Leaflet/blob/master/src/layer/Tooltip.js
   shape.bindTooltip(tooltipContent(_celltypeinfo), {
     permanent: true, // 始终显示

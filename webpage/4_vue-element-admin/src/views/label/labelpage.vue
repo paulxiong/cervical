@@ -228,23 +228,27 @@ export default {
       if (!this.labels[labelinfo.typeid]) {
         this.labels[labelinfo.typeid] = {}
       }
+      var ts = false
       // 树状结构存储，方便分类
       for (var level1 in this.labels) {
         for (var level2 in this.labels[level1]) {
           if (this.labels[level1][level2].labelid !== labelinfo.labelid) {
             continue
           }
+          ts = this.labels[level1][level2].order
           this.labels[level1][level2] = undefined
           delete this.labels[level1][level2]
           break
         }
       }
-      var _label = Object.assign({}, labelinfo)
-      _label.shortname = this.celltypes[_label.typeid].shortname
-      _label.label = this.celltypes[_label.typeid].label
-      _label.cellpath = ''
-      _label.order = new Date().getTime()
-      this.labels[labelinfo.typeid][labelinfo.labelid] = _label
+      if (labelinfo.op !== 2) { // 删除的细胞不要加入显示的列表
+        var _label = Object.assign({}, labelinfo)
+        _label.shortname = this.celltypes[_label.typeid].shortname
+        _label.label = this.celltypes[_label.typeid].label
+        _label.cellpath = ''
+        _label.order = ts || new Date().getTime()
+        this.labels[labelinfo.typeid][labelinfo.labelid] = _label
+      }
 
       if (this.inited) { // 初始化完之后的操作才触发更新面板的数据
         this.$refs.labelpannel.updateLabelTable(this.labels)
