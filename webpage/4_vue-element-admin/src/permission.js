@@ -20,7 +20,7 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   let hasToken = getToken()
   // 特殊路由可以使用querystring自动登录
-  if (to.path === '/review/list' && to.query && to.query.token && to.query.token.length > 1) {
+  if ((to.path === '/review/list' || to.path === '/label/page') && to.query && to.query.token && to.query.token.length > 1) {
     const token = to.query.token
     setToken(`token ${token}`)
     hasToken = getToken()
