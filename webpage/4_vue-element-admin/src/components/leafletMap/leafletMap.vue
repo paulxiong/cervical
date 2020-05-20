@@ -80,9 +80,8 @@ export default {
       'minNativeZoom': this.minNativeZoom }).addTo(this.mapInstance)
 
     // 下面是标注相关的
-    if (this.args.labletool) {
-      this.drawInstance = new LeafletDrawRectangle(this, this.mapInstance, this.drawRectangleUpdateHandler)
-    }
+    this.drawInstance = new LeafletDrawRectangle(this, this.mapInstance, this.drawRectangleUpdateHandler)
+
     // 初始化完成
     this.$emit('labelinited')
   },

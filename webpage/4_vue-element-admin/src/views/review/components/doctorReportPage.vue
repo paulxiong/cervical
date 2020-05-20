@@ -106,6 +106,9 @@ export default {
       getScantxtByDID({ 'did': did, 'type': type }).then(res => {
         const data = res.data.data
         this.mapargs = data
+        this.mapargs.labletool = true // 表示需要初始化标注工具
+        this.mapargs.pid = this.pid
+        this.mapargs.did = this.did
         this.resultimg = medicalURL.resultImagePath(data.batchid, data.medicalid, data.result) + '?width=300'
         this.preview = medicalURL.previewImagePath(data.batchid, data.medicalid, data.preview) + '?width=240'
         this.loading = false
@@ -134,6 +137,11 @@ export default {
       this.thumbmouseMoveToXY(x / (this.mapargs.realimgwidth * this.mapargs.colcnt), y / (this.mapargs.realimgheight * this.mapargs.rowcnt))
       if (this.$refs.map) {
         this.$refs.map.gotolatLng(x, y, true)
+        img.points = []
+        img.points.push([-y, x]) // 在第4象限所以y是负数
+        img.points.push([-y - 100, x + 100])
+        img.fromdb = true
+        this.$refs.map.drawrectangle(img)
       }
     },
     updatereviewcnt(reviewedcnt) {
