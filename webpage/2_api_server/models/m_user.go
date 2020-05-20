@@ -53,7 +53,7 @@ func UserTypeInit() error {
 	for _, ut := range uts {
 		err := NewUserType(&ut)
 		if err != nil {
-			logger.Info.Println(err)
+			logger.Info(err)
 		}
 	}
 	return nil
@@ -176,17 +176,17 @@ func (u *User) UserLogined() error {
 func (u *User) CheckUserExist() (user *User, errcode int) {
 	user, err := u.Finduserbyemail()
 	if err == nil && user != nil {
-		logger.Warning.Println("checkUserExist " + u.Email)
+		logger.Warn("checkUserExist " + u.Email)
 		return user, e.StatusRegisterEmailExisted71
 	}
 	user, err = u.Finduserbyname()
 	if err == nil && user != nil {
-		logger.Warning.Println("UserExisted " + u.Name)
+		logger.Warn("UserExisted " + u.Name)
 		return user, e.StatusRegisterUserExisted70
 	}
 	user, err = u.FinduserbyMobile()
 	if err == nil && user != nil {
-		logger.Warning.Println("MobileExisted " + u.Mobile)
+		logger.Warn("MobileExisted " + u.Mobile)
 		return user, e.StatusRegisterMobileExisted76
 	}
 	return nil, e.StatusSucceed
@@ -203,14 +203,14 @@ func CheckUserExist2(name string, email string, mobile string) (user *User, errc
 	u = &User{Mobile: mobile}
 	user, err = u.FinduserbyMobile()
 	if err == nil && user != nil {
-		logger.Warning.Println("MobileExisted " + u.Mobile)
+		logger.Warn("MobileExisted " + u.Mobile)
 		return user, e.StatusRegisterMobileExisted76
 	}
 
 	u = &User{Email: email}
 	user, err = u.Finduserbyemail()
 	if err == nil && user != nil {
-		logger.Warning.Println("EmailExisted " + u.Email)
+		logger.Warn("EmailExisted " + u.Email)
 		return user, e.StatusRegisterEmailExisted71
 	}
 	return nil, e.StatusSucceed
@@ -249,7 +249,7 @@ func UserLists(limit int, skip int, order int) (users []User, t int, err error) 
 	}
 	ret := db.Model(&User{}).Order(orderStr).Limit(limit).Offset(skip).Find(&us)
 	if ret.Error != nil {
-		logger.Info.Println(users)
+		logger.Info(users)
 	}
 	return us, total, ret.Error
 }
@@ -280,7 +280,7 @@ func (u *User) UpdateUserInfo() (err error) {
 
 	ret := db.Model(u).Where("id=?", u.ID).Updates(updateu)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 
 	return ret.Error
@@ -300,7 +300,7 @@ func UpdateUserPassWD(UID int64, passwd string) (err error) {
 
 	ret := db.Model(&User{}).Where("id=?", UID).Updates(updateu)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 
 	return ret.Error

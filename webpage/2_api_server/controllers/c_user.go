@@ -20,7 +20,7 @@ func init() {
 	var err error
 	AuthMiddleware, err = mid.JwtMiddleware()
 	if err != nil {
-		logger.Error.Fatal("JWT Error:" + err.Error())
+		logger.Fatal("JWT Error:" + err.Error())
 	}
 }
 
@@ -59,7 +59,7 @@ func RegisterUser(c *gin.Context) {
 	user.Image = "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"
 
 	if user.Password == "" || (user.Name == "" && user.Email == "" && user.Mobile == "") {
-		logger.Warning.Println("RegisterUser failed ", user)
+		logger.Warn("RegisterUser failed ", user)
 		res.ResFailedStatus(c, e.Errors["RegisterInvalidData"])
 		return
 	}
@@ -87,7 +87,7 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
-	logger.Info.Println("RegisterUser succsess ", user)
+	logger.Info("RegisterUser succsess ", user)
 	res.ResSucceedString(c, "ok")
 	return
 }
@@ -188,7 +188,7 @@ func GetAccessLog(c *gin.Context) {
 
 	total, ds, err := m.ListOperationlog(int(limit), int(skip), int(_order))
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 	/*
 		for idx, v := range ds {
@@ -232,7 +232,7 @@ func GetUserLists(c *gin.Context) {
 
 	users, total, err := m.UserLists(int(limit), int(skip), int(_order))
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 	lu := listusers{
 		Users: users,

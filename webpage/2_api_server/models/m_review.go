@@ -84,7 +84,7 @@ func GetReviewByID(id int64) (r Review, e error) {
 	var _r Review
 	ret := db.Model(&_r).Where("id = ?", id).First(&_r)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _r, ret.Error
 }
@@ -94,7 +94,7 @@ func CreateReviews(reviews []*Review) (e error) {
 	if len(reviews) < 1 {
 		return nil
 	}
-	logger.Info.Println(len(reviews), time.Now())
+	logger.Info(len(reviews), time.Now())
 	sql1 := "INSERT  INTO `c_review` (`predictid`, `imgid`,`pid`,`x1`,`y1`,`x2`,`y2`,`cellpath`,`imgpath`,`w`,`h`,`predict_score`,`predict_type`,`predict_p1n0`,`true_type`,`true_p1n0`,`vid`,`status`) VALUES "
 	sql := sql1
 	// 新增预测结果
@@ -108,8 +108,8 @@ func CreateReviews(reviews []*Review) (e error) {
 			sql += ";"
 			ret := _db.Exec(sql)
 			if ret.Error != nil {
-				logger.Info.Println(ret.Error)
-				logger.Info.Println(sql)
+				logger.Info(ret.Error)
+				logger.Info(sql)
 			}
 			sql = sql1
 		} else {
@@ -117,7 +117,7 @@ func CreateReviews(reviews []*Review) (e error) {
 		}
 	}
 	_db.Commit()
-	logger.Info.Println(time.Now(), len(sql))
+	logger.Info(time.Now(), len(sql))
 	return nil
 }
 
@@ -129,22 +129,22 @@ func ListReviews(limit int, skip int, status int, userid int64, owner int) (tota
 	if owner == 0 {
 		ret := db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Count(&total)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		ret = db.Model(&Review{}).Where("status=? AND vid=?", status, userid).Limit(limit).Offset(skip).Find(&_r)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		return total, _r, ret.Error
 	}
 
 	ret := db.Model(&Review{}).Where("status=?", status).Count(&total)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	ret = db.Model(&Review{}).Where("status=?", status).Limit(limit).Offset(skip).Find(&_r)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _r, ret.Error
 }
@@ -159,32 +159,32 @@ func ListReviews2(pid int, limit int, skip int, status int, userid int64, owner 
 		if status == 4 {
 			ret := db.Model(&Review{}).Where("pid=? AND vid=?", pid, userid).Count(&total)
 			if ret.Error != nil {
-				logger.Info.Println(ret.Error)
+				logger.Info(ret.Error)
 			}
 			ret = db.Model(&Review{}).Where("pid=? AND vid=?", pid, userid).Limit(limit).Offset(skip).Find(&_r)
 			if ret.Error != nil {
-				logger.Info.Println(ret.Error)
+				logger.Info(ret.Error)
 			}
 			return total, _r, ret.Error
 		}
 		ret := db.Model(&Review{}).Where("status=? AND pid=? AND vid=?", status, pid, userid).Count(&total)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		ret = db.Model(&Review{}).Where("status=? AND pid=? AND vid=?", status, pid, userid).Limit(limit).Offset(skip).Find(&_r)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		return total, _r, ret.Error
 	}
 
 	ret := db.Model(&Review{}).Where("status=? AND pid=?", status, pid).Count(&total)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	ret = db.Model(&Review{}).Where("status=? AND pid=?", status, pid).Limit(limit).Offset(skip).Find(&_r)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _r, ret.Error
 }
@@ -209,7 +209,7 @@ func UpdateReview(id int64, trueType int, userid int64) (Review, error) {
 		"status":    status,
 		"vid":       userid})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return r, ret.Error
 }

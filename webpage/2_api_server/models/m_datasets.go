@@ -49,7 +49,7 @@ func (i *Image) CreateImage() (e error) {
 
 	ret := db.Model(i).Save(i)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 
 	return ret.Error
@@ -60,7 +60,7 @@ func GetImageByID(imgid int64) (img Image, e error) {
 	var retimg Image
 	ret := db.Model(&Image{}).Where("ID = ?", imgid).First(&retimg)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return retimg, ret.Error
 }
@@ -73,7 +73,7 @@ func ListImage(limit int, skip int) (totalNum int64, c []Image, e error) {
 	db.Model(&Image{}).Count(&total)
 	ret := db.Model(&Image{}).Limit(limit).Offset(skip).Find(&_i)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _i, ret.Error
 }
@@ -86,7 +86,7 @@ func ListImageOfMedicalID(bid string, mdcid string, limit int64, skip int64) (to
 	db.Model(&Image{}).Where("BATCHID=? AND MEDICALID=?", mdcid, bid).Count(&total)
 	ret := db.Model(&Image{}).Where("BATCHID=? AND MEDICALID=?", bid, mdcid).Limit(limit).Offset(skip).Find(&_i)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _i, ret.Error
 }
@@ -190,7 +190,7 @@ func ListWantedImages(limit int, skip int, batchids []string, medicalids []strin
 		log.Println(ret.Error)
 		return _b, ret.Error
 	}
-	logger.Info.Println(ress)
+	logger.Info(ress)
 	for _, v := range ress {
 		_b = append(_b, v.Batchid+"/"+v.Medicalid+"/"+v.Imgpath)
 	}
@@ -272,7 +272,7 @@ func RemoveImagesByIDs(ids []int64) (e error) {
 	}
 	ret := db.Where("ID in (?)", ids).Delete(Image{})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -306,7 +306,7 @@ func ListCategory(limit int, skip int) (totalNum int64, c []Category, e error) {
 	db.Model(&Category{}).Count(&total)
 	ret := db.Model(&Category{}).Limit(limit).Offset(skip).Find(&_c)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _c, ret.Error
 }
@@ -317,7 +317,7 @@ func GetCategoryByID(id int) (c Category, e error) {
 
 	ret := db.Model(&_c).Where("Id = ?", id).First(&_c)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _c, ret.Error
 }
@@ -454,7 +454,7 @@ func UpdateDatasetsCellTypes(did int64, cti []CellTypesinfo) (e error) {
 
 	ret := db.Model(&d).Where("id=?", did).Updates(d)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -474,7 +474,7 @@ func ListDataset(limit int, skip int, order int) (totalNum int64, c []Dataset, e
 
 	ret = db.Model(&Dataset{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_d)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _d, ret.Error
 }
@@ -484,7 +484,7 @@ func (d *Dataset) CreateDatasets() (e error) {
 	d.ID = 0
 	ret := db.Model(d).Save(d)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -506,7 +506,7 @@ func UpdateDatasetsStatus(did int64, status int) (e error) {
 
 	ret := db.Model(&d).Where("id=?", did).Updates(d)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -526,7 +526,7 @@ func UpdateDatasetsPercent(did int64, percent int, ETA int) (e error) {
 
 	ret := db.Model(&d).Where("id=?", did).Updates(map[string]interface{}{"process_percent": d.ProcessPercent, "ETA": d.ETA})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -556,7 +556,7 @@ func RemoveDatasetByID(did int64) (e error) {
 	// 删除当前项目的所有预测结果
 	ret := db.Where("id=?", did).Delete(Dataset{})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }

@@ -49,7 +49,7 @@ func NewProjectJSONFile(project models.Project, types []int, _mod *models.Model)
 		log.Println("ERROR:", err)
 	}
 	info := projectsDir + "/" + project.Dir + "/info.json"
-	logger.Info.Println(info)
+	logger.Info(info)
 	writeJSON(info, data)
 }
 
@@ -74,7 +74,7 @@ func NewTrainJSONFile(id int64, types []int, dirname string, status int) {
 		log.Println("ERROR:", err)
 	}
 	info := scratchRoot + "/" + dirname + "/train.json"
-	logger.Info.Println(info)
+	logger.Info(info)
 	writeJSON(info, data)
 }
 
@@ -111,7 +111,7 @@ func (p *PredictInfo) NewPredictJSONFile() {
 		log.Println("ERROR:", err)
 	}
 	info := scratchRoot + "/" + dirname + "/predict.json"
-	logger.Info.Println(info)
+	logger.Info(info)
 	writeJSON(info, data)
 }
 
@@ -164,7 +164,7 @@ func LoadPredictJSONFile(dirname string, done int) PredictInfo2 {
 	j := PredictInfo2{}
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		return j
 	}
 	err = json.Unmarshal(data, &j)

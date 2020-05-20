@@ -87,15 +87,15 @@ func History() gin.HandlerFunc {
 				operationlog.RegionID = region.ID
 				operationlog.ISP = region.ISP
 			} else {
-				logger.Info.Println(err2)
+				logger.Info(err2)
 			}
 		} else {
-			logger.Info.Println(err)
+			logger.Info(err)
 		}
 
 		err3 := operationlog.NewOperationlog()
 		if err3 != nil {
-			logger.Info.Println(err3)
+			logger.Info(err3)
 		}
 
 		// 注意： 这里只有记录错误日志的时候需要

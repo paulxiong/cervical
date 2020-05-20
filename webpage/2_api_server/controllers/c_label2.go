@@ -66,7 +66,7 @@ func UpdateLabel2s(c *gin.Context) {
 			Status: v.Status,
 		}
 		if newl.X1 < 0 || newl.Y1 < 0 || newl.X2 <= newl.X1 || newl.Y2 <= newl.Y1 {
-			logger.Info.Println("Label2Invalie 2")
+			logger.Info("Label2Invalie 2")
 			res.ResFailedStatus(c, e.Errors["LabelInvalied"])
 			return
 		}

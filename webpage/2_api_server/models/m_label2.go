@@ -56,7 +56,7 @@ func (l *Label2) InsertLabel2() (e error) {
 
 	ret2 := db.Model(l).Save(l)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 	return ret2.Error
 }
@@ -65,7 +65,7 @@ func (l *Label2) InsertLabel2() (e error) {
 func (l *Label2) RemoveLabel2() (e error) {
 	ret2 := db.Model(l).Where("id=?", l.ID).Updates(map[string]interface{}{"status": 2})
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 
 	return ret2.Error
@@ -75,7 +75,7 @@ func (l *Label2) RemoveLabel2() (e error) {
 func (l *Label2) UpdateLabel2() (e error) {
 	ret2 := db.Model(l).Where("id=?", l.ID).Updates(map[string]interface{}{"x1": l.X1, "y1": l.Y1, "x2": l.X2, "y2": l.Y2, "typeid": l.TypeID, "status": 1})
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 
 	return ret2.Error
@@ -89,7 +89,7 @@ func ListLabel2(limit int, skip int) (totalNum int64, l []Label2, e error) {
 	db.Model(&Label2{}).Count(&total)
 	ret := db.Model(&Label2{}).Limit(limit).Offset(skip).Find(&_l)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _l, ret.Error
 }
@@ -102,7 +102,7 @@ func ListLabel2ByPid(limit int, skip int, pid int) (totalNum int64, l []Label2, 
 	db.Model(&Label2{}).Where("pid = ?", pid).Count(&total)
 	ret := db.Model(&Label2{}).Where("pid = ?", pid).Limit(limit).Offset(skip).Find(&_l)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _l, ret.Error
 }
@@ -115,7 +115,7 @@ func ListLabel2ByType(limit int, skip int, t int) (totalNum int64, l []Label2, e
 	db.Model(&Label2{}).Where("typeid = ?", t).Count(&total)
 	ret := db.Model(&Label2{}).Where("typeid = ?", t).Limit(limit).Offset(skip).Find(&_l)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _l, ret.Error
 }

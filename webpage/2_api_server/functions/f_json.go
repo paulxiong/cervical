@@ -9,11 +9,11 @@ import (
 
 func writeJSON(jsonfilepath string, jsonByte []byte) {
 	if jsonfilepath == "" {
-		logger.Info.Println("please specify json file")
+		logger.Info("please specify json file")
 	}
 	_, err := file.WriteBytes(jsonfilepath, jsonByte)
 	if err != nil {
-		logger.Info.Println("write config file:", jsonfilepath, "fail:", err)
+		logger.Info("write config file:", jsonfilepath, "fail:", err)
 	}
 }
 

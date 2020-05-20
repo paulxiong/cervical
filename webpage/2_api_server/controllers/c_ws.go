@@ -168,7 +168,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		str := string(data)
 		if len(str) != 5 || str != "getsm" {
-			logger.Info.Println(str)
+			logger.Info(str)
 			continue
 		}
 		// 只要有消息写回来就把系统信息发出去

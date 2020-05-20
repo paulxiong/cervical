@@ -172,7 +172,7 @@ func ImageServer(cfg *ImageServerSettings) http.Handler {
 			&imageserver_http_gamma.CorrectionParser{},
 		}),
 		ErrorFunc: func(err error, req *http.Request) {
-			logger.Info.Println(err)
+			logger.Info(err)
 		},
 		Server:   newServer(cfg.ImgDir, cfg.Cachedir, cfg.MemCacheSize, cfg.MaxWidth, cfg.MaxHeight),
 		ETagFunc: imageserver_http.NewParamsHashETagFunc(sha256.New),

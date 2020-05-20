@@ -41,7 +41,7 @@ func (err *Errorlog) AfterFind(scope *gorm.Scope) error {
 func (err *Errorlog) NewErrorLog() error {
 	ret := db.Model(err).Create(err)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 		return ret.Error
 	}
 	return nil
@@ -59,7 +59,7 @@ func ErrorlogLists(limit int, skip int, order int) (el []Errorlog, t int, err er
 	}
 	ret := db.Model(&Errorlog{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_el)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _el, total, ret.Error
 }
@@ -71,7 +71,7 @@ func UpdateErrorlog(elid int64, opid int64) (err error) {
 	}
 	ret := db.Model(&Errorlog{}).Where("id=?", elid).Updates(map[string]interface{}{"opid": opid})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }

@@ -45,7 +45,7 @@ func GetModelInfo(d m.Dataset, _type string) []m.Model {
 			_minfo.PID = d.ID
 			minfo = append(minfo, _minfo)
 		} else {
-			logger.Info.Println(err2)
+			logger.Info(err2)
 		}
 	}
 }
@@ -56,7 +56,7 @@ func LoadModJSONFile(dirname string) m.Model {
 	j := m.Model{}
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		return j
 	}
 	err = json.Unmarshal(data, &j)

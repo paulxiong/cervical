@@ -99,12 +99,12 @@ func (p *Project) CreateProject() (e error) {
 	p.ID = 0
 	ret := db.Model(p).Save(&p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 
 	ret2 := db.Model(p).Where("dir=?", p.Dir).First(&p)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 	return ret2.Error
 }
@@ -151,7 +151,7 @@ func UpdateProjectStatus(pid int64, status int) (e error) {
 		"endtime":   p.EndTime,
 		"status":    p.Status})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -165,7 +165,7 @@ func UpdateProjectCellsType(pid int64, cellstype []ProjectCellstype) (e error) {
 
 	ret := db.Model(&Project{}).Where("id=?", pid).Updates(map[string]interface{}{"cellstype": cellstypestring})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -183,7 +183,7 @@ func UpdateProjectPercent(pid int64, percent int, ETA int) (e error) {
 
 	ret := db.Model(&_p).Where("id=?", pid).Updates(map[string]interface{}{"process_percent": _p.Percent, "ETA": _p.ETA})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -204,14 +204,14 @@ func ListProject(limit int, skip int, order int, status int) (totalNum int64, c 
 		ret := db.Model(&Project{}).Count(&total)
 		ret = db.Model(&Project{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		return total, _p, ret.Error
 	} else if status == 101 {
 		ret := db.Model(&Project{}).Where("status=? OR status=?", 5, 6).Count(&total)
 		ret = db.Model(&Project{}).Where("status=? OR status=?", 5, 6).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		return total, _p, ret.Error
 	}
@@ -219,7 +219,7 @@ func ListProject(limit int, skip int, order int, status int) (totalNum int64, c 
 	ret := db.Model(&Project{}).Where("status=?", status).Count(&total)
 	ret = db.Model(&Project{}).Where("status=?", status).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _p, ret.Error
 }
@@ -249,7 +249,7 @@ func RemoveProjectByID(pid int64) (e error) {
 	// 删除当前项目的所有预测结果
 	ret := db.Where("id=?", pid).Delete(Project{})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -331,7 +331,7 @@ func (r *Result) UpdateResult() (e error) {
 	}
 	ret := db.Model(&Result{}).Where("pid=?", r.PID).Updates(updater)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -345,14 +345,14 @@ func (r *Result) CreateOrUpdateResult() (e error) {
 	if ret.Error == nil && total > 0 {
 		err := r.UpdateResult()
 		if err != nil {
-			logger.Info.Println(err)
+			logger.Info(err)
 		}
 		return err
 	}
 
 	ret2 := db.Model(r).Create(&r)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 	return ret2.Error
 }
@@ -365,7 +365,7 @@ func ListResult(limit int64, skip int64) (totalNum int64, c []Result, e error) {
 	ret := db.Model(&Result{}).Count(&total)
 	ret = db.Model(&Result{}).Limit(limit).Offset(skip).Find(&_r)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _r, ret.Error
 }

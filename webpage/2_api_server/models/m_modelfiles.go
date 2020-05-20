@@ -67,7 +67,7 @@ func (d *Model) CreateModelInfo() (e error) {
 
 	ret2 := db.Model(d).Where("path=?", d.Path).First(&_d)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 
 	if _d.ID > 0 {
@@ -76,7 +76,7 @@ func (d *Model) CreateModelInfo() (e error) {
 
 	ret := db.Model(d).Save(&d)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -91,14 +91,14 @@ func ListModel(limit int, skip int, _type int) (totalNum int64, c []Model, e err
 		db.Model(&Model{}).Where("type>4").Count(&total)
 		ret := db.Model(&Model{}).Where("type>4").Limit(limit).Offset(skip).Find(&_d)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		return total, _d, ret.Error
 	} else if _type == 52 {
 		db.Model(&Model{}).Count(&total)
 		ret := db.Model(&Model{}).Limit(limit).Offset(skip).Find(&_d)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		return total, _d, ret.Error
 	}
@@ -106,7 +106,7 @@ func ListModel(limit int, skip int, _type int) (totalNum int64, c []Model, e err
 	db.Model(&Model{}).Where("type=?", _type).Count(&total)
 	ret := db.Model(&Model{}).Where("type=?", _type).Limit(limit).Offset(skip).Find(&_d)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _d, ret.Error
 }
@@ -117,7 +117,7 @@ func FindModelInfoByPath(modpath string) (m *Model, e error) {
 
 	ret2 := db.Model(&_d).Where("path=?", modpath).First(&_d)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 	return &_d, ret2.Error
 }
@@ -128,7 +128,7 @@ func FindModelInfoByID(mid int) (m *Model, e error) {
 
 	ret2 := db.Model(&_d).Where("id=?", mid).First(&_d)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 	return &_d, ret2.Error
 }
@@ -139,7 +139,7 @@ func (d *Model) ModelInfoSaved() bool {
 
 	ret2 := db.Model(&_d).Where("path=?", d.Path).First(&_d)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 	if _d.Path != "" && len(_d.Path) > 0 {
 		return true

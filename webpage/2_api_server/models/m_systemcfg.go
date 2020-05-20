@@ -92,7 +92,7 @@ func (s *Syscfg) UpdateSysCfg() (err error) {
 
 	ret := db.Model(s).Where("id=?", s.ID).Updates(updates)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	SystemCfg, _ = FindSysCfg()
 	return ret.Error

@@ -116,7 +116,7 @@ func GetPredictsByPIDSortByScore(c *gin.Context) {
 
 	// 第3个参数limit给了500+limit，因为下面要过滤，不能保证最后返回的就是limit个数,skip也不在查找时候做，这里将来改进
 	p, total, _ := models.GetPredictByPIDAndType(pid, int(status), int(limit+500), int(0), int(_type), int(order))
-	logger.Info.Println(total, len(p))
+	logger.Info(total, len(p))
 	total2 := models.GetReviewCntByPID(pid, int(_type)) // 已经分配过的个数
 
 	_predicts := predictsByPID{}
@@ -383,7 +383,7 @@ func DownloadReviews(c *gin.Context) {
 		}
 		ret, _ := f.PathExists(_r.CellPath)
 		if ret != true {
-			logger.Info.Printf("cell file not found %s", _r.CellPath)
+			logger.Infof("cell file not found %s", _r.CellPath)
 			continue
 		}
 		filesname = append(filesname, _r.CellPath)

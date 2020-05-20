@@ -11,7 +11,7 @@ import (
 )
 
 func textMsgHandler(ctx *core.Context) {
-	logger.Info.Printf("收到文本消息:\n%s\n", ctx.MsgPlaintext)
+	logger.Infof("收到文本消息:\n%s\n", ctx.MsgPlaintext)
 
 	msg := request.GetText(ctx.MixedMsg)
 	resp := response.NewText(msg.FromUserName, msg.ToUserName, msg.CreateTime, msg.Content)
@@ -20,12 +20,12 @@ func textMsgHandler(ctx *core.Context) {
 }
 
 func defaultMsgHandler(ctx *core.Context) {
-	logger.Info.Printf("收到消息:\n%s\n", ctx.MsgPlaintext)
+	logger.Infof("收到消息:\n%s\n", ctx.MsgPlaintext)
 	ctx.NoneResponse()
 }
 
 func menuClickEventHandler(ctx *core.Context) {
-	logger.Info.Printf("收到菜单 click 事件:\n%s\n", ctx.MsgPlaintext)
+	logger.Infof("收到菜单 click 事件:\n%s\n", ctx.MsgPlaintext)
 
 	event := menu.GetClickEvent(ctx.MixedMsg)
 	resp := response.NewText(event.FromUserName, event.ToUserName, event.CreateTime, "收到 click 类型的事件")
@@ -34,7 +34,7 @@ func menuClickEventHandler(ctx *core.Context) {
 }
 
 func defaultEventHandler(ctx *core.Context) {
-	logger.Info.Printf("收到事件:\n%s\n", ctx.MsgPlaintext)
+	logger.Infof("收到事件:\n%s\n", ctx.MsgPlaintext)
 	ctx.NoneResponse()
 }
 
@@ -51,17 +51,17 @@ func NewWechatServe() *core.Server {
 		// 注册消息(事件)处理 Handler, 都不是必须的!
 		{
 			mux.UseFunc(func(ctx *core.Context) { // 注册中间件, 处理所有的消息(事件)
-				logger.Info.Println("处理所有的消息(事件)")
+				logger.Info("处理所有的消息(事件)")
 				// TODO: 中间件处理逻辑
 			})
 			mux.UseFuncForMsg(func(ctx *core.Context) { // 注册中间件, 处理所有的消息
-				logger.Info.Println("处理所有的消息")
-				logger.Info.Println(string(ctx.MsgPlaintext))
+				logger.Info("处理所有的消息")
+				logger.Info(string(ctx.MsgPlaintext))
 
 				// TODO: 中间件处理逻辑
 			})
 			mux.UseFuncForEvent(func(ctx *core.Context) { // 注册中间件, 处理所有的事件
-				logger.Info.Println("处理所有的事件")
+				logger.Info("处理所有的事件")
 				// TODO: 中间件处理逻辑
 			})
 		}

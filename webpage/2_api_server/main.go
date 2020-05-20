@@ -53,7 +53,7 @@ func printlistenaddr(port string) {
 	for _, address := range addrs {
 		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
-				logger.Warning.Printf("http://%s%s", ipnet.IP.String(), port)
+				logger.Warnf("http://%s%s", ipnet.IP.String(), port)
 			}
 		}
 	}
@@ -70,9 +70,9 @@ func main() {
 	defer atexit()
 
 	if release != "true" {
-		logger.Info.Printf("port on ==> %d", port)
+		logger.Infof("port on ==> %d", port)
 		if err := http.ListenAndServe(endPoint, r); err != nil {
-			logger.Error.Fatal(err)
+			logger.Fatal(err)
 		}
 	} else {
 		endless.DefaultReadTimeOut = 1 * time.Second
@@ -81,14 +81,14 @@ func main() {
 
 		server := endless.NewServer(endPoint, r)
 		server.BeforeBegin = func(add string) {
-			logger.Info.Printf("Actual pid is %d", syscall.Getpid())
+			logger.Infof("Actual pid is %d", syscall.Getpid())
 		}
 
-		logger.Info.Printf("port on ==> %d", port)
+		logger.Infof("port on ==> %d", port)
 
 		err := server.ListenAndServe()
 		if err != nil {
-			logger.Error.Fatal("Server err: ", err)
+			logger.Fatal("Server err: ", err)
 		}
 	}
 }

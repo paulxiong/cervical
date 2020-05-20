@@ -136,7 +136,7 @@ func UploadModelHandler(c *gin.Context) {
 	modpath := f.NewModulePath(int(_type), filename)
 	err2 := c.SaveUploadedFile(file, modpath)
 	if err2 != nil {
-		logger.Info.Println(err2)
+		logger.Info(err2)
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
 		return
 	}

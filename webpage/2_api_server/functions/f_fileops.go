@@ -44,18 +44,18 @@ func ZipCompressDatasets(dirname string, dest string) error {
 	cellslist := datasetsDir + "/" + dirname + "/cellslist.csv"
 	file, err := os.Open(cellslist)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		return err
 	}
 	defer file.Close()
 	reader := csv.NewReader(file)
 	if reader == nil {
-		logger.Info.Println("NewReader return nil, file:", file)
+		logger.Info("NewReader return nil, file:", file)
 		return err
 	}
 	records, err := reader.ReadAll()
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		return err
 	}
 
@@ -119,6 +119,6 @@ func RemoveDir(dir string) {
 	}
 	err := os.RemoveAll(dir)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 }

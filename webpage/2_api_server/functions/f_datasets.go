@@ -102,13 +102,13 @@ func NewJSONFile(d models.Dataset, batchids []string, medicalids []string, cntn 
 func CreateDataset(imgs []models.Image, dt *models.Dataset) (n int, p int) {
 	err := os.MkdirAll(path.Join(datasetsDir, dt.Dir), os.ModePerm) //创建多级目录
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 
 	filelist := FileListCSVPath(dt.Dir)
 	fd, err1 := os.OpenFile(filelist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
-		logger.Info.Println(filelist, err1)
+		logger.Info(filelist, err1)
 	}
 	var cntn int = 0
 	var cntp int = 0

@@ -77,7 +77,7 @@ func AllInfo(c *gin.Context) {
 	}
 
 	total2, ls2, err2 := models.ListLabel(1, 0)
-	logger.Info.Println(total2, ls2, err2)
+	logger.Info(total2, ls2, err2)
 	st.TotalLabel = total2
 	st.TotalLabelP = totalP
 	st.TotalLabelN = totalN
@@ -225,13 +225,13 @@ func GetImgListOfWanted(c *gin.Context) {
 	w := wanted{}
 	err := c.BindJSON(&w)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 
 	for _, v := range w.Categorys {
-		logger.Info.Println(v.Num, 0, w.Batchs, w.Medicalids, v.ID)
+		logger.Info(v.Num, 0, w.Batchs, w.Medicalids, v.ID)
 		ws, err2 := models.ListWantedImages(v.Num, 0, w.Batchs, w.Medicalids, v.ID)
-		logger.Info.Println(ws, err2)
+		logger.Info(ws, err2)
 
 		for _, v2 := range ws {
 			images.Images = append(images.Images, v2)
@@ -547,7 +547,7 @@ func ListDatasets(c *gin.Context) {
 
 	total, ds, err := models.ListDataset(int(limit), int(skip), int(_order))
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 
 	dts := listDatasets{}

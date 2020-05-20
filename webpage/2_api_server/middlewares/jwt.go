@@ -42,7 +42,7 @@ func LoginWithPasswd(name string, password string, emailormobile string) (*model
 	hashed := []byte(userFound.Password)
 	err := bcrypt.CompareHashAndPassword(hashed, []byte(password))
 	if err != nil {
-		logger.Info.Println("Authenticator  password not match")
+		logger.Info("Authenticator  password not match")
 		return nil, "LoginBadPasswd"
 	}
 	return userFound, ""
@@ -76,7 +76,7 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginVals LoginFormData
 			if err := c.ShouldBind(&loginVals); err != nil {
-				logger.Info.Println(err)
+				logger.Info(err)
 				return "", jwt.ErrMissingLoginValues
 			}
 			userName := loginVals.Username
@@ -148,7 +148,7 @@ func JwtMiddleware() (*jwt.GinJWTMiddleware, error) {
 	})
 
 	if err != nil {
-		logger.Error.Fatal("JWT Error:" + err.Error())
+		logger.Fatal("JWT Error:" + err.Error())
 	}
 	return authMiddleware, nil
 }

@@ -27,19 +27,19 @@ require (
 	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
-	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.2
 	github.com/tidwall/gjson v1.3.2 // indirect
 	github.com/toolkits/file v0.0.0-20160325033739-a5b3c5147e07
 	github.com/ugorji/go v1.1.7 // indirect
 	github.com/zhnxin/csvreader v0.0.0-20190606083136-f9e31b1bce61
+	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7 // indirect
 	golang.org/x/sys v0.0.0-20190825160603-fb81701db80f // indirect
-	golang.org/x/tools v0.0.0-20190826060629-95c3470cfb70 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )
 

@@ -111,7 +111,7 @@ func UploadsHandler(c *gin.Context) {
 	//这里是多文件上传 在之前单文件upload上传的基础上加 [] 变成upload[] 类似文件数组的意思
 	files := form.File["upload[]"]
 	//循环存文件到服务器本地
-	logger.Info.Println(files)
+	logger.Info(files)
 	for _, file := range files {
 		c.SaveUploadedFile(file, file.Filename)
 	}

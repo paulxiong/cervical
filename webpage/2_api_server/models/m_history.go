@@ -82,7 +82,7 @@ func ListOperationlog(limit int, skip int, order int) (totalNum int64, c []Opera
 
 	ret = db.Model(&Operationlog{}).Order(orderStr).Limit(limit).Offset(skip).Find(&_o)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _o, ret.Error
 }

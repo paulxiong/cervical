@@ -32,7 +32,7 @@ func getSHA1StringOfURL(data string) string {
 // QiniuInit 初始化七牛云的配置
 func QiniuInit() {
 	if len(configs.Qiniu.AccessKey) != 40 || len(configs.Qiniu.SecretKey) != 40 {
-		logger.Error.Println("invalied Qiniu.AccessKey/Qiniu.SecretKey")
+		logger.Error("invalied Qiniu.AccessKey/Qiniu.SecretKey")
 		return
 	}
 	mac := qbox.NewMac(configs.Qiniu.AccessKey, configs.Qiniu.SecretKey)
@@ -43,7 +43,7 @@ func QiniuInit() {
 	prefix, delimiter, marker, limit := "", "", "", 1
 	_, _, _, _, err := bucketManager.ListFiles(bucket, prefix, delimiter, marker, limit)
 	if err != nil {
-		logger.Error.Println("list error,", err)
+		logger.Error("list error,", err)
 	}
 
 	// dataCleanChoiceQuestion()
@@ -54,7 +54,7 @@ func UploadImageByURL(url string) (newurl string, e error) {
 	key := prefix + getSHA1StringOfURL(url)
 	fetchRet, err := bucketManager.Fetch(url, bucket, key)
 	if err != nil {
-		logger.Error.Println("fetch error,", err, fetchRet)
+		logger.Error("fetch error,", err, fetchRet)
 		return "", err
 	}
 	return (ossHost + key), err
@@ -82,7 +82,7 @@ func findURLLists(content string, originsite string) ([]string, int) {
 		}
 		end = start + end
 		if start >= end {
-			logger.Info.Println(str, start, end)
+			logger.Info(str, start, end)
 			break
 		}
 		ret = append(ret, str[start:end+2])
@@ -114,7 +114,7 @@ func replaceWithQiniuURL(old string) (string, int) {
 			oldurl := getUrlfromString(img)
 			newurl, err := UploadImageByURL(oldurl)
 			if err != nil {
-				logger.Info.Println(old, oldurl)
+				logger.Info(old, oldurl)
 				continue
 			}
 			retstr = strings.Replace(retstr, oldurl, newurl, -1)
@@ -132,7 +132,7 @@ func dataCleanChoiceQuestion() {
 		var cqs []ChoiceQuestion
 		ret := db.Model(&ChoiceQuestion{}).Order("id").Limit(limit).Offset(skip).Find(&cqs)
 		if ret.Error != nil || len(cqs) < 1 {
-			logger.Info.Println(ret.Error, count)
+			logger.Info(ret.Error, count)
 			break
 		}
 
@@ -169,7 +169,7 @@ func dataCleanChoiceQuestion() {
 			cq.Analysis = Analysis
 			cq.SubQuestion = SubQuestion
 			cq.Type = 1
-			logger.Info.Println("updated:", cq.Id, changed, skip)
+			logger.Info("updated:", cq.Id, changed, skip)
 			updatecqs = append(updatecqs, cq)
 		}
 

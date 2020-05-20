@@ -53,7 +53,7 @@ func FindPredictbyID(id int64) (*Predict, error) {
 
 // CreatePredicts 新建细胞预测结果，一个很长的数组
 func CreatePredicts(predicts []*Predict, pid int64) (e error) {
-	logger.Info.Println(len(predicts), time.Now())
+	logger.Info(len(predicts), time.Now())
 	// 删除当前项目的所有预测结果
 	db.Where("pid=?", pid).Delete(Predict{})
 	sql1 := "INSERT  INTO `c_predict` (`imgid`,`pid`,`x1`,`y1`,`x2`,`y2`,`cellpath`,`predict_score`,`predict_type`,`predict_p1n0`,`true_type`,`true_p1n0`,`vid`,`status`) VALUES "
@@ -69,7 +69,7 @@ func CreatePredicts(predicts []*Predict, pid int64) (e error) {
 			sql += ";"
 			ret := _db.Exec(sql)
 			if ret.Error != nil {
-				logger.Info.Println(ret.Error)
+				logger.Info(ret.Error)
 			}
 			sql = sql1
 		} else {
@@ -77,7 +77,7 @@ func CreatePredicts(predicts []*Predict, pid int64) (e error) {
 		}
 	}
 	_db.Commit()
-	logger.Info.Println(time.Now(), len(sql))
+	logger.Info(time.Now(), len(sql))
 	return nil
 }
 
@@ -95,12 +95,12 @@ func ListPredict(limit int, skip int, pid int, imgid int, status int) (totalNum 
 		db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 0).Count(&total2)
 		ret := db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 0).Limit(limit).Offset(skip).Find(&_p2)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 1).Count(&total3)
 		ret = db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, 1).Limit(limit).Offset(skip).Find(&_p3)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		_p = append(append(_p, _p2...), _p3...)
 		total = total + total2 + total3
@@ -111,7 +111,7 @@ func ListPredict(limit int, skip int, pid int, imgid int, status int) (totalNum 
 	db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, status).Count(&total)
 	ret := db.Model(&Predict{}).Where("pid=? AND imgid=? AND status=?", pid, imgid, status).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _p, ret.Error
 }
@@ -136,7 +136,7 @@ func UpdatePredict(id int64, trueType int, userid int64) (e error) {
 		"status":    status,
 		"vid":       userid})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -158,7 +158,7 @@ func GetPredictPercent(id int64, status int) (int, int, int, int) {
 	// 项目所有细胞，　项目已经审核的细胞，　当前图片的所有细胞，当前图片已经审核的细胞，
 	ret := db.Model(&Predict{}).Where("id=?", id).First(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 		return 0, 0, 0, 0
 	}
 	return GetPredictPercentByImgID(_p.ImgID, _p.PID, status)
@@ -173,7 +173,7 @@ func ReviewPredict(id int64, status int) (e error) {
 
 	ret := db.Model(&Predict{}).Where("id=?", id).Updates(map[string]interface{}{"status": status})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -183,7 +183,7 @@ func GetPredictByImgID(pid int64, iid int64) (p []Predict, e error) {
 	var _p []Predict
 	ret := db.Model(&Predict{}).Where("pid=? AND imgid=?", pid, iid).Find(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _p, ret.Error
 }
@@ -195,7 +195,7 @@ func GetPredictByPID(pid int64, status int, limit int, skip int) (p []Predict, t
 	db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Count(&total)
 	ret := db.Model(&Predict{}).Where("pid=? AND status=?", pid, status).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _p, total, ret.Error
 }
@@ -207,7 +207,7 @@ func GetPredictAllByPID(pid int64) (p []Predict, t int64, e error) {
 	db.Model(&Predict{}).Where("pid=?", pid).Count(&total)
 	ret := db.Model(&Predict{}).Where("pid=?", pid).Find(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _p, total, ret.Error
 }
@@ -226,7 +226,7 @@ func GetPredictByPIDAndType(pid int64, status int, limit int, skip int, predictT
 	db.Model(&Predict{}).Where("pid=? AND predict_type=? AND status=?", pid, predictType, status).Count(&total)
 	ret := db.Model(&Predict{}).Where("pid=? AND predict_type=? AND status=?", pid, predictType, status).Order(orderStr).Limit(limit).Offset(skip).Find(&_p)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return _p, total, ret.Error
 }
@@ -258,7 +258,7 @@ func GetPredictCount() PredictCount {
 	selector1 := "SELECT vid FROM c_predict GROUP BY vid;"
 	ret := db.Raw(selector1).Scan(&vids)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	// 依次统计出审核人员的信息,0 未审核 1 已审核 2 移除 3 管理员确认
 	pcnt := PredictCount{}
@@ -270,12 +270,12 @@ func GetPredictCount() PredictCount {
 		selector1 := "SELECT count(1) AS total FROM c_predict WHERE vid=? AND status=?;"
 		ret := db.Raw(selector1, v.Vid, 0).Scan(&total0)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		selector1 = "SELECT count(1) AS total FROM c_predict WHERE vid=? AND status=?;"
 		ret = db.Raw(selector1, v.Vid, 1).Scan(&total1)
 		if ret.Error != nil {
-			logger.Info.Println(ret.Error)
+			logger.Info(ret.Error)
 		}
 		u, err := FinduserbyID(v.Vid)
 		if err != nil {
@@ -299,7 +299,7 @@ func RemovePredictsByPid(pid int64) (e error) {
 	// 删除当前项目的所有预测结果
 	ret := db.Where("pid=?", pid).Delete(Predict{})
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }

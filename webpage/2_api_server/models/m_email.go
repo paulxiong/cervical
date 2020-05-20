@@ -50,7 +50,7 @@ func (em *Email) NeEmail() error {
 func (em *Email) UpdateEmail() (e error) {
 	ret := db.Model(em).Where("id=?", em.ID).Updates(em)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }
@@ -63,7 +63,7 @@ func (em *Email) UpdateEmailInvalid() (e error) {
 	em.Valid = 0
 	ret := db.Model(em).Where("id=?", em.ID).Updates(em)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return ret.Error
 }

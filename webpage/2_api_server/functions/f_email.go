@@ -53,7 +53,7 @@ func SendEmailCode(toaddr string, _type int) error {
 
 	err := newemail.NeEmail()
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		return err
 	}
 
@@ -79,14 +79,14 @@ func SendEmailCode(toaddr string, _type int) error {
 
 	err = sendMail(mailTo, subject, body)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		newemail.Status = 2
 		newemail.Valid = 0
 	}
 
 	err2 := newemail.UpdateEmail()
 	if err2 != nil {
-		logger.Info.Println(err2)
+		logger.Info(err2)
 	}
 	return err
 }

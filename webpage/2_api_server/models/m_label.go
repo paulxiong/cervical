@@ -52,7 +52,7 @@ func (l *Label) InsertLabel() (e error) {
 	//ret2 := db.Debug().Model(l).Save(l)
 	ret2 := db.Model(l).Save(l)
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 
 	return ret2.Error
@@ -62,7 +62,7 @@ func (l *Label) InsertLabel() (e error) {
 func (l *Label) RemoveLabel() (e error) {
 	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"status": 2})
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 
 	return ret2.Error
@@ -72,7 +72,7 @@ func (l *Label) RemoveLabel() (e error) {
 func (l *Label) UpdateLabel() (e error) {
 	ret2 := db.Model(l).Where("ID=?", l.ID).Updates(map[string]interface{}{"x1": l.X1, "y1": l.Y1, "x2": l.X2, "y2": l.Y2, "TYPE": l.Type})
 	if ret2.Error != nil {
-		logger.Info.Println(ret2.Error)
+		logger.Info(ret2.Error)
 	}
 
 	return ret2.Error
@@ -86,7 +86,7 @@ func ListLabel(limit int, skip int) (totalNum int64, l []Label, e error) {
 	db.Model(&Label{}).Count(&total)
 	ret := db.Model(&Label{}).Limit(limit).Offset(skip).Find(&_l)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _l, ret.Error
 }
@@ -99,7 +99,7 @@ func ListLabelByType(limit int, skip int, t int) (totalNum int64, l []Label, e e
 	db.Model(&Label{}).Where("TYPE = ?", t).Count(&total)
 	ret := db.Model(&Label{}).Where("TYPE = ?", t).Limit(limit).Offset(skip).Find(&_l)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _l, ret.Error
 }
@@ -112,7 +112,7 @@ func ListLabelByImageID(limit int, skip int, imgid int) (totalNum int64, l []Lab
 	db.Model(&Label{}).Where("IMGID = ?", imgid).Count(&total)
 	ret := db.Model(&Label{}).Where("IMGID = ?", imgid).Limit(limit).Offset(skip).Find(&_l)
 	if ret.Error != nil {
-		logger.Info.Println(ret.Error)
+		logger.Info(ret.Error)
 	}
 	return total, _l, ret.Error
 }

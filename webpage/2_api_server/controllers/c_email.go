@@ -29,7 +29,7 @@ func GetEmailCode(c *gin.Context) {
 	var mcode mailregister
 	err := c.ShouldBindJSON(&mcode)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		res.ResFailedStatus(c, e.Errors["EmailCodeInvalidData"])
 		return
 	}
@@ -53,7 +53,7 @@ func GetEmailCode(c *gin.Context) {
 
 	err = f.SendEmailCode(mcode.Email, mcode.Type)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		res.ResFailedStatus(c, e.Errors["EmailCodeSendFailed"])
 		return
 	}

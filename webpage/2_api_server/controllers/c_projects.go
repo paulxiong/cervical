@@ -43,7 +43,7 @@ func CreateProject(c *gin.Context) {
 	np := newProject{}
 	err := c.BindJSON(&np)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
@@ -67,8 +67,8 @@ func CreateProject(c *gin.Context) {
 	_mod, _ := models.FindModelInfoByID(p.ParameterMID)
 	p.ParameterMType = _mod.Type
 
-	logger.Info.Println(np.Desc)
-	logger.Info.Println(np.DID)
+	logger.Info(np.Desc)
+	logger.Info(np.DID)
 
 	p.CreateProject()
 
@@ -108,7 +108,7 @@ func ListProjects(c *gin.Context) {
 
 	total, p, err := models.ListProject(int(limit), int(skip), int(_order), int(status))
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 
 	dts := listProjectsData{}
@@ -262,7 +262,7 @@ func GetAllPredictResult(c *gin.Context) {
 
 	total, p, err := models.ListProject(int(limit), int(skip), int(_order), int(status))
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 	}
 
 	allp := allpredictresult{}
@@ -374,7 +374,7 @@ func CreateProjectResult(c *gin.Context) {
 	pr := projectResult{}
 	err := c.BindJSON(&pr)
 	if err != nil {
-		logger.Info.Println(err)
+		logger.Info(err)
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
@@ -458,7 +458,7 @@ func DownloadResult(c *gin.Context) {
 
 	fd, err1 := os.OpenFile(csvname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
-		logger.Info.Println(csvname, err1)
+		logger.Info(csvname, err1)
 	}
 	w := csv.NewWriter(fd)
 	w.Write([]string{"编号", "项目ID", "数据集ID", "批次和病例号", "阴性细胞数", "阳性细胞数", "过滤杂质数", "FOV数", "模型预测结果", "医生诊断结果", "备注"})
@@ -532,7 +532,7 @@ func DownloadCells(c *gin.Context) {
 	//初始化CSv
 	fd, err1 := os.OpenFile(csvname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err1 != nil {
-		logger.Info.Println(csvname, err1)
+		logger.Info(csvname, err1)
 		res.ResFailedStatus(c, e.Errors["ZipFailed"])
 		return
 	}
