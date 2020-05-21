@@ -158,6 +158,12 @@
               "chnname": "类型名称"
             },
             {
+              "name": "role",
+              "type": "DefaultString",
+              "remark": "前端判断权限使用",
+              "chnname": "角色英文缩写"
+            },
+            {
               "name": "description",
               "type": "MiddleString",
               "remark": "",

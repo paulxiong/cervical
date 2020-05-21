@@ -16,6 +16,7 @@ import (
 type UserType struct {
 	ID          int       `json:"id"           gorm:"column:id"`          //"ID"
 	Name        string    `json:"name"         gorm:"column:name"`        //"类型名称"
+	Role        string    `json:"role"         gorm:"column:role"`        //角色英文缩写
 	Description string    `json:"description"  gorm:"column:description"` //"描述"
 	Image       string    `json:"image"        gorm:"column:image"`       //"类型图片"
 	CreatedAt   time.Time `json:"created_at"   gorm:"column:created_at"`  //"创建时间"
@@ -36,7 +37,7 @@ func (u *UserType) BeforeCreate(scope *gorm.Scope) error {
 // NewUserType 新建用户类型
 func NewUserType(nut *UserType) error {
 	ut := UserType{}
-	ret := db.Model(&UserType{}).Where("name = ?", nut.Name).First(&ut)
+	ret := db.Model(&UserType{}).Where("role = ?", nut.Role).First(&ut)
 	if ret.Error != nil {
 		ret2 := db.Model(&UserType{}).Create(nut)
 		return ret2.Error
@@ -45,18 +46,21 @@ func NewUserType(nut *UserType) error {
 }
 
 // UserTypeInit 初始化时候默认新建的用户类型
-func UserTypeInit() error {
+func UserTypeInit() (map[int]string, error) {
 	uts := [...]UserType{
-		UserType{ID: 1, Name: "超级管理员", Description: "拥有所有权限", Image: ""},
-		UserType{ID: 1000, Name: "普通用户", Description: "使用者", Image: ""},
+		UserType{ID: 1, Role: "admin", Name: "超级管理员", Description: "拥有所有权限", Image: ""},
+		UserType{ID: 1000, Role: "user", Name: "游客", Description: "普通用户", Image: ""},
+		UserType{ID: 1001, Role: "doctor", Name: "医生", Description: "医生", Image: ""},
 	}
+	userTypeDic := make(map[int]string, len(uts))
 	for _, ut := range uts {
+		userTypeDic[ut.ID] = ut.Role
 		err := NewUserType(&ut)
 		if err != nil {
 			logger.Info(err)
 		}
 	}
-	return nil
+	return userTypeDic, nil
 }
 
 // User 用户信息
@@ -92,12 +96,11 @@ func (u *User) BeforeCreate(scope *gorm.Scope) error {
 
 // AfterFind 返回用户角色, 1 超级管理员 1000 普通用户
 func (u *User) AfterFind(scope *gorm.Scope) error {
-	if u.TypeID == 1 {
-		u.Roles = []string{"admin"}
-	} else if u.TypeID == 1000 {
+	if typeString, ok := userTypes[u.TypeID]; ok {
+		u.Roles = []string{typeString}
+	} else {
 		u.Roles = []string{"user"}
 	}
-
 	return nil
 }
 

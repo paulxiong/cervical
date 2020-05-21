@@ -17,6 +17,7 @@ import (
 )
 
 var db *gorm.DB
+var userTypes map[int]string
 
 func init() {
 	var err error
@@ -39,5 +40,5 @@ func init() {
 
 	// db.AutoMigrate(&Token{}, &UserType{}, &User{})
 
-	UserTypeInit()
+	userTypes, _ = UserTypeInit()
 }

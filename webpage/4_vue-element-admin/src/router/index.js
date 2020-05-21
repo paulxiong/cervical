@@ -109,7 +109,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/workSpace/list',
     name: '工作台',
-    meta: { title: '工作台', icon: 'component', keepAlive: true },
+    meta: { title: '工作台', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
@@ -131,7 +131,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/report/list',
     name: '审核报告',
-    meta: { title: '审核报告', icon: 'nested', keepAlive: true },
+    meta: { title: '审核报告', icon: 'nested', keepAlive: true, roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
@@ -146,7 +146,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/review/list',
     name: '审核细胞',
-    meta: { title: '审核细胞', icon: 'nested' },
+    meta: { title: '审核细胞', icon: 'nested', roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
@@ -165,7 +165,41 @@ export const constantRoutes = [
         path: '/label',
         component: () => import('@/views/label/labelhome'),
         name: '标注',
-        meta: { title: '标注', icon: 'edit', affix: true }
+        meta: { title: '标注', icon: 'edit', affix: true, roles: ['admin', 'editor'] }
+      }
+    ]
+  }
+]
+
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system',
+    name: '系统设置',
+    meta: { title: '系统设置', icon: 'table', keepAlive: true, roles: ['admin'] },
+    children: [
+      {
+        path: 'imgserver',
+        component: () => import('@/views/system/imgServer'),
+        name: '图片设置',
+        meta: { title: '图片服务设置', icon: 'photo', affix: true }
+      },
+      {
+        path: 'email',
+        component: () => import('@/views/system/email'),
+        name: '邮件设置',
+        meta: { title: '邮件设置', icon: 'email', affix: true }
+      },
+      {
+        path: 'errLog',
+        component: () => import('@/views/system/errLog'),
+        name: '错误日志',
+        meta: { title: '错误日志', icon: 'bug', affix: true }
       }
     ]
   },
@@ -174,11 +208,7 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/authManage/userManage',
     name: '权限管理',
-    meta: {
-      title: '权限管理',
-      icon: 'peoples',
-      keepAlive: true
-    },
+    meta: { title: '权限管理', icon: 'peoples', keepAlive: true, roles: ['admin'] },
     children: [
       {
         path: 'userManage',
@@ -201,44 +231,6 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: '/system',
-    name: '系统设置',
-    meta: {
-      title: '系统设置',
-      icon: 'table',
-      keepAlive: true
-    },
-    children: [
-      {
-        path: 'imgserver',
-        component: () => import('@/views/system/imgServer'),
-        name: '图片设置',
-        meta: { title: '图片服务设置', icon: 'photo', affix: true }
-      },
-      {
-        path: 'email',
-        component: () => import('@/views/system/email'),
-        name: '邮件设置',
-        meta: { title: '邮件设置', icon: 'email', affix: true }
-      },
-      {
-        path: 'errLog',
-        component: () => import('@/views/system/errLog'),
-        name: '错误日志',
-        meta: { title: '错误日志', icon: 'bug', affix: true }
-      }
-    ]
-  }
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
- */
-export const asyncRoutes = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
