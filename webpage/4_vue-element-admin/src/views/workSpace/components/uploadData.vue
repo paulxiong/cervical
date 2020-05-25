@@ -33,6 +33,7 @@ export default {
       options: {
         target: APIUrl + '/api1/uploaddir',
         query: this.getqueryfunc,
+        parseTimeRemaining: this.parseTimeRemaining,
         simultaneousUploads: 1, // 只准有一个上传队列
         headers: {
           'Authorization': getToken()
@@ -62,6 +63,9 @@ export default {
   methods: {
     getqueryfunc(val, val2) {
       return { 'mid': this.mid, 'bid': this.bid, 'dir': this.dirname }
+    },
+    parseTimeRemaining(timeRemaining, parsedTimeRemaining) { // 显示时间不对，不显示，直接返回空字符串
+      return ''
     },
     onfilesAdded(files, fileList, event) { // 把文件列表做个排序，确保Scan.txt文件第一个处理
       files = files.sort(function(a, b) {
@@ -97,11 +101,12 @@ export default {
       }
     },
     oncomplete() {
-      this.once = true
       if (this.lostfiles && this.lostfiles.length > 0) {
         this.once = false
+      } else {
+        this.once = true
+        this.$emit('checkUpload', true)
       }
-      this.$emit('checkUpload', true)
     },
     cancelUploder(msg) {
       this.uploaderInstance.uploader.cancel()
@@ -166,6 +171,10 @@ export default {
 </script>
 
 <style>
+  .uploader-file-actions{
+     /* 把操作按钮都藏起来 */
+    display: none !important;
+  }
   .uploader-example {
     padding: 15px;
     margin: 40px auto 0;

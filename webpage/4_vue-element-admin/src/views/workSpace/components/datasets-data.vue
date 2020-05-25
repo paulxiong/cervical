@@ -142,6 +142,9 @@
     <el-dialog
       :title="upload ? '上传数据' : '新建数据集'"
       :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
       @closed="closedDialog"
     >
       <newDatasets
