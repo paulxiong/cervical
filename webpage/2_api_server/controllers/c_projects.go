@@ -183,6 +183,46 @@ func oneProjectPredict(pinfo models.Project, limit int64, skip int64, correc int
 	return &j
 }
 
+// oneProjectPredictType 按参数获得一个项目的预测结果里面的制定类型的细胞
+func oneProjectPredictType(pinfo models.Project, limit int64, skip int64, correc int64, _type int) *f.PredictInfo2 {
+	j := f.LoadPredictJSONFile(pinfo.Dir, 0)
+	if j.ID < 1 || limit > 0 {
+		// limit>0 说明需要细胞列表，要从predict2.json读取
+		j = f.LoadPredictJSONFile(pinfo.Dir, 1)
+	}
+
+	j.CellsTotal = len(j.Cells)
+	if j.CellsTotal > 0 {
+		var CellsCrop []f.PredictCell
+		for index, v := range j.Cells {
+			if _type != int(v.Predict) {
+				continue
+			}
+			if index < int(skip) {
+				continue
+			}
+			if correc == 0 && v.Type == v.Predict {
+				continue
+			} else if correc == 1 && v.Type != v.Predict {
+				continue
+			}
+			if len(CellsCrop) >= int(limit) {
+				break
+			}
+			CellsCrop = append(CellsCrop, v)
+		}
+		j.Cells = CellsCrop
+	}
+
+	j.CorrecTotal = 0
+	j.InCorrecTotal = 0
+	for _, v := range j.PRsult {
+		j.CorrecTotal = j.CorrecTotal + v.Correct
+		j.CorrecTotal = j.CorrecTotal + (v.Total - v.Correct)
+	}
+	return &j
+}
+
 // GetPredictResult 根据传递来的项目ID，返回预测的结果
 // @Summary 根据传递来的项目ID，返回预测的结果
 // @Description 创建预测任务
@@ -546,7 +586,7 @@ func DownloadCells(c *gin.Context) {
 	filesname := make([]string, 0)
 	filestype := make([]string, 0)
 	filesscore := make([]float32, 0)
-	j := oneProjectPredict(pinfo, limit, skip, correc)
+	j := oneProjectPredictType(pinfo, limit, skip, correc, int(_type))
 	for _, v := range j.Cells {
 		if v.Predict != int(_type) {
 			continue
@@ -559,7 +599,7 @@ func DownloadCells(c *gin.Context) {
 	}
 
 	correc = 1
-	j = oneProjectPredict(pinfo, limit, skip, correc)
+	j = oneProjectPredictType(pinfo, limit, skip, correc, int(_type))
 	for _, v := range j.Cells {
 		if v.Predict != int(_type) {
 			continue
