@@ -110,6 +110,8 @@ func NewModulePath(_type int, filename string) string {
 	// 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
 	if _type == 6 {
 		return path.Join(rootdir, modulesDir, "classifier", filename)
+	} else if _type == 4 {
+		return path.Join(rootdir, modulesDir, "detector", filename)
 	}
 
 	// 目前只支持6MALA的模型上传
