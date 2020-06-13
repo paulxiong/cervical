@@ -1,0 +1,28 @@
+#FROM tensorflow/tensorflow:1.13.2-gpu-py3
+FROM lambdazhang/jstson-agx-xavire:tf-1.14.0-nv19.7-1209
+ENV DEBIAN_FRONTEND "noninteractive"
+ADD assets/sources.list.armv8 /etc/apt/sources.list
+RUN mkdir /tmp && chmod 777 /tmp && rm -rf /etc/apt/sources.list.d/* && apt-get update && \
+    apt-get -y --no-install-recommends install libsm-dev libxrender-dev python3-tk language-pack-en openssh-server pkg-config wget libgeos-dev libfreetype6-dev python3-h5py libqt5test5 libqt5opengl5 liblapack-dev gfortran && \
+    apt-get clean && \
+    sed -i 's/^PermitRootLogin/#PermitRootLogin/' /etc/ssh/sshd_config && \
+    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
+    echo "root:5F392afB7f76170d" | chpasswd && mkdir -p /var/run/sshd
+
+ADD assets/run_jupyter.sh /run_jupyter.sh
+ADD assets/bashrc /tmp
+
+ENV LANG "en_US.UTF-8"
+ENV PYTHONUNBUFFERED "0"
+
+RUN mkdir -p /notebooks/data
+WORKDIR /notebooks/data
+RUN apt-get remove -y libopencv libopencv-dev libopencv-python libopencv-samples libopencv-core-dev
+ADD tmp/ tmp
+RUN dpkg -i tmp/*.deb && pip3 install tmp/opencv_python-3.4.3-cp36-cp36m-linux_aarch64.whl && rm tmp -rf
+ADD requirements.txt.armv8 /notebooks/data/requirements.txt.armv8
+RUN pip3 uninstall -y enum34 && pip3 install -r requirements.txt.armv8 --no-cache-dir && \
+    rm -rf /root/.nv/ && rm -rf requirements.txt.armv8 && ls -alh && \
+    cat /tmp/bashrc >> /root/.bashrc && rm /tmp/bashrc
+ADD mrcnn /notebooks/data/mrcnn
+WORKDIR /notebooks/data/mrcnn
