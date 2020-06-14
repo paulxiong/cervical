@@ -24,5 +24,7 @@ ADD requirements.txt.armv8 /notebooks/data/requirements.txt.armv8
 RUN pip3 uninstall -y enum34 && pip3 install -r requirements.txt.armv8 --no-cache-dir && \
     rm -rf /root/.nv/ && rm -rf requirements.txt.armv8 && ls -alh && \
     cat /tmp/bashrc >> /root/.bashrc && rm /tmp/bashrc
+ENV LD_LIBRARY_PATH "/usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu/tegra-egl"
+RUN ln -sf /usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1.1 /usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1
 ADD mrcnn /notebooks/data/mrcnn
 WORKDIR /notebooks/data/mrcnn
