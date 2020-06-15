@@ -15,6 +15,12 @@ class BowlConfig(Config):
     # Give the configuration a recognizable name
     NAME = "Inference"
 
+    #解决armv8上面内存不够的问题
+    GPU_COUNT = 1
+    IMAGES_PER_GPU = 1
+    STEPS_PER_EPOCH = 1
+    VALIDATION_STEPS = 1
+
     IMAGE_RESIZE_MODE = "pad64" ## tried to modfied but I am using other git clone
     ## No augmentation
     ZOOM = False
