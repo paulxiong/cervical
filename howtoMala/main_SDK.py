@@ -12,9 +12,9 @@ from SDK.worker import worker
 from SDK.const.const import wt, mt
 from SDK.utilslib.fileops import parse_imgid_xy_from_cellname, get_file_lists
 import keras.backend.tensorflow_backend as KTF
-from filter_end.filter_end import main_filter_end
-from filter_end.predict import yolo_init
-import filter_end.test_cell_seg2 as mala2
+#from filter_end.filter_end import main_filter_end
+#from filter_end.predict import yolo_init
+#import filter_end.test_cell_seg2 as mala2
 
 # 自适应分配计算资源
 config = tf.ConfigProto()
@@ -394,24 +394,24 @@ class mala_predict(worker):
             result.append([cellpath, predict_label, predict_label, f[2], 1, x1, y1, x2, y2, imgid])
         _df_result = pd.DataFrame(result, columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
 
-        # 加入yolo过滤及最终mala模型过滤
-        cfg2, metadata2 = "filter_end/names-data/yolov3-voc-predict.cfg", "filter_end/names-data/voc.data"
-        weights2 = "filter_end/yolov3-voc_40100.weights.0501.concat"
+        ## 加入yolo过滤及最终mala模型过滤
+        #cfg2, metadata2 = "filter_end/names-data/yolov3-voc-predict.cfg", "filter_end/names-data/voc.data"
+        #weights2 = "filter_end/yolov3-voc_40100.weights.0501.concat"
 
-        if self.filtermodyolo2 != weights2 or self.yolo_net2 is None:
-            self.filtermodyolo2 = weights2
-            self.yolo_net2, self.yolo_meta2 = yolo_init(cfg2, weights2, metadata2)
+        #if self.filtermodyolo2 != weights2 or self.yolo_net2 is None:
+        #    self.filtermodyolo2 = weights2
+        #    self.yolo_net2, self.yolo_meta2 = yolo_init(cfg2, weights2, metadata2)
 
-        #filter_mod90_file='filter_end/Mala_H_fillter_0501_2.h5'
-        filter_mod90_file='filter_end/Mala_H_fillter_0520.h5'
-        if self.filtermod90 != filter_mod90_file  or self.filter_model90 is None:
-            self.filtermod90 = filter_mod90_file
-            print(os.path.exists(self.filtermod90))
-            self.filter_model90 = load_model(self.filtermod90)
-            print(self.filter_model90)
+        ##filter_mod90_file='filter_end/Mala_H_fillter_0501_2.h5'
+        #filter_mod90_file='filter_end/Mala_H_fillter_0520.h5'
+        #if self.filtermod90 != filter_mod90_file  or self.filter_model90 is None:
+        #    self.filtermod90 = filter_mod90_file
+        #    print(os.path.exists(self.filtermod90))
+        #    self.filter_model90 = load_model(self.filtermod90)
+        #    print(self.filter_model90)
 
-        df_result = main_filter_end(_df_result, self.filter_model90, self.yolo_net2, self.yolo_meta2)
-        return True, df_result
+        #df_result = main_filter_end(_df_result, self.filter_model90, self.yolo_net2, self.yolo_meta2)
+        return True, _df_result
 
     def predict(self):
         remove_cnt_201, remove_cnt_200 = 0, 0
