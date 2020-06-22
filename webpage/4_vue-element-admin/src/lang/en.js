@@ -17,5 +17,8 @@ export default {
     incorrectpasswd: 'At least 3 letters or numbers',
     incorrectconfirm: 'The password and password (Reenter to confirm) do not match',
     enterCode: 'Please enter 6-digit email verification code'
+  },
+  navbar: {
+    lang: 'English'
   }
 }

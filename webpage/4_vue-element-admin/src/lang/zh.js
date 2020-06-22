@@ -17,5 +17,8 @@ export default {
     incorrectpasswd: '至少3位',
     incorrectconfirm: '两次输入的密码不同',
     enterCode: '请输入6位的邮箱验证码'
+  },
+  navbar: {
+    lang: '中文'
   }
 }
