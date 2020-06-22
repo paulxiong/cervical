@@ -1,3 +1,4 @@
+<!-- i18n -->
 <template>
   <div class="login-container">
     <loginHeader />
@@ -12,7 +13,7 @@
         label-position="left"
       >
         <div class="title-container">
-          <h3 class="title">{{ forgetPassword ? '密码找回' : register ? '注册' : '欢迎登录' }}</h3>
+          <h3 class="title">{{ forgetPassword ? $t('loginpage.passwordRecovery') : register ? $t('loginpage.register') : $t('loginpage.login') }}</h3>
         </div>
 
         <el-form-item prop="username">
@@ -22,7 +23,7 @@
           <el-input
             ref="username"
             v-model="loginForm.username"
-            placeholder="请输入邮箱"
+            :placeholder="$t('loginpage.inputemail')"
             name="username"
             type="email"
             tabindex="1"
@@ -39,7 +40,7 @@
             ref="password"
             v-model="loginForm.password"
             :type="passwordType"
-            placeholder="密码"
+            :placeholder="$t('loginpage.password')"
             name="password"
             tabindex="2"
             autocomplete="on"
@@ -59,7 +60,7 @@
             ref="confirmPassword"
             v-model="loginForm.confirmPassword"
             :type="passwordType"
-            placeholder="确认密码"
+            :placeholder="$t('loginpage.confirm')"
             name="confirmPassword"
             tabindex="2"
             autocomplete="on"
@@ -80,13 +81,13 @@
             v-model="loginForm.code"
             maxlength="6"
             type="primary"
-            placeholder="邮箱验证码"
+            :placeholder="$t('loginpage.code')"
             name="code"
             tabindex="2"
             autocomplete="on"
           />
           <span class="send-code" @click="sendCode">
-            <b v-if="time === 60">发送验证码</b>
+            <b v-if="time === 60">{{ $t('loginpage.send') }}</b>
             <i v-else>{{ time }}</i>
           </span>
         </el-form-item>
@@ -96,10 +97,16 @@
           type="primary"
           style="width:100%;margin-bottom:20px;"
           @click.native.prevent="handleLogin"
-        >{{ forgetPassword?'确认修改新密码':register?'注册并登录':'登录' }}</el-button>
+        >{{ forgetPassword ? $t('loginpage.resetPassword') : register? $t('loginpage.registing') : $t('loginpage.gotologin') }}</el-button>
         <div style="position:relative">
           <div class="tips">
-            <el-link v-show="!register" type="primary" :underline="false" icon="el-icon-key" @click="handleForgetPassword">{{ !forgetPassword?'忘记密码':'登录' }}</el-link>
+            <el-link
+              v-show="!register"
+              type="primary"
+              :underline="false"
+              icon="el-icon-key"
+              @click="handleForgetPassword"
+            >{{ !forgetPassword ? $t('loginpage.gotoRecovery') : $t('loginpage.gotologin') }}</el-link>
             <el-link
               v-show="!forgetPassword"
               type="primary"
@@ -107,7 +114,7 @@
               icon="el-icon-user"
               class="register"
               @click="handleRegisterLogin"
-            >{{ !register?'注册':'登录' }}</el-link>
+            >{{ !register ? $t('loginpage.gotoRegister') : $t('loginpage.gotologin') }}</el-link>
           </div>
         </div>
       </el-form>
@@ -131,26 +138,26 @@ export default {
       if (validEmail(value) || this.loginForm.username === 'admin') {
         callback()
       } else {
-        callback(new Error('请输入正确的邮箱号'))
+        callback(new Error(this.$t('loginpage.incorrectmail')))
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
-        callback(new Error('至少3位'))
+        callback(new Error(this.$t('loginpage.incorrectpasswd')))
       } else {
         callback()
       }
     }
     const validateConfirmPassword = (rule, value, callback) => {
       if (this.loginForm.password !== this.loginForm.confirmPassword) {
-        callback(new Error('两次输入的密码不同'))
+        callback(new Error(this.$t('loginpage.incorrectconfirm')))
       } else {
         callback()
       }
     }
     const validateCode = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('请输入6位的邮箱验证码'))
+        callback(new Error(this.$t('loginpage.enterCode')))
       } else {
         callback()
       }
@@ -227,10 +234,10 @@ export default {
     sendCode() {
       if (!validEmail(this.loginForm.username)) return
       if (this.loginForm.password.length < 3 || this.loginForm.confirmPassword.length < 3) {
-        return new Error('密码小于3位')
+        return new Error(this.$t('loginpage.incorrectpasswd'))
       }
       if (this.loginForm.password !== this.loginForm.confirmPassword) {
-        return new Error('两次输入的密码不同')
+        return new Error(this.$t('loginpage.incorrectconfirm'))
       }
       if (this.time < 60) return
       getCode({ 'email': this.loginForm.username, 'type': this.forgetPassword ? 2 : 1 }).then(res => {
