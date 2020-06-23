@@ -23,5 +23,24 @@ export default {
   },
   navbar: {
     lang: 'English'
+  },
+  route: {
+    homepage: 'home',
+    workSpace: 'workSpace',
+    workSpaceOverview: 'workSpace Overview',
+    workSpaceDetails: 'Details',
+    report: 'Report',
+    reportOverview: 'Report Overview',
+    cell: 'Cells',
+    cellOverview: 'Cells Overview',
+    label: 'Label',
+    system: 'System Settings',
+    systemImg: 'Image',
+    systemMail: 'E-Mail',
+    systemErr: 'Error Log',
+    permission: 'Permission',
+    permissionUser: 'Users',
+    permissionLog: 'Log',
+    permissionInfo: 'User Info'
   }
 }

@@ -99,8 +99,8 @@ export const constantRoutes = [
       {
         path: 'home',
         component: () => import('@/views/home/index'),
-        name: '首页',
-        meta: { title: '首页', icon: 'dashboard', affix: true, keepAlive: true }
+        name: 'route.homepage',
+        meta: { title: 'route.homepage', icon: 'dashboard', affix: true, keepAlive: true }
       }
     ]
   },
@@ -108,21 +108,21 @@ export const constantRoutes = [
     path: '/workSpace',
     component: Layout,
     redirect: '/workSpace/list',
-    name: '工作台',
-    meta: { title: '工作台', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
+    name: 'route.workSpace',
+    meta: { title: 'route.workSpace', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
         component: () => import('@/views/workSpace/index'),
-        name: '工作台概览',
-        meta: { title: '工作台概览', icon: 'component', affix: true }
+        name: 'route.workSpaceOverview',
+        meta: { title: 'route.workSpaceOverview', icon: 'component', affix: true }
       },
       {
         path: 'details',
         component: () => import('@/views/workSpace/details'),
         hidden: true,
-        name: '任务详情',
-        meta: { title: '任务详情', affix: true }
+        name: 'route.workSpaceDetails',
+        meta: { title: 'route.workSpaceDetails', affix: true }
       }
     ]
   },
@@ -130,14 +130,14 @@ export const constantRoutes = [
     path: '/report',
     component: Layout,
     redirect: '/report/list',
-    name: '审核报告',
-    meta: { title: '审核报告', icon: 'nested', keepAlive: true, roles: ['admin', 'editor'] },
+    name: 'route.report',
+    meta: { title: 'route.report', icon: 'nested', keepAlive: true, roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
         component: () => import('@/views/report/report'),
-        name: '审核报告概览',
-        meta: { title: '审核报告概览', icon: 'documentation', affix: true }
+        name: 'route.reportOverview',
+        meta: { title: 'route.reportOverview', icon: 'documentation', affix: true }
       }
     ]
   },
@@ -145,14 +145,14 @@ export const constantRoutes = [
     path: '/review',
     component: Layout,
     redirect: '/review/list',
-    name: '审核细胞',
-    meta: { title: '审核细胞', icon: 'nested', roles: ['admin', 'editor'] },
+    name: 'route.cell',
+    meta: { title: 'route.cell', icon: 'nested', roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
         component: () => import('@/views/review/index'),
-        name: '审核细胞概览',
-        meta: { title: '审核细胞概览', icon: 'cellspredict', affix: true, keepAlive: true }
+        name: 'route.cellOverview',
+        meta: { title: 'route.cellOverview', icon: 'cellspredict', affix: true, keepAlive: true }
       }
     ]
   },
@@ -164,8 +164,8 @@ export const constantRoutes = [
       {
         path: '/label',
         component: () => import('@/views/label/labelhome'),
-        name: '标注',
-        meta: { title: '标注', icon: 'edit', affix: true, roles: ['admin', 'editor'] }
+        name: 'route.label',
+        meta: { title: 'route.label', icon: 'edit', affix: true, roles: ['admin', 'editor'] }
       }
     ]
   }
@@ -180,26 +180,26 @@ export const asyncRoutes = [
     path: '/system',
     component: Layout,
     redirect: '/system',
-    name: '系统设置',
-    meta: { title: '系统设置', icon: 'table', keepAlive: true, roles: ['admin'] },
+    name: 'route.system',
+    meta: { title: 'route.system', icon: 'table', keepAlive: true, roles: ['admin'] },
     children: [
       {
         path: 'imgserver',
         component: () => import('@/views/system/imgServer'),
-        name: '图片设置',
-        meta: { title: '图片服务设置', icon: 'photo', affix: true }
+        name: 'route.systemImg',
+        meta: { title: 'route.systemImg', icon: 'photo', affix: true }
       },
       {
         path: 'email',
         component: () => import('@/views/system/email'),
-        name: '邮件设置',
-        meta: { title: '邮件设置', icon: 'email', affix: true }
+        name: 'route.systemMail',
+        meta: { title: 'route.systemMail', icon: 'email', affix: true }
       },
       {
         path: 'errLog',
         component: () => import('@/views/system/errLog'),
-        name: '错误日志',
-        meta: { title: '错误日志', icon: 'bug', affix: true }
+        name: 'route.systemErr',
+        meta: { title: 'route.systemErr', icon: 'bug', affix: true }
       }
     ]
   },
@@ -207,26 +207,26 @@ export const asyncRoutes = [
     path: '/authManage',
     component: Layout,
     redirect: '/authManage/userManage',
-    name: '权限管理',
-    meta: { title: '权限管理', icon: 'peoples', keepAlive: true, roles: ['admin'] },
+    name: 'route.permission',
+    meta: { title: 'route.permission', icon: 'peoples', keepAlive: true, roles: ['admin'] },
     children: [
       {
         path: 'userManage',
         component: () => import('@/views/user/userMannage'),
-        name: '用户管理',
-        meta: { title: '用户管理', icon: 'peoples', affix: true }
+        name: 'route.permissionUser',
+        meta: { title: 'route.permissionUser', icon: 'peoples', affix: true }
       },
       {
         path: 'userLog',
         component: () => import('@/views/user/userLog'),
-        name: '用户日志',
-        meta: { title: '用户日志', icon: 'nested', affix: true }
+        name: 'route.permissionLog',
+        meta: { title: 'route.permissionLog', icon: 'nested', affix: true }
       },
       {
         path: 'userInfo',
         component: () => import('@/views/user/userInfo'),
-        name: '用户信息',
-        meta: { title: '用户信息', icon: 'nested', affix: true },
+        name: 'route.permissionInfo',
+        meta: { title: 'route.permissionInfo', icon: 'nested', affix: true },
         hidden: true
       }
     ]

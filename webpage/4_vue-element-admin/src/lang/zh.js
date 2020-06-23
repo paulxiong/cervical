@@ -23,5 +23,24 @@ export default {
   },
   navbar: {
     lang: '中文'
+  },
+  route: {
+    homepage: '首页',
+    workSpace: '工作台',
+    workSpaceOverview: '工作台概览',
+    workSpaceDetails: '任务详情',
+    report: '审核报告',
+    reportOverview: '审核报告概览',
+    cell: '审核细胞',
+    cellOverview: '审核细胞概览',
+    label: '标注',
+    system: '系统设置',
+    systemImg: '图片设置',
+    systemMail: '邮件设置',
+    systemErr: '错误日志',
+    permission: '权限管理',
+    permissionUser: '用户管理',
+    permissionLog: '用户日志',
+    permissionInfo: '用户信息'
   }
 }
