@@ -1,8 +1,7 @@
 import defaultSettings from '@/settings'
 
-const title = defaultSettings.title || '讯动医疗'
-
 export default function getPageTitle(pageTitle) {
+  const title = (window._i18n ? window._i18n.tc('web.title') : '') || defaultSettings.title
   if (pageTitle) {
     return `${pageTitle} - ${title}`
   }

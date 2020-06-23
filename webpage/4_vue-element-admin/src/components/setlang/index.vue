@@ -20,6 +20,7 @@
 
 <script>
 import { getLanguage } from '@/lang'
+import getPageTitle from '@/utils/get-page-title'
 
 export default {
   data() {
@@ -46,6 +47,8 @@ export default {
     langChange(lang) {
       this.$i18n.locale = lang // 切换
       this.$store.dispatch('app/setLanguage', lang) // 结合vuex （vuex的mutations方法结合了cookie）
+
+      document.title = getPageTitle()
     },
     handleCommand(command) {
       this.langChange(command)

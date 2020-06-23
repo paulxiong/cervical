@@ -1,5 +1,5 @@
 module.exports = {
-  title: '讯动医疗',
+  title: '',
   /**
    * @type {boolean} true | false
    * @description Whether show the settings right-panel

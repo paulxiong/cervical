@@ -18,6 +18,9 @@ export default {
     incorrectconfirm: '两次输入的密码不同',
     enterCode: '请输入6位的邮箱验证码'
   },
+  web: {
+    title: '讯动医疗'
+  },
   navbar: {
     lang: '中文'
   }

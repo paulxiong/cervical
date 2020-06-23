@@ -21,6 +21,7 @@ import * as filters from './filters' // global filters
 import uploader from 'vue-simple-uploader'
 
 import i18n from '@/lang' // 导入配置文件(默认会导入./lang/index.js)
+window._i18n = i18n // 保存为全局变量，目的是在js里面做i18n
 
 /**
  * If you don't want to use mock-server

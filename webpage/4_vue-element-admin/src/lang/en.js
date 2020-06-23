@@ -18,6 +18,9 @@ export default {
     incorrectconfirm: 'The password and password (Reenter to confirm) do not match',
     enterCode: 'Please enter 6-digit email verification code'
   },
+  web: {
+    title: 'AI Medical'
+  },
   navbar: {
     lang: 'English'
   }
