@@ -25,9 +25,9 @@ export default {
     lang: 'English'
   },
   route: {
-    homepage: 'home',
-    workSpace: 'workSpace',
-    workSpaceOverview: 'workSpace Overview',
+    homepage: 'Dashboard',
+    workSpace: 'WorkSpace',
+    workSpaceOverview: 'WorkSpace Overview',
     workSpaceDetails: 'Details',
     report: 'Report',
     reportOverview: 'Report Overview',
@@ -42,5 +42,38 @@ export default {
     permissionUser: 'Users',
     permissionLog: 'Log',
     permissionInfo: 'User Info'
+  },
+  dashboard: {
+    datasets: 'Datasets',
+    images: 'Images',
+    projects: 'Projects',
+    users: 'Users',
+    medicalID: 'Medical ID',
+    medicalDesc: 'Description',
+    medicalDataset: 'Dataset',
+    medicalTS: 'Create Time',
+    medicalETA: 'Status',
+    reviewID: 'Review ID',
+    reviewOwner: 'User',
+    reviewUsername: 'Username',
+    review1: 'Reviewed',
+    review0: 'To Be Reviewed',
+    datasetID: 'Dataset ID',
+    datasetDesc: 'Description',
+    datasetTS: 'Create Time',
+    datasetETA: 'Status',
+    modelID: 'Model ID',
+    modelDesc: 'Description',
+    modelType: 'Type',
+    modelPrecision: 'Precision'
+  },
+  const: {
+    init: 'Initialize',
+    ready: 'Ready',
+    start: 'Start',
+    error: 'Error',
+    done: 'Done',
+    tobereview: 'To Be Review',
+    reviewed: 'Reviewed'
   }
 }

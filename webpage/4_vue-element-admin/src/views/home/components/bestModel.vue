@@ -2,21 +2,21 @@
   <div class="modelData">
     <el-table :data="modelLists" max-height="300">
       <el-table-column
-        label="模型ID"
+        :label="$t('dashboard.modelID')"
         prop="id"
         width="100"
       />
       <el-table-column
-        label="描述"
+        :label="$t('dashboard.modelDesc')"
         prop="desc"
       />
       <el-table-column
-        label="类型"
+        :label="$t('dashboard.modelType')"
         prop="modelType"
       />
       <el-table-column
         width="100"
-        label="准确度"
+        :label="$t('dashboard.modelPrecision')"
         prop="precision"
       />
     </el-table>

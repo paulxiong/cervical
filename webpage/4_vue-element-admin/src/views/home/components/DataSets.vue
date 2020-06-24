@@ -1,12 +1,12 @@
 <template>
   <div class="dataSets">
     <el-table :data="datasetsList" max-height="300">
-      <el-table-column label="数据集ID" width="100" prop="id" />
-      <el-table-column label="描述" prop="desc" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+      <el-table-column :label="$t('dashboard.datasetID')" width="100" prop="id" />
+      <el-table-column :label="$t('dashboard.datasetDesc')" prop="desc" />
+      <el-table-column :label="$t('dashboard.datasetTS')" prop="created_at" />
+      <el-table-column :label="$t('dashboard.datasetETA')" prop="statusTime">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
+          <el-tag :type="scope.row.statusType" effect="light">{{ $t(scope.row.statusTime) }}</el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -33,25 +33,7 @@ export default {
       listQuery: {
         desc: undefined,
         type: undefined
-      },
-      typeOptions: [
-        {
-          key: '0',
-          name: '未知'
-        },
-        {
-          key: '1',
-          name: '保留'
-        },
-        {
-          key: '2',
-          name: '训练'
-        },
-        {
-          key: '3',
-          name: '预测'
-        }
-      ]
+      }
     }
   },
   created() {

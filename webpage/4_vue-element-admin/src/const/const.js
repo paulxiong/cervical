@@ -1,12 +1,12 @@
 // 裁剪图片、训练的状态
 export const taskStatus = {
-  0: '初始化',
-  1: '送去处理',
-  2: '开始',
-  3: '出错',
-  4: '完成',
-  5: '送去审核',
-  6: '审核完成'
+  0: 'const.init',
+  1: 'const.ready',
+  2: 'const.start',
+  3: 'const.error',
+  4: 'const.done',
+  5: 'const.tobereview',
+  6: 'const.reviewed'
 }
 
 export const taskType = {

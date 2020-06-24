@@ -8,7 +8,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              数据集总数
+              {{ $t('dashboard.datasets') }}
             </div>
             <count-to :start-val="0" :end-val="overview.datasetcnt" :duration="2600" class="card-panel-num" />
           </div>
@@ -21,7 +21,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              图片总数
+              {{ $t('dashboard.images') }}
             </div>
             <count-to :start-val="0" :end-val="overview.imgcnt" :duration="3000" class="card-panel-num" />
           </div>
@@ -34,7 +34,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              项目总数
+              {{ $t('dashboard.projects') }}
             </div>
             <count-to :start-val="0" :end-val="overview.projectcnt" :duration="3200" class="card-panel-num" />
           </div>
@@ -47,7 +47,7 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              用户总数
+              {{ $t('dashboard.users') }}
             </div>
             <count-to :start-val="0" :end-val="overview.usercnt" :duration="3600" class="card-panel-num" />
           </div>

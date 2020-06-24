@@ -1,8 +1,8 @@
 <template>
   <div class="VerificationcntData">
     <el-table :data="verificationcnt" max-height="300">
-      <el-table-column width="100" label="审核ID" prop="id" />
-      <el-table-column label="创建者">
+      <el-table-column width="100" :label="$t('dashboard.reviewID')" prop="id" />
+      <el-table-column :label="$t('dashboard.reviewOwner')">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.name" :content="scope.row.name" placement="right">
             <el-image
@@ -27,9 +27,9 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column width="200" label="用户名" prop="name" />
-      <el-table-column label="已审核" prop="status1" />
-      <el-table-column label="未审核" prop="status0" />
+      <el-table-column width="200" :label="$t('dashboard.reviewUsername')" prop="name" />
+      <el-table-column :label="$t('dashboard.review1')" prop="status1" />
+      <el-table-column :label="$t('dashboard.review0')" prop="status0" />
     </el-table>
   </div>
 </template>
@@ -44,25 +44,7 @@ export default {
     return {
       verificationcnt: [],
       total: undefined,
-      dialogFormVisible: false,
-      typeOptions: [
-        {
-          key: '0',
-          name: '未知'
-        },
-        {
-          key: '1',
-          name: '保留'
-        },
-        {
-          key: '2',
-          name: '训练'
-        },
-        {
-          key: '3',
-          name: '预测'
-        }
-      ]
+      dialogFormVisible: false
     }
   },
   created() {

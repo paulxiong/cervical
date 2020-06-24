@@ -42,5 +42,38 @@ export default {
     permissionUser: '用户管理',
     permissionLog: '用户日志',
     permissionInfo: '用户信息'
+  },
+  dashboard: {
+    datasets: '数据集总数',
+    images: '图片总数',
+    projects: '项目总数',
+    users: '用户总数',
+    medicalID: '报告ID',
+    medicalDesc: '描述',
+    medicalDataset: '数据集',
+    medicalTS: '创建时间',
+    medicalETA: '状态/剩余时间(秒)',
+    reviewID: '审核ID',
+    reviewOwner: '创建者',
+    reviewUsername: '用户名',
+    review1: '已审核',
+    review0: '未审核',
+    datasetID: '数据集ID',
+    datasetDesc: '描述',
+    datasetTS: '创建时间',
+    datasetETA: '状态/剩余时间(秒)',
+    modelID: '模型ID',
+    modelDesc: '描述',
+    modelType: '类型',
+    modelPrecision: '准确度'
+  },
+  const: {
+    init: '初始化',
+    ready: '送去处理',
+    start: '开始',
+    error: '出错',
+    done: '完成',
+    tobereview: '送去审核',
+    reviewed: '审核完成'
   }
 }
