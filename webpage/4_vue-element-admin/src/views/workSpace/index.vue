@@ -5,13 +5,13 @@
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive" />
     <el-tabs v-model="activeName" class="tabs">
-      <el-tab-pane label="项目" name="project">
+      <el-tab-pane :label="$t('workspace.projects')" name="project">
         <projectData :activename="activeName" />
       </el-tab-pane>
-      <el-tab-pane label="数据集" name="datasets">
+      <el-tab-pane :label="$t('workspace.datasets')" name="datasets">
         <datasetsData :activename="activeName" />
       </el-tab-pane>
-      <el-tab-pane label="模型" name="model">
+      <el-tab-pane :label="$t('workspace.models')" name="model">
         <modelData />
       </el-tab-pane>
       <!-- <el-tab-pane label="回收站" name="recycle">

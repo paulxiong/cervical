@@ -1,93 +1,72 @@
 <template>
   <div class="projectData">
     <div class="filter-box">
-      <!-- <el-input
-        v-model="listQuery.desc"
-        placeholder="请输入描述搜索"
-        style="width:200px;"
-        class="filter-input"
-        @keyup.enter.native="filterSearch"
-      />
-      <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
-        clearable
-        class="filter-type"
-        style="width: 130px"
-      >
-        <el-option
-          v-for="item in typeOptions"
-          :key="item.key"
-          :label="item.name"
-          :value="item.key"
-        />
-      </el-select> -->
       <el-button
         class="filter-btn"
         type="primary"
         :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
         @click="filterSearch"
-      >刷新</el-button>
+      >{{ $t('workspace.projectsRefresh') }}</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-edit"
         @click="dialogFormVisible = true"
-      >新增项目</el-button>
+      >{{ $t('workspace.projectsNew') }}</el-button>
     </div>
     <el-table
       v-loading="loading"
-      element-loading-text="拼命加载中"
+      :element-loading-text="$t('workspace.loading')"
       :data="projectlist"
       style="width: 100%"
     >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="工作目录">
+            <el-form-item :label="$t('workspace.projectDir')">
               <span>{{ props.row.dir }}</span>
             </el-form-item>
-            <el-form-item label="创建者">
+            <el-form-item :label="$t('workspace.projectOwner')">
               <span>{{ props.row.username }}</span>
             </el-form-item>
-            <el-form-item label="预测模型 ID">
+            <el-form-item :label="$t('workspace.projectModelID')">
               <span>{{ props.row.parameter_mid }}</span>
             </el-form-item>
-            <el-form-item label="预测模型类型">
+            <el-form-item :label="$t('workspace.projectModelType')">
               <span>{{ props.row.parameter_mtype }}</span>
             </el-form-item>
-            <el-form-item label="训练之前统一的尺寸">
+            <el-form-item :label="$t('workspace.projectSize')">
               <span>{{ props.row.parameter_resize }}</span>
             </el-form-item>
-            <el-form-item label="训练使用的最长时间">
+            <el-form-item :label="$t('workspace.projectTime')">
               <span>{{ props.row.parameter_time }}</span>
             </el-form-item>
-            <el-form-item label="预测方式">
-              <span>{{ props.row.parameter_type === 0 ? '没标注的图' : '有标注的图' }}</span>
+            <el-form-item :label="$t('workspace.projectType')">
+              <span>{{ props.row.parameter_type === 0 ? $t('workspace.projectTypeNoLabel') : $t('workspace.projectTypeLabel') }}</span>
             </el-form-item>
-            <el-form-item label="进度">
+            <el-form-item :label="$t('workspace.projectPercent')">
               <span>{{ props.row.percent }}</span>
             </el-form-item>
-            <el-form-item label="剩余时间(秒)">
+            <el-form-item :label="$t('workspace.projectETA')">
               <span>{{ props.row.ETA }}</span>
             </el-form-item>
-            <el-form-item label="状态">
+            <el-form-item :label="$t('workspace.projectStatus')">
               <span>{{ props.row.status }}</span>
             </el-form-item>
-            <el-form-item label="开始处理">
+            <el-form-item :label="$t('workspace.projectStartTime')">
               <span>{{ props.row.starttime }}</span>
             </el-form-item>
-            <el-form-item label="结束时间">
+            <el-form-item :label="$t('workspace.projectEndTime')">
               <span>{{ props.row.endtime }}</span>
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column width="60" label="ID" prop="id" />
-      <el-table-column width="350" label="描述" prop="desc" />
-      <el-table-column width="150" label="数据集 ID" prop="did" />
-      <el-table-column label="创建者">
+      <el-table-column width="100" :label="$t('workspace.projectID')" prop="id" />
+      <el-table-column width="350" :label="$t('workspace.projectDesc')" prop="desc" />
+      <el-table-column width="150" :label="$t('workspace.projectDID')" prop="did" />
+      <el-table-column :label="$t('workspace.projectCreator')">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
             <el-image
@@ -112,16 +91,16 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="类型" prop="projectType" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+      <el-table-column :label="$t('workspace.projectType2')" prop="projectType" />
+      <el-table-column :label="$t('workspace.projectCreatTime')" prop="created_at" />
+      <el-table-column :label="$t('workspace.projectStatus2')" prop="statusTime">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
+          <el-tag :type="scope.row.statusType" effect="light">{{ $t(scope.row.statusTime) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" :label="$t('workspace.projectOP')" width="100">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button>
+          <el-button type="primary" size="mini" @click="goDetail(scope.row)">{{ $t('workspace.projectOPLook') }}</el-button>
           <!-- <el-button type="primary" style="color: #ff3c43;" size="mini">删除</el-button> -->
         </template>
       </el-table-column>
@@ -138,7 +117,7 @@
         @size-change="handleSizeChange"
       />
     </div>
-    <el-dialog title="新建项目" :visible.sync="dialogFormVisible">
+    <el-dialog :title="$t('workspace.projectNew')" :visible.sync="dialogFormVisible">
       <newProject ref="newProject" style="margin-top:-40px;" />
     </el-dialog>
   </div>
@@ -171,25 +150,7 @@ export default {
       listQuery: {
         desc: undefined,
         type: undefined
-      },
-      typeOptions: [
-        {
-          key: '0',
-          name: '未知'
-        },
-        {
-          key: '1',
-          name: '保留'
-        },
-        {
-          key: '2',
-          name: '训练'
-        },
-        {
-          key: '3',
-          name: '预测'
-        }
-      ]
+      }
     }
   },
   created() {
