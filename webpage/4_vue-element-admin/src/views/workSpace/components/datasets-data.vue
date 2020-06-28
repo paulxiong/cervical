@@ -1,98 +1,68 @@
 <template>
   <div class="datasetsData">
     <div class="filter-box">
-      <!-- <el-input
-        v-model="listQuery.desc"
-        placeholder="请输入描述搜索"
-        style="width:200px;"
-        class="filter-input"
-        @keyup.enter.native="filterSearch"
-      />
-      <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
-        clearable
-        class="filter-type"
-        style="width: 130px"
-      >
-        <el-option
-          v-for="item in typeOptions"
-          :key="item.key"
-          :label="item.name"
-          :value="item.key"
-        />
-      </el-select> -->
       <el-button
         class="filter-btn"
         type="primary"
         :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
         @click="filterSearch"
-      >刷新</el-button>
+      >{{ $t('workspace.projectDataRefresh') }}</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-edit"
         @click="newData"
-      >新增数据集</el-button>
+      >{{ $t('workspace.projectDataAdd') }}</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-upload"
         @click="uploadImgs"
-      >上传</el-button>
+      >{{ $t('workspace.projectDataUpload') }}</el-button>
     </div>
     <el-table
       v-loading="loading"
-      element-loading-text="拼命加载中"
+      :element-loading-text="$t('workspace.projectDataLoading')"
       :data="datasetsList"
       style="width: 100%"
     >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="目录">
+            <el-form-item :label="$t('workspace.projectDataDir')">
               <span>{{ props.row.dir }}</span>
             </el-form-item>
-            <el-form-item label="创建者">
+            <el-form-item :label="$t('workspace.projectDataCreator')">
               <span>{{ props.row.username }}</span>
             </el-form-item>
-            <el-form-item label="裁剪模型">
+            <el-form-item :label="$t('workspace.projectDataModel')">
               <span>{{ props.row.parameter_mid }}</span>
             </el-form-item>
-            <el-form-item label="裁剪是否用缓存">
+            <el-form-item :label="$t('workspace.projectDataCache')">
               <span>{{ props.row.parameter_cache }}</span>
             </el-form-item>
-            <el-form-item label="裁剪采用颜色">
+            <el-form-item :label="$t('workspace.projectDataColor')">
               <span>{{ props.row.parameter_gray }}</span>
             </el-form-item>
-            <el-form-item label="裁剪采用大小">
+            <el-form-item :label="$t('workspace.projectDataSize')">
               <span>{{ props.row.parameter_size }}</span>
             </el-form-item>
-            <el-form-item label="裁剪开始时间">
+            <el-form-item :label="$t('workspace.projectDataStartTime')">
               <span>{{ props.row.processtime }}</span>
             </el-form-item>
-            <el-form-item label="裁剪结束">
+            <el-form-item :label="$t('workspace.projectDataEndTime')">
               <span>{{ props.row.processend }}</span>
             </el-form-item>
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column label="ID" width="60" prop="id" />
-      <el-table-column label="描述" prop="desc" />
-      <el-table-column label="创建者">
+      <el-table-column :label="$t('workspace.projectDataID')" width="60" prop="id" />
+      <el-table-column :label="$t('workspace.projectDataDescription')" prop="desc" />
+      <el-table-column :label="$t('workspace.projectDataCreator2')">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
-            <!-- <el-image
-              style="width:36px;height:36px;border-radius:7px;"
-              :src="scope.row.userimg"
-              lazy
-            >
-              <div slot="error" class="image-slot">
-                <i class="el-icon-picture-outline" />
-              </div>
-            </el-image> -->
             <el-image
               :src="scope.row.userimg"
               style="width:36px;height:36px;border-radius:7px;"
@@ -113,17 +83,16 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="裁剪模型" prop="parameter_mid" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+      <el-table-column :label="$t('workspace.projectDataModel2')" prop="parameter_mid" />
+      <el-table-column :label="$t('workspace.projectDataCreateTime')" prop="created_at" />
+      <el-table-column :label="$t('workspace.projectDataStatus')" prop="statusTime">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
+          <el-tag :type="scope.row.statusType" effect="light">{{ $t(scope.row.statusTime) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" :label="$t('workspace.projectDataOP')" width="100">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button>
-          <!-- <el-button type="primary" style="color: #ff3c43;" size="mini">删除</el-button> -->
+          <el-button type="primary" size="mini" @click="goDetail(scope.row)">{{ $t('workspace.projectDataDetails') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -140,7 +109,7 @@
       />
     </div>
     <el-dialog
-      :title="upload ? '上传数据' : '新建数据集'"
+      :title="upload ? $t('workspace.projectDataUpload2') : $t('workspace.projectDataAdd2')"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -156,14 +125,14 @@
         @checkModel="checkModel"
       />
       <div slot="footer" class="dialog-footer">
-        <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">上一步</el-button>
+        <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">{{ $t('workspace.projectDataPrevious') }}</el-button>
         <el-button
           v-show="step===1 || step===2"
           size="mini"
           :disabled="!uploadServer && !imgChecked && !modelChecked"
           type="primary"
           @click="stepNext"
-        >下一步</el-button>
+        >{{ $t('workspace.projectDataNext') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -200,25 +169,7 @@ export default {
       listQuery: {
         desc: undefined,
         type: undefined
-      },
-      typeOptions: [
-        {
-          key: '0',
-          name: '未知'
-        },
-        {
-          key: '1',
-          name: '保留'
-        },
-        {
-          key: '2',
-          name: '训练'
-        },
-        {
-          key: '3',
-          name: '预测'
-        }
-      ]
+      }
     }
   },
   created() {
@@ -280,11 +231,11 @@ export default {
             v.updated_at = parseTime(v.updated_at)
             v.processtime = parseTime(v.processtime)
             v.processend = parseTime(v.processend)
-            v.created_by = createdBy[v.created_by] || '普通用户'
+            v.created_by = createdBy[v.created_by] || this.$t('workspace.projectNewUser')
             v.statusType = taskType[v.status]
             v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
-            v.parameter_cache = v.parameter_cache === 1 ? '使用' : '不使用'
-            v.parameter_gray = v.parameter_gray === 1 ? '灰色' : '彩色'
+            v.parameter_cache = v.parameter_cache === 1 ? this.$t('workspace.projectNewCache') : this.$t('workspace.projectNewNoCache')
+            v.parameter_gray = v.parameter_gray === 1 ? this.$t('workspace.projectNewGray') : this.$t('workspace.projectNewColor')
           })
           this.datasetsList = res.data.data.datasets
           this.total = res.data.data.total

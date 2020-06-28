@@ -5,7 +5,7 @@
         <el-input
           v-model="inputName"
           autofocus
-          placeholder="输入模型描述"
+          :placeholder="$t('workspace.projectNewEnterDesc')"
           show-word-limit
           maxlength="30"
           class="input-name"
@@ -18,15 +18,15 @@
           class="save-btn"
           :disabled="!modelInfo.desc"
           @click="saveModel"
-        >保存模型</el-button>
+        >{{ $t('workspace.projectSaveModel') }}</el-button>
       </div>
       <div v-else slot="header" class="flex card-header">
-        <el-badge is-dot class="badge-item">选择模型</el-badge>
+        <el-badge is-dot class="badge-item">{{ $t('workspace.projectSelectModel') }}</el-badge>
         <el-select
           v-model="model"
           class="model-option"
           style="width:240px"
-          placeholder="请选择"
+          :placeholder="$t('workspace.projectSelectModel2')"
           size="mini"
           @change="modelChange"
         >
@@ -35,34 +35,34 @@
       </div>
       <div class="flex model-info">
         <section class="info">
-          <i>准确率:</i>
+          <i>{{ $t('workspace.projectModelPrecision') }}:</i>
           <b>{{ modelInfo.precision }}</b>
         </section><section class="info">
-          <i>召回率:</i>
+          <i>{{ $t('workspace.projectModelRecall') }}:</i>
           <b>{{ modelInfo.recall }}</b>
         </section>
         <section class="info">
-          <i>损失值:</i>
+          <i>{{ $t('workspace.projectModelLoss') }}:</i>
           <b>{{ modelInfo.loss }}</b>
         </section>
         <section v-if="modelInfo.input_shape" class="info">
-          <i>尺寸:</i>
+          <i>{{ $t('workspace.projectModelSize') }}:</i>
           <b>{{ modelInfo.input_shape }}</b>
         </section>
         <section class="info">
-          <i>类型:</i>
+          <i>{{ $t('workspace.projectModelType2') }}:</i>
           <b>{{ modelInfo.type | filterModelType }}</b>
         </section>
         <section class="info">
-          <i>训练用图数:</i>
+          <i>{{ $t('workspace.projectModelTrainNum') }}:</i>
           <b>{{ modelInfo.n_train }}</b>
         </section>
         <section class="info">
-          <i>训练分类数:</i>
+          <i>{{ $t('workspace.projectModelClassNum') }}:</i>
           <b>{{ modelInfo.n_classes }}</b>
         </section>
         <section v-if="modelInfo.types" class="info" style="height: auto;overflow: auto;">
-          <i>细胞分类:</i>
+          <i>{{ $t('workspace.projectModelCellType') }}:</i>
           <b>{{ modelInfo.types | filtersCellsType }}</b>
         </section>
       </div>

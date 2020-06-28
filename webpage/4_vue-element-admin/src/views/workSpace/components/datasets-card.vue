@@ -2,12 +2,12 @@
   <div class="card">
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="flex card-header">
-        <el-badge is-dot class="badge-item">选择数据集</el-badge>
+        <el-badge is-dot class="badge-item">{{ $t('workspace.projectNewSelectDt') }}</el-badge>
         <el-select
           v-model="datasets"
           class="model-option"
           style="width:220px"
-          placeholder="请选择"
+          :placeholder="$t('workspace.projectNewSelect')"
           size="mini"
           @change="datasetsChange"
         >
@@ -20,35 +20,35 @@
       </div>
       <div class="flex model-info">
         <section class="info">
-          <i>创建者:</i>
+          <i>{{ $t('workspace.projectNewCreator') }}:</i>
           <b>{{ datasetsInfo.created_by }}</b>
         </section>
         <section class="info">
-          <i>目录:</i>
+          <i>{{ $t('workspace.projectNewDir') }}:</i>
           <b>{{ datasetsInfo.dir }}</b>
         </section>
         <section class="info">
-          <i>状态:</i>
-          <b>{{ datasetsInfo.status }}</b>
+          <i>{{ $t('workspace.projectNewStatus') }}:</i>
+          <b>{{ $t(datasetsInfo.status) }}</b>
         </section>
         <section class="info">
-          <i>裁剪模型:</i>
+          <i>{{ $t('workspace.projectNewCropModel') }}:</i>
           <b>{{ datasetsInfo.parameter_mid }}</b>
         </section>
         <section class="info">
-          <i>裁剪是否用缓存:</i>
+          <i>{{ $t('workspace.projectNewUseCache') }}:</i>
           <b>{{ datasetsInfo.parameter_cache }}</b>
         </section>
         <section class="info">
-          <i>裁剪采用颜色:</i>
+          <i>{{ $t('workspace.projectNewUseColor') }}:</i>
           <b>{{ datasetsInfo.parameter_gray }}</b>
         </section>
         <section class="info">
-          <i>裁剪采用大小:</i>
+          <i>{{ $t('workspace.projectNewSize2') }}:</i>
           <b>{{ datasetsInfo.parameter_size }}</b>
         </section>
         <section class="info">
-          <i>细胞类型:</i>
+          <i>{{ $t('workspace.projectNewType2') }}:</i>
           <b>{{ datasetsInfo.types }}</b>
         </section>
       </div>
