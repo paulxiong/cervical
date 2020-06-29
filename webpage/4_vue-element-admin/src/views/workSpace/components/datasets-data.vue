@@ -7,13 +7,13 @@
         :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
         @click="filterSearch"
       >{{ $t('workspace.projectDataRefresh') }}</el-button>
-      <el-button
+      <!-- <el-button
         class="filter-btn"
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-edit"
         @click="newData"
-      >{{ $t('workspace.projectDataAdd') }}</el-button>
+      >{{ $t('workspace.projectDataAdd') }}</el-button> -->
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"

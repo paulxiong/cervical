@@ -3,7 +3,6 @@
     <div class="change-type">
       <el-form
         ref="args"
-        v-loading="loading"
         :model="args"
         :rules="rules"
         class="login-container"
@@ -11,14 +10,14 @@
         label-width="0px"
       >
         <el-form-item prop="description" style="text-align: left" :required="form.inputdesc">
-          <span style="color: blue;"> *1.请输入上传模型描述信息：</span>
+          <span style="color: blue;">{{ $t('workspace.modelUploadDesc') }}</span>
           <el-input
             v-model="args.description"
             prefix-icon="icon iconfont el-icon-qianniu-account"
             type="text"
             autofocus
             auto-complete="off"
-            placeholder="请输入模型描述"
+            :placeholder="$t('workspace.modelUploadDesc2')"
             show-word-limit
             maxlength="30"
             class="input-name"
@@ -28,9 +27,9 @@
           />
         </el-form-item>
         <el-form-item prop="type" style="text-align: left" required>
-          <span style="color: blue;"> *2.请选择上传模型类型：</span>
+          <span style="color: blue;">{{ $t('workspace.modelUploadType') }}</span>
           <br>
-          <el-select v-model="args.type" placeholder="请选择类型" style="margin-right:100px;" :disabled="isSelect" @change="selectChange">
+          <el-select v-model="args.type" :placeholder="$t('workspace.modelUploadType2')" style="margin-right:100px;" :disabled="isSelect" @change="selectChange">
             <el-option
               v-for="item in options"
               :key="item.type"
@@ -60,8 +59,8 @@
         :disabled="isUpload"
       >
         <i class="el-icon-upload" />
-        <div class="el-upload__text" style="color: blue;"><b>*3.将模型文件拖到此处或点击上传,只能上传h5/H5文件</b></div>
-        <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">取消上传</el-button>
+        <div class="el-upload__text" style="color: blue;"><b>{{ $t('workspace.modelUploadUp') }}</b></div>
+        <el-button style="margin-top: 10px;" size="mini" type="danger" @click.stop="abortUpload">{{ $t('workspace.modelUploadCancel') }}</el-button>
       </el-upload>
     </div>
   </div>
@@ -93,8 +92,8 @@ export default {
         description: ''
       },
       rules: {
-        description: [{ required: true, message: '请输入上传模型描述信息', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择上传模型类型', trigger: 'blur' }]
+        description: [{ required: true, message: this.$t('workspace.modelUploadRuleDesc'), trigger: 'blur' }],
+        type: [{ required: true, message: this.$t('workspace.modelUploadRuleType'), trigger: 'blur' }]
       },
       finishedFileList: 0,
       fileList: 0,
@@ -107,10 +106,10 @@ export default {
       isUpload: true,
       options: [{
         type: 4,
-        label: '切割'
+        label: this.$t('workspace.modelTypeSeg')
       }, {
         type: 6,
-        label: '细胞分类'
+        label: this.$t('workspace.modelTypeClassification')
       }]
     }
   },
@@ -155,15 +154,13 @@ export default {
       console.log(file)
       const isH5 = file.name.slice(-3) === '.h5' || file.name.slice(-3) === '.H5'
       if (!isH5) {
-        this.$message.error('只能上传h5/H5文件')
+        this.$message.error(this.$t('workspace.modelUploadOnlyH5'))
         return isH5
       } else {
         document.querySelector('.el-upload-list').className += ' list-container'
       }
     },
     onError(response, file, fileList) {
-      console.log(response, file, fileList)
-      console.log('上传失败！')
     },
     abortUpload() {
       this.$refs.upload.abort()

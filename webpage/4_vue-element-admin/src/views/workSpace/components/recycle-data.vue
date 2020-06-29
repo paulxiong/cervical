@@ -192,21 +192,7 @@ export default {
       listQuery: {
         desc: undefined,
         type: undefined
-      },
-      typeOptions: [
-        {
-          key: '0',
-          name: '全部'
-        },
-        {
-          key: '1',
-          name: '训练'
-        },
-        {
-          key: '2',
-          name: '预测'
-        }
-      ]
+      }
     }
   },
   methods: {

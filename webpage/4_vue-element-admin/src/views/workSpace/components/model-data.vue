@@ -9,57 +9,61 @@
         type="primary"
         :icon="loading?'el-icon-loading':'el-icon-refresh-left'"
         @click="filterSearch"
-      >刷新</el-button>
+      >{{ $t('workspace.modelRefresh') }}</el-button>
       <el-button
         class="filter-btn"
         style="margin-left: 10px;"
         type="success"
         icon="el-icon-upload"
         @click="createModel"
-      >新增模型</el-button>
+      >{{ $t('workspace.modelAdd') }}</el-button>
     </div>
     <el-table
       v-loading="loading"
-      element-loading-text="拼命加载中"
+      :element-loading-text="$t('workspace.modelLoading')"
       :data="modelLists"
       style="width: 100%"
     >
       <el-table-column
-        label="模型ID"
+        :label="$t('workspace.modelID')"
         prop="id"
         width="100"
       />
       <el-table-column
-        label="描述"
+        :label="$t('workspace.modelDesc')"
         prop="desc"
         width="300"
       />
       <el-table-column
-        label="模型类型"
+        :label="$t('workspace.modelType')"
         prop="modelType"
+        width="120"
       />
       <el-table-column
-        label="准确度"
+        :label="$t('workspace.modelPrecision')"
         prop="precision"
+        width="85"
       />
       <el-table-column
-        label="创建时间"
+        :label="$t('workspace.modelCreatedAt')"
         prop="created_at"
+        width="160"
       />
       <el-table-column
-        label="召回率"
+        :label="$t('workspace.modelRecall')"
         prop="recall"
       />
       <el-table-column
-        label="损失"
+        :label="$t('workspace.modelLoss')"
         prop="loss"
       />
       <el-table-column
-        label="训练用图数"
+        :label="$t('workspace.modelNumber')"
         prop="n_train"
+        width="120"
       />
       <el-table-column
-        label="类型"
+        :label="$t('workspace.modelTypes')"
         prop="types"
       />
     </el-table>
@@ -76,7 +80,7 @@
       />
     </div>
     <el-dialog
-      :title="'上传模型(根据指定步骤上传模型)'"
+      :title="$t('workspace.modelUpload')"
       :visible.sync="dialogFormVisible"
       @closed="closedDialog"
     >
@@ -115,21 +119,7 @@ export default {
       listQuery: {
         desc: undefined,
         type: undefined
-      },
-      typeOptions: [
-        {
-          key: '0',
-          name: '全部'
-        },
-        {
-          key: '1',
-          name: '训练'
-        },
-        {
-          key: '2',
-          name: '预测'
-        }
-      ]
+      }
     }
   },
   created() {
