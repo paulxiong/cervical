@@ -21,8 +21,8 @@ export const taskType = {
 
 // 训练类型
 export const typeStatus = {
-  1: '训练',
-  2: '预测'
+  1: 'const.train',
+  2: 'const.predict'
 }
 
 // 用户
@@ -68,8 +68,8 @@ export const cellsType = {
 export const projectType = {
   0: '未知',
   1: '保留',
-  2: '训练',
-  3: '预测'
+  2: 'const.train',
+  3: 'const.predict'
 }
 
 // order 从小到大表示病从轻到重，choicscolor是选项菜单颜色，typecolor是选框颜色

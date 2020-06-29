@@ -2,9 +2,9 @@
   <div class="newDatasets">
     <section class="step">
       <el-steps :active="step">
-        <el-step :title="upload ? '上传所选批次' : '选择批次和病例'" icon="el-icon-picture" />
-        <el-step title="选择模型并调整参数" icon="el-icon-edit" />
-        <el-step title="确认信息" icon="el-icon-upload" />
+        <el-step :title="upload ? $t('workspace.projectDataUpload3') : $t('workspace.projectDataSelect')" icon="el-icon-picture" />
+        <el-step :title="$t('workspace.projectDataModel3')" icon="el-icon-edit" />
+        <el-step :title="$t('workspace.projectDataReconfirm')" icon="el-icon-upload" />
       </el-steps>
     </section>
 

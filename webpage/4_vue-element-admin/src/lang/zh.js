@@ -74,7 +74,9 @@ export default {
     error: '出错',
     done: '完成',
     tobereview: '送去审核',
-    reviewed: '审核完成'
+    reviewed: '审核完成',
+    train: '训练',
+    predict: '预测'
   },
   workspace: {
     projects: '项目',
@@ -167,6 +169,14 @@ export default {
     projectDataUpload2: '上传数据',
     projectDataAdd2: '新建数据集',
     projectDataPrevious: '上一步',
-    projectDataNext: '下一步'
+    projectDataNext: '下一步',
+    projectDataUpload3: '上传所选批次',
+    projectDataSelect: '选择批次和病例',
+    projectDataModel3: '选择模型并调整参数',
+    projectDataReconfirm: '确认信息',
+    projectDataUploadTip: '拖动文件到此处或点击上传',
+    projectDataBrowse: '选择文件夹',
+    projectDataIncomplete: '所选的病例目录不完整 !',
+    projectDataStartUpload: '开始上传'
   }
 }

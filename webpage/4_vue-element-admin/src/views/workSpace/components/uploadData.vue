@@ -12,8 +12,8 @@
     >
       <uploader-unsupport />
       <uploader-drop v-show="!once">
-        <p>拖动文件到此处或点击上传</p>
-        <uploader-btn :attrs="attrs" :directory="true" :single="true">选择文件夹</uploader-btn>
+        <p>{{ $t('workspace.projectDataUploadTip') }}</p>
+        <uploader-btn :attrs="attrs" :directory="true" :single="true">{{ $t('workspace.projectDataBrowse') }}</uploader-btn>
       </uploader-drop>
       <uploader-list />
     </uploader>
@@ -94,9 +94,9 @@ export default {
       // 没有Scan.txt，直接取消上传，说明病例不对
       if (hasScanTxt === false) {
         this.uploaderInstance.uploader.cancel()
-        this.$message.error('所选的病例目录不完整 !')
+        this.$message.error(this.$t('workspace.projectDataIncomplete'))
       } else {
-        this.$message({ type: 'success', message: '开始上传' })
+        this.$message({ type: 'success', message: this.$t('workspace.projectDataStartUpload') })
         this.once = true
       }
     },
@@ -158,7 +158,11 @@ export default {
         this.getFilelist(chunk.file, this.options.chunkSize).then((filelist) => {
           this.lostfiles = checkFileList(filelist, that.filelist)
           if (this.lostfiles && this.lostfiles.length > 0) {
-            that.cancelUploder(`缺失 ${this.lostfiles[0]} 等${this.lostfiles.length}个文件, 请检查上传的目录`)
+            if (window._i18n && window._i18n.locale && window._i18n.locale === 'zh') {
+              that.cancelUploder(`缺失 ${this.lostfiles[0]} 等${this.lostfiles.length}个文件, 请检查上传的目录`)
+            } else {
+              that.cancelUploder(`${this.lostfiles.length} files such as ${this.lostfiles[0]} are missing. Please check the uploaded directory`)
+            }
           }
           chunk.preprocessFinished()
         })

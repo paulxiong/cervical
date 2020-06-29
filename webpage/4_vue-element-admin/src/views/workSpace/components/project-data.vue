@@ -186,7 +186,7 @@ export default {
           v.created_by = createdBy[v.created_by] || '普通用户'
           v.statusType = taskType[v.status]
           v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : taskStatus[v.status]
-          v.projectType = projectType[v.type]
+          v.projectType = this.$t(projectType[v.type])
         })
         this.projectlist = res.data.data.projects
         this.total = res.data.data.total

@@ -74,7 +74,9 @@ export default {
     error: 'Error',
     done: 'Done',
     tobereview: 'To Be Review',
-    reviewed: 'Reviewed'
+    reviewed: 'Reviewed',
+    train: 'Train',
+    predict: 'Predict'
   },
   workspace: {
     projects: 'Projects',
@@ -167,6 +169,14 @@ export default {
     projectDataUpload2: 'Upload',
     projectDataAdd2: 'New',
     projectDataPrevious: 'Previous',
-    projectDataNext: 'Next'
+    projectDataNext: 'Next',
+    projectDataUpload3: 'Upload Images',
+    projectDataSelect: 'Select Images',
+    projectDataModel3: 'Select Model',
+    projectDataReconfirm: 'Reconfirm',
+    projectDataUploadTip: 'Drag & Drop Your Medical Case To Begin Uploading',
+    projectDataBrowse: 'Select Folder',
+    projectDataIncomplete: 'The Selected Case Is Incomplete',
+    projectDataStartUpload: 'Uploading'
   }
 }
