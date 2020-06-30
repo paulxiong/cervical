@@ -4,7 +4,7 @@
       <el-input
         v-model="inputName"
         autofocus
-        placeholder="输入描述"
+        :placeholder="$t('workspace.dataDescription')"
         show-word-limit
         maxlength="30"
         class="input-name"
@@ -16,12 +16,12 @@
         :disabled="!inputName.length"
         :loading="loading"
         @click="goDetail"
-      >开始处理</el-button>
+      >{{ $t('workspace.dataStartToSegmentate') }}</el-button>
     </h2>
     <section class="train-box-info">
       <el-card shadow="hover">
         <div class="info-header flex">
-          <el-badge is-dot class="badge">训练集</el-badge>
+          <el-badge is-dot class="badge">{{ $t('workspace.dataTrainingSet') }}</el-badge>
           <el-tag
             class="info-tag"
             effect="dark"
@@ -31,26 +31,26 @@
         </div>
         <div class="info-list flex">
           <section class="info" style="width: 48%;height: 50px;overflow: auto;margin-right: 2%;">
-            <i>批次</i>
+            <i>{{ $t('workspace.dataBatch') }}</i>
             <b>{{ postData.batchids }}</b>
           </section>
           <section class="info" style="width: 50%;height: 50px;overflow: auto;">
-            <i>病例</i>
+            <i>{{ $t('workspace.dataCase') }}</i>
             <b>{{ postData.medicalids }}</b>
           </section>
           <section class="info">
-            <i>描述</i>
+            <i>{{ $t('workspace.dataDescription2') }}</i>
             <b>{{ inputName }}</b>
           </section>
           <section class="info">
-            <i>n/p比例</i>
+            <i>{{ $t('workspace.dataProportion') }}</i>
             <b>{{ countNP.countn }}/{{ countNP.countp }}</b>
           </section>
         </div>
       </el-card>
       <el-card v-if="modelInfo.model.id" style="margin-top:20px;" shadow="hover">
         <div class="info-header flex">
-          <el-badge is-dot class="badge">模型及参数</el-badge>
+          <el-badge is-dot class="badge">{{ $t('workspace.dataModelParameters') }}</el-badge>
           <el-tag
             class="info-tag"
             effect="dark"
@@ -60,15 +60,15 @@
         </div>
         <div class="info-list flex">
           <section class="model-info">
-            <i>模型ID</i>
+            <i>{{ $t('workspace.dataModelID') }}</i>
             <b>{{ modelInfo.model.id }}</b>
           </section>
           <section class="model-info">
-            <i>模型</i>
+            <i>{{ $t('workspace.dataModel') }}</i>
             <b>{{ modelInfo.model.desc }}</b>
           </section>
           <section class="model-info">
-            <i>是否使用缓存</i>
+            <i>{{ $t('workspace.dataUseCache') }}</i>
             <b>{{ modelInfo.cache }}</b>
           </section>
           <!-- <section class="model-info">
@@ -76,11 +76,11 @@
             <b>{{ modelInfo.model.loss }}</b>
           </section> -->
           <section class="model-info">
-            <i>背景色</i>
+            <i>{{ $t('workspace.dataColor2') }}</i>
             <b>{{ modelInfo.imgColor }}</b>
           </section>
           <section class="model-info">
-            <i>裁剪大小</i>
+            <i>{{ $t('workspace.dataSize') }}</i>
             <b>{{ modelInfo.cutSize }}</b>
           </section>
           <!-- <section class="model-info">
@@ -92,7 +92,7 @@
             <b>{{ modelInfo.model.recall }}</b>
           </section> -->
           <section class="model-info">
-            <i>最后更新时间</i>
+            <i>{{ $t('workspace.dataUpdateTime') }}</i>
             <b>{{ modelInfo.model.updated_at | filterDate }}</b>
           </section>
         </div>
@@ -133,8 +133,8 @@ export default {
     goDetail() {
       this.loading = true
       this.postData['desc'] = this.inputName
-      this.postData['parameter_cache'] = this.modelInfo.cache === '是' ? 1 : 0
-      this.postData['parameter_gray'] = this.modelInfo.imgColor === '灰色' ? 1 : 0
+      this.postData['parameter_cache'] = this.modelInfo.cache === this.$t('workspace.dataCacheYes') ? 1 : 0
+      this.postData['parameter_gray'] = this.modelInfo.imgColor === this.$t('workspace.dataColorGray') ? 1 : 0
       this.postData['parameter_mid'] = this.modelInfo.model.id
       this.postData['parameter_size'] = parseInt(this.modelInfo.cutSize)
       this.postData['parameter_type'] = parseInt(this.modelInfo.type.slice(0, 1))
