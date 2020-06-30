@@ -237,10 +237,10 @@ export default {
             v.parameter_cache = v.parameter_cache === 1 ? this.$t('workspace.projectNewCache') : this.$t('workspace.projectNewNoCache')
             v.parameter_gray = v.parameter_gray === 1 ? this.$t('workspace.projectNewGray') : this.$t('workspace.projectNewColor')
           })
-          this.datasetsList = res.data.data.datasets
-          this.total = res.data.data.total
-          this.loading = false
         }
+        this.datasetsList = res.data.data.datasets
+        this.total = res.data.data.total
+        this.loading = false
       })
     }
   }
