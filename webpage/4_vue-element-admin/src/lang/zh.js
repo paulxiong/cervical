@@ -227,6 +227,27 @@ export default {
     modelUploadRuleType: '请选择上传模型类型',
     modelTypeSeg: '切割',
     modelTypeClassification: '细胞分类',
-    modelUploadOnlyH5: '只能上传h5/H5文件'
+    modelUploadOnlyH5: '只能上传h5/H5文件',
+    dataType: '类型',
+    dataDir: '目录',
+    dataBatch2: '批次',
+    dataCase2: '病例',
+    dataNumberImage: '图片总数',
+    dataNumberN: 'fov-n个数',
+    dataNumberP: 'fov-p个数',
+    dataNumberLabels: '标记次数或输出细胞个数',
+    dataNumberNLabels: 'n标记次数或输出细胞个数',
+    dataNumberPLabels: 'p标记次数或输出细胞个数',
+    dataOriginalImage: '原图',
+    dataCells: '细胞图',
+    dataSegmentationLog: '日志',
+    dataInProgress: '正在执行',
+    dataETA: '预计还需要(秒):',
+    dataInputInformation: '输入信息',
+    dataOutputInformation: '输出信息',
+    dataDownloadAlert: '正在下载中，请耐心等待下载完成！请勿离开或刷新页面！压缩包下载大小(MB):',
+    dataDownloadConfirm: '确定',
+    dataDownloadZip: '细胞图.zip',
+    dataDownloadSucc: '下载成功'
   }
 }

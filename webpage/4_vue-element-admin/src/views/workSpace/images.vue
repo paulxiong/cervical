@@ -1,33 +1,22 @@
 <template>
   <div class="images">
-    <!-- <section class="header flex">
-      <el-badge is-dot class="badge">裁剪进度</el-badge>
-      <el-progress
-        class="progress"
-        :text-inside="true"
-        :stroke-width="26"
-        :percentage="percentage"
-        status="success"
-      />
-    </section> -->
     <section class="main">
       <section class="info-box">
         <el-table :data="tableData" stripe border style="width: 100%">
-          <el-table-column prop="name" label="类型" />
-          <el-table-column prop="dir" label="目录" />
-          <el-table-column label="批次" width="180">
+          <el-table-column prop="name" :label="$t('workspace.dataType')" />
+          <el-table-column prop="dir" :label="$t('workspace.dataDir')" />
+          <el-table-column :label="$t('workspace.dataBatch2')" width="180">
             <template slot-scope="scope">{{ scope.row.batchids }}</template>
           </el-table-column>
-          <el-table-column label="病例" width="180">
+          <el-table-column :label="$t('workspace.dataCase2')" width="180">
             <template slot-scope="scope">{{ scope.row.medicalids }}</template>
           </el-table-column>
-          <el-table-column prop="fovcnt" label="图片总数" />
-          <el-table-column prop="fovncnt" label="fov-n个数" />
-          <el-table-column prop="fovpcnt" label="fov-p个数" />
-          <el-table-column prop="labelcnt" label="标记次数或输出细胞个数" />
-          <el-table-column prop="labelncnt" label="n标记次数或输出细胞个数" />
-          <el-table-column prop="labelpcnt" label="p标记次数或输出细胞个数" />
-          <!-- <el-table-column prop="types" label="细胞类型"></el-table-column> -->
+          <el-table-column prop="fovcnt" :label="$t('workspace.dataNumberImage')" />
+          <el-table-column prop="fovncnt" :label="$t('workspace.dataNumberN')" />
+          <el-table-column prop="fovpcnt" :label="$t('workspace.dataNumberP')" />
+          <el-table-column prop="labelcnt" :label="$t('workspace.dataNumberLabels')" />
+          <el-table-column prop="labelncnt" :label="$t('workspace.dataNumberNLabels')" />
+          <el-table-column prop="labelpcnt" :label="$t('workspace.dataNumberPLabels')" />
         </el-table>
       </section>
       <el-tabs
@@ -37,7 +26,7 @@
         class="img-tabs"
         @tab-click="tabClick"
       >
-        <el-tab-pane label="原图">
+        <el-tab-pane :label="$t('workspace.dataOriginalImage')">
           <div class="img-div" style="overflow-y: auto;height:500px;">
             <el-image
               v-for="(img,idx) in origin_imgs"
@@ -65,7 +54,7 @@
         </el-tab-pane>
         <el-tab-pane style="overflow: scroll;">
           <span slot="label">
-            细胞图
+            {{ $t('workspace.dataCells') }}
             <i v-if="downloadLoading" class="el-icon-loading" />
             <svg-icon v-else class="download" icon-class="download" @click="downloadImgs" />
           </span>
@@ -94,25 +83,12 @@
             @size-change="handleSizeChange"
           />
         </el-tab-pane>
-        <!-- <el-tab-pane label="细胞核图">
-          <el-image
-            v-for="(img,idx) in cells_crop_masked"
-            :key="idx"
-            class="img"
-            :src="hosturlpath32 + img"
-            lazy
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline" />
-            </div>
-          </el-image>
-        </el-tab-pane>-->
-        <el-tab-pane label="Log">
+        <el-tab-pane :label="$t('workspace.dataSegmentationLog')">
           <el-input
             v-model="cLog"
             type="textarea"
             :rows="2"
-            placeholder="裁剪log"
+            placeholder="log"
             :autosize="{ minRows: 2, maxRows: 16}"
             readonly
           >1</el-input>
@@ -135,14 +111,14 @@ export default {
       percentage: 0,
       ETA: 10,
       status: 0,
-      loadingtext: '正在执行',
+      loadingtext: this.$t('workspace.dataInProgress'),
       loading: true,
       dir: 'dsEoM8RR/',
       hosturlpath32: APIUrl + '/imgs/',
       hosturlpath100: APIUrl + '/imgs/',
       tableData: [],
-      objData: { 'name': '输入信息' },
-      objData2: { 'name': '输出信息' },
+      objData: { 'name': this.$t('workspace.dataInputInformation') },
+      objData2: { 'name': this.$t('workspace.dataOutputInformation') },
       cLog: '',
       origin_imgs: [],
       cells_crop: [],
@@ -165,8 +141,8 @@ export default {
   methods: {
     downloadImgs() {
       this.downloadLoading = true
-      this.$alert(`正在下载中，请耐心等待下载完成！压缩包下载大小约${parseFloat(this.total * 20 / 1024).toFixed(1)}M，请勿离开或刷新页面！`, {
-        confirmButtonText: '确定'
+      this.$alert(`${this.$t('workspace.dataDownloadAlert')}${parseFloat(this.total * 20 / 1024).toFixed(1)}`, {
+        confirmButtonText: this.$t('workspace.dataDownloadConfirm')
       })
       downloadImgs({ 'id': this.$route.query.did }).then(res => {
         const blob = new Blob([res.data])
@@ -177,14 +153,14 @@ export default {
           const evt = document.createEvent('HTMLEvents')
           evt.initEvent('click', false, false)
           link.href = URL.createObjectURL(blob)
-          link.download = '细胞图.zip'
+          link.download = this.$t('workspace.dataDownloadZip')
           link.style.display = 'none'
           document.body.appendChild(link)
           link.click()
           window.URL.revokeObjectURL(link.href)
         }
         this.$message({
-          message: '下载成功',
+          message: this.$t('workspace.dataDownloadSucc'),
           type: 'success'
         })
         this.downloadLoading = false
@@ -256,7 +232,7 @@ export default {
             this.getjoblog()
           }
         } else {
-          this.loadingtext = '预计还需要' + this.ETA + '秒'
+          this.loadingtext = this.$t('workspace.dataETA') + this.ETA
         }
       })
     },
