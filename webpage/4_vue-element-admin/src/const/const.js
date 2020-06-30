@@ -59,10 +59,10 @@ export const cellsType = {
   13: '13 M霉菌 N',
   14: '14 HSV疱疹 N',
   15: '15 X1线索细胞 N',
-  50: '50 阴性细胞 N',
-  51: '51 阳性细胞 P',
-  100: '100 未知类型',
-  200: '200 不是细胞'
+  50: 'const.cellsType50',
+  51: 'const.cellsType51',
+  100: 'const.cellsType100',
+  200: 'const.cellsType200'
 }
 
 export const projectType = {

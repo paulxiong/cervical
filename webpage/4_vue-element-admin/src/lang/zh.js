@@ -76,7 +76,11 @@ export default {
     tobereview: '送去审核',
     reviewed: '审核完成',
     train: '训练',
-    predict: '预测'
+    predict: '预测',
+    cellsType50: '50 阴性细胞 N',
+    cellsType51: '51 阳性细胞 P',
+    cellsType100: '100 未知类型',
+    cellsType200: '200 不是细胞'
   },
   workspace: {
     projects: '项目',
@@ -248,6 +252,29 @@ export default {
     dataDownloadAlert: '正在下载中，请耐心等待下载完成！请勿离开或刷新页面！压缩包下载大小(MB):',
     dataDownloadConfirm: '确定',
     dataDownloadZip: '细胞图.zip',
-    dataDownloadSucc: '下载成功'
+    dataDownloadSucc: '下载成功',
+    dataTrainingEvaluation: '训练&评估',
+    dataImages: '图片',
+    dataPredict: '预测',
+    dataDetails: '详情',
+    dataPredictDetails: '类型',
+    dataPredictNumber: '预测个数',
+    dataPredictFalseNumber: '错误个数',
+    dataPredictTrueNumber: '正确个数',
+    dataPredictTrueCells: '正确细胞',
+    dataPredictCells: '预测细胞',
+    dataPredictFalseCells: '错误细胞',
+    dataNotPredicted: '未预测细胞',
+    dataPredictOriginalImage: '原图',
+    dataPredictOverallProgress: '总进度',
+    dataPredictStatus: '审核状态',
+    dataPredictTypes: '细胞类型',
+    dataPredictRefresh: '刷新',
+    dataPredictCurrentProgress: '当前图片进度:',
+    dataPredictFalse: '错误',
+    dataPredictTrue: '正确',
+    dataPredictTip: '提示',
+    dataPredictInProgress: '正在执行',
+    dataPredictETA: '预计还需要(秒):'
   }
 }

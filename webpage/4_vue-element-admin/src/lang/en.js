@@ -76,7 +76,11 @@ export default {
     tobereview: 'To Be Review',
     reviewed: 'Reviewed',
     train: 'Train',
-    predict: 'Predict'
+    predict: 'Predict',
+    cellsType50: '50 Negative cells',
+    cellsType51: '51 Positive cells',
+    cellsType100: '100 Unknown',
+    cellsType200: '200 Not Cell'
   },
   workspace: {
     projects: 'Projects',
@@ -247,6 +251,29 @@ export default {
     dataDownloadAlert: 'Download in progress, please wait for download to complete! Please do not leave or refresh the page! Download size of compressed package(MB):',
     dataDownloadConfirm: 'Ok',
     dataDownloadZip: 'Cells.zip',
-    dataDownloadSucc: 'Download successful'
+    dataDownloadSucc: 'Download successful',
+    dataTrainingEvaluation: 'Training & Evaluation',
+    dataImages: 'Images',
+    dataPredict: 'Predict',
+    dataDetails: 'Details',
+    dataPredictDetails: 'Details',
+    dataPredictNumber: 'Predict Number',
+    dataPredictFalseNumber: 'False Number',
+    dataPredictTrueNumber: 'True Number',
+    dataPredictTrueCells: 'True Cells',
+    dataPredictCells: 'Predict Cells',
+    dataPredictFalseCells: 'False Cells',
+    dataNotPredicted: 'Not Predicted',
+    dataPredictOriginalImage: 'Original Image',
+    dataPredictOverallProgress: 'Overall Progress',
+    dataPredictStatus: 'Status',
+    dataPredictTypes: 'Cell Types',
+    dataPredictRefresh: 'Refresh',
+    dataPredictCurrentProgress: 'Current Progress:',
+    dataPredictFalse: 'False',
+    dataPredictTrue: 'True',
+    dataPredictTip: 'Tip',
+    dataPredictInProgress: 'In Progress',
+    dataPredictETA: 'Expected to take (sec.):'
   }
 }

@@ -3,15 +3,15 @@
     <section v-loading="loading" :element-loading-text="loadingtext" class="results">
       <section v-if="!report" class="info-box">
         <el-table :data="predictResult.result" stripe border style="width: 100%">
-          <el-table-column prop="type" width="400" label="类型" />
-          <el-table-column prop="total" label="预测个数" />
-          <el-table-column v-if="predictResult.parameter_type" prop="falseCnt" label="错误个数" />
-          <el-table-column v-if="predictResult.parameter_type" prop="correct" label="正确个数" />
+          <el-table-column prop="type" width="400" :label="$t('workspace.dataPredictDetails')" />
+          <el-table-column prop="total" :label="$t('workspace.dataPredictNumber')" />
+          <el-table-column v-if="predictResult.parameter_type" prop="falseCnt" :label="$t('workspace.dataPredictFalseNumber')" />
+          <el-table-column v-if="predictResult.parameter_type" prop="correct" :label="$t('workspace.dataPredictTrueNumber')" />
         </el-table>
       </section>
       <section class="img-list">
         <el-tabs tab-position="left" class="img-tabs">
-          <el-tab-pane v-if="!report" type="info" :label="`${predictResult.parameter_type ? '正确细胞' : '预测细胞'} ${predictResult.correc_total ? predictResult.correc_total : ''}`" class="img-tab">
+          <el-tab-pane v-if="!report" type="info" :label="`${predictResult.parameter_type ? $t('workspace.dataPredictTrueCells') : $t('workspace.dataPredictCells')} ${predictResult.correc_total ? predictResult.correc_total : ''}`" class="img-tab">
             <div class="img-div flex" style="overflow-y: auto;height:600px;">
               <div v-for="v in rightCellsList" :key="v.url" class="item-box" style="padding: 30px;">
                 <el-badge :value="`${v.type}-${v.score}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
@@ -31,7 +31,7 @@
               @size-change="handleSizeChange"
             />
           </el-tab-pane>
-          <el-tab-pane v-if="!report" :label="`${predictResult.parameter_type ? '错误细胞' : '未预测细胞'} ${predictResult.incorrec_total ? predictResult.incorrec_total : ''}`" class="img-tab flex">
+          <el-tab-pane v-if="!report" :label="`${predictResult.parameter_type ? $t('workspace.dataPredictFalseCells') : $t('workspace.dataNotPredicted')} ${predictResult.incorrec_total ? predictResult.incorrec_total : ''}`" class="img-tab flex">
             <div class="img-div" style="overflow-y: auto;height:600px;">
               <div v-for="v in falseCellsList" :key="v.url" class="item-box" style="padding: 20px;">
                 <el-badge :value="`${v.type}>${v.predict}`" :type="v.type === 51 ? 'warning': 'info'" class="item">
@@ -51,12 +51,12 @@
               @size-change="handleSizeChange2"
             />
           </el-tab-pane>
-          <el-tab-pane v-if="report" type="info" :label="`原图 ${total}`" class="img-tab flex">
+          <el-tab-pane v-if="report" type="info" :label="`${$t('workspace.dataPredictOriginalImage')} ${total}`" class="img-tab flex">
             <section class="tools-bar flex">
-              <div>总进度:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
+              <div>{{ $t('workspace.dataPredictOverallProgress') }}:{{ imgCellsInfo.cellsverified }} / {{ imgCellsInfo.cellsall }}</div>
               <div class="fitler-tools">
-                <span>审核状态</span>
-                <el-select v-model="filterValue.filterChecked" placeholder="审核状态" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
+                <span>{{ $t('workspace.dataPredictStatus') }}</span>
+                <el-select v-model="filterValue.filterChecked" :placeholder="$t('workspace.dataPredictStatus')" size="mini" style="width: 100px;margin: 5px;" @change="filterChecked">
                   <el-option
                     v-for="item in checkedOptions"
                     :key="item.value"
@@ -64,8 +64,8 @@
                     :value="item.value"
                   />
                 </el-select>
-                <span>细胞类型: {{ renderData.length }}个</span>
-                <el-select v-model="filterValue.filterCellsType" placeholder="细胞类型" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
+                <span>{{ $t('workspace.dataPredictTypes') }}: {{ renderData.length }}</span>
+                <el-select v-model="filterValue.filterCellsType" :placeholder="$t('workspace.dataPredictTypes')" size="mini" style="width: 100px;margin: 5px;" @change="filterCellsType">
                   <el-option
                     v-for="item in CellsTypeOptions"
                     :key="item.value"
@@ -73,9 +73,9 @@
                     :value="item.value"
                   />
                 </el-select>
-                <el-button class="filter-btn" type="primary" size="mini" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
+                <el-button class="filter-btn" type="primary" size="mini" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">{{ $t('workspace.dataPredictRefresh') }}</el-button>
               </div>
-              <div>当前图片进度:{{ imgCellsInfo.imgcellsverified }} / {{ imgCellsInfo.imgcellsall }}</div>
+              <div>{{ $t('workspace.dataPredictCurrentProgress') }}:{{ imgCellsInfo.imgcellsverified }} / {{ imgCellsInfo.imgcellsall }}</div>
             </section>
             <section v-if="orgImgList.length" class="label-img flex">
               <div class="check-box" style="width: 110px" :style="{height: fov_img.w < 1000 ? fov_img.h + 'px' : (fov_img.h*(1000/fov_img.w)) + 'px'}">
@@ -119,13 +119,13 @@
                     @change="updatePredict"
                   />
                   <el-radio-group v-if="report === 'admin'" v-model="select.status" size="mini" style="position: absolute;top: 45px;right: 0;" @change="updateAdminValue">
-                    <el-radio-button label="错误" />
-                    <el-radio-button label="正确" />
+                    <el-radio-button :label="$t('workspace.dataPredictFalse')" />
+                    <el-radio-button :label="$t('workspace.dataPredictTrue')" />
                   </el-radio-group>
                 </div>
                 <div class="checked-all flex">
                   <el-dialog
-                    title="提示"
+                    :title="$t('workspace.dataPredictTip')"
                     :visible.sync="centerDialogVisible"
                     width="30%"
                     center
@@ -205,7 +205,7 @@ export default {
       loading: true,
       ETA: 10,
       status: 0,
-      loadingtext: '正在执行',
+      loadingtext: this.$t('workspace.dataPredictInProgress'),
       postCelltypes: [],
       cLog: '',
       hosturlpath64: APIUrl + '/imgs/',
@@ -496,7 +496,7 @@ export default {
           if (res.data.data.result) {
             res.data.data.result.map(v => {
               v.falseCnt = v.total - v.correct
-              v.type = cellsType[v.type]
+              v.type = this.$t(cellsType[v.type])
             })
           }
           this.predictResult = res.data.data
@@ -572,7 +572,7 @@ export default {
           }
           this.getjoblog()
         } else {
-          this.loadingtext = '预计还需要' + this.ETA + '秒'
+          this.loadingtext = this.$t('workspace.dataPredictETA') + this.ETA
         }
       })
     },
