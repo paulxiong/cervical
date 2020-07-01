@@ -328,5 +328,5 @@ ALTER TABLE c_syscfg COMMENT 'syscfg';;
 
 
 LOCK TABLES `c_user` WRITE;
-INSERT INTO `c_user` VALUES (1,'','xundong_km@163.com','xundong_km@163.com','http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg','',1,'$2a$10$3KTmT3vqZkPKv9.E4DDpW.KsP.T/FlfPjMuDR9qNyPtRZfrhTW3uW','2019-12-25 09:56:26','2019-12-25 09:56:27',NULL);
+INSERT INTO `c_user` VALUES (1,'','xundong_km@163.com','xundong_km@163.com','/img/avatar.jpg','',1,'$2a$10$3KTmT3vqZkPKv9.E4DDpW.KsP.T/FlfPjMuDR9qNyPtRZfrhTW3uW','2019-12-25 09:56:26','2019-12-25 09:56:27',NULL);
 UNLOCK TABLES;

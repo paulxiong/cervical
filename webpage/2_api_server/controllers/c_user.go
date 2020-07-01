@@ -56,7 +56,7 @@ func RegisterUser(c *gin.Context) {
 	user.Email = reg.Email
 	user.Mobile = reg.Mobile
 	user.TypeID = 1000 //普通用户TypeId=1000
-	user.Image = "http://workaiossqn.tiegushi.com/xdedu/images/touxiang.jpg"
+	user.Image = "/img/avatar.jpg"
 
 	if user.Password == "" || (user.Name == "" && user.Email == "" && user.Mobile == "") {
 		logger.Warn("RegisterUser failed ", user)
