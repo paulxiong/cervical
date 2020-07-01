@@ -77,6 +77,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/test3',
+    component: () => import('@/views/testView/test3'),
+    hidden: true
+  },
+  {
     path: '/doctorreport',
     component: () => import('@/views/review/components/doctorReportPage'),
     hidden: true
