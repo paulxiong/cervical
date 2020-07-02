@@ -1,7 +1,7 @@
 #!/bin/bash
 #该脚本只测试过在Linux环境执行
-#docker run --rm -v $(pwd):/data -e GOPROXY='https://mirrors.aliyun.com/goproxy' -it golang:1.13.12-stretch sh -c 'cd /data && go get -v github.com/swaggo/swag/cmd/swag && swag init && GOOS="linux" GOARCH="arm64" go build -v -o main.exe main.go && chmod 777 main.exe'
-docker run --rm -v $(pwd):/data -it golang:1.13.12-stretch sh -c 'cd /data && go get -v github.com/swaggo/swag/cmd/swag && swag init && GOOS="linux" GOARCH="arm64" go build -v -o main.exe main.go && chmod 777 main.exe'
+swag init
+GOOS="linux" GOARCH="arm64" go build -v -o main.exe main.go
 if [ ! -f main.exe ]; then
     echo "not found main.exe"
     exit 1
