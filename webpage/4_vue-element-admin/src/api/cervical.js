@@ -413,3 +413,12 @@ export function getlabel2sbypid(query) {
     params: query
   })
 }
+
+export function uploadCustomMedical(data) {
+  return request({
+    url: '/api1/uploadm',
+    method: 'post',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data
+  })
+}

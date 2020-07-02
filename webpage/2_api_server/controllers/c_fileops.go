@@ -269,3 +269,42 @@ func UploadDirHandler(c *gin.Context) {
 	res.ResSucceedString(c, "ok")
 	return
 }
+
+// UploadCustomMedicalHandler 上传自定义病例
+// @Summary 上传自定义病例
+// @Description 上传病例文件夹
+// @tags API1 文件（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/uploadm [post]
+func UploadCustomMedicalHandler(c *gin.Context) {
+	_mid := c.DefaultPostForm("mid", "")
+	_bid := c.DefaultPostForm("bid", "")
+	_name := c.DefaultPostForm("name", "")
+
+	logger.Infof("%s  %s  %s", _mid, _bid, _name)
+
+	if len(_mid) < 1 || len(_bid) < 1 || len(_name) < 1 {
+		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
+		return
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["UploadGetFileNameFailed"])
+		return
+	}
+
+	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), "Images", _name)
+	f.NewDir(path.Join(f.GetMedicalDir(_bid, _mid), "Images"))
+	logger.Info(_filepath)
+	if err := c.SaveUploadedFile(file, _filepath); err != nil {
+		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
+		return
+	}
+
+	res.ResSucceedString(c, "ok")
+	return
+}
