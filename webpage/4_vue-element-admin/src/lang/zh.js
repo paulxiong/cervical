@@ -153,6 +153,7 @@ export default {
     projectDataRefresh: '刷新',
     projectDataAdd: '新增数据集',
     projectDataUpload: '上传',
+    projectDataCustom: '上传自定义病例',
     projectDataLoading: '拼命加载中',
     projectDataDir: '目录',
     projectDataCreator: '创建者',
@@ -171,6 +172,7 @@ export default {
     projectDataOP: '操作',
     projectDataDetails: '查看',
     projectDataUpload2: '上传数据',
+    projectDataCustomUpload: '上传自定义数据',
     projectDataAdd2: '新建数据集',
     projectDataPrevious: '上一步',
     projectDataNext: '下一步',
@@ -275,6 +277,13 @@ export default {
     dataPredictTrue: '正确',
     dataPredictTip: '提示',
     dataPredictInProgress: '正在执行',
-    dataPredictETA: '预计还需要(秒):'
+    dataPredictETA: '预计还需要(秒):',
+    dataCustomUploaded: '已经上传',
+    dataCustomNotUploaded: '未上传',
+    dataCustomFOVUploaded: '请上传 FOV 图片',
+    dataCustomUpload: '上传这几个图片作为一个病例',
+    dataCustomNotFound: '图片文件未找到或格式不对',
+    dataCustomSizeNotUniform: '图片尺寸不统一',
+    dataCustomFormatUniform: '图片格式不统一'
   }
 }

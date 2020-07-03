@@ -21,6 +21,13 @@
         icon="el-icon-upload"
         @click="uploadImgs"
       >{{ $t('workspace.projectDataUpload') }}</el-button>
+      <el-button
+        class="filter-btn"
+        style="margin-left: 10px;"
+        type="success"
+        icon="el-icon-upload"
+        @click="uploadCustomImgs"
+      >{{ $t('workspace.projectDataCustom') }}</el-button>
     </div>
     <el-table
       v-loading="loading"
@@ -135,6 +142,33 @@
         >{{ $t('workspace.projectDataNext') }}</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :title="$t('workspace.projectDataCustomUpload')"
+      :visible.sync="dialogFormVisible2"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
+      @closed="closedDialog"
+    >
+      <newCustomDatasets
+        ref="newDatasets"
+        :upload="upload"
+        style="margin-top:-30px;"
+        @checkUpload="checkUpload"
+        @checkImg="checkImg"
+        @checkModel="checkModel"
+      />
+      <div slot="footer" class="dialog-footer">
+        <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">{{ $t('workspace.projectDataPrevious') }}</el-button>
+        <el-button
+          v-show="step===1 || step===2"
+          size="mini"
+          :disabled="!uploadServer && !imgChecked && !modelChecked"
+          type="primary"
+          @click="stepNext"
+        >{{ $t('workspace.projectDataNext') }}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -143,10 +177,11 @@ import { listdatasets } from '@/api/cervical'
 import { taskStatus, createdBy, taskType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 import newDatasets from './newDatasets'
+import newCustomDatasets from './newCustomDatasets'
 
 export default {
   name: 'DatasetsData',
-  components: { newDatasets },
+  components: { newDatasets, newCustomDatasets },
   props: {
     activename: {
       type: String,
@@ -159,6 +194,7 @@ export default {
       step: 1,
       total: undefined,
       dialogFormVisible: false,
+      dialogFormVisible2: false,
       upload: false,
       uploadServer: false,
       imgChecked: false,
@@ -178,10 +214,17 @@ export default {
   methods: {
     uploadImgs() {
       this.dialogFormVisible = true
+      this.dialogFormVisible2 = false
+      this.upload = true
+    },
+    uploadCustomImgs() {
+      this.dialogFormVisible = false
+      this.dialogFormVisible2 = true
       this.upload = true
     },
     newData() {
       this.dialogFormVisible = true
+      this.dialogFormVisible2 = false
       this.upload = false
     },
     stepNext() {

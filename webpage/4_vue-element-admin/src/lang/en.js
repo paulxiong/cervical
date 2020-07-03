@@ -153,6 +153,7 @@ export default {
     projectDataRefresh: 'Refresh',
     projectDataAdd: 'Add',
     projectDataUpload: 'Upload',
+    projectDataCustom: 'Upload Custom Case',
     projectDataLoading: 'Loading',
     projectDataDir: 'Directory',
     projectDataCreator: 'Creator',
@@ -171,6 +172,7 @@ export default {
     projectDataOP: 'Operation',
     projectDataDetails: 'Details',
     projectDataUpload2: 'Upload',
+    projectDataCustomUpload: 'Upload Custom Data',
     projectDataAdd2: 'New',
     projectDataPrevious: 'Previous',
     projectDataNext: 'Next',
@@ -274,6 +276,13 @@ export default {
     dataPredictTrue: 'True',
     dataPredictTip: 'Tip',
     dataPredictInProgress: 'In Progress',
-    dataPredictETA: 'Expected to take (sec.):'
+    dataPredictETA: 'Expected to take (sec.):',
+    dataCustomUploaded: 'Uploaded',
+    dataCustomNotUploaded: 'Not Uploaded',
+    dataCustomFOVUploaded: 'Upload FOV',
+    dataCustomUpload: 'Upload these images as a case',
+    dataCustomNotFound: 'The picture file is not found or the format is not correct',
+    dataCustomSizeNotUniform: 'The picture size is not uniform',
+    dataCustomFormatUniform: 'The picture format is not uniform'
   }
 }

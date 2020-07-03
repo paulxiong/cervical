@@ -422,3 +422,11 @@ export function uploadCustomMedical(data) {
     data
   })
 }
+
+export function makeCustomMedicalScanTxt(data) {
+  return request({
+    url: '/api1/uploadms',
+    method: 'post',
+    data
+  })
+}

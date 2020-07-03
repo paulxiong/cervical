@@ -17,7 +17,6 @@ import (
 
 	e "github.com/paulxiong/cervical/webpage/2_api_server/error"
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
-	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	models "github.com/paulxiong/cervical/webpage/2_api_server/models"
 	res "github.com/paulxiong/cervical/webpage/2_api_server/responses"
 	u "github.com/paulxiong/cervical/webpage/2_api_server/utils"
@@ -111,7 +110,6 @@ func UploadsHandler(c *gin.Context) {
 	//这里是多文件上传 在之前单文件upload上传的基础上加 [] 变成upload[] 类似文件数组的意思
 	files := form.File["upload[]"]
 	//循环存文件到服务器本地
-	logger.Info(files)
 	for _, file := range files {
 		c.SaveUploadedFile(file, file.Filename)
 	}
@@ -284,8 +282,6 @@ func UploadCustomMedicalHandler(c *gin.Context) {
 	_bid := c.DefaultPostForm("bid", "")
 	_name := c.DefaultPostForm("name", "")
 
-	logger.Infof("%s  %s  %s", _mid, _bid, _name)
-
 	if len(_mid) < 1 || len(_bid) < 1 || len(_name) < 1 {
 		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return
@@ -299,9 +295,15 @@ func UploadCustomMedicalHandler(c *gin.Context) {
 
 	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), "Images", _name)
 	f.NewDir(path.Join(f.GetMedicalDir(_bid, _mid), "Images"))
-	logger.Info(_filepath)
 	if err := c.SaveUploadedFile(file, _filepath); err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
+		return
+	}
+
+	_u, _ := models.GetUserFromContext(c)
+	ret := saveMedicalImages(_filepath, _u.ID, _bid, _mid)
+	if ret != e.Errors["Succeed"] {
+		res.ResFailedStatus(c, ret)
 		return
 	}
 
