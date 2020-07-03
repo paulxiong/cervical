@@ -21,10 +21,10 @@ import (
 // @title API说明
 // @version 1.0
 // @description 这是API说明文档，开发服务器才有， 正式部署之后没有。
-// @description 认证时候填 "token eyJhbGciOiJIU..." (注意token后面有个空格， token向管理员申请)
+// @description 认证时候填 『token eyJhbGciOiJIU...』 (注意token后面有个空格， token向管理员申请)
 // @description swagger 只显示返回值data字段的内容，返回值的描述如下：
 // @description {
-// @description     status: "70", // 我们平台处理请求的状态, 比如70表示：注册的用户名已经存在
+// @description     status: 70, // 我们平台处理请求的状态, 比如70表示：注册的用户名已经存在
 // @description     data: {}/[]/int/string // 我们平台处理请求的结果，可以是对象/数组/整数/字符串, null是状态为出错(status>0)时候返回的
 // @description }
 // @termsOfService http://dev.medical.raidcdn.cn:3000
