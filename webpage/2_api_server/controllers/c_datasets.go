@@ -917,3 +917,38 @@ func GetBIDMID(c *gin.Context) {
 	res.ResSucceedStruct(c, _bidmid)
 	return
 }
+
+type customScanTxt struct {
+	BID string `json:"bid"` // 批次ID
+	MID string `json:"mid"` // 病例ID
+	W   int    `json:"w"`   // FOV宽
+	H   int    `json:"h"`   // FOV高
+	Ext string `json:"ext"` // FOV后缀
+}
+
+// UploadCustomMedicalScanTxtHandler 自定义病例的Scan.txt
+// @Summary 自定义病例的Scan.txt
+// @Description 自定义病例的Scan.txt
+// @tags API1 数据集（需要认证）
+// @Accept  json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param customScanTxt body controllers.customScanTxt true "自定义病例信息"
+// @Success 200 {string} json "{"ping": "pong",	"status": 200}"
+// @Router /api1/uploadms [post]
+func UploadCustomMedicalScanTxtHandler(c *gin.Context) {
+	cs := customScanTxt{}
+	err := c.BindJSON(&cs)
+	if err != nil {
+		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
+		return
+	}
+
+	st, err2 := f.FakeScanTXT(cs.BID, cs.MID, cs.W, cs.H, cs.Ext)
+	if err2 == nil {
+		f.NewScanTXTJSON(st, f.GetMedicalDir(cs.BID, cs.MID))
+	}
+
+	res.ResSucceedString(c, "ok")
+	return
+}

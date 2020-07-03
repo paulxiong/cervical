@@ -134,6 +134,36 @@ func ParseScanTXT(scantxt string, bid string, mid string) (_st Scantxt, _err err
 	return st, nil
 }
 
+// FakeScanTXT 生成自定义病例的Scan.txt
+func FakeScanTXT(bid string, mid string, imgw int, imgh int, ext string) (_st Scantxt, _err error) {
+	st := Scantxt{
+		Batchid:          bid,
+		Medicalid:        mid,
+		RowCount:         2,
+		ColumnCount:      2,
+		ImageWidth:       imgw,
+		ImageHeight:      imgh,
+		RealImageWidth:   imgw,
+		RealImageHeight:  imgh,
+		SceneWidth:       imgw * 2,
+		SceneHeight:      imgh * 2,
+		ImageFileNameExt: ext,
+		SlideID:          "c",
+		Result:           "Result-c.jpg",
+		Preview:          "Preview-c.jpg",
+		Boundx1:          0,
+		Boundy1:          0,
+		Boundx2:          imgw * 2,
+		Boundy2:          imgh * 2,
+	}
+	st.Imgs = make([]ImgROI, 0)
+	st.Imgs = append(st.Imgs, ImgROI{X: 0, Y: 0, Index: 1, ImageFile: "IMG001x001" + ext})
+	st.Imgs = append(st.Imgs, ImgROI{X: imgw, Y: 0, Index: 2, ImageFile: "IMG001x002" + ext})
+	st.Imgs = append(st.Imgs, ImgROI{X: 0, Y: imgh, Index: 3, ImageFile: "IMG002x001" + ext})
+	st.Imgs = append(st.Imgs, ImgROI{X: imgw, Y: imgh, Index: 4, ImageFile: "IMG002x002" + ext})
+	return st, nil
+}
+
 // NewScanTXTJSON Scan.txt信息存到JSON文件
 func NewScanTXTJSON(st Scantxt, middir string) {
 	data, err := json.MarshalIndent(st, "", " ") //这里返回的data值，类型是[]byte
