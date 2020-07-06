@@ -1,11 +1,12 @@
 #!/bin/bash
 #该脚本只测试过在Linux环境执行
 swag init
-GOOS="linux" GOARCH="arm64" go build -v -o main.exe main.go
+GOOS="linux" GOARCH="arm64" go build -v -o main.exe -ldflags="-w -s" main.go
 if [ ! -f main.exe ]; then
     echo "not found main.exe"
     exit 1
 fi
+./assets/upx main.exe
 
 pushd web
     npm install
