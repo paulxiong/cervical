@@ -18,8 +18,12 @@
         </div>
       </div>
     </div>
-    <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
-    <!-- <el-button type="primary" @click="resetImage">清空图片重新选择</el-button> -->
+    <div>
+      <canvas ref="thumbnail" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
+      <canvas ref="preview" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
+      <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
+      <!-- <el-button type="primary" @click="resetImage">清空图片重新选择</el-button> -->
+    </div>
   </div>
 </template>
 
@@ -43,11 +47,15 @@ export default {
       w: 0,
       h: 0,
       ext: '.jpg',
-      alluploaded: false
+      alluploaded: false,
+      canvas: null,
+      ctx: null
     }
   },
   mounted() {
     this.getBidMid()
+    this.canvas = this.$refs.thumbnail
+    this.ctx = this.canvas.getContext('2d')
   },
   methods: {
     resetImage() {
@@ -68,9 +76,10 @@ export default {
       this.imgs[id].url = this.getObjectURL(event.target.files[0])
       this.imgs[id].file = event.target.files[0]
       // 读取图片宽高
-      this.imgInfo(this.imgs[id].url, (w, h) => {
+      this.imgInfo(id, this.imgs[id].url, (img, w, h) => {
         this.imgs[id].w = w
         this.imgs[id].h = h
+        this.imgs[id].img = img
         this.imgs[id].type = event.target.files[0].type
         this.imgs[id].name = event.target.files[0].name
         this.imgs[id].size = event.target.files[0].size
@@ -79,6 +88,8 @@ export default {
         } else if (this.imgs[id].type === 'image/jpeg' || this.imgs[id].type === 'image/jpg') {
           this.imgs[id].ext = '.jpg'
         }
+
+        this.thumbnail(id, img)
       })
     },
     getObjectURL(file) {
@@ -92,11 +103,11 @@ export default {
       }
       return url
     },
-    imgInfo(fileURL, cb) {
+    imgInfo(id, fileURL, cb) {
       var img = new Image()
       img.src = fileURL
       img.onload = () => {
-        return cb && cb(img.width, img.height)
+        return cb && cb(img, img.width, img.height)
       }
     },
     uploadm() {
@@ -108,6 +119,8 @@ export default {
 
       this.uploadCustomMedical()
       this.makeCustomMedicalScanTxt()
+      this.uploadThumbnail()
+      this.uploadPreview()
     },
     checkBeforeUpload() {
       var err = ''
@@ -137,7 +150,9 @@ export default {
     asyncUploadCustomMedical(param, id) {
       return new Promise((resolve, reject) => {
         uploadCustomMedical(param).then(res => {
-          this.imgs[id].uploaded = true
+          if (id < 4) {
+            this.imgs[id].uploaded = true
+          }
           resolve()
         })
       })
@@ -175,6 +190,66 @@ export default {
           resolve()
         })
       })
+    },
+    convertBase64UrlToBlob(urlData, type) { /* 将base64转换成可用formdata提交的文件,urlData base64的url,type 0图片 1视频 */
+      var bytes = window.atob(urlData.split(',')[1]) // 去掉url的头，并转换为byte
+      // 处理异常,将ascii码小于0的转换为大于0
+      var ab = new ArrayBuffer(bytes.length)
+      var ia = new Uint8Array(ab)
+      for (var i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+      }
+      return new Blob([ab], { type: type === 0 ? 'image/png' : 'image/mp4' })
+    },
+    thumbnail() {
+      const width = 200
+      this.canvas.width = width
+      this.canvas.height = width
+      var xy = {
+        0: { x1: 0, y1: 0, w: this.canvas.width / 2, h: this.canvas.height / 2 },
+        1: { x1: this.canvas.width / 2, y1: 0, w: this.canvas.width / 2, h: this.canvas.height / 2 },
+        2: { x1: 0, y1: this.canvas.height / 2, w: this.canvas.width / 2, h: this.canvas.height / 2 },
+        3: { x1: this.canvas.width / 2, y1: this.canvas.height / 2, w: this.canvas.width / 2, h: this.canvas.height / 2 }
+      }
+      for (var id in this.imgs) {
+        const item = this.imgs[id]
+        if (!item.img) {
+          continue
+        }
+        this.ctx.drawImage(item.img, xy[id].x1, xy[id].y1, xy[id].w, xy[id].h)
+      }
+    },
+    uploadThumbnail() {
+      const param = new FormData() // 创建form对象
+      const base64 = this.canvas.toDataURL('image/jpg')
+      const file = this.convertBase64UrlToBlob(base64, 0)
+
+      param.append('file', file) // 通过append向form对象添加数据
+      param.append('mid', this.mid)
+      param.append('bid', this.bid)
+      param.append('name', 'Result-c.jpg')
+      this.asyncUploadCustomMedical(param, 100) // <4 的时候表示传的是FOV, 100认为是缩略图
+    },
+    uploadPreview() {
+      var ctx = this.$refs.preview.getContext('2d')
+      this.$refs.preview.width = 240
+      this.$refs.preview.height = 81
+
+      var img = new Image()
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0)
+
+        const param = new FormData() // 创建form对象
+        const base64 = this.$refs.preview.toDataURL('image/jpg')
+        const file = this.convertBase64UrlToBlob(base64, 0)
+
+        param.append('file', file) // 通过append向form对象添加数据
+        param.append('mid', this.mid)
+        param.append('bid', this.bid)
+        param.append('name', 'Preview-c.jpg')
+        this.asyncUploadCustomMedical(param, 100) // <4 的时候表示传的是FOV, 100认为是缩略图
+      }
+      img.src = '/img/Preview-c.jpg'
     }
   }
 }

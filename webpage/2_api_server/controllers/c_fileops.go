@@ -293,10 +293,20 @@ func UploadCustomMedicalHandler(c *gin.Context) {
 		return
 	}
 
-	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), "Images", _name)
-	f.NewDir(path.Join(f.GetMedicalDir(_bid, _mid), "Images"))
+	dir := "Images"
+	if _name == "Result-c.jpg" || _name == "Preview-c.jpg" {
+		dir = "Thumbs"
+	}
+
+	_filepath := path.Join(f.GetMedicalDir(_bid, _mid), dir, _name)
+	f.NewDir(path.Join(f.GetMedicalDir(_bid, _mid), dir))
 	if err := c.SaveUploadedFile(file, _filepath); err != nil {
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
+		return
+	}
+
+	if dir != "Images" {
+		res.ResSucceedString(c, "ok")
 		return
 	}
 
