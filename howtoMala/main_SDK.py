@@ -205,43 +205,45 @@ class mala_predict(worker):
     #统计预测结果
     def result_predict(self, df):
         predict_info = self.load_info_json()
+        num = df.shape[0]
+        result = {"result": [], "crop_cells": []}
 
         if predict_info['parameter_type'] == 0:
             self.log.info("统计:图片直接检测并切割出细胞")
         elif predict_info['parameter_type'] == 1:
             self.log.info("统计:按照标注csv切割细胞")
 
-        #计算每个类别的recall/precision/f1，输出到前端log
-        true_label = np.array(df["true_label"])
-        predict_label = np.array(df["predict_label"])
-        key = np.unique(true_label)
-        self.log.info("统计:recall/precision/f1")
-        self.log.info('\n%s'%classification_report(true_label, predict_label, key))
+        if num > 0:
+            #计算每个类别的recall/precision/f1，输出到前端log
+            true_label = np.array(df["true_label"])
+            predict_label = np.array(df["predict_label"])
+            key = np.unique(true_label)
+            self.log.info("统计:recall/precision/f1")
+            self.log.info('\n%s'%classification_report(true_label, predict_label, key))
 
-        result = {"result": [], "crop_cells": []}
 
-        if predict_info['parameter_type'] == 1:
-            #统计每个分类的信息
-            for true_label, df1 in df.groupby(['true_label']):
-                df_correct = df1[df1["correct"] == 1]
-                result["result"].append({"type": true_label, "total": df1.shape[0], "correct": df_correct.shape[0]})
+            if predict_info['parameter_type'] == 1:
+                #统计每个分类的信息
+                for true_label, df1 in df.groupby(['true_label']):
+                    df_correct = df1[df1["correct"] == 1]
+                    result["result"].append({"type": true_label, "total": df1.shape[0], "correct": df_correct.shape[0]})
 
-            #统计crop_cells
-            for index, row in df.iterrows():
-                cellpath = row["cellpath"][len(self.rootdir):]
-                one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath, "score":row["score"],
-                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"], "imgid": row["imgid"]}
-                result["crop_cells"].append(one)
-        elif predict_info['parameter_type'] == 0:
-            #统计每个分类的信息
-            for predict_label, df1 in df.groupby(['predict_label']):
-                result["result"].append({"type": predict_label, "total": df1.shape[0], "correct": df1.shape[0]})
-            #统计crop_cells
-            for index, row in df.iterrows():
-                cellpath = row["cellpath"][len(self.rootdir):]
-                one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath, "score":row["score"],
-                        "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"], "imgid": row["imgid"]}
-                result["crop_cells"].append(one)
+                #统计crop_cells
+                for index, row in df.iterrows():
+                    cellpath = row["cellpath"][len(self.rootdir):]
+                    one = {"predict": row["predict_label"], "type": row["true_label"], "url": cellpath, "score":row["score"],
+                            "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"], "imgid": row["imgid"]}
+                    result["crop_cells"].append(one)
+            elif predict_info['parameter_type'] == 0:
+                #统计每个分类的信息
+                for predict_label, df1 in df.groupby(['predict_label']):
+                    result["result"].append({"type": predict_label, "total": df1.shape[0], "correct": df1.shape[0]})
+                #统计crop_cells
+                for index, row in df.iterrows():
+                    cellpath = row["cellpath"][len(self.rootdir):]
+                    one = {"predict": row["predict_label"], "type": row["predict_label"], "url": cellpath, "score":row["score"],
+                            "x1": row["x1"], "y1": row["y1"], "x2": row["x2"], "y2": row["y2"], "imgid": row["imgid"]}
+                    result["crop_cells"].append(one)
 
         #写入文件
         predict_info['crop_cells'] = result['crop_cells']
@@ -363,6 +365,9 @@ class mala_predict(worker):
         	shuffle=False,
         	batch_size=self.BS)
         self.totalTest_cross_domain = len(testGen_cross_domain.filenames)
+        if (self.totalTest_cross_domain < 1):
+            _df_result = pd.DataFrame([], columns=['cellpath', 'true_label', 'predict_label', 'score', 'correct', 'x1', 'y1', 'x2', 'y2', 'imgid'])
+            return True, _df_result
 
         if self.modpath != self.projectinfo['modpath'] or self.model is None:
             self.modpath = self.projectinfo['modpath']
