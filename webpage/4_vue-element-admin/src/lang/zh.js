@@ -80,7 +80,10 @@ export default {
     cellsType50: '50 阴性细胞 N',
     cellsType51: '51 阳性细胞 P',
     cellsType100: '100 未知类型',
-    cellsType200: '200 不是细胞'
+    cellsType200: '200 不是细胞',
+    medicalType50: '阴性',
+    medicalType51: '阳性',
+    medicalType100: '未知'
   },
   workspace: {
     projects: '项目',
@@ -285,5 +288,38 @@ export default {
     dataCustomNotFound: '图片文件未找到或格式不对',
     dataCustomSizeNotUniform: '图片尺寸不统一',
     dataCustomFormatUniform: '图片格式不统一'
+  },
+  report: {
+    doctorReview: '医生审核',
+    adminReview: '管理员审核',
+    loading: '拼命加载中',
+    results: '病例预测结果',
+    directory: '工作目录',
+    creator: '创建者',
+    modelID: '预测模型 ID',
+    modelType: '预测模型类型',
+    Size: '训练之前统一的尺寸',
+    MaxTime: '训练使用的最长时间',
+    predictType: '预测方式',
+    noLabel: '没标注的图',
+    labeled: '有标注的图',
+    progress: '进度',
+    ETA: '剩余时间(秒)',
+    status: '状态',
+    startTime: '开始处理',
+    endTime: '结束时间',
+    cellTypes: '细胞类型',
+    type: '类型',
+    number: '个数',
+    operation: '操作',
+    download: '下载',
+    description: '描述',
+    datasetID: '数据集 ID',
+    creator1: '创建者',
+    type1: '类型',
+    createdAt: '创建时间',
+    ETA1: '状态/剩余时间(秒)',
+    operation1: '操作',
+    review: '查看'
   }
 }

@@ -80,7 +80,10 @@ export default {
     cellsType50: '50 Negative cells',
     cellsType51: '51 Positive cells',
     cellsType100: '100 Unknown',
-    cellsType200: '200 Not Cell'
+    cellsType200: '200 Not Cell',
+    medicalType50: 'Negative',
+    medicalType51: 'Positive',
+    medicalType100: 'Unknown'
   },
   workspace: {
     projects: 'Projects',
@@ -233,6 +236,7 @@ export default {
     modelUploadRuleType: 'Please select model type',
     modelTypeSeg: 'Segmentation',
     modelTypeClassification: 'Classification',
+    modelUploadOnlyH5: 'Only H5 / H5 files can be uploaded',
     dataType: 'Type',
     dataDir: 'Directory',
     dataBatch2: 'Batch',
@@ -284,5 +288,38 @@ export default {
     dataCustomNotFound: 'The picture file is not found or the format is not correct',
     dataCustomSizeNotUniform: 'The picture size is not uniform',
     dataCustomFormatUniform: 'The picture format is not uniform'
+  },
+  report: {
+    doctorReview: 'Doctor Review',
+    adminReview: 'Admin Review',
+    loading: 'Loading',
+    results: 'Results',
+    directory: 'Directory',
+    creator: 'Creator',
+    modelID: 'Model ID',
+    modelType: 'Model Type',
+    Size: 'Size',
+    MaxTime: 'Max Time',
+    predictType: 'Predict Type',
+    noLabel: 'No Label',
+    labeled: 'Labeled',
+    progress: 'Progress',
+    ETA: 'Expected to take (sec.):',
+    status: 'Status',
+    startTime: 'Start Time',
+    endTime: 'End Time',
+    cellTypes: 'Cell Types',
+    type: 'Type',
+    number: 'Number',
+    operation: 'Operation',
+    download: 'Download',
+    description: 'Description',
+    datasetID: 'Dataset ID',
+    creator1: 'Creator',
+    type1: 'Type',
+    createdAt: 'CreatedAt',
+    ETA1: 'Expected to take (sec.):',
+    operation1: 'Operation',
+    review: 'Review'
   }
 }

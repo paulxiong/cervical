@@ -5,10 +5,10 @@
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive" />
     <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
-      <el-tab-pane label="医生审核" name="doctor">
+      <el-tab-pane :label="$t('report.doctorReview')" name="doctor">
         <doctorReport />
       </el-tab-pane>
-      <el-tab-pane label="管理员审核" name="admin">
+      <el-tab-pane :label="$t('report.adminReview')" name="admin">
         <adminReport />
       </el-tab-pane>
     </el-tabs>

@@ -65,6 +65,13 @@ export const cellsType = {
   200: 'const.cellsType200'
 }
 
+// 病例分类
+export const medicalType = {
+  50: 'const.medicalType50',
+  51: 'const.medicalType51',
+  100: 'const.medicalType100'
+}
+
 export const projectType = {
   0: '未知',
   1: '保留',
