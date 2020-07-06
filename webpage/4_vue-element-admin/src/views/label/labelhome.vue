@@ -3,9 +3,9 @@
     <keep-alive>
       <router-view v-if="$route.meta.keepAlive" />
     </keep-alive>
-    <router-view v-if="!$route.meta.keepAlive" />
+    <!-- <router-view v-if="!$route.meta.keepAlive" /> -->
     <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
-      <el-tab-pane label="空白标注" name="LabelHome">
+      <el-tab-pane label="标注" name="LabelHome">
         <labellist />
       </el-tab-pane>
     </el-tabs>
@@ -24,12 +24,10 @@ export default {
     }
   },
   mounted() {
-    this.activeName = localStorage.getItem('REPORT_TAB') || 'LabelHome'
+    this.activeName = 'LabelHome'
   },
   methods: {
-    handleClick(tab, event) {
-      localStorage.setItem('REPORT_TAB', this.activeName)
-    }
+    handleClick(tab, event) {}
   }
 }
 </script>
