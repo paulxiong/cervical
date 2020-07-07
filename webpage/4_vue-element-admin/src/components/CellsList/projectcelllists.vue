@@ -29,19 +29,19 @@
     <el-divider content-position="left"><el-radio v-model="cellRadio" :label="50">{{ $t('label.negative') }}</el-radio></el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
       <el-radio v-for="cell of cellsOptions" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
-        {{ cell.label }}
+        {{ $t(cell.label) }}
       </el-radio>
     </el-radio-group>
     <el-divider content-position="left"><el-radio v-model="cellRadio" :label="51">{{ $t('label.positive') }}</el-radio></el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
       <el-radio v-for="cell of cellsOptions2" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
-        {{ cell.label }}
+        {{ $t(cell.label) }}
       </el-radio>
     </el-radio-group>
     <el-divider content-position="left">{{ $t('label.other') }}</el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
       <el-radio v-for="cell of cellsOptions3" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
-        {{ cell.label }}
+        {{ $t(cell.label) }}
       </el-radio>
     </el-radio-group>
 

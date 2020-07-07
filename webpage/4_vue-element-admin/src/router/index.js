@@ -141,21 +141,21 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/review',
-    component: Layout,
-    redirect: '/review/list',
-    name: 'route.cell',
-    meta: { title: 'route.cell', icon: 'nested', roles: ['admin', 'editor'] },
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/views/review/index'),
-        name: 'route.cellOverview',
-        meta: { title: 'route.cellOverview', icon: 'cellspredict', affix: true, keepAlive: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/review',
+  //   component: Layout,
+  //   redirect: '/review/list',
+  //   name: 'route.cell',
+  //   meta: { title: 'route.cell', icon: 'nested', roles: ['admin', 'editor'] },
+  //   children: [
+  //     {
+  //       path: 'list',
+  //       component: () => import('@/views/review/index'),
+  //       name: 'route.cellOverview',
+  //       meta: { title: 'route.cellOverview', icon: 'cellspredict', affix: true, keepAlive: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/label',
     component: Layout,
@@ -189,12 +189,12 @@ export const asyncRoutes = [
         name: 'route.systemImg',
         meta: { title: 'route.systemImg', icon: 'photo', affix: true }
       },
-      {
-        path: 'email',
-        component: () => import('@/views/system/email'),
-        name: 'route.systemMail',
-        meta: { title: 'route.systemMail', icon: 'email', affix: true }
-      },
+      // {
+      //   path: 'email',
+      //   component: () => import('@/views/system/email'),
+      //   name: 'route.systemMail',
+      //   meta: { title: 'route.systemMail', icon: 'email', affix: true }
+      // },
       {
         path: 'errLog',
         component: () => import('@/views/system/errLog'),

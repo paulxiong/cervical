@@ -18,6 +18,7 @@ function _celltype_init() {
   // 细胞类型字典, 导入系统预测时候使用
   var celltypekeys = {}
   celltypes.map(v => {
+    v.label = window._i18n ? window._i18n.tc(v.label) : v.label
     celltypekeys[v.id] = v
   })
 
@@ -36,33 +37,33 @@ function _celltype_init() {
 
   // tooltip的位置列表
   var toolTipPosation = []
-  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '右上', 'color': '#ffdca8', 'direction': 'right', 'direction2': 'top' }))
-  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '右下', 'color': '#ffdca8', 'direction': 'right', 'direction2': 'bottom' }))
-  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '左下', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'bottom' }))
-  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': '左上', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'top' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': window._i18n ? window._i18n.tc('label.topRight') : '右上', 'color': '#ffdca8', 'direction': 'right', 'direction2': 'top' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': window._i18n ? window._i18n.tc('label.bottomRight') : '右下', 'color': '#ffdca8', 'direction': 'right', 'direction2': 'bottom' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': window._i18n ? window._i18n.tc('label.bottomLeft') : '左下', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'bottom' }))
+  toolTipPosation.push(L.ToolTipPosation.extendOptions({ 'label': window._i18n ? window._i18n.tc('label.topLeft') : '左上', 'color': '#ffdca8', 'direction': 'left', 'direction2': 'top' }))
 
   return { 'menuitems': menuitems, 'unkownCell': unkownCell, 'toolTipPosation': toolTipPosation, 'celltypekeys': celltypekeys }
 }
 
 function _tooltip_init() { // 初始化地图上默认的一些提示信息
-  L.drawLocal.draw.toolbar.buttons.rectangle = '绘制矩形标注'
-  L.drawLocal.draw.toolbar.actions.title = '取消绘制矩形标注'
-  L.drawLocal.draw.toolbar.actions.text = '取消'
-  L.drawLocal.draw.handlers.rectangle.tooltip.start = '左键按下不放，拖动鼠标来绘制矩形标注'
-  L.drawLocal.draw.handlers.simpleshape.tooltip.end = '松开左键完成绘制'
-  L.drawLocal.edit.toolbar.buttons.edit = '修改标注'
-  L.drawLocal.edit.toolbar.buttons.editDisabled = '没有可以修改的标注'
-  L.drawLocal.edit.toolbar.buttons.remove = '删除标注'
-  L.drawLocal.edit.toolbar.actions.save.title = '保存修改'
-  L.drawLocal.edit.toolbar.actions.save.text = '保存'
-  L.drawLocal.edit.toolbar.actions.cancel.title = '取消当前的标注修改'
-  L.drawLocal.edit.toolbar.actions.cancel.text = '取消'
-  L.drawLocal.edit.toolbar.actions.clearAll.title = '删除所有的标注, 慎用！'
-  L.drawLocal.edit.toolbar.actions.clearAll.text = '删除所有'
-  L.drawLocal.edit.toolbar.buttons.removeDisabled = '没有可以删除的标注'
-  L.drawLocal.edit.handlers.remove.tooltip.text = '单击标注来删除'
-  L.drawLocal.edit.handlers.edit.tooltip.text = '拖拽标注中心点可平移标注，拖拽四角可改变标注形状'
-  L.drawLocal.edit.handlers.edit.tooltip.subtext = '右上角“取消/保存”可以放弃/保存修改'
+  L.drawLocal.draw.toolbar.buttons.rectangle = window._i18n ? window._i18n.tc('label.buttonsRectangle') : '绘制矩形标注'
+  L.drawLocal.draw.toolbar.actions.title = window._i18n ? window._i18n.tc('label.actionsTitle') : '取消绘制矩形标注'
+  L.drawLocal.draw.toolbar.actions.text = window._i18n ? window._i18n.tc('label.actionsText') : '取消'
+  L.drawLocal.draw.handlers.rectangle.tooltip.start = window._i18n ? window._i18n.tc('label.rectangleTooltipStart') : '左键按下不放，拖动鼠标来绘制矩形标注'
+  L.drawLocal.draw.handlers.simpleshape.tooltip.end = window._i18n ? window._i18n.tc('label.simpleshapeTooltipEnd') : '松开左键完成绘制'
+  L.drawLocal.edit.toolbar.buttons.edit = window._i18n ? window._i18n.tc('label.buttonsEdit') : '修改标注'
+  L.drawLocal.edit.toolbar.buttons.editDisabled = window._i18n ? window._i18n.tc('label.buttonsEditDisabled') : '没有可以修改的标注'
+  L.drawLocal.edit.toolbar.buttons.remove = window._i18n ? window._i18n.tc('label.buttonsRemove') : '删除标注'
+  L.drawLocal.edit.toolbar.actions.save.title = window._i18n ? window._i18n.tc('label.saveTitle') : '保存修改'
+  L.drawLocal.edit.toolbar.actions.save.text = window._i18n ? window._i18n.tc('label.saveText') : '保存'
+  L.drawLocal.edit.toolbar.actions.cancel.title = window._i18n ? window._i18n.tc('label.cancelTitle') : '取消当前的标注修改'
+  L.drawLocal.edit.toolbar.actions.cancel.text = window._i18n ? window._i18n.tc('label.cancelText') : '取消'
+  L.drawLocal.edit.toolbar.actions.clearAll.title = window._i18n ? window._i18n.tc('label.clearAllTitle') : '删除所有的标注, 慎用！'
+  L.drawLocal.edit.toolbar.actions.clearAll.text = window._i18n ? window._i18n.tc('label.clearAllText') : '删除所有'
+  L.drawLocal.edit.toolbar.buttons.removeDisabled = window._i18n ? window._i18n.tc('label.removeDisabled') : '没有可以删除的标注'
+  L.drawLocal.edit.handlers.remove.tooltip.text = window._i18n ? window._i18n.tc('label.removeTooltipText') : '单击标注来删除'
+  L.drawLocal.edit.handlers.edit.tooltip.text = window._i18n ? window._i18n.tc('label.editTooltipText') : '拖拽标注中心点可平移标注，拖拽四角可改变标注形状'
+  L.drawLocal.edit.handlers.edit.tooltip.subtext = window._i18n ? window._i18n.tc('label.editTooltipSubtext') : '右上角“取消/保存”可以放弃/保存修改'
 
   // 下面这个是自定义方法，目的是缩放的时候动态更新tooltip位置, 是画完框之后，上面的设置是画框的时候的提示
   L.Tooltip.prototype._updatePosition = function() {

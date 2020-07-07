@@ -29,7 +29,7 @@
             <el-dropdown-item>{{ userInfo.name }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided style="text-align:center;">
-            <span style="display:block;" @click="logout">登出</span>
+            <span style="display:block;" @click="logout">{{ $t('navbar.logout') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

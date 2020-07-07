@@ -5,7 +5,7 @@
     </div>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item v-for="(cells, idx) of cellsType" :key="idx">
-        {{ cells }}
+        {{ $t(cells) }}
       </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>

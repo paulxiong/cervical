@@ -33,7 +33,7 @@ L.ToolTipPosation = L.Toolbar2.Action.extend({
     L.extend(colorSwatch.style, {
       display: 'flex',
       backgroundColor: '#efefef',
-      width: '35px',
+      width: '95px',
       height: L.DomUtil.getStyle(this._link, 'height'),
       border: '3px solid ' + L.DomUtil.getStyle(this._link, 'backgroundColor')
     })

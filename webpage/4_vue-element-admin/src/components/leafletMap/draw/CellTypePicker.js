@@ -31,7 +31,7 @@ L.CellTypePicker = L.Toolbar2.Action.extend({
     L.extend(colorSwatch.style, {
       display: 'flex',
       backgroundColor: '#efefef',
-      width: '355px',
+      width: '400px',
       height: L.DomUtil.getStyle(this._link, 'height'),
       border: '3px solid ' + L.DomUtil.getStyle(this._link, 'backgroundColor')
     })
@@ -39,7 +39,7 @@ L.CellTypePicker = L.Toolbar2.Action.extend({
     // 显示细胞类型
     this.cellTypeText = L.DomUtil.create('a', 'cell-option-text')
     this.cellTypeText.innerHTML = `${this.options.celltype.shortname}`
-    this.cellTypeText.style.width = '25%'
+    this.cellTypeText.style.width = '20%'
     this.cellTypeText.style.height = '100%'
     this.cellTypeText.style.backgroundColor = this.options.celltype.choicscolor
     this.cellTypeText.style.display = 'inline-block'
@@ -52,7 +52,7 @@ L.CellTypePicker = L.Toolbar2.Action.extend({
 
     this.cellTypeText2 = L.DomUtil.create('a', 'cell-option-text')
     this.cellTypeText2.innerHTML = `${this.options.celltype.label}`
-    this.cellTypeText2.style.width = '75%'
+    this.cellTypeText2.style.width = '80%'
     this.cellTypeText2.style.height = '100%'
     this.cellTypeText2.style.backgroundColor = this.options.celltype.choicscolor
     this.cellTypeText2.style.display = 'inline-block'
