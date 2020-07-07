@@ -3,7 +3,7 @@
     <div class="imgreplace">
       <img v-if="newAvatar" :src="newAvatar+'?width=160'">
       <img v-else :src="avatar+'?width=160'">
-      <el-button id="pick-avatar" type="info" class="upload" round>上传头像</el-button>
+      <el-button id="pick-avatar" type="info" class="upload" round>{{ $t('system.usrUploadAvatar') }}</el-button>
     </div>
     <avatar-cropper
       trigger="#pick-avatar"
@@ -13,31 +13,31 @@
     />
     <div class="info">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="昵称" prop="name">
+        <el-form-item :label="$t('system.usrNickname')" prop="name">
           <el-input v-model="ruleForm.name" />
         </el-form-item>
-        <el-form-item label="邮箱账号" prop="email">
+        <el-form-item :label="$t('system.usrEmail')" prop="email">
           <el-input v-model="ruleForm.email" :disabled="true" />
         </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-select v-model="ruleForm.sex" placeholder="请选择您的性别" class="sex">
-            <el-option label="男" value="male" />
-            <el-option label="女" value="female" />
-            <el-option label="保密" value="secret" />
+        <el-form-item :label="$t('system.usrGender')" prop="sex">
+          <el-select v-model="ruleForm.sex" :placeholder="$t('system.usrGenderSelect')" class="sex">
+            <el-option :label="$t('system.usrMale')" value="male" />
+            <el-option :label="$t('system.usrFemale')" value="female" />
+            <el-option :label="$t('system.usrSecrecy')" value="secret" />
           </el-select>
         </el-form-item>
-        <el-form-item label="手机号码" prop="mobile">
+        <el-form-item :label="$t('system.usrPhone')" prop="mobile">
           <el-input v-model="ruleForm.mobile" />
         </el-form-item>
-        <el-form-item label="创建时间" prop="created_at">
+        <el-form-item :label="$t('system.usrCreateAt')" prop="created_at">
           <el-input v-model="ruleForm.created_at" :disabled="true" />
         </el-form-item>
-        <el-form-item label="介绍" prop="introduction">
+        <el-form-item :label="$t('system.usrIntroduce')" prop="introduction">
           <el-input v-model="ruleForm.introduction" type="textarea" :autosize="{ minRows: 10, maxRows: 20}" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="mini" @click="submitForm('ruleForm')">保存</el-button>
-          <el-button @click="resetForm('ruleForm')">重置</el-button>
+          <el-button type="primary" size="mini" @click="submitForm('ruleForm')">{{ $t('system.usrSave') }}</el-button>
+          <el-button @click="resetForm('ruleForm')">{{ $t('system.usrReset') }}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -69,16 +69,16 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入昵称', trigger: 'blur' },
-          { min: 2, max: 40, message: '长度在 2 到 40 个字符', trigger: 'blur' }
+          { required: true, message: this.$t('system.usrEnterNickname'), trigger: 'blur' },
+          { min: 2, max: 40, message: this.$t('system.usrNicknameTip'), trigger: 'blur' }
         ],
         mobile: [
-          { message: '请输入手机号(可以不填)', trigger: 'blur' },
-          { min: 0, max: 11, message: '长度在 0 到 11 个字符， 可以不填', trigger: 'blur' }
+          { message: this.$t('system.usrEnterPhone'), trigger: 'blur' },
+          { min: 0, max: 11, message: this.$t('system.usrPhoneTip'), trigger: 'blur' }
         ],
         introduction: [
-          { message: '请输入自我介绍', trigger: 'blur' },
-          { min: 0, max: 512, message: '长度在 0 到 512 个字符', trigger: 'blur' }
+          { message: this.$t('system.usrEnterIntroduce'), trigger: 'blur' },
+          { min: 0, max: 512, message: this.$t('system.usrIntroduceTip'), trigger: 'blur' }
         ]
       }
     }
@@ -126,12 +126,12 @@ export default {
             new Error(error)
           })
           this.$message({
-            message: '用户信息已经更新',
+            message: this.$t('system.usrUpdated'),
             type: 'success'
           })
         } else {
           this.$message({
-            message: '请重新填写',
+            message: this.$t('system.usrFillAgain'),
             type: 'danger'
           })
           return false
@@ -146,8 +146,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.text-center {
-}
 .imgreplace {
   overflow: auto;
   float: left;

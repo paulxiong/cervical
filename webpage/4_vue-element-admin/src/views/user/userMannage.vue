@@ -1,61 +1,37 @@
 <template>
   <div class="userList">
-    <!-- <div class="filter-box">
-      <el-input
-        v-model="listQuery.desc"
-        placeholder="请输入描述搜索"
-        style="width:200px;"
-        class="filter-input"
-        @keyup.enter.native="filterSearch"
-      />
-      <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
-        clearable
-        class="filter-type"
-        style="width: 130px"
-      >
-        <el-option
-          v-for="item in typeOptions"
-          :key="item.key"
-          :label="item.name"
-          :value="item.key"
-        />
-      </el-select>
-      <el-button class="filter-btn" type="primary" :icon="loading?'el-icon-loading':'el-icon-refresh-left'" @click="filterSearch">刷新</el-button>
-    </div> -->
     <keep-alive>
       <router-view v-if="$route.meta.keepAlive" />
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive" />
     <el-table :data="userList.users" style="width: 100%">
-      <el-table-column prop="id" label="用户ID" width="100" />
-      <el-table-column label="头像" width="200">
+      <el-table-column prop="id" :label="$t('system.usrID')" width="100" />
+      <el-table-column :label="$t('system.usrAvatar')" width="200">
         <template slot-scope="scope">
           <el-image :src="scope.row.image" style="width:36px;height:36px;border-radius:6px;" />
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="用户名" width="250" />
-      <el-table-column prop="email" label="邮箱" width="250" />
-      <el-table-column prop="type_id" label="用户类型" width="100" />
-      <el-table-column prop="created_at" label="创建时间" />
-      <el-table-column prop="updated_at" label="最近操作" />
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column prop="name" :label="$t('system.usrName')" width="250" />
+      <el-table-column prop="email" :label="$t('system.usrEmail')" width="250" />
+      <el-table-column prop="type_id" :label="$t('system.usrType')" width="100" />
+      <el-table-column prop="created_at" :label="$t('system.usrCreatedAt')" />
+      <el-table-column prop="updated_at" :label="$t('system.usrUpdatedAt')" />
+      <el-table-column fixed="right" :label="$t('system.usrOperation')" width="100">
         <template slot-scope="scope">
           <el-popover placement="right" trigger="click">
             <div>
               <table class="tftable" border="1">
-                <tr><td class="td-1">用户ID:</td><td>{{ scope.row.id }}</td></tr>
-                <tr><td class="td-1">用户名:</td><td>{{ scope.row.name }}</td></tr>
-                <tr><td class="td-1">用户类型:</td><td>{{ scope.row.type_id }}</td></tr>
-                <tr><td class="td-1">邮箱:</td><td>{{ scope.row.email }}</td></tr>
-                <tr><td class="td-1">手机号码:</td><td>{{ scope.row.mobile }}</td></tr>
-                <tr><td class="td-1">介绍:</td><td>{{ scope.row.introduction }}</td></tr>
-                <tr><td class="td-1">权限:</td><td>{{ scope.row.roles }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrID') }}:</td><td>{{ scope.row.id }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrName') }}:</td><td>{{ scope.row.name }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrType') }}:</td><td>{{ scope.row.type_id }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrEmail') }}:</td><td>{{ scope.row.email }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrPhone') }}:</td><td>{{ scope.row.mobile }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrIntroduce') }}:</td><td>{{ scope.row.introduction }}</td></tr>
+                <tr><td class="td-1">{{ $t('system.usrPermission') }}:</td><td>{{ scope.row.roles }}</td></tr>
 
               </table>
             </div>
-            <el-button slot="reference" type="primary" size="mini" @click="handleClick(scope.row)">查看</el-button>
+            <el-button slot="reference" type="primary" size="mini" @click="handleClick(scope.row)">{{ $t('system.usrDetails') }}</el-button>
           </el-popover>
           <!-- <el-button type="primary" size="mini">删除</el-button> -->
         </template>
@@ -88,24 +64,6 @@ export default {
       currentPage: 1,
       currentPageSize: 10,
       loading: false,
-      listQuery: {
-        desc: undefined,
-        type: undefined
-      },
-      typeOptions: [
-        {
-          key: '0',
-          name: '类型'
-        },
-        {
-          key: '1',
-          name: '用户名'
-        },
-        {
-          key: '2',
-          name: '城市'
-        }
-      ],
       userList: {}
     }
   },

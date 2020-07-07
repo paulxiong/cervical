@@ -2,19 +2,19 @@
   <div class="img-server">
     <div class="setting">
       <div class="setting-en">
-        <h4>是否启用图片防盗链</h4>
-        <el-switch v-model="referer_en" active-text="开" inactive-text="关" />
+        <h4>{{ $t('system.imgPictureAntiTheftChain') }}</h4>
+        <el-switch v-model="referer_en" :active-text="$t('system.imgEnabel')" :inactive-text="$t('system.imgDisabel')" />
       </div>
       <div class="setting-time">
-        <h4>设置图片缓存时间</h4>
-        <el-select v-model="refererSetting.imgexpires" style="width:100px;" placeholder="请选择">
+        <h4>{{ $t('system.imgCacheTime') }}</h4>
+        <el-select v-model="refererSetting.imgexpires" style="width:100px;" :placeholder="$t('system.imgSelect')">
           <el-option v-for="item in [24, 48, 72]" :key="item" :label="item" :value="item" />
         </el-select>
       </div>
     </div>
     <div class="img-upload" style="display: flex;">
       <div class="setting-401">
-        <h4>图片401设置</h4>
+        <h4>{{ $t('system.img401') }}</h4>
         <el-image :src="APIUrl + refererSetting.referer_401_url" />
         <avatar-cropper
           trigger="#pick-401"
@@ -22,10 +22,10 @@
           :upload-url="uploadURL"
           @uploaded="handleUploaded401"
         />
-        <el-button id="pick-401" type="success" class="upload" style="margin-left:10px;" round>上传</el-button>
+        <el-button id="pick-401" type="success" class="upload" style="margin-left:10px;" round>{{ $t('system.imgUpload') }}</el-button>
       </div>
       <div class="setting-404">
-        <h4>图片404设置</h4>
+        <h4>{{ $t('system.img404') }}</h4>
         <el-image :src="APIUrl + refererSetting.referer_404_url" />
         <avatar-cropper
           trigger="#pick-404"
@@ -33,14 +33,14 @@
           :upload-url="uploadURL"
           @uploaded="handleUploaded404"
         />
-        <el-button id="pick-404" type="success" class="upload" style="margin-left:10px;" round>上传</el-button>
+        <el-button id="pick-404" type="success" class="upload" style="margin-left:10px;" round>{{ $t('system.imgUpload') }}</el-button>
       </div>
     </div>
     <div class="url-add">
       <div class="setting-list">
-        <h4>白名单</h4>
-        <el-input v-model="refererInput" placeholder="请输入内容" style="width: 500px;">
-          <el-button slot="append" type="primary" @click="addUrl">添加</el-button>
+        <h4>{{ $t('system.imgWhiteList') }}</h4>
+        <el-input v-model="refererInput" :placeholder="$t('system.imgEnterContent')" style="width: 500px;">
+          <el-button slot="append" type="primary" @click="addUrl">{{ $t('system.imgAdd') }}</el-button>
         </el-input>
         <div class="list" style="max-height: 300px;overflow-y: auto;">
           <p v-for="(v, i) in refererSetting.referers" :key="i"><span>{{ i }}</span>{{ v }}<i class="el-icon-close" @click="delReferer(v)" /></p>
@@ -48,8 +48,8 @@
       </div>
     </div>
     <div class="setting-btn" style="margin-top: 10px;">
-      <el-button type="primary" @click="saveAll">保存</el-button>
-      <el-button>重置</el-button>
+      <el-button type="primary" @click="saveAll">{{ $t('system.imgSave') }}</el-button>
+      <el-button>{{ $t('system.imgReset') }}</el-button>
     </div>
   </div>
 </template>
