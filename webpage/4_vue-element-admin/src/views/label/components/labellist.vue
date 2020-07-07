@@ -2,60 +2,60 @@
   <div class="labellist">
     <el-table
       v-loading="loading"
-      element-loading-text="拼命加载中"
+      :element-loading-text="$t('label.loading')"
       :data="reportlist"
       style="width: 100%"
     >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="table-expand">
-            <el-form-item label="病例预测结果">
-              <span>{{ props.row.predictType }}</span>
+            <el-form-item :label="$t('label.results')">
+              <span>{{ $t(props.row.predictType) }}</span>
             </el-form-item>
-            <el-form-item label="工作目录">
+            <el-form-item :label="$t('label.directory')">
               <span>{{ props.row.dir }}</span>
             </el-form-item>
-            <el-form-item label="创建者">
+            <el-form-item :label="$t('label.creator')">
               <span>{{ props.row.username }}</span>
             </el-form-item>
-            <el-form-item label="预测模型 ID">
+            <el-form-item :label="$t('label.modelID')">
               <span>{{ props.row.parameter_mid }}</span>
             </el-form-item>
-            <el-form-item label="预测模型类型">
+            <el-form-item :label="$t('label.modelType')">
               <span>{{ props.row.parameter_mtype }}</span>
             </el-form-item>
-            <el-form-item label="训练之前统一的尺寸">
+            <el-form-item :label="$t('label.Size')">
               <span>{{ props.row.parameter_resize }}</span>
             </el-form-item>
-            <el-form-item label="训练使用的最长时间">
+            <el-form-item :label="$t('label.MaxTime')">
               <span>{{ props.row.parameter_time }}</span>
             </el-form-item>
-            <el-form-item label="预测方式">
-              <span>{{ props.row.parameter_type === 0 ? '没标注的图' : '有标注的图' }}</span>
+            <el-form-item :label="$t('label.predictType')">
+              <span>{{ props.row.parameter_type === 0 ? $t('label.noLabel') : $t('label.labeled') }}</span>
             </el-form-item>
-            <el-form-item label="进度">
+            <el-form-item :label="$t('label.progress')">
               <span>{{ props.row.percent }}</span>
             </el-form-item>
-            <el-form-item label="剩余时间(秒)">
+            <el-form-item width="200" :label="$t('label.ETA')">
               <span>{{ props.row.ETA }}</span>
             </el-form-item>
-            <el-form-item label="状态">
-              <span>{{ props.row.status }}</span>
+            <el-form-item :label="$t('label.status')">
+              <span>{{ $t(props.row.status) }}</span>
             </el-form-item>
-            <el-form-item label="开始处理">
+            <el-form-item :label="$t('label.startTime')">
               <span>{{ props.row.starttime }}</span>
             </el-form-item>
-            <el-form-item label="结束时间">
+            <el-form-item :label="$t('label.endTime')">
               <span>{{ props.row.endtime }}</span>
             </el-form-item>
-            <el-form-item label="细胞类型">
+            <el-form-item :label="$t('label.cellTypes')">
               <el-table :data="props.row.cellstype" stripe border style="width: 100%">
-                <el-table-column prop="type" width="300" label="类型" />
-                <el-table-column prop="total" label="个数" />
-                <el-table-column label="操作">
+                <el-table-column prop="type" width="300" :label="$t('label.type')" />
+                <el-table-column prop="total" :label="$t('label.number')" />
+                <el-table-column width="110" :label="$t('label.operation')">
                   <template slot-scope="scope">
                     <el-button size="mini" type="success" @click="downloadCells(scope.row)">
-                      下载
+                      {{ $t('label.download') }}
                     </el-button>
                   </template>
                 </el-table-column>
@@ -65,9 +65,9 @@
         </template>
       </el-table-column>
       <el-table-column width="60" label="ID" prop="id" />
-      <el-table-column width="360" label="描述" prop="desc" />
-      <el-table-column width="150" label="数据集 ID" prop="did" />
-      <el-table-column label="创建者">
+      <el-table-column width="360" :label="$t('label.description')" prop="desc" />
+      <el-table-column width="150" :label="$t('label.datasetID')" prop="did" />
+      <el-table-column :label="$t('label.creator1')">
         <template slot-scope="scope">
           <el-tooltip v-if="scope.row.username" :content="scope.row.username" placement="right">
             <el-image
@@ -92,16 +92,16 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column label="类型" prop="projectType" />
-      <el-table-column label="创建时间" prop="created_at" />
-      <el-table-column label="状态/剩余时间(秒)" prop="statusTime">
+      <el-table-column :label="$t('label.type1')" prop="projectType" />
+      <el-table-column :label="$t('label.createdAt')" prop="created_at" />
+      <el-table-column :label="$t('label.ETA1')" prop="statusTime">
         <template slot-scope="scope">
           <el-tag :type="scope.row.statusType" effect="light">{{ scope.row.statusTime }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" :label="$t('label.operation1')" width="100">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="goDetail(scope.row)">查看</el-button>
+          <el-button type="primary" size="mini" @click="goDetail(scope.row)">{{ $t('label.review') }}</el-button>
           <!-- <el-button type="primary" style="color: #ff3c43;" size="mini">删除</el-button> -->
         </template>
       </el-table-column>
@@ -122,7 +122,7 @@
 
 <script>
 import { getListprojects, downloadCellsURL } from '@/api/cervical'
-import { taskStatus, createdBy, taskType, projectType, cellsType } from '@/const/const'
+import { taskStatus, createdBy, taskType, projectType, cellsType, medicalType } from '@/const/const'
 import { parseTime } from '@/utils/index'
 import { APIUrl } from '@/const/config'
 import { getToken } from '@/utils/auth'
@@ -154,17 +154,17 @@ export default {
     // 判断当前病例的阴性阳性
     PNJudgement(cellstotal, posativetotal) {
       let positiveRate = 0
-      let predictType = '未知'
+      let predictType = medicalType[100]
       if (cellstotal > 0 && posativetotal > 0) {
         positiveRate = posativetotal * 100 / cellstotal
       }
       // console.log(positiveRate)
       if (positiveRate === 0) {
-        predictType = '未知'
+        predictType = medicalType[100]
       } else if (positiveRate <= 5) {
-        predictType = '阴性'
+        predictType = medicalType[50]
       } else if (positiveRate > 5) {
-        predictType = '阳性'
+        predictType = medicalType[51]
       }
       return predictType
     },
@@ -180,8 +180,8 @@ export default {
           v.created_by = createdBy[v.created_by] || '普通用户'
           v.statusType = taskType[v.status]
           v.status = taskStatus[v.status]
-          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : v.status
-          v.projectType = projectType[v.type]
+          v.statusTime = v.status === '开始' ? `${v.status}(${v.ETA}s)` : this.$t(v.status)
+          v.projectType = this.$t(projectType[v.type])
           v.cellstotal = 0
           v.posativetotal = 0
           if (v.cellstype.length) {
@@ -194,7 +194,7 @@ export default {
               }
               cells['pid'] = v.id
               cells['_type'] = cells.type
-              cells['type'] = cellsType[cells.type]
+              cells['type'] = this.$t(cellsType[cells.type])
             })
           }
           v.predictType = this.PNJudgement(v.cellstotal, v.posativetotal)
@@ -206,10 +206,10 @@ export default {
     },
     downloadCells(cell) {
       if (!cell || !cell._type || !cell.pid) {
-        this.$message.error('下载失败，请刷新网页然后重试')
+        this.$message.error(this.$t('label.downloadFailedMsg'))
         return
       }
-      this.$message({ type: 'success', message: '开始下载' })
+      this.$message({ type: 'success', message: this.$t('label.startDownloading') })
 
       const token = getToken().replace('token ', '')
       // 直接跳转下载页面

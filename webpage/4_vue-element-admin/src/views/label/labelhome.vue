@@ -5,7 +5,7 @@
     </keep-alive>
     <!-- <router-view v-if="!$route.meta.keepAlive" /> -->
     <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
-      <el-tab-pane label="标注" name="LabelHome">
+      <el-tab-pane :label="$t('label.label')" name="LabelHome">
         <labellist />
       </el-tab-pane>
     </el-tabs>
