@@ -26,19 +26,19 @@
         @size-change="handleSizeChange"
       />
     </div>
-    <el-divider content-position="left"><el-radio v-model="cellRadio" :label="50">阴性</el-radio></el-divider>
+    <el-divider content-position="left"><el-radio v-model="cellRadio" :label="50">{{ $t('label.negative') }}</el-radio></el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
       <el-radio v-for="cell of cellsOptions" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
         {{ cell.label }}
       </el-radio>
     </el-radio-group>
-    <el-divider content-position="left"><el-radio v-model="cellRadio" :label="51">阳性</el-radio></el-divider>
+    <el-divider content-position="left"><el-radio v-model="cellRadio" :label="51">{{ $t('label.positive') }}</el-radio></el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
       <el-radio v-for="cell of cellsOptions2" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
         {{ cell.label }}
       </el-radio>
     </el-radio-group>
-    <el-divider content-position="left">其他</el-divider>
+    <el-divider content-position="left">{{ $t('label.other') }}</el-divider>
     <el-radio-group v-model="cellRadio" size="mini" class="radio-box">
       <el-radio v-for="cell of cellsOptions3" :key="cell.value" :label="cell.value" border style="margin:0 6px 3px 0;">
         {{ cell.label }}
@@ -46,8 +46,8 @@
     </el-radio-group>
 
     <div class="btn-box">
-      <el-divider content-position="center">医生复核区</el-divider>
-      <el-button icon="el-icon-check" type="success" style="width:100%;" @click="confirmclicked">确认复核</el-button>
+      <el-divider content-position="center">{{ $t('label.doctorReviewArea') }}</el-divider>
+      <el-button icon="el-icon-check" type="success" style="width:100%;" @click="confirmclicked">{{ $t('label.confirmation') }}</el-button>
     </div>
   </div>
 </template>

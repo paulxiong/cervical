@@ -354,6 +354,24 @@ export default {
     operation1: 'Operation',
     review: 'Review',
     startDownloading: 'Start downloading',
-    downloadFailedMsg: 'Download failed. Please refresh the page and try again'
+    downloadFailedMsg: 'Download failed. Please refresh the page and try again',
+    backPrevious: 'Back to previous page',
+    total: 'Total',
+    notReviewed: 'Not',
+    reviewed: 'Reviewed',
+    notReviewed2: 'Not Reviewed',
+    cellReview: 'Cell Review',
+    doctorReviewArea: 'Doctor review area',
+    confirmation: 'Confirmation',
+    negative: 'Negative',
+    positive: 'Positive',
+    other: 'Other',
+    details: 'Details',
+    operation2: 'Operation',
+    label2: 'Label',
+    exitLabelMode: 'Exit Label Mode',
+    importSystemAnnotations: 'Import System Annotations',
+    importedSystemAnnotations: 'Imported System Annotations',
+    reviewSuccessful: 'Review Successful'
   }
 }

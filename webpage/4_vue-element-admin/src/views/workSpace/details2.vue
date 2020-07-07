@@ -17,7 +17,7 @@
           @updatexy="thumbclicked"
         />
         <div class="text-box">
-          <el-button icon="el-icon-arrow-left" size="medium" type="primary" class="text-box-btn" @click="goBack">返回上一页</el-button>
+          <el-button icon="el-icon-arrow-left" size="medium" type="primary" class="text-box-btn" @click="goBack">{{ $t('label.backPrevious') }}</el-button>
           <img :src="preview" class="bpt-img">
           <el-table
             :data="checkTableData"
@@ -25,15 +25,16 @@
             size="mini"
           >
             <el-table-column
-              label="总数"
+              :label="$t('label.total')"
               :min-width="tabwidth"
+              width="55px"
             >
               <template slot-scope="scope">
                 <span>{{ scope.row.total }}</span>
               </template>
             </el-table-column>
             <el-table-column
-              label="未审核"
+              :label="$t('label.notReviewed')"
               :min-width="tabwidth"
             >
               <template slot-scope="scope">
@@ -42,7 +43,7 @@
             </el-table-column>
             <el-table-column
               prop="checked_num"
-              label="已审核"
+              :label="$t('label.reviewed')"
               :min-width="tabwidth"
             />
           </el-table>
@@ -73,7 +74,7 @@ export default {
       cellsboxHeight: '200px',
       checkTableData: [
         {
-          type: '待审核',
+          type: this.$t('label.notReviewed2'),
           total: 0,
           checked_num: 0
         }
@@ -145,7 +146,7 @@ export default {
     updatereviewcnt(reviewedcnt) {
       this.checkTableData = []
       this.checkTableData.push({
-        type: '审核细胞',
+        type: this.$t('label.cellReview'),
         total: reviewedcnt.notreviewed + reviewedcnt.reviewed,
         checked_num: reviewedcnt.reviewed
       })

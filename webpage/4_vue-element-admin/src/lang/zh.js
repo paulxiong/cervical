@@ -354,6 +354,24 @@ export default {
     operation1: '操作',
     review: '查看',
     startDownloading: '开始下载',
-    downloadFailedMsg: '下载失败，请刷新网页然后重试'
+    downloadFailedMsg: '下载失败，请刷新网页然后重试',
+    backPrevious: '返回上一页',
+    total: '总数',
+    notReviewed: '未审核',
+    reviewed: '已审核',
+    notReviewed2: '待审核',
+    cellReview: '审核细胞',
+    doctorReviewArea: '医生复核区',
+    confirmation: '确认复核',
+    negative: '阴性',
+    positive: '阳性',
+    other: '其他',
+    details: '详情',
+    operation2: '操作',
+    label2: '标注',
+    exitLabelMode: '退出标注模式',
+    importSystemAnnotations: '导入系统标注',
+    importedSystemAnnotations: '已导入系统标注',
+    reviewSuccessful: '审核确认成功'
   }
 }

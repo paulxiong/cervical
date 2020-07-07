@@ -1,7 +1,7 @@
 <template>
   <div class="img-content">
     <div>
-      <el-divider content-position="left">详情</el-divider>
+      <el-divider content-position="left">{{ $t('label.details') }}</el-divider>
       <div class="img-div">
         <div v-for="img in labelList" :key="img.labelid" class="img-box">
           <el-image
@@ -30,10 +30,10 @@
       />
     </div>
     <div>
-      <el-divider content-position="left">操作</el-divider>
+      <el-divider content-position="left">{{ $t('label.operation2') }}</el-divider>
       <div class="btn-box">
-        <el-button class="labelbtn" type="success" @click="labelclicked">标注</el-button>
-        <el-button class="labelbtn" type="success" @click="cancellabelclicked">退出标注模式</el-button>
+        <el-button class="labelbtn" type="success" @click="labelclicked">{{ $t('label.label2') }}</el-button>
+        <el-button class="labelbtn" type="success" @click="cancellabelclicked">{{ $t('label.exitLabelMode') }}</el-button>
         <el-button v-if="!imported" :disabled="imported" class="labelbtn" type="success" @click="importclicked">{{ importbuttontext }}</el-button>
       </div>
     </div>
@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      importbuttontext: '导入系统标注',
+      importbuttontext: this.$t('label.importSystemAnnotations'),
       imported: false,
       cellRadio: 100,
       total: 0,
@@ -150,7 +150,7 @@ export default {
       }
       this.gotofirstcell() // 系统预测小图预览的第一个细胞
       this.imported = true
-      this.importbuttontext = '已导入系统标注'
+      this.importbuttontext = this.$t('label.importedSystemAnnotations')
     },
     handleCurrentChange(val) {
       this.currentPage = val
@@ -182,7 +182,7 @@ export default {
         this.notreviewed = res.data.data.notreviewed
         this.updateLocalCellsList(this.selectedcell.id, this.cellRadio)
         this.$message({
-          message: '审核确认成功',
+          message: this.$t('label.reviewSuccessful'),
           type: 'success'
         })
       })
