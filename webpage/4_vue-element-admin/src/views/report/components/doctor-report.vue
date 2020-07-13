@@ -40,7 +40,7 @@
               <span>{{ props.row.ETA }}</span>
             </el-form-item>
             <el-form-item :label="$t('report.status')">
-              <span>{{ props.row.status }}</span>
+              <span>{{ $t(props.row.status) }}</span>
             </el-form-item>
             <el-form-item :label="$t('report.startTime')">
               <span>{{ props.row.starttime }}</span>
