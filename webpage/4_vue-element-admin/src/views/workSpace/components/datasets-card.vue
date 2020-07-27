@@ -78,7 +78,7 @@ export default {
   components: {},
   filters: {
     filtersCheckbox(val) {
-      return cellsType[val]
+      return window._i18n ? window._i18n.tc(cellsType[val]) : '' + val
     },
     filterCreated(value) {
       return createdBy[value]

@@ -84,7 +84,7 @@ export default {
     filtersCellsType(val) {
       const arr = []
       val.map(v => {
-        v = cellsType[v]
+        v = window._i18n ? window._i18n.tc(cellsType[v]) : '' + v
         arr.push(v)
       })
       return arr
