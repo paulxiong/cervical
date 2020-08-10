@@ -141,7 +141,7 @@ export default {
       this.modelChecked = val
     },
     closedDialog() {
-      this.$refs.uploadModel.step = 1
+      this.$refs.uploadModel.reset()
     },
     filterSearch() {
       this.getListmodel(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 52)
