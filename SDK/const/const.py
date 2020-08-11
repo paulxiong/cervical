@@ -9,6 +9,7 @@ class mt(Enum):
     MASKRCNN  = 4 #4MASKRCNN
     AUTOKERAS = 5 #5AUTOKERAS
     MALA      = 6 #MALA
+    YOLOV4    = 7 #MALA
 
 # worker type
 class wt(Enum):
