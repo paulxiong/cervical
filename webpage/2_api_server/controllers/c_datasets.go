@@ -395,7 +395,7 @@ var jobgetmutex sync.Mutex
 // @tags API1 任务（不需要认证）
 // @Accept  json
 // @Produce json
-// @Param job body controllers.jobResult true "请求任务的属性, 只有mtype和type字段有效"
+// @Param job body controllers.jobResult true "请求任务的属性, 只有status、mtype和type字段有效"
 // @Success 200 {object} models.Dataset
 // @Success 2000 {object} models.Project
 // @Router /api1/job [post]
@@ -415,7 +415,7 @@ func GetOneJob(c *gin.Context) {
 
 	//数据处理
 	if w.Type == 1 {
-		dt, err := models.GetOneDatasetsToProcess(w.Status)
+		dt, err := models.GetOneDatasetsToProcess(w.Status, w.MType)
 		if err != nil {
 			res.ResSucceedStruct(c, dt)
 			return
