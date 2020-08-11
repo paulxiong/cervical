@@ -39,7 +39,8 @@ export const modelType = {
   3: 'SVM',
   4: 'MASKRCNN',
   5: 'AUTOKERAS',
-  6: 'HOWTOMALA'
+  6: 'HOWTOMALA',
+  7: 'YOLOV4'
 }
 
 // 细胞分类

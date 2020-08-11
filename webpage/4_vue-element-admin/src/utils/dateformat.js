@@ -44,3 +44,16 @@ export function dateformat5() {
   const s = ('' + _ts.getSeconds()).padStart(2, '0')
   return (`${y}${m}${d}${h}${min}${s}`)
 }
+
+// 返回时间当前的时间戳，如 20200811103825164
+export function dateformat6() {
+  const _ts = new Date()
+  const y = ('' + _ts.getFullYear()).padStart(4, '0')
+  const m = ('' + (_ts.getMonth() + 1)).padStart(2, '0')
+  const d = ('' + _ts.getDate()).padStart(2, '0')
+  const h = ('' + _ts.getHours()).padStart(2, '0')
+  const min = ('' + _ts.getMinutes()).padStart(2, '0')
+  const s = ('' + _ts.getSeconds()).padStart(2, '0')
+  const ms = ('' + _ts.getMilliseconds()).padStart(3, '0')
+  return (`${y}${m}${d}${h}${min}${s}${ms}`)
+}

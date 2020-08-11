@@ -37,7 +37,7 @@
           <el-upload
             ref="upload"
             class="upload-models"
-            accept=".h5,.H5"
+            :accept="accept"
             :action="APIUrl"
             :headers="headers"
             :data="args"
@@ -48,8 +48,8 @@
             :file-list="fileList"
             :auto-upload="false"
           >
-            <el-button slot="trigger" size="small" type="primary" :disabled="active<2">{{ $t('workspace.modelUploadUp2') }}</el-button>
-            <el-button v-if="needFilesNum==2" slot="trigger" style="margin-left: 10px;" size="small" type="primary" :disabled="active<2">选取配置文件</el-button>
+            <el-button slot="trigger" size="small" type="primary" :disabled="active<2" @click="clickSelect('model')">{{ $t('workspace.modelUploadUp2') }}</el-button>
+            <el-button v-if="needFilesNum==2" slot="trigger" style="margin-left: 10px;" size="small" type="primary" :disabled="active<2" @click="clickSelect('cfg')">{{ $t('workspace.modelUploadUpcfg') }}</el-button>
             <div slot="tip" class="el-upload__tip">{{ $t('workspace.modelUploadUp3') }}</div>
           </el-upload>
         </template>
@@ -66,6 +66,7 @@
 <script>
 import { getToken } from '@/utils/auth'
 import { APIUrl } from '@/const/config'
+import { dateformat6 } from '@/utils/dateformat'
 
 export default {
   name: 'UploadModel',
@@ -78,6 +79,7 @@ export default {
       },
       args: {
         'type': '',
+        'ts': '', // 上传的时间辍
         'pid': 0,
         'description': '',
         'precision1': 0.0,
@@ -85,12 +87,16 @@ export default {
       },
       active: 0,
       uploaded: false,
-      uploadButtonText: '确认并上传',
+      uploadButtonText: 'workspace.modelUploadUpConfirm2',
       fileList: [],
       needFilesNum: 1, // 需要上传的文件个数，yolo都是2个，其他是1个
+      accept: '.h5,.H5', // yolo是.weights和.cfg, 其他是.h5
       options: [{
         type: 4,
         label: this.$t('workspace.modelTypeSeg')
+      }, {
+        type: 7,
+        label: this.$t('workspace.modelTypeSegYOLOV4')
       }, {
         type: 6,
         label: this.$t('workspace.modelTypeClassification')
@@ -107,6 +113,7 @@ export default {
     reset() {
       this.args = {
         'type': '',
+        'ts': '', // 上传的时间辍
         'pid': 0,
         'description': '',
         'precision1': 0.0,
@@ -117,6 +124,7 @@ export default {
       this.uploadButtonText = 'workspace.modelUploadUpConfirm2'
       this.fileList = []
       this.needFilesNum = 1 // 需要上传的文件个数，yolo都是2个，其他是1个
+      this.accept = '.h5,.H5'
       this.$refs.upload.clearFiles()
     },
     checkActive() {
@@ -154,6 +162,8 @@ export default {
     selectChange() {
       if (this.args.type === 7) { // yolo
         this.needFilesNum = 2
+      } else {
+        this.needFilesNum = 1
       }
       this.checkActive()
     },
@@ -173,10 +183,22 @@ export default {
       this.checkActive()
     },
     submitUpload() {
+      this.args.ts = dateformat6()
       this.$nextTick(() => {
         this.$refs.upload.submit()
         this.active = 4
       })
+    },
+    clickSelect(val) {
+      if (this.needFilesNum === 1) {
+        this.accept = '.h5,.H5'
+      } else if (this.needFilesNum === 2) {
+        if (val === 'model') {
+          this.accept = '.weights'
+        } else {
+          this.accept = '.cfg'
+        }
+      }
     }
   }
 }
