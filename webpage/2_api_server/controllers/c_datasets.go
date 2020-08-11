@@ -382,7 +382,7 @@ type jobResult struct {
 	ID      int64 `json:"id"`     // 数据集ID或者项目ID
 	Type    int   `json:"type"`   // 0未知 1数据处理 2训练 3预测
 	Status  int   `json:"status"` // 0初始化 1送去处理 2开始处理 3处理出错 4处理完成
-	MType   int   `json:"mtype"`  // 目前预测时候有用,表示使用哪种模型,0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA
+	MType   int   `json:"mtype"`  // 目前预测时候有用,表示使用哪种模型,0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6 MALA 7YOLOV4
 	ETA     int   `json:"ETA"`
 	Percent int   `json:"percent"` // 完成百分比
 }
@@ -392,10 +392,10 @@ var jobgetmutex sync.Mutex
 // GetOneJob python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @Summary python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型
 // @Description python端请求一个任务（数据处理/训练/预测），python端会指定请求任务的状态和类型。注意文档的返回值有２种，为了区分其中一种code写成了2000，其实应该是200
-// @tags API1 任务（需要认证）
+// @tags API1 任务（不需要认证）
 // @Accept  json
 // @Produce json
-// @Security ApiKeyAuth
+// @Param job body controllers.jobResult true "请求任务的属性, 只有mtype和type字段有效"
 // @Success 200 {object} models.Dataset
 // @Success 2000 {object} models.Project
 // @Router /api1/job [post]
