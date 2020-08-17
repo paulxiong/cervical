@@ -2,7 +2,7 @@
 timestamp=$(date "+%Y%m%d%-H%-M%-S")
 
 mv SDK SDK.bk
-cp ../SDK/ SDK -a
+cp ../../SDK/ SDK -a
 
 docker build -f Dockerfile -t cervical:crop_y4_${timestamp} .
 

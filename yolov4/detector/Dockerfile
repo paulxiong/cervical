@@ -12,4 +12,9 @@ WORKDIR /notebooks/data
 ADD requirements.txt /notebooks/data/requirements.txt
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir && \
     rm -rf /root/.nv/ && rm -rf requirements.txt && ls -alh
-WORKDIR /notebooks/data
+ADD libdarknet.so libdarknet.so
+ADD main_SDK.py main_SDK.py
+ADD SDK SDK
+ADD names-data names-data
+ADD cells_detect_crop.py cells_detect_crop.py
+ADD kernelpredict.py kernelpredict.py
