@@ -2,8 +2,8 @@
 # coding: utf-8
 #pylint: disable=R, W0401, W0614, W0703
 from ctypes import *
-import math, random, os, time
-from cv2 import cv2
+import math, random, os, time, platform
+import cv2
 import numpy as np
 from tqdm import tqdm
 
@@ -42,7 +42,13 @@ class METADATA(Structure):
                 ("names", POINTER(c_char_p))]
 
 hasGPU = True
-lib = CDLL("./libdarknet.so", RTLD_GLOBAL)
+lib = None
+sys_version = platform.linux_distribution()
+sys_arch = platform.uname()[4]   #eg:x86_64 amd64 win32
+if sys_arch == 'x86_64':
+    lib = CDLL("./libdarknet.so.x64", RTLD_GLOBAL)
+elif sys_arch == 'aarch64':
+    lib = CDLL("./libdarknet.so.aarch64", RTLD_GLOBAL)
 lib.network_width.argtypes = [c_void_p]
 lib.network_width.restype = c_int
 lib.network_height.argtypes = [c_void_p]
