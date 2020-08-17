@@ -152,6 +152,12 @@ func UploadModelHandler(c *gin.Context) {
 		return
 	}
 
+	// 如果是上传配置文件就不记录在数据库
+	if int(_type) == 7 && path.Ext(file.Filename) == ".cfg" {
+		res.ResSucceedString(c, "ok")
+		return
+	}
+
 	_u, _ := models.GetUserFromContext(c)
 
 	// 保存模型信息到数据库
