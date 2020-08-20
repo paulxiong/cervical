@@ -142,7 +142,8 @@ class cells_detect_crop(worker):
         if self.datasetinfo['parameter_type'] == 0:
             #调用模型检测细胞核
             celltype = 100 #100表示类型未知
-            slicesresults = self.detector.batchDetect(slices, image) # 多个切图里面预测细胞核
+            imgslices = self.detector.img_slicing(slices, image)
+            slicesresults = self.detector.predict_batch(imgslices) # 多个切图里面预测细胞核
             results = self.detector.resultsConcat(slices, slicesresults) # 把预测结果还原到原FOV图
             results = self.detector.removeSmall(results) # 删除细胞核太小，以及得分不高的
             for i in results:

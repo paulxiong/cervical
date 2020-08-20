@@ -86,7 +86,6 @@ class detect():
             return min_max_list
 
     def predict_batch(self, img0s, draw_bndbox=False, bndbox_format='min_max_list'):
-        time_start=time.time()
         imgs = self.send_whatever_to_device(img0s)
         with torch.no_grad():
             # Run model
@@ -104,10 +103,10 @@ class detect():
             results[str(i)] = []
             for obj in batch_output[i]:
                 label, score = obj['name'], obj["conf"]
+                if label != 'kernel':
+                    continue
                 x1, y1, x2, y2 = int(obj['bndbox']['xmin']), int(obj['bndbox']['ymin']), int(obj['bndbox']['xmax']), int(obj['bndbox']['ymax'])
                 results[str(i)].append({'label': label, 'labelid': -1, 'score': round(score, 2), 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2})
-        time_end=time.time()
-        print('totally cost:',time_end-time_start)
         return results
 
     def send_to_device(self, img_to_send):
