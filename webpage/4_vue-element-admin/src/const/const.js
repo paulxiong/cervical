@@ -40,7 +40,8 @@ export const modelType = {
   4: 'MASKRCNN',
   5: 'AUTOKERAS',
   6: 'HOWTOMALA',
-  7: 'YOLOV4'
+  7: 'YOLOV4',
+  8: 'YOLOV5'
 }
 
 // 细胞分类

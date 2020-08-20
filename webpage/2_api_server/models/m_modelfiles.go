@@ -86,10 +86,10 @@ func ListModel(limit int, skip int, _type int) (totalNum int64, c []Model, e err
 	var _d []Model
 	var total int64 = 0
 
-	//返回可用来做分类的模型, 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4 50全部的裁剪模型 51全部的分类模型 52全部模型"
+	//返回可用来做分类的模型, 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4 8YOLOV5 50全部的裁剪模型 51全部的分类模型 52全部模型"
 	if _type == 50 {
-		db.Model(&Model{}).Where("type=4 or type=7").Count(&total)
-		ret := db.Model(&Model{}).Where("type=4 or type=7").Limit(limit).Offset(skip).Find(&_d)
+		db.Model(&Model{}).Where("type=4 or type=7 or type=8").Count(&total)
+		ret := db.Model(&Model{}).Where("type=4 or type=7 or type=8").Limit(limit).Offset(skip).Find(&_d)
 		if ret.Error != nil {
 			logger.Info(ret.Error)
 		}

@@ -295,6 +295,7 @@ export default {
     modelUploadRuleType: 'Please select model type',
     modelTypeSeg: 'Segmentation',
     modelTypeSegYOLOV4: 'Segmentation(YOLOV4)',
+    modelTypeSegYOLOV5: 'Segmentation(YOLOV5)',
     modelTypeClassification: 'Classification',
     modelUploadOnlyH5: 'Only H5 / H5 files can be uploaded',
     dataType: 'Type',

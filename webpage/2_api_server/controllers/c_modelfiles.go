@@ -27,7 +27,7 @@ type listMods struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 10"
 // @Param skip query string false "skip, default 0"
-// @Param type query string false "type, default 52, 模型类型，0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4 50全部的裁剪模型 51全部的分类模型 52全部模型"
+// @Param type query string false "type, default 52, 模型类型，0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4 8YOLOV5 50全部的裁剪模型 51全部的分类模型 52全部模型"
 // @Success 200 {object} controllers.listMods
 // @Router /api1/listmodel [get]
 func GetModelLists(c *gin.Context) {
@@ -112,7 +112,7 @@ func SaveModelInfo(c *gin.Context) {
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Router /api1/uploadmodel [post]
 func UploadModelHandler(c *gin.Context) {
-	_typeStr := c.DefaultPostForm("type", "") // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4
+	_typeStr := c.DefaultPostForm("type", "") // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4 8YOLOV5
 	_ts := c.DefaultPostForm("ts", "")
 	_pidStr := c.DefaultPostForm("pid", "0")
 	_description := c.DefaultPostForm("description", "")

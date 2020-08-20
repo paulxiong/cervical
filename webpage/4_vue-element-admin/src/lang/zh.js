@@ -295,6 +295,7 @@ export default {
     modelUploadRuleType: '请选择上传模型类型',
     modelTypeSeg: '切割',
     modelTypeSegYOLOV4: '切割(YOLOV4)',
+    modelTypeSegYOLOV5: '切割(YOLOV5)',
     modelTypeClassification: '细胞分类',
     modelUploadOnlyH5: '只能上传h5/H5文件',
     dataType: '类型',

@@ -98,6 +98,9 @@ export default {
         type: 7,
         label: this.$t('workspace.modelTypeSegYOLOV4')
       }, {
+        type: 8,
+        label: this.$t('workspace.modelTypeSegYOLOV5')
+      }, {
         type: 6,
         label: this.$t('workspace.modelTypeClassification')
       }]
@@ -191,7 +194,7 @@ export default {
     },
     clickSelect(val) {
       if (this.needFilesNum === 1) {
-        this.accept = '.h5,.H5'
+        this.accept = '.h5,.H5,.pt,.PT'
       } else if (this.needFilesNum === 2) {
         if (val === 'model') {
           this.accept = '.weights'
