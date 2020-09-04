@@ -18,9 +18,11 @@ testing_cross_domain
 （表示testing_cross_domain/file_P路径下的数据机器预测结果：阳性细胞30个，阴性细胞970个）
 ```
 ## 3 Reading Note
-*Where is the predict function:
-    def _predict(self, result201_200, remove_cnt_201, remove_cnt_200):
+*Where is the predict function:*
+```
+   def _predict(self, result201_200, remove_cnt_201, remove_cnt_200):
     ...
             self.model = load_model(self.projectinfo['modpath'])
     ...
             predIdxs = self.model.predict_generator(testGen_cross_domain,
+```
