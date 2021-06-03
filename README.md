@@ -1,6 +1,6 @@
 ## CervicAI 
 
-This repository contains the Python (machine learning)/Go (GUI) implementation for our  
+This repository contains the Python (ML)/Go (GUI) implementation for our  
             <B>Cervical Cancer AI System for Individual End User</B>
 
 
