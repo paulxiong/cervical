@@ -1,7 +1,8 @@
-## nu_gan
+## CervicAI 
 
-This repository contains the Python implementation for our paper *Unsupervised Learning for Cell-level Visual Representation in Histopathology Images with Generative Adversarial Networks*, 
-Bo Hu♯ , Ye Tang♯ , Eric I-Chao Chang, Yubo Fan, Maode Lai and Yan Xu*  (* corresponding author; ♯ equal contribution), [arxiv](https://arxiv.org/abs/1711.11317), [IEEE](https://ieeexplore.ieee.org/document/8402089)
+This repository contains the Python (machine learning)/Go (GUI) implementation for our  
+            <B>Cervical Cancer AI System for Individual End User</B>
+
 
 Specially thanks for the open source codes shared by [*caogang/wgan-gp*](https://github.com/caogang/wgan-gp) and [*DigitalSlideArchive/HistomicsTK*](https://github.com/DigitalSlideArchive/HistomicsTK)
 
