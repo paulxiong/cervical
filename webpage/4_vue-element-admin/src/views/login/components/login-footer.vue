@@ -8,7 +8,7 @@ export default {
   components: {},
   data() {
     return {
-      value: '反馈建议 | 关于我们 | 滇公网安备33043876513123号',
+      value: 'feedback | about us | Cervical Cancer AI',
       env: process.env.NODE_ENV
     }
   },

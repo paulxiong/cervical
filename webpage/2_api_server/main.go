@@ -71,6 +71,8 @@ func main() {
 
 	if release != "true" {
 		logger.Infof("port on ==> %d", port)
+		//boostx: to support https, replaced this line with following line
+		//if err := http.ListenAndServeTLS(endPoint, "https-server.crt", "https-server.key", r); err != nil {
 		if err := http.ListenAndServe(endPoint, r); err != nil {
 			logger.Fatal(err)
 		}

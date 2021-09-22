@@ -1,12 +1,11 @@
 #!/bin/bash
 #该脚本只测试过在Linux环境执行
-swag init
-GOOS="linux" GOARCH="arm64" go build -v -o main.exe -ldflags="-w -s" main.go
+#docker run --rm -v $(pwd):/data -e GOPROXY='https://mirrors.aliyun.com/goproxy' -it golang:1.13.12-stretch sh -c 'cd /data && go get -v github.com/swaggo/swag/cmd/swag && swag init && GOOS="linux" GOARCH="arm64" go build -v -o main.exe main.go && chmod 777 main.exe'
+docker run --rm -v $(pwd):/data -it golang:1.13.12-stretch sh -c 'cd /data && go get -v github.com/swaggo/swag/cmd/swag && swag init && GOOS="linux" GOARCH="arm64" go build -v -o main.exe main.go && chmod 777 main.exe'
 if [ ! -f main.exe ]; then
     echo "not found main.exe"
     exit 1
 fi
-./assets/upx main.exe
 
 pushd web
     npm install
@@ -14,7 +13,6 @@ pushd web
 popd
 
 rm -rf release.tgz
-#tar -czvmf release.tgz main.exe https-server.crt https-server.key configs/conf.ini web/dist/ web/src/const/errCode.json
 tar -czvmf release.tgz main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
 if [ ! -f release.tgz ]; then
     echo "not found release.tgz"

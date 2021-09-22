@@ -42,7 +42,9 @@ export default {
     permission: 'Permission',
     permissionUser: 'Users',
     permissionLog: 'Log',
-    permissionInfo: 'User Info'
+    permissionInfo: 'User Info',
+    stepBystep:"Step by Step",
+    stepBystepOverview: 'Step by Step Overview'
   },
   dashboard: {
     datasets: 'Datasets',
@@ -134,7 +136,7 @@ export default {
     labelCellAIS: 'Adenocarcinoma In Situ Of The Cervical Canal',
     labelCellADC: 'Adenocarcinoma',
     labelCellNC: 'Not Cell',
-    labelCellUnkown: 'Unkown',
+    labelCellUnkown: 'Unknown',
     labelCellN: 'Negative',
     labelCellP: 'Positive'
   },
@@ -420,9 +422,9 @@ export default {
     positive: 'Positive',
     other: 'Other',
     details: 'Details',
-    operation2: 'Operation',
-    label2: 'Label',
-    exitLabelMode: 'Exit Label Mode',
+    operation2: 'Label Operations, Click to choose:',
+    label2: 'Start labeling',
+    exitLabelMode: 'End labeling',
     importSystemAnnotations: 'Import System Annotations',
     importedSystemAnnotations: 'Imported System Annotations',
     reviewSuccessful: 'Review Successful',
@@ -433,8 +435,8 @@ export default {
     buttonsRectangle: 'Draws a rectangular',
     actionsTitle: 'Cancel drawing rectangle',
     actionsText: 'Cancel',
-    rectangleTooltipStart: 'Hold down the left button and drag the mouse to draw a rectangular',
-    simpleshapeTooltipEnd: 'Release the left button to complete the drawing',
+    rectangleTooltipStart: 'Hold down the button to draw',
+    simpleshapeTooltipEnd: 'Release to complete the drawing',
     buttonsEdit: 'Edit',
     buttonsEditDisabled: 'There are no annotations to Edit',
     buttonsRemove: 'Remove annotations',

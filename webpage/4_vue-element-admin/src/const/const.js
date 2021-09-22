@@ -234,7 +234,7 @@ export const cellsOptionsAll = [
   { id: 11,  order: 109, choicscolor: '#FF0000', typecolor: '#ff0000', notcelltype: false, shortname: 'ADC',        label: 'const.labelCellADC' },
   // 其他
   { id: 200, order: 201, choicscolor: '#ffdca8', typecolor: '#ff7800', notcelltype: false, shortname: 'NC',         label: 'const.labelCellNC' },
-  { id: 100, order: 202, choicscolor: '#ffcd84', typecolor: '#ff7800', notcelltype: false, shortname: 'Unkown',     label: 'const.labelCellUnkown' },
+  { id: 100, order: 202, choicscolor: '#ffcd84', typecolor: '#ff7800', notcelltype: false, shortname: '?',     label: 'const.labelCellUnkown' },
   { id: 50,  order: 202, choicscolor: '#ffba55', typecolor: '#ff7800', notcelltype: true,  shortname: 'N',          label: 'const.labelCellN' },
   { id: 51,  order: 202, choicscolor: '#ff9800', typecolor: '#ff7800', notcelltype: true,  shortname: 'P',          label: 'const.labelCellP' }
 ]

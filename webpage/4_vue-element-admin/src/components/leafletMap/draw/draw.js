@@ -151,6 +151,9 @@ function _createRectangleHandler(e, drawInstance, _map, celltypeinfo) {
     }
   })
   drawInstance._updateRectangleHandler('add', shape)
+
+  //console.log("boostx-debug:11111111")
+  //document.getElementById("radio").innerHTML="boostx-debug:123456"
 }
 
 // 修改中触发

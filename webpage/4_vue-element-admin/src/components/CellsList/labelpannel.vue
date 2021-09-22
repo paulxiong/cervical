@@ -31,6 +31,14 @@
     </div>
     <div>
       <el-divider content-position="left">{{ $t('label.operation2') }}</el-divider>
+      <!--
+      <div id='radio'>
+        <el-radio-group v-model="radio1"   @change="Radio1valueChange" border>
+          <el-radio-button label="start_label">{{ $t('label.label2') }}</el-radio-button>
+          <el-radio-button label="end_label">{{ $t('label.exitLabelMode') }}</el-radio-button>
+        </el-radio-group>
+      </div>
+      -->
       <div class="btn-box">
         <el-button class="labelbtn" type="success" @click="labelclicked">{{ $t('label.label2') }}</el-button>
         <el-button class="labelbtn" type="success" @click="cancellabelclicked">{{ $t('label.exitLabelMode') }}</el-button>
@@ -70,7 +78,8 @@ export default {
       selectedcell: { id: 0 }, // 随便初始化一个值，防止页面报错
       reviewed: 0, // 已经审核的个数
       notreviewed: 0, // 没有审核的个数
-      tableData: []
+      tableData: [],
+      radio1: 'end_label'
     }
   },
   created() {
@@ -143,6 +152,15 @@ export default {
     },
     labelclicked() {
       this.$emit('labelclicked')
+    },
+    Radio1valueChange(val){
+      //console.log('boost-debug:radioChange')
+      if (val ==='start_label') {
+        this.$emit('labelclicked')
+      }
+      if (val ==='end_label') {
+        this.$emit('cancellabelclicked')
+      }
     },
     importclicked() {
       if (!this.imported) { // 说明是点按钮触发的

@@ -104,6 +104,30 @@ export const constantRoutes = [
       }
     ]
   },
+  /*boostx: added step-by-step operation flow */
+  {
+    path: '/stepBystep',
+    component: Layout,
+    redirect: '/stepBystep/list',
+    name: 'route.stepBystepOverview',
+    meta: { title: 'route.stepBystepOverview', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/stepBystep/index'),
+        name: 'route.stepBystepOverview',
+        meta: { title: 'route.stepBystepOverview', icon: 'component', affix: true }
+      },
+      {
+        path: 'details',
+        component: () => import('@/views/stepBystep/details'),
+        hidden: true,
+        name: 'route.stepBystepDetails',
+        meta: { title: 'route.stepBystepDetails', affix: true }
+      }
+    ]
+  },
+
   {
     path: '/workSpace',
     component: Layout,

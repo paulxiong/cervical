@@ -17,7 +17,7 @@ function commitid() {
     return stdout.toString().replace(/[\r\n]/g, "")
 }
 
-const version = '翠湖v1'
+const version = 'v1'
 const ts = datetime()
 const subversion = commitid()
 
