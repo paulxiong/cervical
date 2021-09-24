@@ -109,14 +109,36 @@ export const constantRoutes = [
     path: '/stepBystep',
     component: Layout,
     redirect: '/stepBystep/list',
-    name: 'route.stepBystepOverview',
-    meta: { title: 'route.stepBystepOverview', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
+    name: 'route.findSimilarImages',
+    meta: { title: 'route.findSimilarImages', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
     children: [
       {
         path: 'list',
         component: () => import('@/views/stepBystep/index'),
-        name: 'route.stepBystepOverview',
-        meta: { title: 'route.stepBystepOverview', icon: 'component', affix: true }
+        name: 'route.findSimilarImages',
+        meta: { title: 'route.findSimilarImages', icon: 'component', affix: true }
+      },
+      {
+        path: 'details',
+        component: () => import('@/views/stepBystep/details'),
+        hidden: true,
+        name: 'route.stepBystepDetails',
+        meta: { title: 'route.stepBystepDetails', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/findMistakenLabels',
+    component: Layout,
+    redirect: '/stepBystep/list',
+    name: 'route.findMistakenLabels',
+    meta: { title: 'route.findMistakenLabels', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/stepBystep/index'),
+        name: 'route.findMistakenLabels',
+        meta: { title: 'route.findMistakenLabels', icon: 'component', affix: true }
       },
       {
         path: 'details',

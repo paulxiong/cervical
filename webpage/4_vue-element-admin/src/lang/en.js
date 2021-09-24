@@ -44,7 +44,8 @@ export default {
     permissionLog: 'Log',
     permissionInfo: 'User Info',
     stepBystep:"Step by Step",
-    stepBystepOverview: 'Step by Step Overview'
+    findMistakenLabels:"Find Mistaken Labels",
+    findSimilarImages: 'Find Similar Images'
   },
   dashboard: {
     datasets: 'Datasets',
