@@ -1,3 +1,4 @@
+# coding: utf-8
 import os, time, json
 from .const.const import wt, dt, ds, mt
 from .utilslib.logger import logger

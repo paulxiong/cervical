@@ -532,9 +532,14 @@ func UpdateDatasetsPercent(did int64, percent int, ETA int) (e error) {
 }
 
 // GetOneDatasetsToProcess 请求一个指定状态和类型的数据集去处理
-func GetOneDatasetsToProcess(status int) (dt Dataset, e error) {
+func GetOneDatasetsToProcess(status int, mtype int) (dt Dataset, e error) {
+	mIDs := make([]int, 0)
+	_, ms, _ := ListModel(1000, 0, mtype)
+	for _, v := range ms {
+		mIDs = append(mIDs, v.ID)
+	}
 	d := Dataset{}
-	ret2 := db.Model(&d).Where("status=?", status).First(&d)
+	ret2 := db.Model(&d).Where("status=? AND parameter_mid in (?)", status, mIDs).First(&d)
 	if ret2.Error != nil {
 		return d, ret2.Error
 	}

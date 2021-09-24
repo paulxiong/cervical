@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"path"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -26,13 +27,13 @@ type listMods struct {
 // @Security ApiKeyAuth
 // @Param limit query string false "limit, default 10"
 // @Param skip query string false "skip, default 0"
-// @Param type query string false "type, default 52, 模型类型，0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 50全部的裁剪模型(没做) 51全部的分类模型 52全部模型"
+// @Param type query string false "type, default 52, 模型类型，0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4 50全部的裁剪模型 51全部的分类模型 52全部模型"
 // @Success 200 {object} controllers.listMods
 // @Router /api1/listmodel [get]
 func GetModelLists(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	skipStr := c.DefaultQuery("skip", "0")
-	typeStr := c.DefaultQuery("type", "4")
+	typeStr := c.DefaultQuery("type", "50")
 	limit, _ := strconv.ParseInt(limitStr, 10, 64)
 	skip, _ := strconv.ParseInt(skipStr, 10, 64)
 	_type, _ := strconv.ParseInt(typeStr, 10, 64)
@@ -111,7 +112,8 @@ func SaveModelInfo(c *gin.Context) {
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Router /api1/uploadmodel [post]
 func UploadModelHandler(c *gin.Context) {
-	_typeStr := c.DefaultPostForm("type", "") // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
+	_typeStr := c.DefaultPostForm("type", "") // 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4
+	_ts := c.DefaultPostForm("ts", "")
 	_pidStr := c.DefaultPostForm("pid", "0")
 	_description := c.DefaultPostForm("description", "")
 	_precision1Str := c.DefaultPostForm("precision1", "0")
@@ -134,10 +136,25 @@ func UploadModelHandler(c *gin.Context) {
 
 	filename := u.GetUUID() + ".h5"
 	modpath := f.NewModulePath(int(_type), filename)
+
+	if int(_type) == 7 {
+		filename = _ts + ".cfg"
+		if path.Ext(file.Filename) == ".weights" {
+			filename = _ts + ".weights"
+		}
+		modpath = f.NewModulePath(int(_type), filename)
+	}
+
 	err2 := c.SaveUploadedFile(file, modpath)
 	if err2 != nil {
 		logger.Info(err2)
 		res.ResFailedStatus(c, e.Errors["UploadSaveFailed"])
+		return
+	}
+
+	// 如果是上传配置文件就不记录在数据库
+	if int(_type) == 7 && path.Ext(file.Filename) == ".cfg" {
+		res.ResSucceedString(c, "ok")
 		return
 	}
 

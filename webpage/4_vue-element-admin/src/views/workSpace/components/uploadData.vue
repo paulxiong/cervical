@@ -58,10 +58,14 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.uploaderInstance = this.$refs.uploader
+      this.getBidMid()
     })
   },
   methods: {
     getqueryfunc(val, val2) {
+      if (!this.mid || !this.bid) {
+        this.getBidMid()
+      }
       return { 'mid': this.mid, 'bid': this.bid, 'dir': this.dirname }
     },
     parseTimeRemaining(timeRemaining, parsedTimeRemaining) { // 显示时间不对，不显示，直接返回空字符串
@@ -79,7 +83,6 @@ export default {
     },
     // 上传文件开始之前触发，后面这里要检查文件是否完整，不完整就不要上传
     onfilesSubmitted(files, fileList, event) {
-      this.getBidMid()
       if (this.$refs.uploader.fileList > 1) {
         this.once = true
         return

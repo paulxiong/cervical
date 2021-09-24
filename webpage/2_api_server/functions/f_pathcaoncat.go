@@ -107,10 +107,10 @@ func ReviewCellPath(src string, fovpath string) (cellpath string) {
 
 // NewModulePath 新上传的模型文件保存的路径
 func NewModulePath(_type int, filename string) string {
-	// 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA
+	// 0未知 1UNET 2GAN 3SVM 4MASKRCNN 5AUTOKERAS 6MALA 7YOLOV4
 	if _type == 6 {
 		return path.Join(rootdir, modulesDir, "classifier", filename)
-	} else if _type == 4 {
+	} else if _type == 4 || _type == 7 {
 		return path.Join(rootdir, modulesDir, "detector", filename)
 	}
 
