@@ -9,7 +9,8 @@
     </section>
 
     <section class="main">
-      <customDataUpload v-if="upload && step===1" @checkUpload="checkUpload" />
+      <!--<customDataUpload v-if="upload && step===1" @checkUpload="checkUpload" />-->
+      <UploadImages v-if="upload && step===1" @checkUpload="checkUpload" />
       <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
       <checkModel v-if="step===2" ref="checkModel" :upload="upload" @checkModel="checkModel" />
       <startTrain v-if="step===3" />
@@ -18,14 +19,17 @@
 </template>
 
 <script>
-import customDataUpload from './customdataupload'
+//import customDataUpload from './customdataupload'
+import UploadImages from './vue-upload-drop-images.vue'
+
 import checkImg from './step1-img'
 import checkModel from './step2-model'
 import startTrain from './step3-train'
 
 export default {
   name: 'NewCustomDatasets',
-  components: { checkImg, checkModel, startTrain, customDataUpload },
+  //components: { checkImg, checkModel, startTrain, customDataUpload },
+  components: { checkImg, checkModel, startTrain, UploadImages },
   props: {
     upload: {
       type: Boolean,

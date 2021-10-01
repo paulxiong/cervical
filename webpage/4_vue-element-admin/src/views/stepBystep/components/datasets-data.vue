@@ -142,6 +142,7 @@
         >{{ $t('workspace.projectDataNext') }}</el-button>
       </div>
     </el-dialog>
+    <!-- boostx-debug -->
     <el-dialog
       :title="$t('workspace.projectDataCustomUpload')"
       :visible.sync="dialogFormVisible2"

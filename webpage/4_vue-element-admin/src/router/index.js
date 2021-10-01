@@ -130,9 +130,21 @@ export const constantRoutes = [
   {
     path: '/findMistakenLabels',
     component: Layout,
-    redirect: '/stepBystep/list',
+//    redirect: '/stepBystep/list',
+    redirect: '/label/page',
     name: 'route.findMistakenLabels',
     meta: { title: 'route.findMistakenLabels', icon: 'component', keepAlive: true, roles: ['admin', 'editor'] },
+    children: [
+      {
+        path: '/label/page',
+        //component: () => import('@/views/label/labelhome'),
+        component: () => import('@/views/label/labelpage'),
+        name: 'route.label',
+        meta: { title: 'route.label', icon: 'edit', affix: true, roles: ['admin', 'editor'] }
+      }
+    ]
+
+    /*
     children: [
       {
         path: 'list',
@@ -142,14 +154,15 @@ export const constantRoutes = [
       },
       {
         path: 'details',
-        component: () => import('@/views/stepBystep/details'),
+        //component: () => import('@/views/stepBystep/details'),
+        component: () => import('@/views/label/labelhome'),
         hidden: true,
         name: 'route.stepBystepDetails',
         meta: { title: 'route.stepBystepDetails', affix: true }
       }
     ]
+    */
   },
-
   {
     path: '/workSpace',
     component: Layout,

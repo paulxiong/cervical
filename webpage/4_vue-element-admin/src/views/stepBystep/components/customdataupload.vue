@@ -5,14 +5,14 @@
         <div v-if="img.url" style="height: 100%">
           <el-image style="height: 100%" fit="scale-down" :src="img.url" />
           <div style="position:absolute; z-index:2; left:10px; top:10px">
-            <span>{{ img.name }}</span>
+            <span style="font-size:x-small">{{ img.name }}</span>
             <el-tag v-if="img.uploaded" type="success">{{ $t('workspace.dataCustomUploaded') }}</el-tag>
             <el-tag v-else type="danger">{{ $t('workspace.dataCustomNotUploaded') }}</el-tag>
           </div>
         </div>
         <div v-else class="notload">
           <div class="notload-container">
-            <span>{{ $t('workspace.dataCustomFOVUploaded') }}{{ img.id }}</span>
+            <span style="font-size:x-small"> {{ $t('workspace.dataCustomFOVUploaded') }}{{ img.id }} boostx-debug</span>
             <input type="file" class="upload" accept="image/png,image/jpeg,image/jpg" @change="addImg($event, img.id)">
           </div>
         </div>
@@ -257,7 +257,7 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
-  background: #fff1ce;
+  background: #f9fafa;
   width: 600px;
   display: grid;
   grid-gap: 0px 0px;
@@ -268,8 +268,9 @@ export default {
 .box {
   position: relative;
   width: 300px;
-  background-color:#e8f4ff;
+  background-color:#f9fafa;
   border-radius: 0px;
+  border: #c7d2f300;
 }
 .notload {
   width: 300px;
@@ -281,7 +282,7 @@ export default {
   .notload-container {
     width: 100%;
     height: 100%;
-    background-color: #909399;
+    background-color: #f1f2f500;
     border-radius: 5px;
   }
 }
