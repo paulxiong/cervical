@@ -1,4 +1,8 @@
 <script>
+import { getBidMid } from '@/api/cervical'
+import { dateformat4, dateformat5 } from '@/utils/dateformat'
+import { uploadCustomMedical, makeCustomMedicalScanTxt } from '@/api/cervical'
+
 export default {
   name: "VueUploadImages", // vue component name
   data() {
@@ -17,6 +21,105 @@ export default {
     clearAll: String,
   },
   methods: {
+    uploadm() {
+      const err = this.checkBeforeUpload()
+      if (err) {
+        this.$message({ type: 'error', message: err, duration: 5000 })
+        return
+      }
+
+      this.uploadCustomMedical()
+      this.makeCustomMedicalScanTxt()
+      //boostx
+      //this.uploadThumbnail()
+      this.uploadPreview()
+    },
+    checkBeforeUpload() {
+      //boostx debug
+      return ''
+      var err = ''
+      const w = this.imgs[0].w
+      const h = this.imgs[0].h
+      const type = this.imgs[0].type
+      for (var id in this.imgs) {
+        const item = this.imgs[id]
+        if (!item.url || !item.name || !item.file || item.w * item.h === 0 || !item.ext) {
+          err = this.$t('workspace.dataCustomNotFound')
+          return err
+        }
+        if (w !== item.w || h !== item.h) {
+          err = this.$t('workspace.dataCustomSizeNotUniform')
+          return err
+        }
+        if (type !== item.type) {
+          err = this.$t('workspace.dataCustomFormatUniform')
+          return err
+        }
+      }
+      this.w = w
+      this.h = h
+      this.ext = this.imgs[0].ext
+      return err
+    },
+    uploadCustomMedical() {
+      for (var id in this.imgs) {
+        const item = this.imgs[id]
+        const param = new FormData() // 创建form对象
+        param.append('file', item.file) // 通过append向form对象添加数据
+        param.append('mid', this.mid)
+        param.append('bid', this.bid)
+        param.append('name', item.savename + item.ext)
+        this.asyncUploadCustomMedical(param, id)
+      }
+    },
+    makeCustomMedicalScanTxt() {
+      makeCustomMedicalScanTxt({ 'bid': this.bid, 'mid': this.mid, 'w': this.w, 'h': this.h, 'ext': this.ext }).then(res => {
+        this.$emit('checkUpload', true)
+        this.alluploaded = true
+      })
+    },
+    uploadThumbnail() {
+      const param = new FormData() // 创建form对象
+      const base64 = this.canvas.toDataURL('image/jpg')
+      const file = this.convertBase64UrlToBlob(base64, 0)
+
+      param.append('file', file) // 通过append向form对象添加数据
+      param.append('mid', this.mid)
+      param.append('bid', this.bid)
+      param.append('name', 'Result-c.jpg')
+      this.asyncUploadCustomMedical(param, 100) // <4 的时候表示传的是FOV, 100认为是缩略图
+    },
+    uploadPreview() {
+      var ctx = this.$refs.preview.getContext('2d')
+      this.$refs.preview.width = 240
+      this.$refs.preview.height = 81
+
+      var img = new Image()
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0)
+
+        const param = new FormData() // 创建form对象
+        const base64 = this.$refs.preview.toDataURL('image/jpg')
+        const file = this.convertBase64UrlToBlob(base64, 0)
+
+        param.append('file', file) // 通过append向form对象添加数据
+        param.append('mid', this.mid)
+        param.append('bid', this.bid)
+        param.append('name', 'Preview-c.jpg')
+        this.asyncUploadCustomMedical(param, 100) // <4 的时候表示传的是FOV, 100认为是缩略图
+      }
+      img.src = '/img/Preview-c.jpg'
+    },
+    asyncUploadCustomMedical(param, id) {
+      return new Promise((resolve, reject) => {
+        uploadCustomMedical(param).then(res => {
+          if (id < 4) {
+            this.imgs[id].uploaded = true
+          }
+          resolve()
+        })
+      })
+    },
     dragOver() {
       this.dropped = 2;
     },
@@ -226,7 +329,9 @@ export default {
       <p class="mainMessage">
         {{ uploadMsg ? uploadMsg : "Click to upload or drop your images here" }}
       </p>
-    </div>
+   </div>
+  <!-- boostx -->
+  <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
     <div class="imgsPreview" v-show="Imgs.length > 0">
       <button type="button" class="clearButton" @click="reset">
         {{ clearAll ? clearAll : "clear All" }}

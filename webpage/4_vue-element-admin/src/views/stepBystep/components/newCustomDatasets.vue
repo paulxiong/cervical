@@ -28,7 +28,7 @@ import startTrain from './step3-train'
 
 export default {
   name: 'NewCustomDatasets',
-  //components: { checkImg, checkModel, startTrain, customDataUpload },
+  //boostx components: { checkImg, checkModel, startTrain, customDataUpload },
   components: { checkImg, checkModel, startTrain, UploadImages },
   props: {
     upload: {
