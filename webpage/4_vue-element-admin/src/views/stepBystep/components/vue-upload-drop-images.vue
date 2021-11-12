@@ -10,7 +10,15 @@ export default {
       error: "",
       files: [],
       dropped: 0,
-      Imgs: [],
+      //boostx: imgs: [],
+      imgs: {
+        0: { 'id': 0, 'savename': 'IMG001x001', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
+        1: { 'id': 1, 'savename': 'IMG001x002', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
+        2: { 'id': 2, 'savename': 'IMG002x001', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
+        3: { 'id': 3, 'savename': 'IMG002x002', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
+      },      
+      mid: 'mid123',
+      bid: 'bid1234',
     };
   },
   props: {
@@ -20,7 +28,83 @@ export default {
     fileError: String,
     clearAll: String,
   },
+  mounted() {
+  this.getBidMid()
+  this.canvas = this.$refs.thumbnail
+  this.ctx = this.canvas.getContext('2d')
+  },
   methods: {
+    getBidMid(cb) { // 改成同步，因为被upload插件调用
+      return new Promise((resolve, reject) => {
+        getBidMid({ }).then(res => {
+          if (res.data.data && res.data.data.batchid && res.data.data.medicalid) {
+            this.bid = res.data.data.batchid
+            this.mid = res.data.data.medicalid
+          } else {
+            this.bid = `b${dateformat4()}`
+            this.mid = `m${dateformat5()}`
+          }
+          // 不提倡的做法
+          var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
+          localStorage.setItem('POST_DATA', JSON.stringify(postData))
+          resolve()
+        })
+      })
+    },    
+
+    thumbnail() {
+      const width = 200
+      this.canvas.width = width
+      this.canvas.height = width
+      var xy = {
+        0: { x1: 0, y1: 0, w: this.canvas.width / 2, h: this.canvas.height / 2 },
+        1: { x1: this.canvas.width / 2, y1: 0, w: this.canvas.width / 2, h: this.canvas.height / 2 },
+        2: { x1: 0, y1: this.canvas.height / 2, w: this.canvas.width / 2, h: this.canvas.height / 2 },
+        3: { x1: this.canvas.width / 2, y1: this.canvas.height / 2, w: this.canvas.width / 2, h: this.canvas.height / 2 }
+      }
+      for (var id in this.imgs) {
+        const item = this.imgs[id]
+        if (!item.img) {
+          continue
+        }
+        this.ctx.drawImage(item.img, xy[id].x1, xy[id].y1, xy[id].w, xy[id].h)
+      }
+    },
+    addImg(event, id) {
+      if (!event || !event.target || !event.target.files || event.target.files.length < 1) {
+        return
+      }
+      this.imgs[id].url = this.getObjectURL(event.target.files[0])
+      this.imgs[id].file = event.target.files[0]
+      // 读取图片宽高
+      this.imgInfo(id, this.imgs[id].url, (img, w, h) => {
+        this.imgs[id].w = w
+        this.imgs[id].h = h
+        this.imgs[id].img = img
+        this.imgs[id].type = event.target.files[0].type
+        this.imgs[id].name = event.target.files[0].name
+        this.imgs[id].size = event.target.files[0].size
+        if (this.imgs[id].type === 'image/png') {
+          this.imgs[id].ext = '.png'
+        } else if (this.imgs[id].type === 'image/jpeg' || this.imgs[id].type === 'image/jpg') {
+          this.imgs[id].ext = '.jpg'
+        }
+
+        this.thumbnail(id, img)
+      })
+    },
+    getObjectURL(file) {
+      var url = null
+      if (window.createObjectURL !== undefined) { // basic
+        url = window.createObjectURL(file)
+      } else if (window.URL !== undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file)
+      } else if (window.webkitURL !== undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file)
+      }
+      return url
+    },
+
     uploadm() {
       const err = this.checkBeforeUpload()
       if (err) {
@@ -29,10 +113,12 @@ export default {
       }
 
       this.uploadCustomMedical()
+      //boostx
+      console.log("makeCustomeMedicalScanTxt is called.")
       this.makeCustomMedicalScanTxt()
       //boostx
       //this.uploadThumbnail()
-      this.uploadPreview()
+      //this.uploadPreview()
     },
     checkBeforeUpload() {
       //boostx debug
@@ -64,6 +150,10 @@ export default {
     uploadCustomMedical() {
       for (var id in this.imgs) {
         const item = this.imgs[id]
+        
+        //boostx debug
+        console.log(item)
+
         const param = new FormData() // 创建form对象
         param.append('file', item.file) // 通过append向form对象添加数据
         param.append('mid', this.mid)
@@ -167,7 +257,7 @@ export default {
       });
     },
     deleteImg(index) {
-      this.Imgs.splice(index, 1);
+      this.imgs.splice(index, 1);
       this.files.splice(index, 1);
       this.$emit("changed", this.files);
       this.$refs.uploadInput.value = null;
@@ -183,21 +273,41 @@ export default {
           : `Maximum files is` + this.$props.max;
         return;
       }
+      //boostx : Added 
+      console.log("Boost debug, reached here.")
+      console.log(event.currentTarget.files);
       if (this.dropped == 0) this.files.push(...event.currentTarget.files);
+      console.log("boostx debug reached here 1")
+      console.log(this.files)  //boostx debug
       this.error = "";
       this.$emit("changed", this.files);
       let readers = [];
       if (!this.files.length) return;
+      console.log("boostx debug reached here 2")
+      console.log(this.files.length)  //boostx debug
+
       for (let i = 0; i < this.files.length; i++) {
-        readers.push(this.readAsDataURL(this.files[i]));
+        //boostx: readers.push(this.readAsDataURL(this.files[i]));
+        readers.push([this.files[i], this.readAsDataURL(this.files[i])])
       }
-      Promise.all(readers).then((values) => {
-        this.Imgs = values;
+      //boostx : Added 
+      console.log(values)
+      for (let i = 0; i < values.length; i++){
+        console.log(values[0])
+        console.log(values[1])
+      }
+
+Promise.all(readers).then((values) => {
+        //boostx: this.imgs = values;
+        for (let i = 0; i < values.length; i++){
+          this.imgs[i].file = values[0]
+          this.imgs[i].url = values[1]
+        }
       });
     },
     reset() {
       this.$refs.uploadInput.value = null;
-      this.Imgs = [];
+      this.imgs = [];
       this.files = [];
       this.$emit("changed", this.files);
     },
@@ -218,13 +328,15 @@ export default {
       {{ error }}
     </div>
 
-    <!-- To inform user how to upload image -->
-    <div v-show="Imgs.length == 0" class="beforeUpload">
+    <!-- To inform user how to upload image 
+    <div v-show="imgs.length == 0" class="beforeUpload"> -->
+    <div v-show="0 == 0" class="beforeUpload"> 
       <input
         type="file"
         style="z-index: 1"
         accept="image/*"
         ref="uploadInput"
+        accept="image/png,image/jpeg,image/jpg"
         @change="previewImgs"
         multiple
       />
@@ -234,93 +346,20 @@ export default {
           <g id="_Group_" data-name="&lt;Group&gt;">
             <g id="_Group_2" data-name="&lt;Group&gt;">
               <g id="_Group_3" data-name="&lt;Group&gt;">
-                <circle
-                  id="_Path_"
-                  data-name="&lt;Path&gt;"
-                  cx="18.5"
-                  cy="16.5"
-                  r="5"
-                  style="
-                    fill: none;
-                    stroke: #303c42;
-                    stroke-linecap: round;
-                    stroke-linejoin: round;
-                  "
-                />
-              </g>
-              <polyline
-                id="_Path_2"
-                data-name="&lt;Path&gt;"
-                points="16.5 15.5 18.5 13.5 20.5 15.5"
-                style="
-                  fill: none;
-                  stroke: #303c42;
-                  stroke-linecap: round;
-                  stroke-linejoin: round;
-                "
-              />
-              <line
-                id="_Path_3"
-                data-name="&lt;Path&gt;"
-                x1="18.5"
-                y1="13.5"
-                x2="18.5"
-                y2="19.5"
-                style="
-                  fill: none;
-                  stroke: #303c42;
-                  stroke-linecap: round;
-                  stroke-linejoin: round;
-                "
-              />
-            </g>
-            <g id="_Group_4" data-name="&lt;Group&gt;">
-              <polyline
-                id="_Path_4"
-                data-name="&lt;Path&gt;"
-                points="0.6 15.42 6 10.02 8.98 13"
-                style="
-                  fill: none;
-                  stroke: #303c42;
-                  stroke-linecap: round;
-                  stroke-linejoin: round;
-                "
-              />
-              <polyline
-                id="_Path_5"
-                data-name="&lt;Path&gt;"
-                points="17.16 11.68 12.5 7.02 7.77 11.79"
-                style="
-                  fill: none;
-                  stroke: #303c42;
-                  stroke-linecap: round;
-                  stroke-linejoin: round;
-                "
-              />
-              <circle
-                id="_Path_6"
-                data-name="&lt;Path&gt;"
-                cx="8"
-                cy="6.02"
-                r="1.5"
-                style="
-                  fill: none;
-                  stroke: #303c42;
-                  stroke-linecap: round;
-                  stroke-linejoin: round;
-                "
-              />
-              <path
-                id="_Path_7"
-                data-name="&lt;Path&gt;"
-                d="M19.5,11.6V4A1.5,1.5,0,0,0,18,2.5H2A1.5,1.5,0,0,0,.5,4V15A1.5,1.5,0,0,0,2,16.5H13.5"
-                style="
-                  fill: none;
-                  stroke: #303c42;
-                  stroke-linecap: round;
-                  stroke-linejoin: round;
-                "
-              />
+                
+                <!-- boostx -->
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                  viewBox="0 0 512.024 512.024" style="enable-background:new 0 0 512.024 512.024;" xml:space="preserve">
+                <polygon style="fill:#0D91BA;" points="176.896,67.3 150.88,36.084 52.032,36.084 20.808,67.3 20.808,108.924 437.04,108.924 
+                  437.04,67.3 "/>
+                <rect y="108.924" style="fill:#25B6D2;" width="457.84" height="299.2"/>
+                <rect x="46.824" y="88.092" style="fill:#FFFFFF;" width="364.2" height="20.808"/>
+                <circle style="fill:#E04F5F;" cx="426.32" cy="390.236" r="85.704"/>
+                <g>
+                  <rect x="381.672" y="386.252" style="fill:#FFFFFF;" width="89.248" height="8"/>
+                  <rect x="422.296" y="345.612" style="fill:#FFFFFF;" width="8" height="89.248"/>
+                </g>
+                </svg>
             </g>
           </g>
         </g>
@@ -330,14 +369,41 @@ export default {
         {{ uploadMsg ? uploadMsg : "Click to upload or drop your images here" }}
       </p>
    </div>
-  <!-- boostx -->
+  <!-- boostx 
   <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
-    <div class="imgsPreview" v-show="Imgs.length > 0">
-      <button type="button" class="clearButton" @click="reset">
-        {{ clearAll ? clearAll : "clear All" }}
-      </button>
-      <div class="imageHolder" v-for="(img, i) in Imgs" :key="i">
-        <img :src="img" />
+  -->
+    <div class="imgsPreview" v-show="imgs.length > 0">
+      <p>
+        <button type="button" class="clearButton" @click="reset">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+</svg>
+          {{ clearAll ? clearAll : "clear All" }}
+        </button>
+      </p>
+      <p align="left">
+        <canvas ref="thumbnail" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
+        <canvas ref="preview" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
+
+        <!-- boostx -->
+        <button type="button" class="uploadallButton" @click="uploadm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+  <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"></path>
+</svg>
+                upload All
+        </button>
+      </p>
+      
+      <!--boostx
+      <div class="imageHolder" v-for="(img, i) in imgs" :key="i">
+         <img :src="img" /> 
+      -->
+      <div class="imageHolder" v-for="(img) in imgs" :key="img.id">
+        <div v-if="img.url">
+        <img :src="img.url" />
+        </div>
         <span class="delete" style="color: white" @click="deleteImg(--i)">
           <svg
             class="icon"
@@ -354,11 +420,17 @@ export default {
             />
           </svg>
         </span>
-        <div class="plus" @click="append" v-if="++i == Imgs.length">+</div>
+        <!-- boostx
+        <div class="plus" @click="append" v-if="++i == imgs.length">+</div>
+        -->
+        <div class="plus" @click="append">+</div>
+
       </div>
     </div>
   </div>
 </template>
+
+
 
 <style scoped>
 .container {
@@ -461,6 +533,15 @@ export default {
   position: absolute;
   top: 7px;
   right: 7px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.uploadallButton {
+  color: #2d3748;
+  position: absolute;
+  top: 7px;
+  left: 7px;
   background: none;
   border: none;
   cursor: pointer;

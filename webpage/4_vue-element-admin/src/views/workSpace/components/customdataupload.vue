@@ -21,8 +21,18 @@
     <div>
       <canvas ref="thumbnail" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
       <canvas ref="preview" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
-      <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
-      <!-- <el-button type="primary" @click="resetImage">清空图片重新选择</el-button> -->
+
+      <!-- boostx -->
+        <button type="button" class="btn btn-success" @click="uploadm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
+  <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"></path>
+</svg>
+                upload All
+        </button>
+
+      <!-- <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
+      <el-button type="primary" @click="resetImage">清空图片重新选择</el-button> -->
     </div>
   </div>
 </template>
@@ -119,8 +129,10 @@ export default {
 
       this.uploadCustomMedical()
       this.makeCustomMedicalScanTxt()
-      this.uploadThumbnail()
-      this.uploadPreview()
+      //boost debug tmp commented following 2 lines. 
+      console.log("reached here: commented uplaodThumnial and uploadPreview in workspace")
+      //this.uploadThumbnail()
+      //this.uploadPreview()
     },
     checkBeforeUpload() {
       var err = ''
@@ -159,6 +171,9 @@ export default {
     },
     uploadCustomMedical() {
       for (var id in this.imgs) {
+        //boostx debug
+        console.log(item)
+
         const item = this.imgs[id]
         const param = new FormData() // 创建form对象
         param.append('file', item.file) // 通过append向form对象添加数据

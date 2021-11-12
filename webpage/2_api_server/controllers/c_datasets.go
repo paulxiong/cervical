@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -335,7 +336,8 @@ func CreateDataset(c *gin.Context) {
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
-
+	//boostx debug
+	fmt.Printf("read here CreateDataset %+v", w)
 	usr, _ := models.GetUserFromContext(c)
 
 	dt := models.Dataset{}
@@ -363,6 +365,8 @@ func CreateDataset(c *gin.Context) {
 			medicalids = append(medicalids, v2)
 		}
 	}
+	//boostx:
+	fmt.Printf("medicalids:%+v", medicalids)
 	if len(medicalids) < 1 {
 		res.ResFailedStatus(c, e.Errors["MedicalImageNotFound"])
 		return
@@ -937,6 +941,8 @@ type customScanTxt struct {
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Router /api1/uploadms [post]
 func UploadCustomMedicalScanTxtHandler(c *gin.Context) {
+	//boostx debug
+	fmt.Println("reached here, good.")
 	cs := customScanTxt{}
 	err := c.BindJSON(&cs)
 	if err != nil {
@@ -948,7 +954,8 @@ func UploadCustomMedicalScanTxtHandler(c *gin.Context) {
 	if err2 == nil {
 		f.NewScanTXTJSON(st, f.GetMedicalDir(cs.BID, cs.MID))
 	}
-
+	//boostx debug
+	fmt.Println("reached here, bingo")
 	res.ResSucceedString(c, "ok")
 	return
 }
