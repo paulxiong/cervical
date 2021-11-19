@@ -161,6 +161,15 @@
       />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">{{ $t('workspace.projectDataPrevious') }}</el-button>
+        <!-- boostx we don't want to have a upload all  botton...
+        <el-button
+          v-show="step===1 || step===2"
+          size="mini"
+          :disabled="!uploadServer && !imgChecked && !modelChecked"
+          type="primary"
+          @click="stepNext"
+        >{{ $t('workspace.projectDataNext') }}</el-button>
+        -->
         <el-button
           v-show="step===1 || step===2"
           size="mini"

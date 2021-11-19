@@ -1,4 +1,5 @@
 <script>
+//this file replaced customDataUpload.vue <- newCustomDatasets.vue  <-
 import { getBidMid } from '@/api/cervical'
 import { dateformat4, dateformat5 } from '@/utils/dateformat'
 import { uploadCustomMedical, makeCustomMedicalScanTxt } from '@/api/cervical'
@@ -10,13 +11,13 @@ export default {
       error: "",
       files: [],
       dropped: 0,
-      //boostx: imgs: [],
-      imgs: {
+      Imgs: [],
+      /* this is cervial ai definition  imgs: {
         0: { 'id': 0, 'savename': 'IMG001x001', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
         1: { 'id': 1, 'savename': 'IMG001x002', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
         2: { 'id': 2, 'savename': 'IMG002x001', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
         3: { 'id': 3, 'savename': 'IMG002x002', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
-      },      
+      },*/      
       mid: 'mid123',
       bid: 'bid1234',
     };
@@ -257,10 +258,14 @@ export default {
       });
     },
     deleteImg(index) {
-      this.imgs.splice(index, 1);
+      this.Imgs.splice(index, 1);
       this.files.splice(index, 1);
       this.$emit("changed", this.files);
       this.$refs.uploadInput.value = null;
+      //boostx
+      if (!this.Imgs.length){
+        this.$emit('checkUpload', false)
+      }
     },
     previewImgs(event) {
       if (
@@ -282,34 +287,32 @@ export default {
       this.error = "";
       this.$emit("changed", this.files);
       let readers = [];
-      if (!this.files.length) return;
-      console.log("boostx debug reached here 2")
-      console.log(this.files.length)  //boostx debug
-
+      if (!this.files.length) {
+         this.$emit('checkUpload', false)
+         return;
+      }
+      this.$emit('checkUpload', true)
+      
+      console.log("boostx debug reached here 2  this.files.length= "+this.files.length);
       for (let i = 0; i < this.files.length; i++) {
-        //boostx: readers.push(this.readAsDataURL(this.files[i]));
-        readers.push([this.files[i], this.readAsDataURL(this.files[i])])
+        //boostx: 
+        readers.push(this.readAsDataURL(this.files[i]));
+        //this.imgs[i].name = this.files[i].name
+        //readers.push([this.files[i], this.readAsDataURL(this.files[i])])
       }
-      //boostx : Added 
-      console.log(values)
-      for (let i = 0; i < values.length; i++){
-        console.log(values[0])
-        console.log(values[1])
-      }
+      console.log("boostx debug reached here 3 readers=" + readers);
 
-Promise.all(readers).then((values) => {
+      Promise.all(readers).then((values) => {
         //boostx: this.imgs = values;
-        for (let i = 0; i < values.length; i++){
-          this.imgs[i].file = values[0]
-          this.imgs[i].url = values[1]
-        }
+          this.Imgs= values;
       });
     },
     reset() {
       this.$refs.uploadInput.value = null;
-      this.imgs = [];
+      this.Imgs = [];
       this.files = [];
       this.$emit("changed", this.files);
+      this.$emit('checkUpload', false)
     },
   },
 };
@@ -328,9 +331,8 @@ Promise.all(readers).then((values) => {
       {{ error }}
     </div>
 
-    <!-- To inform user how to upload image 
-    <div v-show="imgs.length == 0" class="beforeUpload"> -->
-    <div v-show="0 == 0" class="beforeUpload"> 
+    <!-- To inform user how to upload image -->
+    <div v-show="Imgs.length == 0" class="beforeUpload"> 
       <input
         type="file"
         style="z-index: 1"
@@ -372,7 +374,7 @@ Promise.all(readers).then((values) => {
   <!-- boostx 
   <el-button type="primary" :disabled="alluploaded" @click="uploadm">{{ $t('workspace.dataCustomUpload') }}</el-button>
   -->
-    <div class="imgsPreview" v-show="imgs.length > 0">
+    <div class="imgsPreview" v-show="Imgs.length > 0">
       <p>
         <button type="button" class="clearButton" @click="reset">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -386,7 +388,7 @@ Promise.all(readers).then((values) => {
         <canvas ref="thumbnail" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
         <canvas ref="preview" width="200px" height="200px" style="border:1px solid #000000; display: none;" />
 
-        <!-- boostx -->
+        <!-- boostx 
         <button type="button" class="uploadallButton" @click="uploadm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"></path>
@@ -394,16 +396,11 @@ Promise.all(readers).then((values) => {
 </svg>
                 upload All
         </button>
+        -->
       </p>
       
-      <!--boostx
-      <div class="imageHolder" v-for="(img, i) in imgs" :key="i">
-         <img :src="img" /> 
-      -->
-      <div class="imageHolder" v-for="(img) in imgs" :key="img.id">
-        <div v-if="img.url">
-        <img :src="img.url" />
-        </div>
+      <div class="imageHolder" v-for="(img,i) in Imgs" :key="i">
+        <img :src="img" />
         <span class="delete" style="color: white" @click="deleteImg(--i)">
           <svg
             class="icon"
@@ -420,10 +417,7 @@ Promise.all(readers).then((values) => {
             />
           </svg>
         </span>
-        <!-- boostx
-        <div class="plus" @click="append" v-if="++i == imgs.length">+</div>
-        -->
-        <div class="plus" @click="append">+</div>
+        <div class="plus" @click="append" v-if="++i == Imgs.length">+</div>
 
       </div>
     </div>
