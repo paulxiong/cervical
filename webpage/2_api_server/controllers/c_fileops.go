@@ -112,6 +112,7 @@ func UploadsHandler(c *gin.Context) {
 	//循环存文件到服务器本地
 	for _, file := range files {
 		c.SaveUploadedFile(file, file.Filename)
+		fmt.Print("boostx " + file.Filename)
 	}
 	res.ResSucceedString(c, fmt.Sprintf("%d 个文件被上传成功!", len(files)))
 }
@@ -282,6 +283,7 @@ func UploadCustomMedicalHandler(c *gin.Context) {
 	_bid := c.DefaultPostForm("bid", "")
 	_name := c.DefaultPostForm("name", "")
 
+	fmt.Print("boostx: UploadCustomMedica mid=%s", _mid)
 	if len(_mid) < 1 || len(_bid) < 1 || len(_name) < 1 {
 		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return

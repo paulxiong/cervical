@@ -83,6 +83,7 @@ func ListImageOfMedicalID(bid string, mdcid string, limit int64, skip int64) (to
 	var _i []Image
 	var total int = 0
 
+	fmt.Printf("boostx ListImageOfMedicalID\n")
 	db.Model(&Image{}).Where("BATCHID=? AND MEDICALID=?", mdcid, bid).Count(&total)
 	ret := db.Model(&Image{}).Where("BATCHID=? AND MEDICALID=?", bid, mdcid).Limit(limit).Offset(skip).Find(&_i)
 	if ret.Error != nil {

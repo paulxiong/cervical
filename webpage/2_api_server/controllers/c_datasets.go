@@ -337,7 +337,7 @@ func CreateDataset(c *gin.Context) {
 		return
 	}
 	//boostx debug
-	fmt.Printf("read here CreateDataset %+v", w)
+	fmt.Printf("boostx read here CreateDataset %+v", w)
 	usr, _ := models.GetUserFromContext(c)
 
 	dt := models.Dataset{}
@@ -366,7 +366,8 @@ func CreateDataset(c *gin.Context) {
 		}
 	}
 	//boostx:
-	fmt.Printf("medicalids:%+v", medicalids)
+	fmt.Printf("boostx MedicalImageNotFound CreateDataset \n")
+	fmt.Printf("boostx medicalids:%+v", medicalids)
 	if len(medicalids) < 1 {
 		res.ResFailedStatus(c, e.Errors["MedicalImageNotFound"])
 		return
@@ -740,6 +741,8 @@ func GetImgListOfMedicalID(c *gin.Context) {
 		res.ResFailedStatus(c, e.Errors["MedicalBatchInvalied"])
 		return
 	}
+	//boostx:
+	fmt.Print("MedicalImageNotFound\n")
 
 	total, _imgs, err := models.ListImageOfMedicalID(BatchID, MedicalID, limit, skip)
 	if err != nil {

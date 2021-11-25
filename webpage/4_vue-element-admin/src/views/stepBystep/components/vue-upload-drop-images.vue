@@ -5,7 +5,7 @@ import { dateformat4, dateformat5 } from '@/utils/dateformat'
 import { uploadCustomMedical, makeCustomMedicalScanTxt } from '@/api/cervical'
 
 export default {
-  name: "VueUploadImages", // vue component name
+  name: "UploadImages", // vue component name
   data() {
     return {
       error: "",
