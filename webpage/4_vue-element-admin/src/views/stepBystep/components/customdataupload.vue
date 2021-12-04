@@ -133,8 +133,8 @@ export default {
 
       //boost debug tmp commented following 2 lines. 
       console.log("reached here: commented uplaodThumnial and uploadPreview in step by step")
-      //this.uploadThumbnail()
-      //this.uploadPreview()
+      this.uploadThumbnail()
+      this.uploadPreview()
     },
     checkBeforeUpload() {
       var err = ''
@@ -176,15 +176,13 @@ export default {
       for (var id in this.imgs) {
         const item = this.imgs[id]
 
-        //boostx debug
-        console.log("boostx: uploadCustomMedical")
-        console.log(item)
 
         const param = new FormData() // 创建form对象
         param.append('file', item.file) // 通过append向form对象添加数据
         param.append('mid', this.mid)
         param.append('bid', this.bid)
         param.append('name', item.savename + item.ext)
+        console.log("boostx: uploadCustomMedical", item)
         this.asyncUploadCustomMedical(param, id)
       }
     },

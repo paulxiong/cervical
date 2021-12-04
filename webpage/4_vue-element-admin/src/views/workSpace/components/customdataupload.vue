@@ -130,7 +130,7 @@ export default {
       this.uploadCustomMedical()
       this.makeCustomMedicalScanTxt()
       //boost debug tmp commented following 2 lines. 
-      console.log("reached here: commented uplaodThumnial and uploadPreview in workspace")
+      console.log("boostx reached here: commented uplaodThumnial and uploadPreview in workspace")
       //this.uploadThumbnail()
       //this.uploadPreview()
     },
@@ -172,7 +172,7 @@ export default {
     uploadCustomMedical() {
       for (var id in this.imgs) {
         //boostx debug
-        console.log(item)
+        console.log("boostx uploadCustomMedical", item)
 
         const item = this.imgs[id]
         const param = new FormData() // 创建form对象

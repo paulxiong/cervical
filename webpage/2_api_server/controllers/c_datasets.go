@@ -330,14 +330,14 @@ func GetImagesNPTypeByMedicalID(c *gin.Context) {
 // @Success 200 {string} json "{"ping": "pong",	"status": 200}"
 // @Router /api1/createdataset [post]
 func CreateDataset(c *gin.Context) {
+	//boostx debug
+	fmt.Printf("boostx reached here CreateDataset")
 	w := imagesNPTypeByMedicalID{}
 	err := c.BindJSON(&w)
 	if err != nil {
 		res.ResFailedStatus(c, e.Errors["PostDataInvalied"])
 		return
 	}
-	//boostx debug
-	fmt.Printf("boostx read here CreateDataset %+v", w)
 	usr, _ := models.GetUserFromContext(c)
 
 	dt := models.Dataset{}

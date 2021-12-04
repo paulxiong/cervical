@@ -18,8 +18,9 @@ export default {
         2: { 'id': 2, 'savename': 'IMG002x001', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false },
         3: { 'id': 3, 'savename': 'IMG002x002', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
       },*/      
+      imgs:[],
       mid: 'mid123',
-      bid: 'bid1234',
+      bid: 'bid1234'
     };
   },
   props: {
@@ -34,6 +35,10 @@ export default {
   this.canvas = this.$refs.thumbnail
   this.ctx = this.canvas.getContext('2d')
   },
+  //boostx:
+  //created() {
+  //  this.$root.$refs.A = this;
+  //},
   methods: {
     getBidMid(cb) { // 改成同步，因为被upload插件调用
       return new Promise((resolve, reject) => {
@@ -52,7 +57,16 @@ export default {
         })
       })
     },    
-
+    convertBase64UrlToBlob(urlData, type) { /* 将base64转换成可用formdata提交的文件,urlData base64的url,type 0图片 1视频 */
+      var bytes = window.atob(urlData.split(',')[1]) // 去掉url的头，并转换为byte
+      // 处理异常,将ascii码小于0的转换为大于0
+      var ab = new ArrayBuffer(bytes.length)
+      var ia = new Uint8Array(ab)
+      for (var i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+      }
+      return new Blob([ab], { type: type === 0 ? 'image/png' : 'image/mp4' })
+    },
     thumbnail() {
       const width = 200
       this.canvas.width = width
@@ -105,22 +119,24 @@ export default {
       }
       return url
     },
-
+    /* uploadmx() {console.log("boostx: uploadmx")},
+     */
     uploadm() {
+      console.log("boostx: enter uploadm.")
       const err = this.checkBeforeUpload()
       if (err) {
         this.$message({ type: 'error', message: err, duration: 5000 })
         return
       }
+      // var _mself = this
 
       this.uploadCustomMedical()
       //boostx
       console.log("makeCustomeMedicalScanTxt is called.")
       this.makeCustomMedicalScanTxt()
-      //boostx
-      //this.uploadThumbnail()
-      //this.uploadPreview()
-    },
+      this.uploadThumbnail()
+      this.uploadPreview()
+     },
     checkBeforeUpload() {
       //boostx debug
       return ''
@@ -149,13 +165,13 @@ export default {
       return err
     },
     uploadCustomMedical() {
-      for (var id in this.imgs) {
+      for (var  id in this.imgs){
         const item = this.imgs[id]
-        
-        //boostx debug
-        console.log(item)
+        console.log("boostx uploadCustomMedical", item)
+
 
         const param = new FormData() // 创建form对象
+        // param.append('file', item.file) // 通过append向form对象添加数据
         param.append('file', item.file) // 通过append向form对象添加数据
         param.append('mid', this.mid)
         param.append('bid', this.bid)
@@ -204,8 +220,11 @@ export default {
     asyncUploadCustomMedical(param, id) {
       return new Promise((resolve, reject) => {
         uploadCustomMedical(param).then(res => {
+          console.log("boostx:asyncUploadCustomMedical " + id)
           if (id < 4) {
-            this.imgs[id].uploaded = true
+            console.log("boostx:this.files=" + this.imgs[id].file.name)
+            // this.imgs[id].uploaded = true
+            console.log("boostx: uploadCustomMedical")
           }
           resolve()
         })
@@ -278,32 +297,39 @@ export default {
           : `Maximum files is` + this.$props.max;
         return;
       }
-      //boostx : Added 
-      console.log("Boost debug, reached here.")
-      console.log(event.currentTarget.files);
-      if (this.dropped == 0) this.files.push(...event.currentTarget.files);
-      console.log("boostx debug reached here 1")
-      console.log(this.files)  //boostx debug
+      //? don't know why the object event.currentTarget.file cannot be printed correctly? 
+      console.log("boostx debug, reached here.event.currentTarget:" + JSON.stringify(event.currentTarget.files));
+      // if (this.dropped == 0) this.files.push(...event.currentTarget.files); //* merge two arrays
+      if (this.dropped == 0) this.files.push(...event.target.files); //* merge two arrays
+      console.log("boostx debug reached here 1  " + JSON.stringify(this.files))  //? why array this.files cannot be printed?
       this.error = "";
       this.$emit("changed", this.files);
       let readers = [];
       if (!this.files.length) {
-         this.$emit('checkUpload', false)
+         this.$emit('checkUpload', false)  //* disable Next in file datasets-data.vue
          return;
       }
-      this.$emit('checkUpload', true)
+      this.$emit('checkUpload', true)   //*enabled Next in file dataset-data.vue
       
       console.log("boostx debug reached here 2  this.files.length= "+this.files.length);
+      let imgx = { 'id': 0, 'savename': 'IMG001x00', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
       for (let i = 0; i < this.files.length; i++) {
-        //boostx: 
-        readers.push(this.readAsDataURL(this.files[i]));
-        //this.imgs[i].name = this.files[i].name
+        readers.push(this.readAsDataURL(this.files[i])); //!this. here is refer to event itself, not class 
+        imgx.url =this.getObjectURL(this.files[i]);
+        imgx.file=this.files[i];
+        //imgx.savename = imgx.savename + i.toString
+        // console.log("boostx imgx" + JSON.stringify(imgx) + "imgx.file:" + JSON.stringify(imgx.file))
+        this.imgs.push(imgx);
+        // _mself.imgs[i].name = this.files[i].name
+        console.log("boostx imgs=", this.imgs);
         //readers.push([this.files[i], this.readAsDataURL(this.files[i])])
       }
-      console.log("boostx debug reached here 3 readers=" + readers);
+      console.log("boostx debug reached here 2.1  this.files= ", imgx.file, imgx.url);
+      
 
       Promise.all(readers).then((values) => {
         //boostx: this.imgs = values;
+          // console.log("boostx debug reached here 3 readers=" + JSON.stringify(values));
           this.Imgs= values;
       });
     },

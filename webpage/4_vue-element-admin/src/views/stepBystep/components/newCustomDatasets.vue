@@ -10,9 +10,9 @@
 
     <section class="main">
       <!--<customDataUpload v-if="upload && step===1" @checkUpload="checkUpload" />-->
-      <UploadImages v-if="upload && step===1" @checkUpload="checkUpload" />
+      <UploadImages v-if="upload && step===1" ref="ref_UploadImages" @checkUpload="checkUpload" />
       <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
-      <checkModel v-if="step===2" ref="checkModel" :upload="upload" @checkModel="checkModel" />
+      <checkModel v-if="step===2" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" />
       <startTrain v-if="step===3" />
     </section>
   </div>
@@ -52,8 +52,12 @@ export default {
       this.$emit('checkModel', val)
     },
     stepNext() {
+      if (this.step == 1) {
+        console.log("boostx: file=newCustomDatasets.vue.")
+        this.$refs.ref_UploadImages.uploadm()    //boostx
+      }
       if (this.step === 2) {
-        this.$refs.checkModel.saveModelInfo()
+        this.$refs.ref_checkModel.saveModelInfo()
       }
       if (this.step++ > 1) {
         this.step = 3
