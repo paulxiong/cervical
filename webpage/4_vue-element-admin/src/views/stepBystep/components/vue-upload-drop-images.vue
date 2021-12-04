@@ -298,10 +298,9 @@ export default {
         return;
       }
       //? don't know why the object event.currentTarget.file cannot be printed correctly? 
-      console.log("boostx debug, reached here.event.currentTarget:" + JSON.stringify(event.currentTarget.files));
+      console.log("boostx previewImgs ", event.currentTarget.files);
       // if (this.dropped == 0) this.files.push(...event.currentTarget.files); //* merge two arrays
       if (this.dropped == 0) this.files.push(...event.target.files); //* merge two arrays
-      console.log("boostx debug reached here 1  " + JSON.stringify(this.files))  //? why array this.files cannot be printed?
       this.error = "";
       this.$emit("changed", this.files);
       let readers = [];
@@ -311,20 +310,15 @@ export default {
       }
       this.$emit('checkUpload', true)   //*enabled Next in file dataset-data.vue
       
-      console.log("boostx debug reached here 2  this.files.length= "+this.files.length);
-      let imgx = { 'id': 0, 'savename': 'IMG001x00', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
       for (let i = 0; i < this.files.length; i++) {
+        let imgx = { 'id': 0, 'savename': 'IMG001x00', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
         readers.push(this.readAsDataURL(this.files[i])); //!this. here is refer to event itself, not class 
         imgx.url =this.getObjectURL(this.files[i]);
         imgx.file=this.files[i];
-        //imgx.savename = imgx.savename + i.toString
-        // console.log("boostx imgx" + JSON.stringify(imgx) + "imgx.file:" + JSON.stringify(imgx.file))
+        imgx.savename = imgx.savename + i.toString()
         this.imgs.push(imgx);
-        // _mself.imgs[i].name = this.files[i].name
-        console.log("boostx imgs=", this.imgs);
-        //readers.push([this.files[i], this.readAsDataURL(this.files[i])])
       }
-      console.log("boostx debug reached here 2.1  this.files= ", imgx.file, imgx.url);
+        console.log("boostx imgs=", this.imgs);
       
 
       Promise.all(readers).then((values) => {
