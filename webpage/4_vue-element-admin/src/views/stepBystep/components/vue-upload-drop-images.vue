@@ -285,6 +285,10 @@ export default {
       if (!this.Imgs.length){
         this.$emit('checkUpload', false)
       }
+      else{
+        this.imgs.splice(index,1)
+      }
+      console.log("boostx in deleteImg:", this.imgs)
     },
     previewImgs(event) {
       if (
@@ -331,6 +335,7 @@ export default {
       this.$refs.uploadInput.value = null;
       this.Imgs = [];
       this.files = [];
+      this.imgs = [];
       this.$emit("changed", this.files);
       this.$emit('checkUpload', false)
     },
