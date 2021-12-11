@@ -131,12 +131,12 @@ export default {
   },
   methods: {
     goDetail() {
+      console.log("boostx in goDetail: " + this.modelInfo.model.id)
       this.loading = true
       this.postData['desc'] = this.inputName
       this.postData['parameter_cache'] = this.modelInfo.cache === this.$t('workspace.dataCacheYes') ? 1 : 0
       this.postData['parameter_gray'] = this.modelInfo.imgColor === this.$t('workspace.dataColorGray') ? 1 : 0
       this.postData['parameter_mid'] = this.modelInfo.model.id
-      console.log("boostx in goDetail: " + this.modelInfo.model.id)
       this.postData['parameter_size'] = parseInt(this.modelInfo.cutSize)
       this.postData['parameter_type'] = parseInt(this.modelInfo.type.slice(0, 1))
       createdataset(this.postData).then(res => {

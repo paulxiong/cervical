@@ -100,6 +100,7 @@ func NewJSONFile(d models.Dataset, batchids []string, medicalids []string, cntn 
 
 // CreateDataset 按照页面选择的 批次 病例 图片，生产filelist.csv
 func CreateDataset(imgs []models.Image, dt *models.Dataset) (n int, p int) {
+	fmt.Printf("boostx in CrateDataset %s", imgs)
 	err := os.MkdirAll(path.Join(datasetsDir, dt.Dir), os.ModePerm) //创建多级目录
 	if err != nil {
 		logger.Info(err)
