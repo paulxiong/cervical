@@ -15,7 +15,7 @@
       <!-- <checkModel v-if="step===2" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" /> -->
       <checkModel v-show="false" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" />
       <!-- <startTrain v-if="step===3" /> -->
-      <startTrain v-if="step===3" ref="ref_startTrain" />
+      <startTrain v-show='false' v-if="step===3" ref="ref_startTrain" />
     </section>
   </div>
 </template>
