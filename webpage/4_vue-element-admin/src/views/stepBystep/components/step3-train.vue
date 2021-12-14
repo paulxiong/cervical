@@ -129,9 +129,20 @@ export default {
       modelInfo: JSON.parse(localStorage.getItem('MODEL_INFO'))
     }
   },
+  mounted (){
+    this.$nextTick(function () {
+    // Code that will run only after the
+    // entire view has been rendered
+      setTimeout(() => {  console.log("World!");this.goDetail(); }, 2000);    
+      // timeout(1500) { //pass a time in milliseconds to this function
+      //     return new Promise(resolve => setTimeout(resolve, ms));
+      //   }      
+    })
+    console.log("boostx in mounted step3-train.vue: postData=", this.postData)
+  },
   methods: {
     goDetail() {
-      console.log("boostx in goDetail: " + this.modelInfo.model.id)
+      console.log("boostx in goDetail: ", this.modelInfo.model.id)
       this.loading = true
       this.postData['desc'] = this.inputName
       this.postData['parameter_cache'] = this.modelInfo.cache === this.$t('workspace.dataCacheYes') ? 1 : 0

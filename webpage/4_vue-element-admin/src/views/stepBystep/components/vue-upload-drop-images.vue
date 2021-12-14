@@ -51,6 +51,7 @@ export default {
             this.mid = `m${dateformat5()}`
           }
           // 不提倡的做法
+          console.log("boostx in vue-upload-drop-images.vue, this.mid=", this.mid)
           var postData = { 'batchids': [this.bid], 'medicalids': [this.mid] }
           localStorage.setItem('POST_DATA', JSON.stringify(postData))
           resolve()
@@ -223,7 +224,7 @@ export default {
           console.log("boostx:asyncUploadCustomMedical " + id)
           if (id < 4) {
             console.log("boostx:this.files=" + this.imgs[id].file.name)
-            // this.imgs[id].uploaded = true
+            this.imgs[id].uploaded = true
             console.log("boostx: uploadCustomMedical")
           }
           resolve()
@@ -315,7 +316,7 @@ export default {
       this.$emit('checkUpload', true)   //*enabled Next in file dataset-data.vue
       
       for (let i = 0; i < this.files.length; i++) {
-        let imgx = { 'id': 0, 'savename': 'IMG001x00', 'ext': '', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
+        let imgx = { 'id': 0, 'savename': 'IMG001x00', 'ext': '.jpg', 'w': 0, 'h': 0, 'url': '', 'type': '', 'name': '', 'file': null, 'uploaded': false }
         readers.push(this.readAsDataURL(this.files[i])); //!this. here is refer to event itself, not class 
         imgx.url =this.getObjectURL(this.files[i]);
         imgx.file=this.files[i];

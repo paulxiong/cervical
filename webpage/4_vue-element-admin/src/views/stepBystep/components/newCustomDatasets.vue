@@ -15,7 +15,7 @@
       <!-- <checkModel v-if="step===2" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" /> -->
       <checkModel v-show="false" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" />
       <!-- <startTrain v-if="step===3" /> -->
-      <startTrain v-show="false" ref="ref_startTrain" />
+      <startTrain v-if="step===3" ref="ref_startTrain" />
     </section>
   </div>
 </template>
@@ -64,14 +64,15 @@ export default {
         console.log("boostx: file=newCustomDatasets.vue.")
         this.$refs.ref_UploadImages.uploadm()    //boostx
         console.log("boostx: fire AutoNext")
-        this.$emit('AutoNext')
+        // this.$emit('AutoNext')
         this.step++
       }
       if (this.step === 2) {
         this.$refs.ref_checkModel.saveModelInfo()
+        // this.$emit('AutoNext')
       }
       if (this.step++ > 1) {
-        this.$refs.ref_startTrain.goDetail()
+        // this.$refs.ref_startTrain.goDetail()
         this.step = 3
       }
     },
