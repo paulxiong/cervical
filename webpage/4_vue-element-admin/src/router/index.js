@@ -94,7 +94,8 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
+    // redirect: '/home',
+    redirect: '/stepBystep',  //boostx
     children: [
       {
         path: 'home',
