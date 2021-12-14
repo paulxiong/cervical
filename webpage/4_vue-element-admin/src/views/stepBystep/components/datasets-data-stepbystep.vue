@@ -142,13 +142,12 @@
         >{{ $t('workspace.projectDataNext') }}</el-button>
       </div>
     </el-dialog>
-    <!-- boostx-debug -->
     <el-dialog
       :title="$t('workspace.projectDataCustomUpload')"
       :visible.sync="dialogFormVisible2"
-      :close-on-click-modal="true"
-      :close-on-press-escape="true"
-      :show-close="true"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false"
       @closed="closedDialog"
     >
       <newCustomDatasets
@@ -161,15 +160,6 @@
       />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">{{ $t('workspace.projectDataPrevious') }}</el-button>
-        <!-- boostx we don't want to have a upload all  botton...
-        <el-button
-          v-show="step===1 || step===2"
-          size="mini"
-          :disabled="!uploadServer && !imgChecked && !modelChecked"
-          type="primary"
-          @click="stepNext"
-        >{{ $t('workspace.projectDataNext') }}</el-button>
-        -->
         <el-button
           v-show="step===1 || step===2"
           size="mini"

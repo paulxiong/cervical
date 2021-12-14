@@ -120,7 +120,7 @@ export default {
   data() {
     return {
       loading: false,
-      inputName: 'Default Name',
+      inputName: '',
       postData: JSON.parse(localStorage.getItem('POST_DATA')),
       countNP: JSON.parse(localStorage.getItem('countNP')) || {
         countn: 0,
