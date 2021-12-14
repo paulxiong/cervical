@@ -221,6 +221,7 @@ export default {
   },
   created() {
     this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
+    this.uploadCustomImgs()   //boostx directly jump to upload image. 
   },
   methods: {
     AutoNext() {

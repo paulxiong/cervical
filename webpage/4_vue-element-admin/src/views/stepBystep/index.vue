@@ -5,6 +5,7 @@
     </keep-alive>
     <router-view v-if="!$route.meta.keepAlive" />
     <el-tabs v-model="activeName" class="tabs">
+      <p> {{activeName}}</p>
       <el-tab-pane :label="$t('workspace.projects')" name="project">
         <projectData :activename="activeName" />
       </el-tab-pane>
@@ -32,8 +33,9 @@ export default {
   components: { projectData, datasetsData, modelData },
   data() {
     return {
-      activeName: localStorage.getItem('TAB') || 'project'
-    }
+      // activeName: localStorage.getItem('TAB') || 'project'
+      activeName: 'datasets'    //*todo  dont know where the 'TAB' assgined. 
+      }
   }
 }
 </script>
