@@ -12,8 +12,10 @@
       <!--<customDataUpload v-if="upload && step===1" @checkUpload="checkUpload" />-->
       <UploadImages v-if="upload && step===1" ref="ref_UploadImages" @checkUpload="checkUpload" />
       <checkImg v-if="!upload && step===1" @checkImg="checkImg" />
-      <checkModel v-if="step===2" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" />
-      <startTrain v-if="step===3" />
+      <!-- <checkModel v-if="step===2" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" /> -->
+      <checkModel v-show="false" ref="ref_checkModel" :upload="upload" @checkModel="checkModel" />
+      <!-- <startTrain v-if="step===3" /> -->
+      <startTrain v-show="false" ref="ref_startTrain" />
     </section>
   </div>
 </template>
@@ -41,6 +43,12 @@ export default {
       step: 1
     }
   },
+  mounted(){
+    console.log('boostx: mounted stepNext', this.step)
+  },
+  created() {
+    console.log('boostx: created stepNext', this.step)
+  },
   methods: {
     checkUpload(val) {
       this.$emit('checkUpload', val)
@@ -55,11 +63,15 @@ export default {
       if (this.step == 1) {
         console.log("boostx: file=newCustomDatasets.vue.")
         this.$refs.ref_UploadImages.uploadm()    //boostx
+        console.log("boostx: fire AutoNext")
+        this.$emit('AutoNext')
+        this.step++
       }
       if (this.step === 2) {
         this.$refs.ref_checkModel.saveModelInfo()
       }
       if (this.step++ > 1) {
+        this.$refs.ref_startTrain.goDetail()
         this.step = 3
       }
     },

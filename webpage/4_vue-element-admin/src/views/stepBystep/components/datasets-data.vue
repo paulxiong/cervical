@@ -158,6 +158,7 @@
         @checkUpload="checkUpload"
         @checkImg="checkImg"
         @checkModel="checkModel"
+        @AutoNext="AutoNext"
       />
       <div slot="footer" class="dialog-footer">
         <el-button v-show="step===3 || step===2" size="mini" @click="stepBack">{{ $t('workspace.projectDataPrevious') }}</el-button>
@@ -222,6 +223,10 @@ export default {
     this.listdatasets(this.currentPageSize, (this.currentPage - 1) * this.currentPageSize, 1)
   },
   methods: {
+    AutoNext() {
+      console.log('boostx: AutoNext',this.step)
+      this.uploadServer = true
+    },
     uploadImgs() {
       this.dialogFormVisible = true
       this.dialogFormVisible2 = false
