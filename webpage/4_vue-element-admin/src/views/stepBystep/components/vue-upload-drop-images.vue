@@ -358,13 +358,14 @@ export default {
     </div>
 
     <!-- To inform user how to upload image -->
+    <!-- accept="image/png,image/jpeg,image/jpg" -->
+
     <div v-show="Imgs.length == 0" class="beforeUpload"> 
       <input
         type="file"
         style="z-index: 1"
         accept="image/*"
         ref="uploadInput"
-        accept="image/png,image/jpeg,image/jpg"
         @change="previewImgs"
         multiple
       />
@@ -388,6 +389,7 @@ export default {
                   <rect x="422.296" y="345.612" style="fill:#FFFFFF;" width="8" height="89.248"/>
                 </g>
                 </svg>
+              </g>
             </g>
           </g>
         </g>

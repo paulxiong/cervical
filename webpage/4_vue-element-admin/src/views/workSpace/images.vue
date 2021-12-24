@@ -95,17 +95,23 @@
         </el-tab-pane>
       </el-tabs>
     </section>
+          <p> boostx </p>
+          <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[0] + '?width=300'"/>
   </div>
+
+
 </template>
 
 <script>
 import { getjobresult, getPercent, getjoblog, downloadImgs } from '@/api/cervical'
 import { APIUrl } from '@/const/config'
+import B_zumly from './components/zumly.vue'
 let timer
 
 export default {
   name: 'Images',
   components: {},
+  components: {B_zumly},
   data() {
     return {
       percentage: 0,
@@ -254,6 +260,8 @@ export default {
           this.cells_crop = this.objData2.cells_crop
           break
       }
+      this.$refs.Z.method1()
+
     },
     /**
      * 定时器轮训百分比

@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: '讯动医疗',
+      title: 'Cervical AI',
       logo: '../../../assets/login.png'
     }
   }
