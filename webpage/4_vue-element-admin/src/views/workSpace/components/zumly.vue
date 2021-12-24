@@ -25,7 +25,10 @@ export default {
     mounted() {
     },
     methods: {
-        method1() {
+        method1(idx) {
+            if (idx != '') {
+              this.msg_inB = idx
+            }
             alert('In Zumly is ready, Go! \ n' + this.msg_inB)
             const hello = `
             <div class="z-view hello">
