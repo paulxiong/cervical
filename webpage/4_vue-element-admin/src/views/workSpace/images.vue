@@ -30,6 +30,7 @@
           <div class="img-div" style="overflow-y: auto;height:500px;">
             <el-image
               v-for="(img,idx) in origin_imgs"
+              v-on:click = "image_click($event, idx)"
               :key="idx"
               class="img"
               :src="hosturlpath100 + img + '?width=100'"
@@ -39,6 +40,7 @@
                 <i class="el-icon-picture-outline" />
               </div>
             </el-image>
+            <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=300'"/>
           </div>
           <el-pagination
             v-if="total2"
@@ -71,6 +73,7 @@
               </div>
             </el-image>
           </div>
+          <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=300'"/>
           <el-pagination
             v-if="total"
             class="page"
@@ -95,8 +98,6 @@
         </el-tab-pane>
       </el-tabs>
     </section>
-          <p> boostx </p>
-          <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[0] + '?width=300'"/>
   </div>
 
 
@@ -135,7 +136,8 @@ export default {
       total2: 1,
       currentPageSize: 500,
       currentPageSize2: 100,
-      cells_crop_masked: []
+      cells_crop_masked: [],
+      origin_imgs_idx: 0
     }
   },
   created() {
@@ -145,6 +147,11 @@ export default {
     clearInterval(timer)
   },
   methods: {
+    image_click(event, idx) {
+      alert("boostx:" + idx)
+      this.origin_imgs_idx = idx
+      this.$refs.Z.method1(this.hosturlpath100 + this.origin_imgs[this.origin_imgs_idx] + '?width=300')
+    },
     downloadImgs() {
       this.downloadLoading = true
       this.$alert(`${this.$t('workspace.dataDownloadAlert')}${parseFloat(this.total * 20 / 1024).toFixed(1)}`, {
@@ -260,8 +267,6 @@ export default {
           this.cells_crop = this.objData2.cells_crop
           break
       }
-      this.$refs.Z.method1()
-
     },
     /**
      * 定时器轮训百分比
