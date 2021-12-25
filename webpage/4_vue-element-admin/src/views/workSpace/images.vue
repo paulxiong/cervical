@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     image_click(event, idx) {
-      alert("boostx:" + idx)
+      // alert("boostx:" + idx)
       this.origin_imgs_idx = idx
       this.$refs.Z.method1(this.hosturlpath100 + this.origin_imgs[this.origin_imgs_idx] + '?width=300')
     },

@@ -29,7 +29,7 @@ export default {
             if (idx != '') {
               this.msg_inB = idx
             }
-            alert('In Zumly is ready, Go! \ n' + this.msg_inB)
+            // alert('In Zumly is ready, Go! \ n' + this.msg_inB)
             const hello = `
             <div class="z-view hello">
             H E L L O <br>
@@ -37,7 +37,7 @@ export default {
             <img src = “` + this.msg_inB + `“/>
             </div>
             `;
-            alert("boostx:" + hello)
+            // alert("boostx:" + hello)
             const hello1 = `
             <div class="z-view hello">
             H E L L O 1 <br>
