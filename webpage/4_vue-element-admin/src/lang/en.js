@@ -232,6 +232,7 @@ export default {
     projectDataDetails: 'Details',
     projectDataUpload2: 'Upload',
     projectDataCustomUpload: 'Upload Custom Data',
+    zumlyDialogImg:"Display Images",
     projectDataAdd2: 'New',
     projectDataPrevious: 'Previous',
     projectDataNext: 'Next',

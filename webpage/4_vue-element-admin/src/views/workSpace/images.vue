@@ -40,7 +40,6 @@
                 <i class="el-icon-picture-outline" />
               </div>
             </el-image>
-            <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=300'"/>
           </div>
           <el-pagination
             v-if="total2"
@@ -73,7 +72,7 @@
               </div>
             </el-image>
           </div>
-          <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=300'"/>
+
           <el-pagination
             v-if="total"
             class="page"
@@ -98,15 +97,73 @@
         </el-tab-pane>
       </el-tabs>
     </section>
+      <!-- :visible.sync="dialogFormVisible2" -->
+    <el-dialog
+      :title="$t('workspace.zumlyDialogImg')"
+      :visible="true"
+      :close-on-click-modal="true"
+      :close-on-press-escape="true"
+      :show-close="true"
+      @closed="closedDialog"
+    >
+          <div class="img-div" style="overflow-y: auto;height:200px;">
+            <el-image
+              v-for="(img,idx) in origin_imgs"
+              v-on:click = "image_click($event, idx)"
+              :key="idx"
+              class="img"
+              :src="hosturlpath100 + img + '?width=100'"
+              lazy
+            >
+
+              <!-- <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline" />
+              </div> -->
+            </el-image>
+          </div>
+            <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=100'"/>
+
+      <!-- <newCustomDatasets
+        ref="newDatasets"
+        :upload="upload"
+        style="margin-top:-30px;"
+        @checkUpload="checkUpload"
+        @checkImg="checkImg"
+        @checkModel="checkModel"
+        @AutoNext="AutoNext"
+        class = "boostx_newCustomDatasets"
+      /> -->
+      <div slot="footer" class="dialog-footer">
+        <el-button v-show="true" size="mini" @click="stepBack">{{ $t('workspace.projectDataPrevious') }}</el-button>
+        <!-- boostx we don't want to have a upload all  botton...
+        <el-button
+          v-show="step===1 || step===2"
+          size="mini"
+          :disabled="!uploadServer && !imgChecked && !modelChecked"
+          type="primary"
+          @click="stepNext"
+        >{{ $t('workspace.projectDataNext') }}</el-button>
+        -->
+        <el-button
+          v-show="true"
+          size="mini"
+          :disabled="!uploadServer && !imgChecked && !modelChecked"
+          type="primary"
+          @click="stepNext"
+        >{{ $t('workspace.projectDataNext') }}</el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
-
-
+  
 </template>
 
 <script>
 import { getjobresult, getPercent, getjoblog, downloadImgs } from '@/api/cervical'
 import { APIUrl } from '@/const/config'
 import B_zumly from './components/zumly.vue'
+import newCustomDatasets from './components/newCustomDatasets'
 let timer
 
 export default {
@@ -147,6 +204,9 @@ export default {
     clearInterval(timer)
   },
   methods: {
+    closedDialog(){
+
+    },
     image_click(event, idx) {
       // alert("boostx:" + idx)
       this.origin_imgs_idx = idx

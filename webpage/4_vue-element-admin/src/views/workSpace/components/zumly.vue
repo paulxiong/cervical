@@ -32,9 +32,8 @@ export default {
             // alert('In Zumly is ready, Go! \ n' + this.msg_inB)
             const hello = `
             <div class="z-view hello">
-            H E L L O <br>
-            W <span class="zoom-me o" data-to="world0">O</span> R L D!
-            <img src = “` + this.msg_inB + `“/>
+            Found Cancer Cell<br>
+            Z <span class="zoom-me o" data-to="world0">o</span> om to see it!
             </div>
             `;
             // alert("boostx:" + hello)
@@ -48,6 +47,8 @@ export default {
             const world0 = `
                    <div class="z-view world">
                     <img src= ${image_src1} />
+                    Found Cancer Cell<br>
+                    Z <span class="zoom-me o" data-to="world0">O</span> OM TO SEE IT!
                   </div>                      
             `;
             //! Error with following func, due to using async render()
