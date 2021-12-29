@@ -104,7 +104,7 @@
       :close-on-click-modal="true"
       :close-on-press-escape="true"
       :show-close="true"
-      @closed="closedDialog"
+      :destroy-on-close='true'
     >
           <div class="img-div" style="overflow-y: auto;height:200px;">
             <el-image
@@ -121,7 +121,7 @@
               </div> -->
             </el-image>
           </div>
-            <B_zumly ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=100'"/>
+            <B_zumly :key='origin_imgs_idx' ref="Z" :msg_inB="hosturlpath100 + origin_imgs[origin_imgs_idx] + '?width=100'"/>
 
       <!-- <newCustomDatasets
         ref="newDatasets"
@@ -204,13 +204,12 @@ export default {
     clearInterval(timer)
   },
   methods: {
-    closedDialog(){
-
-    },
     image_click(event, idx) {
       // alert("boostx:" + idx)
       this.origin_imgs_idx = idx
-      this.$refs.Z.method1(this.hosturlpath100 + this.origin_imgs[this.origin_imgs_idx] + '?width=300')
+      this.$nextTick().then(()=>{
+        this.$refs.Z.method1(this.hosturlpath100 + this.origin_imgs[this.origin_imgs_idx] + '?width=300')
+      })
     },
     downloadImgs() {
       this.downloadLoading = true
