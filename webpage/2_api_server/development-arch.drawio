@@ -1,0 +1,84 @@
+<mxfile host="65bd71144e">
+    <diagram id="E7ANiKeQiK63f9gDNoph" name="Page-1">
+        <mxGraphModel dx="752" dy="652" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="7" value="" style="edgeStyle=none;html=1;" parent="1" source="2" target="4" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="" style="image;html=1;image=img/lib/clip_art/computers/MacBook_128x128.png" parent="1" vertex="1">
+                    <mxGeometry x="170" y="575.13" width="100" height="96.87" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="" style="edgeStyle=none;html=1;" parent="1" source="4" target="5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.visual_studio_online;" parent="1" vertex="1">
+                    <mxGeometry x="195" y="490" width="50" height="37.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="5" target="10">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="" style="image;html=1;image=img/lib/clip_art/networking/Router_128x128.png" parent="1" vertex="1">
+                    <mxGeometry x="180" y="392" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="9" target="20">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" style="edgeStyle=orthogonalEdgeStyle;shape=arrow;html=1;exitX=0.843;exitY=1;exitDx=0;exitDy=0;elbow=vertical;exitPerimeter=0;" edge="1" parent="1" source="10" target="17">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;elbow=vertical;" edge="1" parent="1" source="10" target="23">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.003;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;elbow=vertical;" edge="1" parent="1" source="9" target="25">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;elbow=vertical;" edge="1" parent="1" source="9" target="26">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="330" y="303"/>
+                            <mxPoint x="330" y="56"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="9" value="bash while boot up..." style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="290" width="140" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="1. /home/bxiong/run.sh" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="9" vertex="1">
+                    <mxGeometry y="26" width="140" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="in run.sh" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="490" width="380" height="182" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="#kill all the exited container&#10;docker ps -a -f status=exited -q |xargs docker rm&#10;cd /home/bxiong/cervical.git/webpage/1_db/ &amp;&amp; ./run.sh&amp;&#10;#give above database process 10s to up&#10;sleep 30&#10;cd /home/bxiong/cervical.git/webpage/2_api_server &amp;&amp; ./run.sh&#10;sleep 30&#10;cd /home/bxiong/cervical.git/segmentation_Mask_RCNN/  &amp;&amp; ./run.sh&#10;sleep 30&#10;cd /home/bxiong/cervical.git/howtoMala &amp;&amp; ./run.sh" style="text;strokeColor=#FF6666;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="16" vertex="1">
+                    <mxGeometry y="26" width="380" height="156" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="source for build docker img" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+                    <mxGeometry x="150" y="90" width="140" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="/home/bxiong/cervic.git" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="19">
+                    <mxGeometry y="26" width="140" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="/home/bxiong/cervical.git/segmentation_Mask_RCNN/run.sh" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="192" width="330" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="docker run -d --name=&quot;cervical_crop&quot; \&#10;    --log-opt max-size=100m \&#10;    -v /data/datadir:/ai \&#10;    -e WEBURL='http://192.168.1.74:9002' \&#10;    -e ROOTDIR='/ai/thumbor/data/loader' \&#10;    -e PYTHONUNBUFFERED=0 \&#10;      --device /dev/nvhost-as-gpu \&#10;  --device /dev/nvhost-ctrl \&#10;  --device /dev/nvhost-ctrl-gpu \&#10;  --device /dev/nvhost-ctxsw-gpu \&#10;  --device /dev/nvhost-dbg-gpu \&#10;  --device /dev/nvhost-gpu \&#10;  --device /dev/nvhost-prof-gpu \&#10;  --device /dev/nvhost-sched-gpu \&#10;  --device /dev/nvhost-tsg-gpu \&#10;  --device /dev/nvmap \&#10;  cervical:crop_mr_20200628123450 python3 main_SDK.py" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="22">
+                    <mxGeometry y="26" width="330" height="254" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="/home/bxiong/cervical.git/webpage/2_api_server/run.sh" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="110" width="300" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="docker-compose up -d&#10;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="24">
+                    <mxGeometry y="26" width="300" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="/home/bxiong/cervical.git/webpage/1_db/run.sh" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+                    <mxGeometry x="420" y="30" width="270" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="docker-compose -f docker-compose-armv8.yml up " style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="26">
+                    <mxGeometry y="26" width="270" height="26" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
