@@ -1,3 +1,16 @@
 __pycache__
 *.swp
 *.tgz
+webpage/1_db/datadir/auto.cnf
+webpage/1_db/datadir/ca-key.pem
+webpage/1_db/datadir/ca.pem
+webpage/1_db/datadir/client-cert.pem
+webpage/1_db/datadir/client-key.pem
+webpage/1_db/datadir/ib_buffer_pool
+webpage/1_db/datadir/ib_logfile0
+webpage/1_db/datadir/ib_logfile1
+webpage/1_db/datadir/ibdata1
+webpage/1_db/datadir/private_key.pem
+webpage/1_db/datadir/public_key.pem
+webpage/1_db/datadir/server-cert.pem
+webpage/1_db/datadir/server-key.pem

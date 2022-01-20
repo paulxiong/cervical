@@ -1,0 +1,414 @@
+{"level":"warn","ts":"2022-01-13T23:15:53.697-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-13T23:15:53.697-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-13T23:15:53.697-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-13T23:15:53.697-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-13T23:15:53.697-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"warn","ts":"2022-01-13T23:17:03.746-0800","caller":"models/m_user.go:216","msg":"EmailExisted paul.xiong.2007@gmail.com"}
+{"level":"info","ts":"2022-01-13T23:17:03.904-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:03.960-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:03.980-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:04.777-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:04.798-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:04.812-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:05.111-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:05.115-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:05.828-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:22.754-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:38.458-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:39.186-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:39.187-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:39.194-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:39.271-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:39.296-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:39.809-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:50.159-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:50.303-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:52.474-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:52.518-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-13T23:17:54.175-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:59.752-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:17:59.992-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-13T23:42:53.617-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-13T23:42:53.617-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-13T23:42:53.617-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-13T23:42:53.617-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-13T23:42:53.617-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"warn","ts":"2022-01-13T23:44:19.436-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-13T23:44:19.437-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-13T23:44:19.437-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-13T23:44:19.437-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-13T23:44:19.437-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-13T23:44:37.291-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:38.229-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:38.267-0800","caller":"controllers/c_review.go:119","msg":"0 0"}
+{"level":"info","ts":"2022-01-13T23:44:38.280-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:38.455-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:45.195-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:45.343-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:48.337-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:48.381-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-13T23:44:50.368-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:51.005-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:51.112-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-13T23:44:51.339-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T04:24:20.488-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T04:24:20.501-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T04:24:20.501-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T04:24:20.501-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-14T04:24:20.501-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-14T04:32:57.909-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:32:58.411-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:32:58.437-0800","caller":"controllers/c_review.go:119","msg":"0 0"}
+{"level":"info","ts":"2022-01-14T04:32:58.447-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:32:58.500-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:07.669-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:07.673-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:07.723-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:07.885-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:07.902-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:08.090-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:14.905-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:15.590-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:15.604-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:15.615-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:15.735-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:15.755-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:15.961-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:33.967-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:33:34.068-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:00.159-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:00.159-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:00.165-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:00.237-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:00.251-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:00.516-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:04.479-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:05.106-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:05.112-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:05.122-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:05.187-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:05.222-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:05.458-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:12.673-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:12.771-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:20.009-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:20.047-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T04:34:21.660-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:25.387-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:25.493-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:31.195-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:31.205-0800","caller":"controllers/c_review.go:119","msg":"0 0"}
+{"level":"info","ts":"2022-01-14T04:34:31.214-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:34.393-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:34.470-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:34:34.610-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:00.313-0800","caller":"models/m_user.go:60","msg":"Error 1062: Duplicate entry '1' for key 'PRIMARY'"}
+{"level":"info","ts":"2022-01-14T04:37:00.319-0800","caller":"models/m_user.go:60","msg":"Error 1062: Duplicate entry '1000' for key 'PRIMARY'"}
+{"level":"warn","ts":"2022-01-14T04:37:00.448-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T04:37:00.448-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T04:37:00.449-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T04:37:00.449-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-14T04:37:00.449-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-14T04:37:29.320-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:29.334-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:29.334-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:29.396-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:29.395-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:33.129-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:37:46.246-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T04:49:59.380-0800","caller":"models/m_user.go:216","msg":"EmailExisted paul.xiong.2007@gmail.com"}
+{"level":"info","ts":"2022-01-14T04:49:59.615-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:49:59.659-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:49:59.681-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:00.842-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:00.875-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:00.879-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:00.895-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:00.903-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:01.890-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:13.984-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:14.249-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:18.178-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:18.243-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T04:50:18.923-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:41.154-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:50:41.453-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:51:02.785-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:51:02.806-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T04:51:03.548-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:52:44.567-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T04:52:44.881-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T05:11:59.041-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T05:11:59.072-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T05:11:59.072-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T05:11:59.072-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-14T05:11:59.072-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"warn","ts":"2022-01-14T05:12:14.388-0800","caller":"models/m_user.go:216","msg":"EmailExisted paul.xiong.2007@gmail.com"}
+{"level":"info","ts":"2022-01-14T05:12:14.611-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:14.668-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:14.690-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:15.574-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:15.594-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:15.636-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:15.826-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:15.831-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T05:12:16.676-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T09:08:55.905-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T09:08:55.934-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:08:55.934-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:08:55.934-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-14T09:08:55.935-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-14T09:09:27.274-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:29.468-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:29.517-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:29.579-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:29.581-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:29.636-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:31.040-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:58.138-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:09:58.358-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:10:11.562-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:10:11.612-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:10:11.627-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:10:11.662-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:10:11.692-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:10:12.327-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:11:02.647-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:11:02.685-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:11:03.134-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:11:05.683-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:11:05.756-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T09:11:06.022-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T09:17:13.216-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T09:17:13.217-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:17:13.217-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:17:13.217-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-14T09:17:13.217-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"fatal","ts":"2022-01-14T09:17:13.217-0800","caller":"2_api_server/main.go:77","msg":"listen tcp :9000: bind: address already in use"}
+{"level":"warn","ts":"2022-01-14T09:26:05.980-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T09:26:05.981-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:26:05.981-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:26:05.981-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-14T09:26:05.981-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"fatal","ts":"2022-01-14T09:26:05.981-0800","caller":"2_api_server/main.go:77","msg":"listen tcp :9000: bind: address already in use"}
+{"level":"warn","ts":"2022-01-14T09:26:27.152-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T09:26:27.154-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:26:27.155-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:26:27.155-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-14T09:26:27.155-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"fatal","ts":"2022-01-14T09:26:27.155-0800","caller":"2_api_server/main.go:77","msg":"listen tcp :9000: bind: address already in use"}
+{"level":"warn","ts":"2022-01-14T09:30:50.292-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T09:30:50.292-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:30:50.292-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:30:50.292-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-14T09:30:50.292-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"fatal","ts":"2022-01-14T09:30:50.292-0800","caller":"2_api_server/main.go:77","msg":"listen tcp :9000: bind: address already in use"}
+{"level":"warn","ts":"2022-01-14T09:32:10.529-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9004"}
+{"level":"warn","ts":"2022-01-14T09:32:10.534-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9004"}
+{"level":"warn","ts":"2022-01-14T09:32:10.535-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9004"}
+{"level":"warn","ts":"2022-01-14T09:32:10.535-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9004"}
+{"level":"info","ts":"2022-01-14T09:32:10.535-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9004"}
+{"level":"info","ts":"2022-01-14T09:32:31.206-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:31.953-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:31.963-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:31.971-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:31.987-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:32.003-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:32.601-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:49.909-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:49.947-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:50.123-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:56.449-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:56.479-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:56.491-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:56.502-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:56.506-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:32:57.016-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:33:05.566-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:33:05.724-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:33:14.118-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:33:14.146-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T09:33:14.741-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T09:34:57.736-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T09:34:57.738-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:34:57.738-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T09:34:57.738-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-14T09:34:57.738-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-14T09:35:10.527-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:11.640-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:11.661-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:11.664-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:11.666-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:11.706-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:12.322-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:17.874-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:17.898-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:18.043-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:22.824-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T09:35:22.861-0800","caller":"controllers/c_review.go:119","msg":"133 133"}
+{"level":"info","ts":"2022-01-14T09:35:23.039-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T22:39:56.648-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T22:39:56.666-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T22:39:56.667-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T22:39:56.667-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-14T22:39:56.668-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-14T22:40:09.749-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:10.866-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:10.903-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:10.933-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:10.934-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:10.986-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:11.259-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:16.325-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:16.512-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:20.486-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:40:20.577-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T22:40:21.117-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-14T22:53:01.859-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T22:53:01.860-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T22:53:01.860-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T22:53:01.860-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-14T22:53:01.860-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"warn","ts":"2022-01-14T22:53:51.497-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-14T22:53:51.499-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T22:53:51.499-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-14T22:53:51.500-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-14T22:53:51.500-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-14T22:54:06.812-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:06.947-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:09.446-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:10.148-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:10.229-0800","caller":"controllers/c_review.go:119","msg":"0 0"}
+{"level":"info","ts":"2022-01-14T22:54:10.232-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:10.282-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:17.972-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:18.010-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:18.031-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:18.060-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:18.065-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:18.344-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:22.805-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:22.898-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:27.879-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-14T22:54:27.947-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-14T22:54:28.296-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"warn","ts":"2022-01-15T13:19:50.435-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T13:19:50.435-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T13:19:50.435-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T13:19:50.435-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T13:19:50.435-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-15T13:19:52.303-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:19:52.974-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:19:53.062-0800","caller":"controllers/c_review.go:119","msg":"0 0"}
+{"level":"info","ts":"2022-01-15T13:19:53.087-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:19:53.351-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:20:57.372-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:20:57.433-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:20:57.507-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:20:57.514-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:20:57.563-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:20:57.940-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:15.296-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:15.361-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:24.957-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:25.005-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:25.033-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:25.044-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:25.051-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:21:25.440-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:22:32.989-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:22:33.026-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:22:33.212-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:06.723-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:06.754-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:06.776-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:06.938-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:11.032-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:11.056-0800","caller":"controllers/c_review.go:119","msg":"0 0"}
+{"level":"info","ts":"2022-01-15T13:23:11.066-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:16.283-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:16.321-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:16.334-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:16.338-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:16.620-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:23.392-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:23.394-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:23.400-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:23.422-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:23.433-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:23.729-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:49.832-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:23:49.971-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:24:02.193-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:24:02.392-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T13:24:02.859-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:25:59.593-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:26:00.054-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:26:07.498-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:26:07.550-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T13:26:08.498-0800","caller":"middlewares/history.go:93","msg":"read ip2region.db: is a directory"}
+{"level":"info","ts":"2022-01-15T13:44:27.482-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T13:45:09.780-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T13:46:38.586-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-15T16:10:34.428-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T16:10:34.429-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T16:10:34.430-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T16:10:34.430-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"info","ts":"2022-01-15T16:10:34.430-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-15T16:18:43.592-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-15T20:39:41.765-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T20:39:41.789-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T20:39:41.790-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T20:39:41.790-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T20:39:41.790-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-15T20:43:49.275-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-15T21:18:29.502-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T21:18:29.524-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:18:29.524-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:18:29.524-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T21:18:29.524-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-15T21:18:42.694-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:18:51.459-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-15T21:19:14.864-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T21:19:14.865-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:19:14.865-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:19:14.865-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T21:19:14.865-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-15T21:19:30.849-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-15T21:29:39.552-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T21:29:39.553-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:29:39.553-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:29:39.553-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T21:29:39.553-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"warn","ts":"2022-01-15T21:30:25.942-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T21:30:25.946-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:30:25.946-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:30:25.946-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T21:30:25.946-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"warn","ts":"2022-01-15T21:32:12.925-0800","caller":"2_api_server/main.go:56","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-15T21:32:12.925-0800","caller":"2_api_server/main.go:56","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:32:12.925-0800","caller":"2_api_server/main.go:56","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-15T21:32:12.926-0800","caller":"2_api_server/main.go:56","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-15T21:32:12.926-0800","caller":"2_api_server/main.go:73","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-15T21:32:30.878-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:32:37.675-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:32:43.253-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:43:31.555-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:44:29.394-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:48:13.632-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:48:39.976-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:49:05.268-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:49:28.002-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"info","ts":"2022-01-15T21:50:49.420-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-17T22:53:48.020-0800","caller":"2_api_server/main.go:58","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-17T22:53:48.036-0800","caller":"2_api_server/main.go:58","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-17T22:53:48.037-0800","caller":"2_api_server/main.go:58","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-17T22:53:48.038-0800","caller":"2_api_server/main.go:58","msg":"http://172.17.0.1:9000"}
+{"level":"info","ts":"2022-01-17T22:53:48.040-0800","caller":"2_api_server/main.go:77","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-17T22:54:15.287-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-19T13:56:02.645-0800","caller":"2_api_server/main.go:58","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-19T13:56:02.669-0800","caller":"2_api_server/main.go:58","msg":"http://172.19.0.1:9000"}
+{"level":"warn","ts":"2022-01-19T13:56:02.669-0800","caller":"2_api_server/main.go:58","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-19T13:56:02.669-0800","caller":"2_api_server/main.go:58","msg":"http://172.18.0.1:9000"}
+{"level":"info","ts":"2022-01-19T13:56:02.669-0800","caller":"2_api_server/main.go:77","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-19T13:56:13.083-0800","caller":"controllers/c_review.go:119","msg":"258 258"}

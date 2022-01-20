@@ -13,7 +13,7 @@ services:
       LOG_OUT: 'enable'
       LOG_GIN: 'enable'
       LOG_LEVEL: 'Info'
-      MYSQL_HOST: '192.168.1.102'
+      MYSQL_HOST: '192.168.1.77'
       MYSQL_PORT: '3309'
       MYSQL_DB: 'datasets'
       MYSQL_USR: 'mysql'

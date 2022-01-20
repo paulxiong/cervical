@@ -32,18 +32,30 @@ export QINIU_BUCKET='mass'
 # mkdir -p /data/datadir/thumbor/data/loader/projects
 # mkdir -p /data/datadir/thumbor/data/loader/scratch
 
-ln -s /data_src/datadir/thumbor/data/loader/scratch /data/scratch
-ln -s /data_src/datadir/thumbor/data/loader/datasets /data/datasets
-ln -s /data_src/datadir/thumbor/data/loader/projects /data/projects
-ln -s /data_src/datadir/thumbor/data/loader/csv /data/csv
-ln -s /data_src/datadir/thumbor/data/loader/img /data/img
-ln -s /data_src/datadir/thumbor/data/loader/cache /data/cache
-# ln -s /data/km/cervical /ai
-ln -s /data_src/ip2region.db /data/ip2region.db
-ln -s /data_src/zoneinfo.zip /data/zoneinfo.zip
+ln -s /data_src/datadir/thumbor/data/loader/scratch ./scratch
+ln -s /data_src/datadir/thumbor/data/loader/datasets ./datasets
+ln -s /data_src/datadir/thumbor/data/loader/projects ./projects
+ln -s /data_src/datadir/thumbor/data/loader/csv ./csv
+ln -s /data_src/datadir/thumbor/data/loader/img ./img
+ln -s /data_src/datadir/thumbor/data/loader/cache ./cache
+ln -s /data/km/cervical ./ai
+ln -s /data_src/ip2region.db ./ip2region.db
+ln -s /data_src/zoneinfo.zip ./zoneinfo.zip
 
+
+# need to copy files list :  main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
 swag init
-go run main.go
+go build -v -o main.exe -ldflags="-w -s" main.go
+tar -czvmf release.tgz main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
+cp release.tgz /data
+# pushd /data
+# tar -xvmf release.tgz
+# echo "entered /data and run main.exe"
+./main.exe
+# popd 
+
+# swag init
+# go run main.go
 # pushd web
 # npm run dev
 # popd

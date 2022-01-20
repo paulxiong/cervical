@@ -2,6 +2,8 @@ package main
 
 import (
 	configs "github.com/paulxiong/cervical/webpage/2_api_server/configs"
+	// configs "/home/bxiong/cervical/webpage/2_api_server/configs"
+
 	f "github.com/paulxiong/cervical/webpage/2_api_server/functions"
 	logger "github.com/paulxiong/cervical/webpage/2_api_server/log"
 	"github.com/paulxiong/cervical/webpage/2_api_server/routes"
@@ -33,7 +35,7 @@ import (
 // @contact.email ggxxde@163.com
 // @license.name Apache 2.0
 // @license.url http://dev.medical.raidcdn.cn:3000
-// @host dev.medical.raidcdn.cn:3000
+// @host localhost:9000
 // @BasePath /
 
 // JWT 认证, 认证时候填 token eyJhbGciOiJIU...(注意token后面有个空格)
@@ -62,6 +64,8 @@ func printlistenaddr(port string) {
 func main() {
 	release := os.Getenv("RELEASE")
 	r := routes.Router()
+
+	print("boostx: 0")
 
 	port := configs.Server.Port
 	endPoint := fmt.Sprintf(":%d", port)
