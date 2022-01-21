@@ -412,3 +412,9 @@
 {"level":"warn","ts":"2022-01-19T13:56:02.669-0800","caller":"2_api_server/main.go:58","msg":"http://172.18.0.1:9000"}
 {"level":"info","ts":"2022-01-19T13:56:02.669-0800","caller":"2_api_server/main.go:77","msg":"port on ==> 9000"}
 {"level":"info","ts":"2022-01-19T13:56:13.083-0800","caller":"controllers/c_review.go:119","msg":"258 258"}
+{"level":"warn","ts":"2022-01-19T20:17:27.651-0800","caller":"2_api_server/main.go:58","msg":"http://192.168.1.77:9000"}
+{"level":"warn","ts":"2022-01-19T20:17:27.651-0800","caller":"2_api_server/main.go:58","msg":"http://172.17.0.1:9000"}
+{"level":"warn","ts":"2022-01-19T20:17:27.651-0800","caller":"2_api_server/main.go:58","msg":"http://172.18.0.1:9000"}
+{"level":"warn","ts":"2022-01-19T20:17:27.651-0800","caller":"2_api_server/main.go:58","msg":"http://172.19.0.1:9000"}
+{"level":"info","ts":"2022-01-19T20:17:27.651-0800","caller":"2_api_server/main.go:77","msg":"port on ==> 9000"}
+{"level":"info","ts":"2022-01-19T20:41:52.407-0800","caller":"controllers/c_review.go:119","msg":"258 258"}

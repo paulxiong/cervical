@@ -43,19 +43,24 @@ ln -s /data_src/ip2region.db ./ip2region.db
 ln -s /data_src/zoneinfo.zip ./zoneinfo.zip
 
 
-# need to copy files list :  main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
+need to copy files list :  main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
 swag init
 go build -v -o main.exe -ldflags="-w -s" main.go
 tar -czvmf release.tgz main.exe configs/conf.ini web/dist/ web/src/const/errCode.json
-cp release.tgz /data
+./main.exe
+
+#! I don't know why NOT work on this folder.... 
+# cp release.tgz /data
 # pushd /data
 # tar -xvmf release.tgz
 # echo "entered /data and run main.exe"
-./main.exe
+# ./main.exe
 # popd 
 
+#! Not working with login
 # swag init
-# go run main.go
+# go build -v -o main.exe -ldflags="-w -s" main.go
 # pushd web
+# npm install
 # npm run dev
 # popd
