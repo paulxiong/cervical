@@ -84,6 +84,9 @@
                 <mxCell id="38" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fillWeight=4;hachureGap=8;hachureAngle=45;fillColor=#1ba1e2;sketch=1;shadow=0;" vertex="1" parent="1">
                     <mxGeometry x="633.5" y="730" width="50" height="45" as="geometry"/>
                 </mxCell>
+                <mxCell id="56" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="39" target="3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
                 <mxCell id="39" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Cognitive_Services.svg;shadow=0;" vertex="1" parent="1">
                     <mxGeometry x="90" y="640" width="50" height="30" as="geometry"/>
                 </mxCell>
